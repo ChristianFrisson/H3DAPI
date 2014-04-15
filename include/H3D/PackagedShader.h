@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -84,7 +84,7 @@ namespace H3D {
           || l == "CG_OPENGL_NV30" || l == "CG_OPENGL_NV20" );
 #ifndef HAVE_CG
       if( is_cg ) {
-        Console(4) << "Warning: H3D API compiled without cg support. ProgramShader "
+        Console(4) << "Warning: H3D API compiled without cg support. PackagedShader "
                    << " node will not support CG." << endl;
       }
       return false;

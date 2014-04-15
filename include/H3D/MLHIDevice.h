@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -33,50 +33,54 @@
 #include <H3D/SFString.h>
 namespace H3D {
 
-	/// \ingroup H3DNodes
-	/// \class  MLHIDevice
-	/// \brief A MLHIDevice is a node for handling communication
-	/// with MLHI devices.
-	/// 
-	/// That is a Maglev haptics device.
-	/// \note THIS NODE IS COMPLETELY UNTESTED.
-	class H3DAPI_API MLHIDevice: public H3DHapticsDevice {
-	public:
+  /// \ingroup H3DNodes
+  /// \class  MLHIDevice
+  /// \brief A MLHIDevice is a node for handling communication
+  /// with MLHI devices.
+  /// 
+  /// That is a Maglev haptics device.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/MLHIDevice.x3d">MLHIDevice.x3d</a>
+  ///     ( <a href="examples/MLHIDevice.x3d.html">Source</a> )
+  /// \note THIS NODE IS COMPLETELY UNTESTED.
+  class H3DAPI_API MLHIDevice: public H3DHapticsDevice {
+  public:
 
-		/// Constructor.
-		MLHIDevice( Inst< SFVec3f            > _devicePosition         = 0,
-								Inst< SFRotation         > _deviceOrientation      = 0,
-								Inst< TrackerPosition    > _trackerPosition        = 0,
-								Inst< TrackerOrientation > _trackerOrientation     = 0,
-								Inst< PosCalibration     > _positionCalibration    = 0,
-								Inst< OrnCalibration     > _orientationCalibration = 0,
-								Inst< SFVec3f            > _proxyPosition          = 0,
-								Inst< WeightedProxy      > _weightedProxyPosition  = 0,
-								Inst< SFFloat            > _proxyWeighting         = 0,
-								Inst< SFBool             > _mainButton             = 0,
-								Inst< SFBool             > _secondaryButton        = 0,
-								Inst< SFInt32            > _buttons                = 0,
-								Inst< SFVec3f            > _force                  = 0,
-								Inst< SFVec3f            > _torque                 = 0,
-								Inst< SFInt32            > _inputDOF               = 0,
-								Inst< SFInt32            > _outputDOF              = 0,
-								Inst< SFInt32            > _hapticsRate            = 0,
-								Inst< SFInt32            > _desiredHapticsRate     = 0,
-								Inst< SFNode             > _stylus                 = 0,
-								Inst< SFHapticsRendererNode > _hapticsRenderer     = 0,
-								Inst< MFVec3f            > _proxyPositions         = 0,
-								Inst< SFBool             > _followViewpoint        = 0,
-								Inst< SFString           > _serverIPAddress        = 0 );
+    /// Constructor.
+    MLHIDevice( Inst< SFVec3f            > _devicePosition         = 0,
+                Inst< SFRotation         > _deviceOrientation      = 0,
+                Inst< TrackerPosition    > _trackerPosition        = 0,
+                Inst< TrackerOrientation > _trackerOrientation     = 0,
+                Inst< PosCalibration     > _positionCalibration    = 0,
+                Inst< OrnCalibration     > _orientationCalibration = 0,
+                Inst< SFVec3f            > _proxyPosition          = 0,
+                Inst< WeightedProxy      > _weightedProxyPosition  = 0,
+                Inst< SFFloat            > _proxyWeighting         = 0,
+                Inst< SFBool             > _mainButton             = 0,
+                Inst< SFBool             > _secondaryButton        = 0,
+                Inst< SFInt32            > _buttons                = 0,
+                Inst< SFVec3f            > _force                  = 0,
+                Inst< SFVec3f            > _torque                 = 0,
+                Inst< SFInt32            > _inputDOF               = 0,
+                Inst< SFInt32            > _outputDOF              = 0,
+                Inst< SFInt32            > _hapticsRate            = 0,
+                Inst< SFInt32            > _desiredHapticsRate     = 0,
+                Inst< SFNode             > _stylus                 = 0,
+                Inst< SFHapticsRendererNode > _hapticsRenderer     = 0,
+                Inst< MFVec3f            > _proxyPositions         = 0,
+                Inst< SFBool             > _followViewpoint        = 0,
+                Inst< SFString           > _serverIPAddress        = 0 );
 
-		/// Creates a MLHIDevice in the hapi_device with IP address from server is serverIPAddress
-		virtual void initialize();
+    /// Creates a MLHIDevice in the hapi_device with IP address from server is serverIPAddress
+    virtual void initialize();
 
-		/// The IP address of the device in use
-		auto_ptr< SFString > serverIPAddress;
+    /// The IP address of the device in use
+    auto_ptr< SFString > serverIPAddress;
 
-		/// Node database entry
-		static H3DNodeDatabase database;
-	};
+    /// Node database entry
+    static H3DNodeDatabase database;
+  };
 }
 
 #endif

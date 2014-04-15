@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='SuperShape.x3d'/>
     <meta name='description' content='Demonstrates the SuperShape geometry.'/>
-    <meta name='editors' content='SenseGraphics AB, 2005-2008'/>
+    <meta name='editors' content='SenseGraphics AB, 2005-2014'/>
   </head>
   <Scene>
     <FitToBoxTransform boxCenter="0 0 0" boxSize="0.3 0.3 0.3"

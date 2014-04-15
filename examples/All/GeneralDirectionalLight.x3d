@@ -4,7 +4,7 @@
     <meta name='title' content='GeneralDirectionalLight.x3d'/>
     <meta name='description' content='GeneralDirectionalLight example.
         Showing different specular and diffuse color components of light. Note that the light affects nodes that share its parent. '/>
-    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
   
   <Scene>

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -40,7 +40,7 @@ namespace H3D {
   /// are used with the API. It contains e.g. all H3DHapticsDevice nodes
   /// that are used for haptic rendering, Mouse and Magellan devices.
   ///
-	/// <b>Examples:</b>
+  /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/PhantomDevice.x3d">PhantomDevice.x3d</a>
   ///     ( <a href="examples/PhantomDevice.x3d.html">Source</a> )
   class H3DAPI_API DeviceInfo : public X3DBindableNode {

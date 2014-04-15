@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -58,42 +58,42 @@ namespace H3D {
 
     /// Constructor.
     GraphicsHardwareInfo( Inst< SFNode  > _metadata = 0,
-			  Inst< SFBool  > _initialized = 0,
-			  Inst< SFString > _vendor = 0,
-			  Inst< SFString > _renderer = 0,
-			  Inst< SFString > _version = 0,
-			  Inst< SFString > _shadingLanguageVersion = 0,
-			  Inst< SFString > _extensions = 0,
-			  Inst< SFInt32 > _max3dTextureSize = 0,
-			  Inst< SFInt32 > _maxClientAttribStackDepth = 0,
-			  Inst< SFInt32 > _maxAttribStackDepth = 0,
-			  Inst< SFInt32 > _maxClipPlanes = 0,
-			  Inst< SFInt32 > _maxColorMatrixStackDepth = 0,
-			  Inst< SFInt32 > _maxCombinedTextureImageUnits = 0,
-			  Inst< SFInt32 > _maxCubeMapTextureSize = 0,
-			  Inst< SFInt32 > _maxDrawBuffers = 0,
-			  Inst< SFInt32 > _maxElementsIndices = 0,
-			  Inst< SFInt32 > _maxElementsVertices = 0,
-			  Inst< SFInt32 > _maxEvalOrder = 0,
-			  Inst< SFInt32 > _maxFragmentUniformComponents = 0,
-			  Inst< SFInt32 > _maxLights = 0,
-			  Inst< SFInt32 > _maxListNesting = 0,
-			  Inst< SFInt32 > _maxModelviewStackDepth = 0,
-			  Inst< SFInt32 > _maxNameStackDepth = 0,
-			  Inst< SFInt32 > _maxPixelMapTable = 0,
-			  Inst< SFInt32 > _maxProjectionStackDepth = 0,
-			  Inst< SFInt32 > _maxTextureCoords = 0,
-			  Inst< SFInt32 > _maxTextureImageUnits = 0,
-			  Inst< SFInt32 > _maxTextureLODBias = 0,
-			  Inst< SFInt32 > _maxTextureSize = 0,
-			  Inst< SFInt32 > _maxTextureStackDepth = 0,
-			  Inst< SFInt32 > _maxTextureUnits = 0,
-			  Inst< SFInt32 > _maxVaryingFloats = 0,
-			  Inst< SFInt32 > _maxVertexAttribs = 0,
-			  Inst< SFInt32 > _maxVertexTextureImageUnits = 0,
-			  Inst< SFInt32 > _maxVertexUniformComponents = 0,
-			  Inst< SFInt32 > _maxViewportWidth = 0,
-			  Inst< SFInt32 > _maxViewportHeight = 0 );
+        Inst< SFBool  > _initialized = 0,
+        Inst< SFString > _vendor = 0,
+        Inst< SFString > _renderer = 0,
+        Inst< SFString > _version = 0,
+        Inst< SFString > _shadingLanguageVersion = 0,
+        Inst< SFString > _extensions = 0,
+        Inst< SFInt32 > _max3dTextureSize = 0,
+        Inst< SFInt32 > _maxClientAttribStackDepth = 0,
+        Inst< SFInt32 > _maxAttribStackDepth = 0,
+        Inst< SFInt32 > _maxClipPlanes = 0,
+        Inst< SFInt32 > _maxColorMatrixStackDepth = 0,
+        Inst< SFInt32 > _maxCombinedTextureImageUnits = 0,
+        Inst< SFInt32 > _maxCubeMapTextureSize = 0,
+        Inst< SFInt32 > _maxDrawBuffers = 0,
+        Inst< SFInt32 > _maxElementsIndices = 0,
+        Inst< SFInt32 > _maxElementsVertices = 0,
+        Inst< SFInt32 > _maxEvalOrder = 0,
+        Inst< SFInt32 > _maxFragmentUniformComponents = 0,
+        Inst< SFInt32 > _maxLights = 0,
+        Inst< SFInt32 > _maxListNesting = 0,
+        Inst< SFInt32 > _maxModelviewStackDepth = 0,
+        Inst< SFInt32 > _maxNameStackDepth = 0,
+        Inst< SFInt32 > _maxPixelMapTable = 0,
+        Inst< SFInt32 > _maxProjectionStackDepth = 0,
+        Inst< SFInt32 > _maxTextureCoords = 0,
+        Inst< SFInt32 > _maxTextureImageUnits = 0,
+        Inst< SFInt32 > _maxTextureLODBias = 0,
+        Inst< SFInt32 > _maxTextureSize = 0,
+        Inst< SFInt32 > _maxTextureStackDepth = 0,
+        Inst< SFInt32 > _maxTextureUnits = 0,
+        Inst< SFInt32 > _maxVaryingFloats = 0,
+        Inst< SFInt32 > _maxVertexAttribs = 0,
+        Inst< SFInt32 > _maxVertexTextureImageUnits = 0,
+        Inst< SFInt32 > _maxVertexUniformComponents = 0,
+        Inst< SFInt32 > _maxViewportWidth = 0,
+        Inst< SFInt32 > _maxViewportHeight = 0 );
         
     /// Destructor.
     virtual ~GraphicsHardwareInfo() {}
@@ -158,247 +158,247 @@ namespace H3D {
       return info;
     }
 
-		/// If true the information in all the other fields are valid.
+    /// If true the information in all the other fields are valid.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// <b>Default value:</b> FALSE \n
     /// \dotfile GraphicsHardwareInfo_initialized.dot
     auto_ptr< SFBool > initialized;
 
-		/// The company responsible for this GL implementation.
-		/// This name does not change from release to release.
+    /// The company responsible for this GL implementation.
+    /// This name does not change from release to release.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_vendor.dot
     auto_ptr< SFString > vendor;
 
-		/// The name of the renderer. This name is typically specific to a
-		/// particular configuration of a hardware platform. It does not change
-		/// from release to release.
+    /// The name of the renderer. This name is typically specific to a
+    /// particular configuration of a hardware platform. It does not change
+    /// from release to release.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_renderer.dot
     auto_ptr< SFString > renderer;
 
-		/// A version or release number.
+    /// A version or release number.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_version.dot
     auto_ptr< SFString > version;
 
-		/// A version or release number for the shading language.
+    /// A version or release number for the shading language.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_shadingLanguageVersion.dot
     auto_ptr< SFString > shadingLanguageVersion;
 
-		/// A space-separated list of supported extensions to GL.
+    /// A space-separated list of supported extensions to GL.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_extensions.dot
     auto_ptr< SFString > extensions;
 
-		/// A rough estimate of the largest 3D texture that the GL can handle.
+    /// A rough estimate of the largest 3D texture that the GL can handle.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_max3dTextureSize.dot
     auto_ptr< SFInt32 > max3dTextureSize;
 
-		/// A value indicating the maximum supported depth of the client attribute
-		/// stack.
+    /// A value indicating the maximum supported depth of the client attribute
+    /// stack.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxClientAttribStackDepth.dot
     auto_ptr< SFInt32 > maxClientAttribStackDepth;
 
-		/// The maximum supported depth of the attribute stack.
+    /// The maximum supported depth of the attribute stack.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxAttribStackDepth.dot
     auto_ptr< SFInt32 > maxAttribStackDepth;
 
-		/// The maximum number of application-defined clipping planes.
+    /// The maximum number of application-defined clipping planes.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxClipPlanes.dot
     auto_ptr< SFInt32 > maxClipPlanes;
 
-		/// The maximum supported depth of the color matrix stack.
+    /// The maximum supported depth of the color matrix stack.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxColorMatrixStackDepth.dot
     auto_ptr< SFInt32 > maxColorMatrixStackDepth;
 
-		/// The maximum supported texture image units that can be used to access
-		/// texture maps from the vertex shader and the fragment processor
-		/// combined. If both the vertex shader and the fragment processing stage
-		/// access the same texture image unit, then that counts as using two
-		/// texture image units against this limit.
+    /// The maximum supported texture image units that can be used to access
+    /// texture maps from the vertex shader and the fragment processor
+    /// combined. If both the vertex shader and the fragment processing stage
+    /// access the same texture image unit, then that counts as using two
+    /// texture image units against this limit.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxCombinedTextureImageUnits.dot
     auto_ptr< SFInt32 > maxCombinedTextureImageUnits;
     
-		/// The value gives a rough estimate of the largest cube-map texture that
-		/// the GL can handle.
+    /// The value gives a rough estimate of the largest cube-map texture that
+    /// the GL can handle.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxCubeMapTextureSize.dot
-		auto_ptr< SFInt32 > maxCubeMapTextureSize;
+    auto_ptr< SFInt32 > maxCubeMapTextureSize;
     
-		/// The maximum number of simultaneous output colors allowed from a fragment
-		/// shader using the gl_FragData built-in array.
+    /// The maximum number of simultaneous output colors allowed from a fragment
+    /// shader using the gl_FragData built-in array.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxDrawBuffers.dot
-		auto_ptr< SFInt32 > maxDrawBuffers;
+    auto_ptr< SFInt32 > maxDrawBuffers;
     
-		/// The recommended maximum number of vertex array indices.
+    /// The recommended maximum number of vertex array indices.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxElementsIndices.dot
-		auto_ptr< SFInt32 > maxElementsIndices;
+    auto_ptr< SFInt32 > maxElementsIndices;
     
-		/// The recommended maximum number of vertex array vertices.
+    /// The recommended maximum number of vertex array vertices.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxElementsVertices.dot
-		auto_ptr< SFInt32 > maxElementsVertices;
+    auto_ptr< SFInt32 > maxElementsVertices;
     
-		/// The maximum equation order supported by 1D and 2D evaluators. 
+    /// The maximum equation order supported by 1D and 2D evaluators. 
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxEvalOrder.dot
-		auto_ptr< SFInt32 > maxEvalOrder;
+    auto_ptr< SFInt32 > maxEvalOrder;
     
-		/// The maximum number of individual floating-point, integer, or boolean
-		/// values that can be held in uniform variable storage for a fragment
-		/// shader.
+    /// The maximum number of individual floating-point, integer, or boolean
+    /// values that can be held in uniform variable storage for a fragment
+    /// shader.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxFragmentUniformComponents.dot
-		auto_ptr< SFInt32 > maxFragmentUniformComponents;
+    auto_ptr< SFInt32 > maxFragmentUniformComponents;
     
-		/// The maximum number of lights.
+    /// The maximum number of lights.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxLights.dot
-		auto_ptr< SFInt32 > maxLights;
+    auto_ptr< SFInt32 > maxLights;
     
-		/// The maximum recursion depth allowed during display-list traversal.
+    /// The maximum recursion depth allowed during display-list traversal.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxListNesting.dot
-		auto_ptr< SFInt32 > maxListNesting;
+    auto_ptr< SFInt32 > maxListNesting;
     
-		/// The maximum supported depth of the modelview matrix stack.
+    /// The maximum supported depth of the modelview matrix stack.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxModelviewStackDepth.dot
-		auto_ptr< SFInt32 > maxModelviewStackDepth;
+    auto_ptr< SFInt32 > maxModelviewStackDepth;
     
-		/// The maximum supported depth of the selection name stack.
+    /// The maximum supported depth of the selection name stack.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxNameStackDepth.dot
-		auto_ptr< SFInt32 > maxNameStackDepth;
+    auto_ptr< SFInt32 > maxNameStackDepth;
     
-		/// The maximum supported size of a glPixelMap lookup table.
+    /// The maximum supported size of a glPixelMap lookup table.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxPixelMapTable.dot
-		auto_ptr< SFInt32 > maxPixelMapTable;
+    auto_ptr< SFInt32 > maxPixelMapTable;
     
-		/// The maximum supported depth of the projection matrix stack. 
+    /// The maximum supported depth of the projection matrix stack. 
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxProjectionStackDepth.dot
-		auto_ptr< SFInt32 > maxProjectionStackDepth;
+    auto_ptr< SFInt32 > maxProjectionStackDepth;
     
-		/// The maximum number of texture coordinate sets available to vertex and
-		/// fragment shaders. 
+    /// The maximum number of texture coordinate sets available to vertex and
+    /// fragment shaders. 
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxTextureCoords.dot
-		auto_ptr< SFInt32 > maxTextureCoords;
+    auto_ptr< SFInt32 > maxTextureCoords;
     
-		/// The maximum supported texture image units that can be used to access
-		/// texture maps from the fragment shader. 
+    /// The maximum supported texture image units that can be used to access
+    /// texture maps from the fragment shader. 
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxTextureImageUnits.dot
-		auto_ptr< SFInt32 > maxTextureImageUnits;
+    auto_ptr< SFInt32 > maxTextureImageUnits;
     
-		/// The maximum, absolute value of the texture level-of-detail bias.
+    /// The maximum, absolute value of the texture level-of-detail bias.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxTextureLODBias.dot
-		auto_ptr< SFInt32 > maxTextureLODBias;
+    auto_ptr< SFInt32 > maxTextureLODBias;
     
-		/// The value gives a rough estimate of the largest texture that the GL can
-		/// handle.
+    /// The value gives a rough estimate of the largest texture that the GL can
+    /// handle.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxTextureSize.dot
-		auto_ptr< SFInt32 > maxTextureSize;
+    auto_ptr< SFInt32 > maxTextureSize;
     
-		/// The maximum supported depth of the texture matrix stack. 
+    /// The maximum supported depth of the texture matrix stack. 
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxTextureStackDepth.dot
-		auto_ptr< SFInt32 > maxTextureStackDepth;
+    auto_ptr< SFInt32 > maxTextureStackDepth;
     
-		/// A value indicating the number of conventional texture units
-		/// supported. Each conventional texture unit includes both a texture
-		/// coordinate set and a texture image unit. Conventional texture
-		/// units may be used for fixed-function (non-shader) rendering.
+    /// A value indicating the number of conventional texture units
+    /// supported. Each conventional texture unit includes both a texture
+    /// coordinate set and a texture image unit. Conventional texture
+    /// units may be used for fixed-function (non-shader) rendering.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxTextureUnits.dot
-		auto_ptr< SFInt32 > maxTextureUnits;
+    auto_ptr< SFInt32 > maxTextureUnits;
     
-		/// The maximum number of interpolators available for processing varying
-		/// variables used by vertex and fragment shaders. This value represents
-		/// the number of individual floating-point values that can be
-		/// interpolated; varying variables declared as vectors, matrices,
-		/// and arrays will all consume multiple interpolators.
+    /// The maximum number of interpolators available for processing varying
+    /// variables used by vertex and fragment shaders. This value represents
+    /// the number of individual floating-point values that can be
+    /// interpolated; varying variables declared as vectors, matrices,
+    /// and arrays will all consume multiple interpolators.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxVaryingFloats.dot
-		auto_ptr< SFInt32 > maxVaryingFloats;
+    auto_ptr< SFInt32 > maxVaryingFloats;
     
-		/// The maximum number of 4-component generic vertex attributes accessible to a vertex shader.
+    /// The maximum number of 4-component generic vertex attributes accessible to a vertex shader.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxVertexAttribs.dot
-		auto_ptr< SFInt32 > maxVertexAttribs;
+    auto_ptr< SFInt32 > maxVertexAttribs;
     
-		/// The maximum supported texture image units that can be used to access
-		/// texture maps from the vertex shader.
+    /// The maximum supported texture image units that can be used to access
+    /// texture maps from the vertex shader.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxVertexTextureImageUnits.dot
-		auto_ptr< SFInt32 > maxVertexTextureImageUnits;
+    auto_ptr< SFInt32 > maxVertexTextureImageUnits;
     
-		/// The maximum number of individual floating-point, integer, or boolean
-		/// values that can be held in uniform variable storage for a vertex
-		/// shader.
+    /// The maximum number of individual floating-point, integer, or boolean
+    /// values that can be held in uniform variable storage for a vertex
+    /// shader.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxVertexUniformComponents.dot
-		auto_ptr< SFInt32 > maxVertexUniformComponents;
+    auto_ptr< SFInt32 > maxVertexUniformComponents;
     
-		/// The maximum supported width of the viewport.
+    /// The maximum supported width of the viewport.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxViewportWidth.dot
-		auto_ptr< SFInt32 > maxViewportWidth;
+    auto_ptr< SFInt32 > maxViewportWidth;
     
-		/// The maximum supported height of the viewport.
+    /// The maximum supported height of the viewport.
     ///
     /// <b>Access type:</b> outputOnly \n
     /// \dotfile GraphicsHardwareInfo_maxViewportHeight.dot
-		auto_ptr< SFInt32 > maxViewportHeight;
+    auto_ptr< SFInt32 > maxViewportHeight;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -122,10 +122,10 @@ namespace H3D {
         /// 45 lines of black between each image.
         HDMI_FRAME_PACKED_1080P,
 
-	/// NVidia 3DVision format when not using quad-buffered stereo. Will
-	/// copy OpenGL buffer and display with DirectX. Executable must be
-	/// named to one of the NVidia sanctioned 3D programs in order to work,
-	/// e.g. googleearth.exe.
+        /// NVidia 3DVision format when not using quad-buffered stereo. Will
+        /// copy OpenGL buffer and display with DirectX. Executable must be
+        /// named to one of the NVidia sanctioned 3D programs in order to work,
+        /// e.g. googleearth.exe.
         NVIDIA_3DVISION
 
       } Mode;
@@ -512,8 +512,8 @@ namespace H3D {
     // Instance to class handling navigation for this window.
     H3DNavigation * h3d_navigation;
 
-		bool window_is_made_active, check_if_stereo_obtained;
-		void checkIfStereoObtained();
+    bool window_is_made_active, check_if_stereo_obtained;
+    void checkIfStereoObtained();
   public:
     /// Saves the currently rendered buffer to file. That is, a screenshot
     /// of the openGL window.

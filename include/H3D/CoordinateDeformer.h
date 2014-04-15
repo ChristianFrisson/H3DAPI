@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -51,7 +51,7 @@ namespace H3D {
   /// deformation is non-plastic (resting points will not be changed) and
   /// 1 means that it is fully plastic (resting points will be the same
   /// as deformed points)
-	/// <b>Examples:</b>
+  /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/DeformableShape.x3d">DeformableShape.x3d</a>
   ///     ( <a href="examples/DeformableShape.x3d.html">Source</a> )
   class H3DAPI_API CoordinateDeformer : public H3DCoordinateDeformerNode {

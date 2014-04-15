@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -234,7 +234,7 @@ void SplineScalarInterpolator::SFValue::update() {
     }
 
 
-    Vec4f	C = Vec4f(key_value[key_index], key_value[key_index+1], T0, T1);
+    Vec4f C = Vec4f(key_value[key_index], key_value[key_index+1], T0, T1);
     Vec4f S = Vec4f(H3DPow(weight,3), H3DPow(weight,2), weight, 1);
     Matrix4f H = Matrix4f(2,-2,1,1, -3,3,-2,-1, 0,0,1,0, 1,0,0,0);
     value =S*(H*C);

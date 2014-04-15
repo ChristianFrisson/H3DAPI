@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -43,7 +43,7 @@ namespace H3D {
   /// field of vertex-based geometry nodes. Unlike the Coordinate node it allows 
   /// the definition of 3D coordinates in double precision floating point values.
   ///
-	/// <b>Examples:</b>
+  /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/TriangleSet.x3d">TriangleSet.x3d</a>
   ///     ( <a href="examples/TriangleSet.x3d.html">Source</a> )
   ///

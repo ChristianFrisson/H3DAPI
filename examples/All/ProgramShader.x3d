@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='ProgramShader.x3d'/>
     <meta name='description' content='Demonstrates how to use shaders with H3DAPI. The shader language is NVIDIA CG. This example requires a haptics device to fully display all its features.'/>
-    <meta name='editors' content='SenseGraphics AB, 2006-2008'/>
+    <meta name='editors' content='SenseGraphics AB, 2006-2014'/>
   </head>
   <Scene>
     <IMPORT inlineDEF='H3D_EXPORTS' exportedDEF='HDEV' AS='HDEV' />

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -132,15 +132,15 @@ void NoiseTexture3D::SFImage::update() {
   H3DFloat perlinGrayValue;
   unsigned int pixel = 0;
 
-	H3DFloat width_minus_1 = H3DFloat( width-1 );
-	H3DFloat height_minus_1 = H3DFloat( height-1 );
-	H3DFloat depth_minus_1 = H3DFloat( depth-1 );
+  H3DFloat width_minus_1 = H3DFloat( width-1 );
+  H3DFloat height_minus_1 = H3DFloat( height-1 );
+  H3DFloat depth_minus_1 = H3DFloat( depth-1 );
   for( z = 0; z < depth; ++z ) {
     for( y = 0; y < height; ++y) {
       for( x = 0; x < width; ++x,pixel++) {
         H3DFloat x_norm = x/width_minus_1;
-				H3DFloat y_norm = y/height_minus_1;
-				H3DFloat z_norm = z/depth_minus_1;
+        H3DFloat y_norm = y/height_minus_1;
+        H3DFloat z_norm = z/depth_minus_1;
 
         if( !simplexNoise ) {
       } else {

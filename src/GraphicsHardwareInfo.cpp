@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -118,7 +118,7 @@ GraphicsHardwareInfo::GraphicsHardwareInfo( Inst< SFNode      > _metadata,
                                             Inst< SFInt32 > _maxVertexTextureImageUnits,
                                             Inst< SFInt32 > _maxVertexUniformComponents,
                                             Inst< SFInt32 > _maxViewportWidth,
-					    Inst< SFInt32 > _maxViewportHeight):
+                                            Inst< SFInt32 > _maxViewportHeight):
   X3DChildNode( _metadata ),
   initialized( _initialized ),
   vendor( _vendor ),
@@ -160,19 +160,19 @@ GraphicsHardwareInfo::GraphicsHardwareInfo( Inst< SFNode      > _metadata,
   type_name = "GraphicsHardwareInfo";
   database.initFields( this );
 
-	initialized->setValue( false, id );
+  initialized->setValue( false, id );
 }
 
 string glGetStlString( GLenum name ) {
-	string return_string = "";
-	const GLubyte * v = glGetString( name );
-	if( v == 0 ) {
-		glGetError();
-		// The error is not important. It is GL_INVALID_ENUM.
-		// We just want to clear the error stack.
-	} else
-		return_string = (const char *)v;
-	return return_string;
+  string return_string = "";
+  const GLubyte * v = glGetString( name );
+  if( v == 0 ) {
+    glGetError();
+    // The error is not important. It is GL_INVALID_ENUM.
+    // We just want to clear the error stack.
+  } else
+    return_string = (const char *)v;
+  return return_string;
 }
 
 bool GraphicsHardwareInfo::initializeInfo() {

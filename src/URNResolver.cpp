@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -43,7 +43,7 @@ void URNResolver::loadConfigFile( const string &config_file ) {
   string line;
   while(!is.eof() ) {
     getline( is, line );
-	if(line.empty()) continue;
+    if(line.empty()) continue;
     unsigned int characters_processed = 0;
     string::size_type pos = 0;
     

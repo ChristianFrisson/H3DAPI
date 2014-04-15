@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -51,8 +51,15 @@ vector< pair< string, pair< string, string > > > field_name_not_variable_name;
 struct less_than_field_name {
   bool operator()(const pair< string, string > &s1, const pair< string, string > &s2 ) const {
         return s1.first < s2.first;
-      }	
+      }
 };
+
+string getFieldName( Field *f, string node_name ) {
+  string field_name = f->getName();
+  if( node_name == "UniversalJoint" && field_name == "stopBounce1" )
+    return "stop1Bounce";
+  return field_name;
+}
 
 void writeNode( ostream &os, Node *n ) {
   if( !n ) {
@@ -62,11 +69,11 @@ void writeNode( ostream &os, Node *n ) {
   H3DNodeDatabase *db = H3DNodeDatabase::lookupTypeId( typeid(*n) );
 
   string node_name = n->getTypeName();
-	// In MedX3D ISOSurfaceVolumeData is the name of the class but IsoSurfaceVolumeData is the name of the type.
-	// Doxygen need the class name to link properly.
-	string class_name = node_name;
+  // In MedX3D ISOSurfaceVolumeData is the name of the class but IsoSurfaceVolumeData is the name of the type.
+  // Doxygen need the class name to link properly.
+  string class_name = node_name;
   if( node_name == "IsoSurfaceVolumeData" )
-		class_name = "ISOSurfaceVolumeData";
+    class_name = "ISOSurfaceVolumeData";
   os << "/// <ul>" << endl
      << "///   <li>\\link H3D::" << class_name << " "
      << node_name << " \\endlink" << endl;
@@ -75,24 +82,24 @@ void writeNode( ostream &os, Node *n ) {
     vector< pair< string, string > > ordered_field_names;
     for( H3DNodeDatabase::FieldDBConstIterator i = db->fieldDBBegin();
          i != db->fieldDBEnd(); i++ ) {
-			string tmp_field_name = i.getFieldDBElement()->getName();
-			bool valid_name = true;
-			for( unsigned int j = 0; j < deprecated_names_list.size(); j++ )
-			  if( deprecated_names_list[j].first == node_name &&
-				    deprecated_names_list[j].second == tmp_field_name )
-						valid_name = false;
-			if( valid_name ) {
-			  bool field_name_is_variable_name = true;
-				for( unsigned int j = 0; j < field_name_not_variable_name.size(); j++ )
-				  if( field_name_not_variable_name[j].first == node_name &&
-					    field_name_not_variable_name[j].second.first == tmp_field_name ) {
-						ordered_field_names.push_back( pair< string, string >( tmp_field_name, field_name_not_variable_name[j].second.second ) );
-						field_name_is_variable_name = false;
-						break;
-					}
-				if( field_name_is_variable_name )
-          ordered_field_names.push_back( pair< string, string >( tmp_field_name, i.getFieldDBElement()->getField(n)->getName() ) );
-			}
+      string tmp_field_name = i.getFieldDBElement()->getName();
+      bool valid_name = true;
+      for( unsigned int j = 0; j < deprecated_names_list.size(); j++ )
+        if( deprecated_names_list[j].first == node_name &&
+            deprecated_names_list[j].second == tmp_field_name )
+            valid_name = false;
+      if( valid_name ) {
+        bool field_name_is_variable_name = true;
+        for( unsigned int j = 0; j < field_name_not_variable_name.size(); j++ )
+          if( field_name_not_variable_name[j].first == node_name &&
+              field_name_not_variable_name[j].second.first == tmp_field_name ) {
+            ordered_field_names.push_back( pair< string, string >( tmp_field_name, field_name_not_variable_name[j].second.second ) );
+            field_name_is_variable_name = false;
+            break;
+          }
+        if( field_name_is_variable_name )
+          ordered_field_names.push_back( pair< string, string >( tmp_field_name, getFieldName( i.getFieldDBElement()->getField(n), node_name ) ) );
+      }
     }
     sort( ordered_field_names.begin(), ordered_field_names.end() );
     os << "///     <ul>" << endl;
@@ -155,19 +162,22 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-	deprecated_names_list.push_back( pair< string, string >( "ImportLibrary", "library" ) );
+  deprecated_names_list.push_back( pair< string, string >( "ImportLibrary", "library" ) );
+  deprecated_names_list.push_back( pair< string, string >( "Contact", "minBounceSpeed" ) );
+  deprecated_names_list.push_back( pair< string, string >( "UniversalJoint", "stopBounce1" ) );
 
-	field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "Text", pair< string, string >( "string", "stringF" ) ) );
+  field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "Text", pair< string, string >( "string", "stringF" ) ) );
   field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "MetadataDouble", pair< string, string >( "name", "nameF" ) ) );
   field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "MetadataFloat", pair< string, string >( "name", "nameF" ) ) );
   field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "MetadataInteger", pair< string, string >( "name", "nameF" ) ) );
   field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "MetadataSet", pair< string, string >( "name", "nameF" ) ) );
   field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "MetadataString", pair< string, string >( "name", "nameF" ) ) );
+  field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "Contact", pair< string, string >( "minbounceSpeed", "minBounceSpeed" ) ) );
 
   vector< string > all_node_names;
   for( unsigned int i = 0; i <= extra_output.size(); i++ ) {
     if( i + 1 >= argc )
-		  return 0;
+      return 0;
     
     string page_name = "";
     if( i > 0 ) {
@@ -180,7 +190,7 @@ int main(int argc, char* argv[]) {
 #ifdef H3D_WINDOWS
                      + ".dll"
 #endif*/
-			               );
+                     );
       imp_lib->url->setValue( url );
       imp_lib->initialize();
       delete imp_lib;

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,15 +29,6 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/HAnimSite.h>
-
-#ifdef MACOSX
-#include <GLUT/glut.h>
-#else
-#include <GL/glut.h>
-#endif
-#ifdef FREEGLUT
-#include <GL/freeglut.h>
-#endif
 
 using namespace H3D;
 

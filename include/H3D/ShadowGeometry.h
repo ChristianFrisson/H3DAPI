@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -49,7 +49,7 @@ namespace H3D {
   ///
   /// The transform field specifies a possible transformation of the 
   /// geometry.
-	///
+  ///
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/ShadowCaster.x3d">ShadowCaster.x3d</a>
   ///     ( <a href="examples/ShadowCaster.x3d.html">Source</a> )

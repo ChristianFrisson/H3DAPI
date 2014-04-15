@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -146,6 +146,9 @@
 /// Undef if you do not Virtual Hand SDK available. Needed for the
 /// CyberGloveSensor and HumanHand nodes.
 #cmakedefine HAVE_VIRTUAL_HAND_SDK
+
+/// Undef if you do not have Glut or FreeGlut.
+#cmakedefine HAVE_GLUT
 
 #define XML_USE_WIN32_TRANSCODER
 #define XML_USE_INMEM_MESSAGELOADER

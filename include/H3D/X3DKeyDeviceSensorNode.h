@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -64,9 +64,9 @@ namespace H3D {
       DOWN  = 18,
       LEFT  = 19,
       RIGHT = 20,
-	    ALT = 21,
-	    CONTROL = 22,
-	    SHIFT = 23
+      ALT = 21,
+      CONTROL = 22,
+      SHIFT = 23
     } ActionKeys;
     
     /// Constructor. 

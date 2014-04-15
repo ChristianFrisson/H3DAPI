@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -107,7 +107,7 @@ namespace H3D {
     ///  The size field specifies the extents of the box along the X-, Y-,
     /// and Z-axes respectively.
     /// <b>Access type:</b> inputOutput
-		/// <b>Default value:</b> 2 2 2 \n
+    /// <b>Default value:</b> 2 2 2 \n
     /// <b>Valid range:</b> >0
     ///
     /// \dotfile Box_size.dot 
@@ -116,7 +116,7 @@ namespace H3D {
     /// The solid field determines whether the box is visible when viewed from
     /// the inside. 
     /// <b>Access type:</b>  inputOutput
-		/// <b>Default value:</b> TRUE \n
+    /// <b>Default value:</b> TRUE \n
     ///
     /// \dotfile Box_solid.dot 
     auto_ptr< SFBool  >  solid;

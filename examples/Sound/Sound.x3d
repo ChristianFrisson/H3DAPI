@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='Sound.x3d'/>
     <meta name='description' content='Demonstrates how to use sound in H3DAPI. This example requires a haptics device to fully display all its features. A sound is played at the position of the haptics device.'/>
-    <meta name='editors' content='SenseGraphics AB, 2006-2008'/>
+    <meta name='editors' content='SenseGraphics AB, 2006-2014'/>
   </head>
   <Scene>
     <IMPORT inlineDEF='H3D_EXPORTS' exportedDEF='HDEV' AS='HDEV' />

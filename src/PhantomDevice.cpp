@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -131,9 +131,9 @@ void PhantomDevice::initialize() {
   hapi_device.reset( new HAPI::PhantomHapticsDevice( deviceName->getValue() ) );
 #else
   Console(4) << "Cannot use PhantomDevice. HAPI compiled without"
-	     << " OpenHaptics support. Recompile HAPI with "
-	     << "HAVE_OPENHAPTICS defined"
-	     << " in order to use it." << endl;
+             << " OpenHaptics support. Recompile HAPI with "
+             << "HAVE_OPENHAPTICS defined"
+             << " in order to use it." << endl;
 #endif
 }
 

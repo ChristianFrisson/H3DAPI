@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -525,18 +525,18 @@ void H3DHapticsDevice::renderStylus() {
 }
 
 void H3DHapticsDevice::setHapticsRenderer( unsigned int layer ) {
-	if( hapi_device.get() ) {
-		HAPI::HAPIHapticsRenderer *hapi_renderer = 
-				hapi_device->getHapticsRenderer( layer );
+  if( hapi_device.get() ) {
+    HAPI::HAPIHapticsRenderer *hapi_renderer = 
+        hapi_device->getHapticsRenderer( layer );
 
-		if( !hapi_renderer ) {
-			H3DHapticsRendererNode *h3d_renderer = hapticsRenderer->getValue();
-			if( h3d_renderer &&
-					hapi_device->getHapticsRenderer( layer ) != h3d_renderer->getHapticsRenderer( layer ) ) {
-				hapi_device->setHapticsRenderer( 
-																	h3d_renderer->getHapticsRenderer( layer ),
-																	layer );
-			}
-		}
-	}
+    if( !hapi_renderer ) {
+      H3DHapticsRendererNode *h3d_renderer = hapticsRenderer->getValue();
+      if( h3d_renderer &&
+          hapi_device->getHapticsRenderer( layer ) != h3d_renderer->getHapticsRenderer( layer ) ) {
+        hapi_device->setHapticsRenderer( 
+                                  h3d_renderer->getHapticsRenderer( layer ),
+                                  layer );
+      }
+    }
+  }
 }

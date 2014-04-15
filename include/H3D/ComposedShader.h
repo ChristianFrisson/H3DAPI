@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -239,7 +239,16 @@ namespace H3D {
     /// \dotfile ComposedShader_transparencyDetectMode.dot
     auto_ptr< SFString  > transparencyDetectMode;
 
-    /// List of varying names to capture during transform feedback
+    /// List of varying names to capture during transform feedback. Allows the use
+    /// of the OpenGL feature 'transform feedback'. Which makes it possible to
+    /// render to a buffer on the gpu using a vertex ( and optionally geometry )
+    /// shader(s) for later user. The listed names must match an output variable
+    /// of the shader.
+    /// See http://www.opengl.org/sdk/docs/man3/xhtml/glTransformFeedbackVaryings.xml
+    /// for more info.
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> [] \n
     auto_ptr< MFString > transformFeedbackVaryings;
 
     /// The H3DNodeDatabase for this node.

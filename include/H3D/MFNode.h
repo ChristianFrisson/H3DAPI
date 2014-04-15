@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -70,7 +70,7 @@ namespace H3D {
       /// Constructor.
       const_reverse_iterator( base_const_reverse_iterator i ):
         RefCountMField< Node >::const_reverse_iterator( i ) {
-	
+
       }
       
       Node * const operator*() {

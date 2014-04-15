@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='cg_glass.x3d'/>
     <meta name='description' content='Demonstrates how to use shaders with H3DAPI. The shader language is NVIDIA CG.'/>
-    <meta name='editors' content='SenseGraphics AB, 2006-2008'/>
+    <meta name='editors' content='SenseGraphics AB, 2006-2014'/>
   </head>
   <Scene>
     <Background

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -37,18 +37,18 @@ namespace H3D {
 
   /// \ingroup X3DNodes
   /// \class HAnimSite
-	/// \brief An HAnimSite node serves three purposes. The first is to define
-	/// an "end effecter" location that can be used by an inverse kinematics
-	/// system. The second is to define an attachment point for accessories
-	/// such as jewelry and clothing. The third is to define a location for
-	/// a virtual camera in the reference frame of an HAnimSegment (such as a
-	/// view "through the eyes" of the humanoid for use in multi-user worlds).
-	///
-	/// \note This Nodes functionality is not fully implemented.
-	///
-	/// <b>Examples:</b>
+  /// \brief An HAnimSite node serves three purposes. The first is to define
+  /// an "end effecter" location that can be used by an inverse kinematics
+  /// system. The second is to define an attachment point for accessories
+  /// such as jewelry and clothing. The third is to define a location for
+  /// a virtual camera in the reference frame of an HAnimSegment (such as a
+  /// view "through the eyes" of the humanoid for use in multi-user worlds).
+  ///
+  /// \note This Nodes functionality is not fully implemented.
+  ///
+  /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/BoxMan.x3d">BoxMan.x3d</a>
-  ///     ( <a href="examples/BoxMan.html">Source</a> )
+  ///     ( <a href="examples/BoxMan.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile HAnimSite.dot

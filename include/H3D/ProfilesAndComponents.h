@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -101,7 +101,7 @@ namespace H3D {
 
     /// Find a component named name in the given component_vector.
     bool findComponent( ProfileSAX2Handlers::myX3DComponentVector &component_vector,
-												std::string name, int &place );
+                        std::string name, int &place );
 
     // Temporary solution to know which profiles H3DAPI supports.
     std::map< std::string, std::vector< std::string > > profiles_supported;

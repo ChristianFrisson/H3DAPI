@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -504,11 +504,11 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
   if( point_light ) {
     lightParam->setValue( point_light->location->getValue() );
     point_light_shader->preRender();
-		point_light_shader->displayList->callList();
+    point_light_shader->displayList->callList();
   } else if( dir_light ) {
     lightParam->setValue( dir_light->direction->getValue() );
     dir_light_shader->preRender();
-		dir_light_shader->displayList->callList();
+    dir_light_shader->displayList->callList();
   }
 
   // draw shadow geometry using vertex arrays
@@ -651,7 +651,7 @@ const char *geometry_shader_functions_string =
   "\n"
   "// returns true if pos is on the same side of the triangle as the normal is pointing\n"
   "bool triangleFacingPos(vec3 v0, vec3 v1, vec3 v2, vec3 pos) {\n"
-	"  // Normalizing is required in order to avoid some incorrectly calculated shadow triangles.\n"
+  "  // Normalizing is required in order to avoid some incorrectly calculated shadow triangles.\n"
   "  vec3 e0 = normalize( v1 - v0 );\n"
   "  vec3 e1 = normalize( v2 - v0 );\n"
   "  vec3 normal = cross(e1, e0);\n"
@@ -660,7 +660,7 @@ const char *geometry_shader_functions_string =
   "\n"
   "// returns true if dir points in the opposite direction of the triangle normal\n"
   "bool triangleFacingDir(vec3 v0, vec3 v1, vec3 v2, vec3 dir) {\n"
-	"  // Normalizing is required in order to avoid some incorrectly calculated shadow triangles. Yes it slows things down a bit, but otherwise shadows can actually be missing.\n"
+  "  // Normalizing is required in order to avoid some incorrectly calculated shadow triangles. Yes it slows things down a bit, but otherwise shadows can actually be missing.\n"
   "  vec3 e0 = normalize( v1 - v0 );\n"
   "  vec3 e1 = normalize( v2 - v0 );\n"
   "  vec3 normal = normalize( cross(e1, e0) );\n"

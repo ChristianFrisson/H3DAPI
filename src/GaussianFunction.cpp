@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -80,5 +80,5 @@ HAPI::HAPIFunctionObject *GaussianFunction::getAsHAPIFunctionObject() {
   return_function->setFunctionString( function_string );
   return return_function;
 #endif
-	return NULL;
+  return NULL;
 }

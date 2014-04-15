@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -102,7 +102,7 @@ bool ShaderProgram::addField( const string &name,
                               Field *field ) {
   bool success = X3DProgrammableShaderObject::addField( name, 
                                                         access, 
-                                                        field  );	
+                                                        field  );
   if( success ) {
     field->route( displayList );
   }

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -61,11 +61,11 @@ using namespace std;
 using namespace H3D;
 
 class ChangeViewport : public PeriodicUpdate< SFInt32> { 
-	public:
-		inline void setOwnerWindow( H3DWindowNode * owner_window ) {
-			glwindow = owner_window;
-		}
-	protected:
+  public:
+    inline void setOwnerWindow( H3DWindowNode * owner_window ) {
+      glwindow = owner_window;
+    }
+  protected:
   virtual void update() {
     int key = static_cast< SFInt32 * >(routes_in[0])->getValue();
     X3DViewpointNode::ViewpointList vp_list = X3DViewpointNode::getAllViewpoints();
@@ -154,17 +154,17 @@ class ChangeViewport : public PeriodicUpdate< SFInt32> {
         }
         break;
       }
-			case KeySensor::F11: {
+      case KeySensor::F11: {
         if( glwindow ) {
-					glwindow->fullscreen->setValue( !glwindow->fullscreen->getValue() );
-				}
+          glwindow->fullscreen->setValue( !glwindow->fullscreen->getValue() );
+        }
         break;
       }
       default: {}
     }
   }
 
-	H3DWindowNode *glwindow;
+  H3DWindowNode *glwindow;
 };
     
 class ChangeNavType : public PeriodicUpdate< SFString > { 
@@ -182,9 +182,9 @@ protected:
       mynav = NavigationInfo::getActive();
     }
     string s = static_cast< SFString * >(routes_in[0])->getValue();
-		if( s.empty() ) return;
+    if( s.empty() ) return;
 
-		if( s[0] == 27 ) {
+    if( s[0] == 27 ) {
       throw Exception::QuitAPI();
     } else if( s == "w") {
       // Set navigation type to WALK
@@ -676,7 +676,7 @@ int main(int argc, char* argv[]) {
     // create a window to display
     GLUTWindow *glwindow = new GLUTWindow;
     change_nav_type->setOwnerWindow( glwindow );
-		change_viewpoint->setOwnerWindow( glwindow );
+    change_viewpoint->setOwnerWindow( glwindow );
     ks->keyPress->route( change_nav_type );  //###########
     glwindow->fullscreen->setValue( fullscreen );
     glwindow->mirrored->setValue( mirrored );

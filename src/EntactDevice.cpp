@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -41,7 +41,7 @@ namespace EntactDeviceInternals {
   FIELDDB_ELEMENT( EntactDevice, needsCalibration, OUTPUT_ONLY );
   FIELDDB_ELEMENT( EntactDevice, calibrate, INPUT_ONLY );
   FIELDDB_ELEMENT( EntactDevice, serialNumber, INITIALIZE_ONLY );
-	FIELDDB_ELEMENT( EntactDevice, ipAddress, INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( EntactDevice, ipAddress, INITIALIZE_ONLY );
 }
 
 /// Constructor.
@@ -68,10 +68,10 @@ EntactDevice::EntactDevice(
                Inst< SFHapticsRendererNode > _hapticsRenderer,
                Inst< MFVec3f         > _proxyPositions,
                Inst< SFBool          > _followViewpoint,
-	       Inst< SFInt32            > _serialNumber,
-	       Inst< SFBool             > _needsCalibration,
-	       Inst< Calibrate          > _calibrate,
-				 Inst< SFString          > _ipAddress ) :
+         Inst< SFInt32            > _serialNumber,
+         Inst< SFBool             > _needsCalibration,
+         Inst< Calibrate          > _calibrate,
+         Inst< SFString          > _ipAddress ) :
   H3DHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
               _trackerOrientation, _positionCalibration, 
               _orientationCalibration, _proxyPosition,
@@ -79,24 +79,24 @@ EntactDevice::EntactDevice(
                     _secondaryButton, _buttons,
               _force, _torque, _inputDOF, _outputDOF, _hapticsRate,
               _desiredHapticsRate, _stylus,_hapticsRenderer, _proxyPositions,
-	      _followViewpoint ),
+        _followViewpoint ),
   serialNumber( _serialNumber ),
   needsCalibration( _needsCalibration ),
   calibrate( _calibrate ),
-	ipAddress( _ipAddress ) {
+  ipAddress( _ipAddress ) {
 
   type_name = "EntactDevice";  
   database.initFields( this );
 
   serialNumber->setValue( -1, id );
   needsCalibration->setValue( false, id );
-	ipAddress->setValue( "", id );
+  ipAddress->setValue( "", id );
 }
 
 void EntactDevice::initialize() {
 #ifdef HAVE_ENTACTAPI
   hapi_device.reset( new HAPI::EntactHapticsDevice( serialNumber->getValue(),
-																										ipAddress->getValue() ) );
+                                                    ipAddress->getValue() ) );
 #else
   Console(4) << "Cannot use EntactDevice. HAPI compiled without"
              << " Entact support. Recompile HAPI with HAVE_ENTACTAPI defined"

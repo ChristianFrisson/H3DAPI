@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -54,5 +54,5 @@ BooleanToggle::BooleanToggle( Inst< SFNode       > _metadata,
   type_name = "BooleanToggle";
   database.initFields( this );
 
-	toggle->setValue( false );
+  toggle->setValue( false );
 }

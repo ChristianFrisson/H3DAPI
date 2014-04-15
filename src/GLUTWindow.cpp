@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -29,6 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/GLUTWindow.h>
+#ifdef HAVE_GLUT
 
 #include <GL/glew.h>
 #ifdef MACOSX
@@ -98,10 +99,10 @@ GLUTWindow::GLUTWindow( Inst< SFInt32     > _width,
   H3DWindowNode( _width, _height, _fullscreen, _mirrored, _renderMode,
                  _viewpoint, _posX, _posY, _manualCursorControl, _cursorType ),
   gameMode( _gameMode ),
-	last_x_pos( -1 ),
-	last_y_pos( -1 ),
-	last_width( -1 ),
-	last_height( -1 ) {
+  last_x_pos( -1 ),
+  last_y_pos( -1 ),
+  last_width( -1 ),
+  last_height( -1 ) {
   
   type_name = "GLUTWindow";
   database.initFields( this );
@@ -128,7 +129,7 @@ GLUTWindow::GLUTWindow( Inst< SFInt32     > _width,
   cursorType->addValidValue( "BOTTOM_LEFT_CORNER" ); 
   cursorType->addValidValue( "FULL_CROSSHAIR" ); 
   cursorType->addValidValue( "NONE" );
-	last_fullscreen = fullscreen->getValue();
+  last_fullscreen = fullscreen->getValue();
 }
 
 GLUTWindow::~GLUTWindow() {
@@ -178,23 +179,23 @@ void GLUTWindow::initWindow() {
     glutInitWindowSize( width->getValue(), height->getValue() );
     glutInitWindowPosition( posX->getValue(), posY->getValue() );
     window_id = glutCreateWindow( "H3D" );
-		setFullscreen( fullscreen->getValue() );
-		// This code is here to check if we got a stereo window using stereo mode.
-		// It seems like on some systems GLUT_MULTISAMPLE can not be combined with
-		// GLUT_STEREO.
-		if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
-			GLboolean quad_stereo_supported;
-			glGetBooleanv( GL_STEREO, &quad_stereo_supported);
-			if( !quad_stereo_supported ) {
-				// No stereo, destroy the window, and then use a mode without
-				// GLUT_MULTISAMPLE to try to create a stereo window.
-				mode = mode ^ GLUT_MULTISAMPLE;
-				glutDestroyWindow(window_id);
-				glutInitDisplayMode( mode );
-				window_id = glutCreateWindow( "H3D" );
-				glGetBooleanv( GL_STEREO, &quad_stereo_supported);
-			}
-		}
+    setFullscreen( fullscreen->getValue() );
+    // This code is here to check if we got a stereo window using stereo mode.
+    // It seems like on some systems GLUT_MULTISAMPLE can not be combined with
+    // GLUT_STEREO.
+    if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
+      GLboolean quad_stereo_supported;
+      glGetBooleanv( GL_STEREO, &quad_stereo_supported);
+      if( !quad_stereo_supported ) {
+        // No stereo, destroy the window, and then use a mode without
+        // GLUT_MULTISAMPLE to try to create a stereo window.
+        mode = mode ^ GLUT_MULTISAMPLE;
+        glutDestroyWindow(window_id);
+        glutInitDisplayMode( mode );
+        window_id = glutCreateWindow( "H3D" );
+        glGetBooleanv( GL_STEREO, &quad_stereo_supported);
+      }
+    }
     glutSetWindow( window_id );
   } else {
     glutGameModeString(gameMode->getValue().c_str());
@@ -250,7 +251,7 @@ void GLUTWindow::initWindow() {
 #endif // H3D_WIN64
 #endif // H3D_WINDOWS
 #endif // FREEGLUT
-	window_is_made_active = true;
+  window_is_made_active = true;
 }
 
 
@@ -268,27 +269,27 @@ GLUTWindow *GLUTWindow::getGLUTWindow( int glut_id ) {
 
 void GLUTWindow::setFullscreen( bool fullscreen ) {
   if( gameMode->getValue() == "" ) {
-		if( fullscreen != last_fullscreen ) {
+    if( fullscreen != last_fullscreen ) {
 // Note: This define check is needed since freeglut does not have a
 // working version compile time definition. freegluts svn repository
 // was checked and GLUT_FULL_SCREEN was added at the same time as
 // glutFullScreenToggle.
 #if defined( FREEGLUT ) && defined( GLUT_FULL_SCREEN )
-			glutFullScreenToggle();
+      glutFullScreenToggle();
 #else
-			if( fullscreen ) {
-				last_x_pos = glutGet( GLUT_WINDOW_X );
-				last_y_pos = glutGet( GLUT_WINDOW_Y );
-				last_width = width->getValue();
-				last_height = height->getValue();
-				glutFullScreen();
-			} else {
-				glutReshapeWindow(last_width, last_height);
-				glutPositionWindow(last_x_pos,last_y_pos);
-			}
+      if( fullscreen ) {
+        last_x_pos = glutGet( GLUT_WINDOW_X );
+        last_y_pos = glutGet( GLUT_WINDOW_Y );
+        last_width = width->getValue();
+        last_height = height->getValue();
+        glutFullScreen();
+      } else {
+        glutReshapeWindow(last_width, last_height);
+        glutPositionWindow(last_x_pos,last_y_pos);
+      }
 #endif
-			last_fullscreen = fullscreen;
-		}
+      last_fullscreen = fullscreen;
+    }
   }
 }
 
@@ -543,3 +544,5 @@ string GLUTWindow::getCursorForMode( const string &mode ) {
 
   return "DEFAULT";
 }
+#endif // HAVE_GLUT
+

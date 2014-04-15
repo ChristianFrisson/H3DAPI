@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -38,7 +38,7 @@ namespace H3D {
   /// \ingroup X3DNodes
   /// \class GeometryGroup
   /// \brief The GeometryGroup node is treated by the scenegraph as one geometry
-	/// but it can contain several geometries.
+  /// but it can contain several geometries.
   ///
   ///
   /// <b>Examples:</b>
@@ -50,7 +50,7 @@ namespace H3D {
   class H3DAPI_API GeometryGroup : public X3DGeometryNode {
   public:
 
-		class H3DAPI_API MFGeometry :
+    class H3DAPI_API MFGeometry :
       public DependentMFNode< X3DGeometryNode,
         FieldRef< H3DDisplayListObject,
                   H3DDisplayListObject::DisplayList,
@@ -100,39 +100,39 @@ namespace H3D {
       virtual void update();
     };
 
-		/// Specialized field class which grabs the first true value
-		/// for each index for any of the contained geometries. The geometry which
-		/// is responsible for the true value is then used for the contactPoint,
-		/// contactNormal and force fields. This is to make sure that the contact
-		/// values for each haptics device is consistent and belongs to one contact
-		/// point.
-		class H3DAPI_API IsTouched : public MFBool {
-		protected:
-			virtual void update();
-		};
+    /// Specialized field class which grabs the first true value
+    /// for each index for any of the contained geometries. The geometry which
+    /// is responsible for the true value is then used for the contactPoint,
+    /// contactNormal and force fields. This is to make sure that the contact
+    /// values for each haptics device is consistent and belongs to one contact
+    /// point.
+    class H3DAPI_API IsTouched : public MFBool {
+    protected:
+      virtual void update();
+    };
 
-		/// Specialized field class which gets one value from each routed field
-		/// and stores that at the corresponding index in its own value. The index to use
-		/// is the index order of the routes in.
-		class H3DAPI_API MFVec3fPerIndex :
-			public TypedField< MFVec3f, MFVec3f, AnyNumber< MFVec3f > > {
-		public:
-			void unrouteAllFrom();
-		protected:
-			virtual void update();
-		};
+    /// Specialized field class which gets one value from each routed field
+    /// and stores that at the corresponding index in its own value. The index to use
+    /// is the index order of the routes in.
+    class H3DAPI_API MFVec3fPerIndex :
+      public TypedField< MFVec3f, MFVec3f, AnyNumber< MFVec3f > > {
+    public:
+      void unrouteAllFrom();
+    protected:
+      virtual void update();
+    };
 
     /// Constructor.
     GeometryGroup( Inst< SFNode > _metadata = 0,
-									 Inst< SFBound > _bound = 0,
-									 Inst< DisplayList > _displayList = 0,
+                   Inst< SFBound > _bound = 0,
+                   Inst< DisplayList > _displayList = 0,
                    Inst< IsTouched   > _isTouched = 0,
                    Inst< MFVec3fPerIndex > _force = 0,
                    Inst< MFVec3fPerIndex > _contactPoint = 0,
                    Inst< MFVec3fPerIndex > _contactNormal = 0,
                    Inst< MFVec3fPerIndex > _contactTexCoord = 0,
                    Inst< SFBoundTree > _boundTree = 0,
-									 Inst< MFGeometry > _geometry = 0 );
+                   Inst< MFGeometry > _geometry = 0 );
 
     /// The number of triangles renderered in this geometry.
     virtual int nrTriangles();
@@ -175,12 +175,12 @@ namespace H3D {
                                         NodeIntersectResult &result );
 
 
-		/// Returns true if this geometry supports the automatic generation
+    /// Returns true if this geometry supports the automatic generation
     /// of tangents and binormals as FloatVertexAttribues(needed by
     /// e.g. PhongShader.
     virtual bool supportsTangentAttributes();
 
-		/// Function overridden from HAPIGLShape. Just call the 
+    /// Function overridden from HAPIGLShape. Just call the 
     /// displayList->callList of contained geometries.
     virtual void glRender();
 

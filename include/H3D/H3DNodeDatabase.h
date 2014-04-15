@@ -1,6 +1,6 @@
 
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -88,7 +88,7 @@ namespace H3D {
 
     /// Given a Node get a pointer to the field in that node that
     /// is represented by this FieldDBElement.
-    virtual Field *getField( Node *n ) const { return NULL; };
+    virtual Field *getField( const Node *n ) const { return NULL; };
     
   protected:
     H3DNodeDatabase *container;
@@ -109,7 +109,7 @@ namespace H3D {
     
     /// Given a Node get a pointer to the field in that node that
     /// is represented by this FieldDBElement.
-    virtual Field *getField( Node *n ) const {
+    virtual Field *getField( const Node *n ) const {
       if( ptr && n == ptr->getOwner() )
         return ptr;
       else
@@ -132,8 +132,8 @@ namespace H3D {
     
     /// Given a Node get a pointer to the field in that node that
     /// is represented by this FieldDBElement.
-    virtual Field *getField( Node *n ) const {
-      N *node = dynamic_cast<N*>(n);
+    virtual Field *getField( const Node *n ) const {
+      const N *node = dynamic_cast<const N*>(n);
       if ( node ) 
         return (node->*ptr).get();
       else
@@ -365,7 +365,7 @@ namespace H3D {
     
     /// getField() will search the node's field database for a field matching
     /// the given name and returning a pointer to the field if found.
-    Field *getField( Node *n, const string& f ) const;
+    Field *getField( const Node * n, const string& f ) const;
     
     /// initialise the given Node using the contents of the database - 
     /// initialise field names, field owner pointers and access restrictors.
@@ -380,7 +380,7 @@ namespace H3D {
     
   private:
     /// Help function for getField.
-    Field *getFieldHelp( Node *n, const string& f ) const;
+    Field *getFieldHelp( const Node * n, const string& f ) const;
 
     /// The string name for this node, used by the X3D parser
     string name;

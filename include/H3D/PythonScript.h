@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -57,7 +57,7 @@ namespace H3D {
                   Inst< MFNode    > _references = 0,
                   Inst< SFString > _moduleName = 0 );
     
-    virtual Field* getField( const string&name ) {
+    virtual Field * getField( const string&name ) const {
       Field *f = H3DScriptNode::getField( name );
       if( f ) return f;
       if ( name == "references" )
@@ -72,7 +72,7 @@ namespace H3D {
     /// lookupField() returns the field pointer to the field with the
     /// specified string field name, used when creating nodes via
     /// the H3DNodeDatabase service.
-    virtual Field *lookupField( const string &name );
+    virtual Field *lookupField( const string &name ) const;
 
     /// Returns the python object with the specified name from the
     /// python module used by the PythonScript node. NULL if no

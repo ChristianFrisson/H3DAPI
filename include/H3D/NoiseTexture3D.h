@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -37,6 +37,10 @@ namespace H3D {
   /// \brief The NoiseTexture3D node creates a texture with Perlin noise.
   /// It can be used to filter the values of the style in order to only use
   /// values in the range specified by the fields windowCenter and windowWidth.
+  ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/NoiseTexture3D.x3d">NoiseTexture3D.x3d</a>
+  ///     ( <a href="examples/NoiseTexture3D.x3d.html">Source</a> )
   class H3DAPI_API NoiseTexture3D : public X3DTexture3DNode {
   public:
     

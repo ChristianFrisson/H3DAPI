@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -71,7 +71,7 @@ CylinderSensor::CylinderSensor(
   rotation_changed( _rotation_changed ),
   axisRotation( _axisRotation ),
   new_cylinder( true ),
-	prev_new_cylinder( true ),
+  prev_new_cylinder( true ),
   y_axis( Vec3f( 0, 1, 0 ) ),
   plane_d( 0.0f ) {
 
@@ -203,7 +203,7 @@ void CylinderSensor::setDragOutputEvents( bool _enabled,
         // intersection to the new intersection) plus the offset value.
         // trackPoint_changed events reflect the unclamped drag position on the
         // surface of this disk."
-				prev_new_cylinder = new_cylinder;
+        prev_new_cylinder = new_cylinder;
         new_cylinder = false;
       } else {
         // Check intersection with cylinder or plane.
@@ -275,15 +275,15 @@ void CylinderSensor::setDragOutputEvents( bool _enabled,
           if( min_angle <= max_angle )
             angle = Clamp( angle, min_angle, max_angle );
 
-					if( prev_new_cylinder )
-						rotation_changed->setValue( Rotation( axis_rotation_matrix * y_axis,
-							                                    angle ) *
-																				Rotation( y_axis, offset->getValue() ),
-								                        id );
-					else
-						rotation_changed->setValue( Rotation( axis_rotation_matrix * y_axis,
-							                                    angle ),
-								                        id );
+          if( prev_new_cylinder )
+            rotation_changed->setValue( Rotation( axis_rotation_matrix * y_axis,
+                                                  angle ) *
+                                        Rotation( y_axis, offset->getValue() ),
+                                        id );
+          else
+            rotation_changed->setValue( Rotation( axis_rotation_matrix * y_axis,
+                                                  angle ),
+                                        id );
         } else {
           if( send_warning_message ) {
             // X3D specification states that in the case of no Cylinder
@@ -298,18 +298,18 @@ void CylinderSensor::setDragOutputEvents( bool _enabled,
             send_warning_message = false;
           }
           trackPoint_changed->touch();
-					if( prev_new_cylinder )
-						rotation_changed->setValue( Rotation( y_axis, offset->getValue() ),
-																				id );
-					else
-						rotation_changed->touch();
+          if( prev_new_cylinder )
+            rotation_changed->setValue( Rotation( y_axis, offset->getValue() ),
+                                        id );
+          else
+            rotation_changed->touch();
         }
-				prev_new_cylinder = new_cylinder;
+        prev_new_cylinder = new_cylinder;
       }
     } else {
       // not active anymore
       if( !new_cylinder ) {
-				prev_new_cylinder = new_cylinder;
+        prev_new_cylinder = new_cylinder;
         new_cylinder = true;
         if( autoOffset->getValue() )
           offset->setValue( rotation_changed->getValue().angle,

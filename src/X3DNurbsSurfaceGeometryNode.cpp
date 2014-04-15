@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -96,7 +96,7 @@ X3DNurbsSurfaceGeometryNode::X3DNurbsSurfaceGeometryNode(
   uOrder( _uOrder ),
   vOrder( _vOrder ),
   nurbs_object( NULL ),
-	printWarning( new Field ) {
+  printWarning( new Field ) {
 
   type_name = "X3DNurbsSurfaceGeometryNode";
   database.initFields( this );
@@ -128,14 +128,14 @@ X3DNurbsSurfaceGeometryNode::X3DNurbsSurfaceGeometryNode(
   uOrder->route( displayList );
   vOrder->route( displayList );
 
-	vOrder->route( printWarning );
-	uOrder->route( printWarning );
-	vDimension->route( printWarning );
-	uDimension->route( printWarning );
-	weight->route( printWarning );
-	uKnot->route( printWarning );
-	vKnot->route( printWarning );
-	controlPoint->route( printWarning );
+  vOrder->route( printWarning );
+  uOrder->route( printWarning );
+  vDimension->route( printWarning );
+  uDimension->route( printWarning );
+  weight->route( printWarning );
+  uKnot->route( printWarning );
+  vKnot->route( printWarning );
+  controlPoint->route( printWarning );
 }
 
 void X3DNurbsSurfaceGeometryNode::render( ) {
@@ -153,47 +153,47 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
 
   // vOrder has to be 2 or greater to define the nurbssurfacepatch
   if( v_order < 2 ) {
-		if( !printWarning->isUpToDate() ) {
-			Console(3) << "Warning: vOrder is less than 2 in " << getTypeName()
-								 << " node( "  << getName() 
-								 << "). Node will not be rendered. " << endl;
-    	printWarning->upToDate();
-		}
-		return;
+    if( !printWarning->isUpToDate() ) {
+      Console(3) << "Warning: vOrder is less than 2 in " << getTypeName()
+                 << " node( "  << getName() 
+                 << "). Node will not be rendered. " << endl;
+      printWarning->upToDate();
+    }
+    return;
   }
 
   // uOrder has to be 2 or greater to define the nurbssurfacepatch
   if( u_order < 2 ) {
-		if( !printWarning->isUpToDate() ) {
-			Console(3) << "Warning: uOrder is less than 2 in " << getTypeName()
-								 << " node( "  << getName() 
-								 << "). Node will not be rendered. " << endl;
-			printWarning->upToDate();
-		}
+    if( !printWarning->isUpToDate() ) {
+      Console(3) << "Warning: uOrder is less than 2 in " << getTypeName()
+                 << " node( "  << getName() 
+                 << "). Node will not be rendered. " << endl;
+      printWarning->upToDate();
+    }
     return;
   }
 
   // vDimension has to be at least vOrder or greater 
   // to define the nurbssurfacepatch
   if( v_dimension < v_order )  {
-		if( !printWarning->isUpToDate() ) {
-			Console(3) << "Warning: vDimension is less than vOrder in "
-				<< getTypeName() << " node( "
-				<< getName() << "). Node will not be rendered. " << endl;
-			printWarning->upToDate();
-		}
+    if( !printWarning->isUpToDate() ) {
+      Console(3) << "Warning: vDimension is less than vOrder in "
+        << getTypeName() << " node( "
+        << getName() << "). Node will not be rendered. " << endl;
+      printWarning->upToDate();
+    }
     return;
   }
 
   // uDimension has to be at least uOrder or greater 
   // to define the nurbssurfacepatch
   if( u_dimension < u_order )  {
-		if( !printWarning->isUpToDate() ) {
-			Console(3) << "Warning: uDimension is less than uOrder in "
-				<< getTypeName() << " node( "
-				<< getName() << "). Node will not be rendered. " << endl;
-			printWarning->upToDate();
-		}
+    if( !printWarning->isUpToDate() ) {
+      Console(3) << "Warning: uDimension is less than uOrder in "
+        << getTypeName() << " node( "
+        << getName() << "). Node will not be rendered. " << endl;
+      printWarning->upToDate();
+    }
     return;
   }
 
@@ -212,12 +212,12 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
 
     // another check to see that the nurbssurfacepatch is correctly defined
     if( noWeights.size() != (unsigned int)(u_dimension * v_dimension) )  {
-			if( !printWarning->isUpToDate() ) {
-				Console(3) << "Warning: The size of controlPoint does not match "
-					<< "vDimension * uDimension in " << getTypeName() << " node( "
-					<< getName() << "). Node will not be rendered. " << endl;
-				printWarning->upToDate();
-			}
+      if( !printWarning->isUpToDate() ) {
+        Console(3) << "Warning: The size of controlPoint does not match "
+          << "vDimension * uDimension in " << getTypeName() << " node( "
+          << getName() << "). Node will not be rendered. " << endl;
+        printWarning->upToDate();
+      }
       return;
     }
 
@@ -228,11 +228,11 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
     H3DInt32 map2Vertex3Or4;
     H3DInt32 sizeOfVertex;
     if( theWeights.size() < noWeights.size() ) {
-			if( !printWarning->isUpToDate() ) {
-				Console(3) << "Warning: The number of weight values is less than "
-					<< "the number of control points in " << getTypeName() << " node( "
-					<< getName() << "). Default weight 1.0 is assumed." << endl;
-			}
+      if( !printWarning->isUpToDate() ) {
+        Console(3) << "Warning: The number of weight values is less than "
+          << "the number of control points in " << getTypeName() << " node( "
+          << getName() << "). Default weight 1.0 is assumed." << endl;
+      }
       sizeOfVertex = 3;
       map2Vertex3Or4 = GL_MAP2_VERTEX_3;
       withWeights = new GLfloat[ noWeights.size() * sizeOfVertex ];
@@ -281,12 +281,12 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
 
     H3DInt32 uSizeToUse = (H3DInt32) uk.size() ;
     if( generateUniform ) {
-			if( !printWarning->isUpToDate() && uSizeToUse != 0 ) {
-				Console(3) << "Warning: The uKnot array is not according to standard in "
-					<< getTypeName() << " node( "
-					<< getName() << "). A default uKnot array will be generated. " << endl;
-			}
-			uSizeToUse = u_dimension + u_order;
+      if( !printWarning->isUpToDate() && uSizeToUse != 0 ) {
+        Console(3) << "Warning: The uKnot array is not according to standard in "
+          << getTypeName() << " node( "
+          << getName() << "). A default uKnot array will be generated. " << endl;
+      }
+      uSizeToUse = u_dimension + u_order;
       delete[] u_knots;
       u_knots = new GLfloat[ uSizeToUse ];
       for( int i = 0; i < uSizeToUse; ++i )
@@ -315,12 +315,12 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
 
     H3DInt32 vSizeToUse = (H3DInt32)vk.size() ;
     if( generateUniform ) {
-			if( !printWarning->isUpToDate() && vSizeToUse != 0 ) {
-				Console(3) << "Warning: The vKnot array is not according to standard in "
-					<< getTypeName() << " node( "
-					<< getName() << "). A default vKnot array will be generated. " << endl;
-			}
-			vSizeToUse = v_dimension + v_order;
+      if( !printWarning->isUpToDate() && vSizeToUse != 0 ) {
+        Console(3) << "Warning: The vKnot array is not according to standard in "
+          << getTypeName() << " node( "
+          << getName() << "). A default vKnot array will be generated. " << endl;
+      }
+      vSizeToUse = v_dimension + v_order;
       delete[] v_knots;
       v_knots = new GLfloat[ vSizeToUse ];
       for( int i = 0; i < vSizeToUse; ++i )
@@ -351,13 +351,13 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
 
       texKnotU[0] = (GLfloat)u_knots[0];
       texKnotU[1] = (GLfloat)u_knots[0];
-      texKnotU[2] = (GLfloat)u_knots[ uKnot->size() - 1 ];
-      texKnotU[3] = (GLfloat)u_knots[ uKnot->size() - 1 ];
+      texKnotU[2] = (GLfloat)u_knots[ uSizeToUse - 1 ];
+      texKnotU[3] = (GLfloat)u_knots[ uSizeToUse - 1 ];
 
       texKnotV[0] = (GLfloat)v_knots[0];
       texKnotV[1] = (GLfloat)v_knots[0];
-      texKnotV[2] = (GLfloat)v_knots[ vKnot->size() - 1 ];
-      texKnotV[3] = (GLfloat)v_knots[ vKnot->size() - 1 ];
+      texKnotV[2] = (GLfloat)v_knots[ vSizeToUse - 1 ];
+      texKnotV[3] = (GLfloat)v_knots[ vSizeToUse - 1 ];
     }
 
     glEnable( GL_AUTO_NORMAL );
@@ -392,7 +392,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
     if( texKnotV != NULL )
       delete [] texKnotV;
   }
-	printWarning->upToDate();
+  printWarning->upToDate();
 }
 
 void X3DNurbsSurfaceGeometryNode::traverseSG( TraverseInfo &ti ) {

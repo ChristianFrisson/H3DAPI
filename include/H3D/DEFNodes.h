@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -63,9 +63,9 @@ namespace H3D {
       
       /// Destructor. unrefs all the nodes in the map.
       ~DEFNodes() {
-		  for( iterator i = map< const string, Node * >::begin(); 
-			   i != map< const string, Node * >::end(); 
-			   ++i ) {
+      for( iterator i = map< const string, Node * >::begin(); 
+         i != map< const string, Node * >::end(); 
+         ++i ) {
           (*i).second->unref();
         }
       }
@@ -119,18 +119,18 @@ namespace H3D {
       /// Add the entries from another DEFNodes structure do this one.
       /// If an entry already exists it will be replaced.
       void merge( DEFNodes *dn ) {
-	if( dn ) {
-	  for( const_iterator i = dn->begin(); i != dn->end(); ++i )
-	    addNode( (*i).first, (*i).second );
-	}
+        if( dn ) {
+          for( const_iterator i = dn->begin(); i != dn->end(); ++i )
+            addNode( (*i).first, (*i).second );
+        }
       }
 
       /// Removes all the entries in the map.
       void clear() {
-	for( const_iterator i = begin(); i != end(); ++i )
+        for( const_iterator i = begin(); i != end(); ++i )
           // unref the node that is removed
           (*i).second->unref();
-	map< const string, Node * >::clear();
+        map< const string, Node * >::clear();
       }
 
       bool empty() {

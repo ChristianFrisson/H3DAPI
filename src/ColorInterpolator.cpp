@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -65,33 +65,33 @@ ColorInterpolator::ColorInterpolator( Inst< SFNode  >  _metadata,
 // HSV - RGB conversion routines from 
 // http://www.acm.org/jgt/papers/SmithLyons96/hsv_rgb.html
 Vec3f ColorInterpolator::SFValue::RGBToHSV( const RGB &rgb ) {
-  int i; 	
-  H3DFloat v, x, f; 	
+  int i;
+  H3DFloat v, x, f;
   H3DFloat R = rgb.r, G = rgb.g, B = rgb.b;
-  x = H3DMin(R, H3DMin( G, B ) ); 	
-  v = H3DMax(R, H3DMax( G, B ) ); 	
-  if(v == x) return Vec3f(0, 0, v); 	
-  f = (R == x) ? G - B : ((G == x) ? B - R : R - G); 	
-  i = (R == x) ? 3 : ((G == x) ? 5 : 1); 	
+  x = H3DMin(R, H3DMin( G, B ) );
+  v = H3DMax(R, H3DMax( G, B ) );
+  if(v == x) return Vec3f(0, 0, v);
+  f = (R == x) ? G - B : ((G == x) ? B - R : R - G);
+  i = (R == x) ? 3 : ((G == x) ? 5 : 1);
   return Vec3f(i - f /(v - x), (v - x)/v, v);
 }
 
 RGB ColorInterpolator::SFValue::HSVToRGB( const Vec3f &hsv ) {
-  H3DFloat h = hsv.x, s = hsv.y, v = hsv.z, m, n, f; 	
-  int i; 	
-  if( h == 0.0 ) return RGB(v, v, v); 	
-  i = (int) H3DFloor(h); 	
-  f = h - i; 	
-  if(!(i & 1)) f = 1 - f; // if i is even 	
-  m = v * (1 - s); 	
-  n = v * (1 - s * f); 	
-  switch (i) { 	
-  case 6: 	
-  case 0: return RGB(v, n, m); 	
-  case 1: return RGB(n, v, m); 	
+  H3DFloat h = hsv.x, s = hsv.y, v = hsv.z, m, n, f;
+  int i;
+  if( h == 0.0 ) return RGB(v, v, v);
+  i = (int) H3DFloor(h);
+  f = h - i;
+  if(!(i & 1)) f = 1 - f; // if i is even
+  m = v * (1 - s);
+  n = v * (1 - s * f);
+  switch (i) {
+  case 6:
+  case 0: return RGB(v, n, m);
+  case 1: return RGB(n, v, m);
   case 2: return RGB(m, v, n);
-  case 3: return RGB(m, n, v); 	
-  case 4: return RGB(n, m, v); 	
+  case 3: return RGB(m, n, v);
+  case 4: return RGB(n, m, v);
   case 5: return RGB(v, m, n);
   // should never happen
   default: return RGB( 0, 0, 0 );

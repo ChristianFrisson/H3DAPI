@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='BrowserPrintPrototype.x3d'/>
     <meta name='description' content='Testing script inside a prototype. Console output should be "Initialize called"'/>
-    <meta name='author' content='SenseGraphics AB, 2012'/>
+    <meta name='author' content='SenseGraphics AB, 2012-2014'/>
   </head>
   <Scene>
     <ProtoDeclare name='BrowserPrint'>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='AnchorHelp.x3d'/>
+    <meta name='description' content='X3D Anchor node example help file.'/>
+    <meta name='author' content='SenseGraphics AB, 2014'/>
+  </head>
+
+  <Scene>
+    <Viewpoint DEF="SecondViewpoint" position='0.01 -0.05 0.6' />
+    <ExternProtoDeclare name='Text' url='"./Prototype.x3d#Text"'>
+      <field accessType='inputOutput' name='offset' type='SFVec3f'/>
+      <field accessType='inputOutput' name='string' type='MFString'/>
+      <field accessType='inputOutput' name='solid' type='SFBool'/>
+    </ExternProtoDeclare>
+
+    <Anchor url='"Anchor.x3d#FIRST_VIEW"' description='Anchor to original anchor file.'>
+      <Shape>
+        <Appearance DEF="GEOMETRY_APP" >
+          <Material diffuseColor='1 0 0' />
+        </Appearance>
+        <Sphere radius='0.05' />
+      </Shape>
+      <ProtoInstance name='Text'>
+        <fieldValue name='offset' value='0 0.07 0' />
+        <fieldValue name='string' value='"Anchor to original anchor file."' />
+        <fieldValue name='solid' value='true' />
+      </ProtoInstance>
+    </Anchor>
+  </Scene>
+</X3D>

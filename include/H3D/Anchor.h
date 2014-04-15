@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -202,6 +202,8 @@ namespace H3D {
     static AutoRef< Anchor > old_anchor;
     static string new_world_url;
     static string new_world_vp;
+    static string new_world_base_url;
+    string internal_base_url;
   };
 }
 

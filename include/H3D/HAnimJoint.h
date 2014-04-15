@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -98,11 +98,11 @@ namespace H3D {
   /// The displacers field contains a list of HAnimDisplacer objects that are
   /// used to morph the deformable mesh using the morph targets defined
   /// in the Displacer objects.
-	///
-	/// <b>Examples:</b>
+  ///
+  /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/BoxMan.x3d">BoxMan.x3d</a>
-  ///     ( <a href="examples/BoxMan.html">Source</a> )
-	///
+  ///     ( <a href="examples/BoxMan.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile HAnimJoint.dot
   class H3DAPI_API HAnimJoint : public Transform {
@@ -146,7 +146,7 @@ namespace H3D {
     //virtual void render();
     virtual void traverseSG( TraverseInfo &ti );
 
-		/// Settings for how to render joints.
+    /// Settings for how to render joints.
     typedef enum {
       /// Render the joints only as spheres
       JOINTS, 

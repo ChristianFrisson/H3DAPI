@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -40,9 +40,17 @@
 using namespace std;
 using namespace H3D;
 
+string getFieldName( Field *f, string node_name ) {
+  string field_name = f->getName();
+  if( node_name == "UniversalJoint" && field_name == "stopBounce1" )
+    return "stop1Bounce";
+  return field_name;
+}
+
 void writeFieldDef( ostream &os, Field *f, string nodename = "", bool filled = false ) {
-  os << "\"" << nodename << f->getName() << "\" [URL=\"\\ref " 
-     << nodename << f->getName() << "\"";
+  string field_name = getFieldName( f, nodename );
+  os << "\"" << nodename << field_name << "\" [URL=\"\\ref " 
+     << nodename << field_name << "\"";
   if( filled )
     os << ", style=filled, fillcolor=steelblue1";
   os <<"  ]" << endl; 
@@ -94,7 +102,7 @@ void writeNode( string out_dir, Node *n ) {
 
     string out_file_field = 
       out_dir + "\\" + node_name +
-      "_" + f->getName() + ".dot";
+      "_" + getFieldName( f, node_name ) + ".dot";
 
     string field_own_name = "";
 
@@ -105,7 +113,7 @@ void writeNode( string out_dir, Node *n ) {
         field_own_name = temp_owner->getName() + "_";
       }
       out_file_field = out_dir + "\\" + node_name + "_" + 
-         field_own_name + f->getName() + ".dot";
+         field_own_name + getFieldName( f, field_own_name ) + ".dot";
     }
 
     bool set_up_routes = false;
@@ -314,7 +322,7 @@ int main(int argc, char* argv[]) {
   resetSceneTimeField();
   writeNode( out_dir, new X3DGroupingNode );
   resetSceneTimeField();
-	writeNode( out_dir, new H3DGeneratedShaderNode );
+  writeNode( out_dir, new H3DGeneratedShaderNode );
   resetSceneTimeField();
 #ifdef HAVE_UI
   writeNode( out_dir, new H3DWidgetNode );

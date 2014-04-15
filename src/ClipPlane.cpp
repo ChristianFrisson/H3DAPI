@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -56,7 +56,7 @@ ClipPlane::ClipPlane( Inst< SFNode  >  _metadata,
                       Inst< SFVec4d >  _plane,
                       Inst< SFBool  >  _clipHaptics,
                       Inst< SFBool  >  _clipGraphics,
-		      Inst< MFBool  >  _clipHapticsDevice) :
+                      Inst< MFBool  >  _clipHapticsDevice) :
   X3DChildNode( _metadata ),
   enabled( _enabled ),
   plane( _plane ),
@@ -91,11 +91,11 @@ void ClipPlane::enableHapticsState( TraverseInfo &ti ) {
     if( clipHaptics->getValue()  ) {
       const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
       for( unsigned int i = 0; i < devices.size(); ++i ) {
-	      H3DHapticsDevice *hd = ti.getHapticsDevice( i );
-	      const Vec3f &pos = ti.getAccInverseMatrix() 
-	                         * hd->trackerPosition->getValue();
-	      if( pos.x * v.x + pos.y * v.y + pos.z * v.z + v.w < 0 )
-	        ti.disableHaptics(i);
+        H3DHapticsDevice *hd = ti.getHapticsDevice( i );
+        const Vec3f &pos = ti.getAccInverseMatrix() 
+                           * hd->trackerPosition->getValue();
+        if( pos.x * v.x + pos.y * v.y + pos.z * v.z + v.w < 0 )
+          ti.disableHaptics(i);
       }
     }
   } else {
@@ -104,13 +104,13 @@ void ClipPlane::enableHapticsState( TraverseInfo &ti ) {
     const vector< H3DHapticsDevice * > &devices = ti.getHapticsDevices();
     for( unsigned int i = 0; i < devices.size(); ++i ) {
       size_t index =  
-	      i < clip_per_device.size() ? i : clip_per_device.size() - 1;
+        i < clip_per_device.size() ? i : clip_per_device.size() - 1;
       if( clip_per_device[ index ] ) {
-	      H3DHapticsDevice *hd = ti.getHapticsDevice( i );
-	      const Vec3f &pos = ti.getAccInverseMatrix() 
-	                         * hd->trackerPosition->getValue();
-	      if( pos.x * v.x + pos.y * v.y + pos.z * v.z + v.w < 0 )
-	        ti.disableHaptics(i);
+        H3DHapticsDevice *hd = ti.getHapticsDevice( i );
+        const Vec3f &pos = ti.getAccInverseMatrix() 
+                           * hd->trackerPosition->getValue();
+        if( pos.x * v.x + pos.y * v.y + pos.z * v.z + v.w < 0 )
+          ti.disableHaptics(i);
       }
     }
   }

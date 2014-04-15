@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -101,12 +101,12 @@ bool SpiderMonkeySAI::initializeScriptEngine( Script *_script_node ) {
   f->setValue(script_node );
   // The script node will get a reference by being
   // put into the SFNode. We remove this reference in order to make sure
-	// that the Script nodes destructor is called. The scrip nodes destructor then
-	// use a trick in order to delete this SFNode instance without accidently calling
-	// the Script nodes own destructor again.
+  // that the Script nodes destructor is called. The scrip nodes destructor then
+  // use a trick in order to delete this SFNode instance without accidently calling
+  // the Script nodes own destructor again.
   script_node->unref();
 
-	JS_SetPrivate( cx, global, (void *) new FieldObjectPrivate( f, true ) );
+  JS_SetPrivate( cx, global, (void *) new FieldObjectPrivate( f, true ) );
 
   /* Populate the global object with the standard globals,
      like Object and Array. */
@@ -119,15 +119,15 @@ bool SpiderMonkeySAI::initializeScriptEngine( Script *_script_node ) {
   // create the Browser property
   JSObject *browser = 
     Browser_newInstance( cx, 
-			 (*Scene::scenes.begin())->getSAIBrowser(), 
-			 false );
+       (*Scene::scenes.begin())->getSAIBrowser(), 
+       false );
 
   // add it as the name "Browser" to the global object.
   JS_DefineProperty( cx, global, 
-		     "Browser", 
-		     OBJECT_TO_JSVAL(browser),
-		     JS_PropertyStub, JS_PropertyStub,
-		     JSPROP_READONLY | JSPROP_PERMANENT  );
+         "Browser", 
+         OBJECT_TO_JSVAL(browser),
+         JS_PropertyStub, JS_PropertyStub,
+         JSPROP_READONLY | JSPROP_PERMANENT  );
 
   // Add all H3D field types such as SFVec3f, MFBool, SFNode etc to 
   // the global object.
@@ -153,7 +153,7 @@ string SpiderMonkeySAI::loadScript( const string &script, const string &filename
   JSBool ok; 
 
   jsval rval;
-  ok = JS_EvaluateScript(cx, global, script.c_str(), script.length(), 
+  ok = JS_EvaluateScript(cx, global, script.c_str(), uintN( script.length() ),
                          filename.c_str(), 1, &rval); 
   if( ok ) {                       
 
@@ -164,29 +164,29 @@ string SpiderMonkeySAI::loadScript( const string &script, const string &filename
     // to a function we rename it to the callback function name and
     // and restore a field propert to the name.
     for( H3DDynamicFieldsObject::field_iterator i = script_node->firstField();
-	 i != script_node->endField(); ++i ) {
+   i != script_node->endField(); ++i ) {
 
       string field_name = (*i)->getName();
       jsval res;
       // get the property
       JSBool has_property = JS_GetProperty( cx,
-					    global,
-					    field_name.c_str(),
-					    &res );
+              global,
+              field_name.c_str(),
+              &res );
       if( has_property && JSVAL_IS_OBJECT( res ) ) {
-	JSObject *fun = JSVAL_TO_OBJECT( res );
-	if( JS_ObjectIsFunction( cx, fun ) ) {
-	  
-	  // a callback function has been defined, change the
-	  // name of it in order let the property be the field
-	  JS_DefineProperty( cx, global, 
-			     fieldNameToCallbackName( field_name ).c_str(), 
-			     res,
-			     JS_PropertyStub, JS_PropertyStub,
-			     0 );
-	  // restore the field to the name
-	  addField( *i );
-	}
+  JSObject *fun = JSVAL_TO_OBJECT( res );
+  if( JS_ObjectIsFunction( cx, fun ) ) {
+    
+    // a callback function has been defined, change the
+    // name of it in order let the property be the field
+    JS_DefineProperty( cx, global, 
+           fieldNameToCallbackName( field_name ).c_str(), 
+           res,
+           JS_PropertyStub, JS_PropertyStub,
+           0 );
+    // restore the field to the name
+    addField( *i );
+  }
       }
     }
      
@@ -234,20 +234,20 @@ bool SpiderMonkeySAI::addField( Field *field ) {
     {
       //    cerr << "Defining property: " << name << endl;
     JS_DefineProperty( cx, global, name.c_str(), 
-		       js_field,
-		       SFNode_getProperty, SFNode_setProperty,
-		       0 );
+           js_field,
+           SFNode_getProperty, SFNode_setProperty,
+           0 );
   }
   if( field->getAccessType() == Field::INPUT_OUTPUT ) {
    
     /*    JS_DefineProperty( cx, global, (name + "_changed").c_str(), 
-		       OBJECT_TO_JSVAL( js_field ),
-		       JS_PropertyStub, JS_PropertyStub,
-		       JSPROP_READONLY | JSPROP_PERMANENT );  
+           OBJECT_TO_JSVAL( js_field ),
+           JS_PropertyStub, JS_PropertyStub,
+           JSPROP_READONLY | JSPROP_PERMANENT );  
     JS_DefineProperty( cx, global, ( string("set_" )+ name).c_str(), 
-		       OBJECT_TO_JSVAL( js_field ),
-		       JS_PropertyStub, JS_PropertyStub,
-		       JSPROP_READONLY | JSPROP_PERMANENT );
+           OBJECT_TO_JSVAL( js_field ),
+           JS_PropertyStub, JS_PropertyStub,
+           JSPROP_READONLY | JSPROP_PERMANENT );
     */
     
     } 
@@ -268,22 +268,22 @@ void SpiderMonkeySAI::CallbackFunctionDispatcher::update() {
       string function_name = sai->fieldNameToCallbackName( field_name );
 
       if( haveFunction( sai->cx, sai->global, function_name.c_str() ) ) {
-	// the callback function has the same name as the field
-	// try to find it in the script and execute it.
-	jsval res;
-	jsval arg[] = { 
-	  jsvalFromField( sai->cx, routes_in[i], true ),
-	  jsvalFromField( sai->cx, Scene::time.get(), true ) 
-	};
-	
-	//cerr << "Calling function: " << function_name << endl;
-	JS_CallFunctionName( sai->cx, sai->global,
-			     function_name.c_str(),
-			     2,
-			     arg,
-			     &res );
-	
-	event_processed = true;
+  // the callback function has the same name as the field
+  // try to find it in the script and execute it.
+  jsval res;
+  jsval arg[] = { 
+    jsvalFromField( sai->cx, routes_in[i], true ),
+    jsvalFromField( sai->cx, Scene::time.get(), true ) 
+  };
+  
+  //cerr << "Calling function: " << function_name << endl;
+  JS_CallFunctionName( sai->cx, sai->global,
+           function_name.c_str(),
+           2,
+           arg,
+           &res );
+  
+  event_processed = true;
       }
     }
   }
@@ -297,7 +297,7 @@ void SpiderMonkeySAI::CallbackFunctionDispatcher::update() {
   if( event_processed && 
       haveFunction( sai->cx, sai->global, "eventsProcessed" ) ) {
     JS_CallFunctionName( sai->cx, sai->global, 
-			 "eventsProcessed", 0, NULL, &res ); 
+       "eventsProcessed", 0, NULL, &res ); 
   }
 
   // call prepareEvents callback function if the Scene::time has
@@ -305,7 +305,7 @@ void SpiderMonkeySAI::CallbackFunctionDispatcher::update() {
   if( hasCausedEvent( Scene::time ) &&
       haveFunction( sai->cx, sai->global, "prepareEvents" )) {
     JS_CallFunctionName( sai->cx, sai->global, 
-			 "prepareEvents", 0, NULL, &res ); 
+       "prepareEvents", 0, NULL, &res ); 
   }
 
   // possibly run garbage collector to dispose of objects

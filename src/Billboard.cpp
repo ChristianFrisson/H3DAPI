@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -126,7 +126,7 @@ void Billboard::SFMatrix4f::update() {
       value = Matrix4f( X.x, vp_up.x, billboard_to_viewer.x, 0,
                         X.y, vp_up.y, billboard_to_viewer.y, 0,
                         X.z, vp_up.z, billboard_to_viewer.z, 0,
-						0, 0, 0, 1);
+                        0, 0, 0, 1);
     }
   }
 }

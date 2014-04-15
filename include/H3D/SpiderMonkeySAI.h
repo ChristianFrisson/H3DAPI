@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -93,7 +93,7 @@ namespace H3D {
     /// The CallbackFunctionDispatcher class handles the calls
     /// of the ecmascript callback functions for the fields.
     class CallbackFunctionDispatcher: 
-	public PeriodicUpdate< EventCollectingField<Field> > {
+      public PeriodicUpdate< EventCollectingField<Field> > {
       virtual void update();
     };
 

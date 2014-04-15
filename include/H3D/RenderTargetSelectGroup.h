@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -54,13 +54,13 @@ namespace H3D {
   public:
     /// Constructor.
     RenderTargetSelectGroup ( Inst< AddChildren    > _addChildren    = 0,
-			      Inst< RemoveChildren > _removeChildren = 0,
-			      Inst< MFChild        > _children       = 0,
-			      Inst< SFNode         > _metadata       = 0,
-			      Inst< SFBound        > _bound          = 0,
-			      Inst< SFVec3f        > _bboxCenter     = 0,
-			      Inst< SFVec3f        > _bboxSize       = 0,
-			      Inst< MFInt32        > _renderTargets  = 0);
+            Inst< RemoveChildren > _removeChildren = 0,
+            Inst< MFChild        > _children       = 0,
+            Inst< SFNode         > _metadata       = 0,
+            Inst< SFBound        > _bound          = 0,
+            Inst< SFVec3f        > _bboxCenter     = 0,
+            Inst< SFVec3f        > _bboxSize       = 0,
+            Inst< MFInt32        > _renderTargets  = 0);
 
     virtual void render();
 

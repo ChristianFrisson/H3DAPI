@@ -14,8 +14,9 @@ Example usage:
  > python TestExamples.py
 
 Platform notes:
- Currently only implemented for Windows. 
- Screen capture and process management is Windows specific.
+ Currently only implemented for Windows and linux.
+ On linux you need to install xautomation tools to have xte command.
+ xte is used to send Escape key to H3DLoad.
 
 Additional requirements:
   * PIL: http://www.pythonware.com/products/pil/
@@ -31,8 +32,7 @@ optional arguments:
 """
 
 import subprocess
-from PIL import ImageGrab
-from PIL import Image
+import platform
 import time
 import os, sys
 from Queue import Queue, Empty
@@ -42,12 +42,17 @@ import string
 import re
 import argparse
 import math
+import signal
+from PIL import Image
 
-import win32api
-import win32com.client
+
+if platform.system() == 'Windows':
+  from PIL import ImageGrab
+  import win32api
+  import win32com.client
 
 # Find this directory.
-test_suite_directory = ""
+test_suite_directory = "."
 if os.getenv("H3D_ROOT") != None:
   test_suite_directory = os.environ["H3D_ROOT"] + "\examples\TestSuite"
 
@@ -203,6 +208,87 @@ class ProcessWin32 ( Process ):
       pass
     return output
 
+class ProcessUnix ( Process ):
+
+  def launch ( self, command, cwd ):
+  
+    def enqueue_output ( stdout, stderr, std_out_q, std_err_q ):
+      for line in iter(stdout.readline, b''):
+        std_out_q.put(line)
+      stdout.close()
+      for line in iter(stderr.readline, b''):
+        std_err_q.put(line)
+      stderr.close()
+  
+    self.process_name= command[0]
+
+    self.process= subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd= cwd)
+    
+    self.std_out_q = Queue()
+    self.std_err_q = Queue()
+    self.monitor_output_thread = Thread(target= enqueue_output, args=(self.process.stdout, self.process.stderr, self.std_out_q, self.std_err_q))
+    self.monitor_output_thread.start()
+    
+  def testLaunch ( self, command, cwd, startup_time, shutdown_time, startup_time_multiplier, early_shutdown_file ):
+  
+    self.process_name= command[0]
+    if os.path.isfile( early_shutdown_file ):
+      os.remove( early_shutdown_file )
+    self.process= subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd= cwd )
+    for i in range( 0, startup_time_multiplier ):
+      time.sleep(startup_time)
+      if os.path.isfile( early_shutdown_file ) or not self.isRunning():
+        break
+    success= self.isRunning()
+    if success:
+      self.kill()
+      time.sleep(shutdown_time)
+    return success
+    
+  def isRunning ( self ):
+    #for Linux use this
+    query_process = 'ps -Af | grep ' + self.process_name
+    
+    p = subprocess.Popen( query_process, stdout=subprocess.PIPE, shell=True )
+    output = p.communicate()
+    output0 = output[0]
+    # remove ps and grep process lines.
+    output0 = output0.replace( 'ps -Af | grep ' + self.process_name, "" )
+    output0 = output0.replace( 'grep ' + self.process_name, "" )
+    return output0.find(self.process_name) >= 0 and not (output0.find( '[' + self.process_name + '] <defunct>') >= 0 )
+    
+  def sendKey ( self, key ):
+    time.sleep ( 0.1 )
+    if key == "{ESC}" or key == "{Esc}":
+#      device = uinput.Device([uinput.KEY_ESC])
+#      device.emit_click(uinput.KEY_ESC)
+      key_process = 'xte "key Escape"'
+      p = subprocess.Popen( key_process, stdout=subprocess.PIPE, shell=True )
+    else:
+      raise Exception("Key " + key + " not handled exception")
+    
+  def kill ( self ):
+    self.process.kill()
+    
+  def getStdOut ( self ):
+    output= ""
+    try:
+      while not self.std_out_q.empty():
+        output+= self.std_out_q.get(timeout=.1)
+    except Empty:
+      pass
+    return output
+    
+  def getStdErr ( self ):
+    output= ""
+    try:
+      while not self.std_err_q.empty():
+        output+= self.std_err_q.get(timeout=.1)
+    except Empty:
+      pass
+    return output
+
+
 class Option ( object ):
   
   def __init__ ( self, node_type, field_name, field_value, container_node = "Scene", add_if_missing = False ):
@@ -324,7 +410,7 @@ class TestExamples ( object ):
     self.early_shutdown_file = '%s/test_complete' % (os.getcwd())
     self.startup_time_multiplier = 10
     self.load_flags = ["-f"]
-    if fake_fullscreen_due_to_PIL_bug:
+    if platform.system() == 'Windows' and fake_fullscreen_due_to_PIL_bug:
       import ctypes
       user32 = ctypes.windll.user32
       self.load_flags = ["-F", "--screen=%ix%i" % (user32.GetSystemMetrics(0)-50, user32.GetSystemMetrics(1)-50)]
@@ -360,15 +446,50 @@ scene = None
           </PythonScript>""" % (self.fps_data_file, self.early_shutdown_file)
 
   def launchExample ( self, url, cwd ):
-    process= ProcessWin32()
-    process.launch ( ["H3DLoad.exe"] + self.load_flags + [url], cwd )
+    process = self.getProcess()
+    process.launch ( ["H3DLoad.exe" if platform.system() == 'Windows' else "H3DLoad"] + self.load_flags + [url], cwd )
     return process
+
+  def getProcess( self ):
+    platform_system = platform.system()
+    if platform_system == 'Windows':
+      return ProcessWin32()
+    elif platform_system == 'Linux':
+      return ProcessUnix()
+
+  # This function I found on stackoverflow.com here http://stackoverflow.com/questions/69645/take-a-screenshot-via-a-python-script-linux
+  def getScreenByPIL(self):
+    import ImageGrab
+    img = ImageGrab.grab()
+    return img
+
+  # This function I found on stackoverflow.com here http://stackoverflow.com/questions/69645/take-a-screenshot-via-a-python-script-linux
+  def getScreenByWx(self):
+    import wx
+    app = wx.App()  # Need to create an App instance before doing anything
+    screen = wx.ScreenDC()
+    size = screen.GetSize()
+    bmp = wx.EmptyBitmap(size[0], size[1])
+    mem = wx.MemoryDC(bmp)
+    mem.Blit(0, 0, size[0], size[1], screen, 0, 0)
+    #bmp.SaveFile('screenshot.png', wx.BITMAP_TYPE_PNG )
+    myWxImage = wx.ImageFromBitmap( bmp )
+    PilImage = Image.new( 'RGB', (myWxImage.GetWidth(), myWxImage.GetHeight()) )
+    PilImage.fromstring( myWxImage.GetData() )
+    del mem  # Release bitmap
+    return PilImage
+
+  def getScreenShot( self ):
+    if platform.system() == 'Windows':
+      return self.getScreenByPIL()
+    else:
+      return self.getScreenByWx()
     
   def testStartUp ( self, url, cwd, variation ):
     """ Returns true if the example can be started. """
     
-    process= ProcessWin32()
-    return process.testLaunch ( ["H3DLoad.exe"] + self.load_flags + [url], cwd, self.startup_time, self.shutdown_time, 1 if variation.global_insertion_string_failed else self.startup_time_multiplier, self.early_shutdown_file )
+    process = self.getProcess()
+    return process.testLaunch ( ["H3DLoad.exe" if platform.system() == 'Windows' else "H3DLoad"] + self.load_flags + [url], cwd, self.startup_time, self.shutdown_time, 1 if variation and variation.global_insertion_string_failed else self.startup_time_multiplier, self.early_shutdown_file )
     
   def testExample ( self, name, url, orig_url= None, var_name= "", variation = None ):
     
@@ -401,7 +522,7 @@ scene = None
       return test_results
     
     if test_results.started_ok:
-      im= ImageGrab.grab()
+      im = self.getScreenShot()
       test_results.screenshot= os.path.join(self.filepath,createFilename(orig_url, var_name)+".jpg")
       im.save(test_results.screenshot, "JPEG")
       im.thumbnail((256,256), Image.ANTIALIAS)
@@ -715,7 +836,7 @@ td, th {
 def testH3DAPI (global_variations):
 
   def isTestable ( file_path ):
-    return file_path.find ( 'TestAll' ) < 0
+    return file_path.find ( 'TestAll' ) < 0 and file_path.find( 'SpaceTennis.x3d' ) < 0
 
   tester= TestExamples( os.path.join(args.output, "H3DAPI"), startup_time= 10, shutdown_time= 10, testable_callback= isTestable )
   results= tester.testAllExamples( global_variations, directory= "../../../H3DAPI/examples" )
@@ -736,7 +857,7 @@ def testH3DPhysics (global_variations):
   def isTestable ( file_path ):
     
     if file_path.find ( 'ParallelPhysicsEngines/x3d' ) >= 0 or file_path.find ( 'ParallelPhysicsEngines\\x3d' ) >= 0:
-      return false
+      return False
     f= open ( file_path, 'r' )
     contents= f.read ()
     f.close()

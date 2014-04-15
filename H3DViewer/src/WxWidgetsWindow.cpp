@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2006-2013, SenseGraphics AB
+//    Copyright 2006-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -69,7 +69,8 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
   use_h3d_settings( true ),
   theWxGLCanvas( NULL ),
   fullscreen_initialized ( false ),
-        theWxGLContext( NULL ) {
+  theWxGLContext( NULL ),
+  allow_new_pixel_format_creation( true ) {
   type_name = "WxWidgetsWindow";
   database.initFields( this );
  
@@ -96,6 +97,16 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
 }
 
 void WxWidgetsWindow::initWindow() {
+  if( isInitialized() && !allow_new_pixel_format_creation ) {
+    Console(4) << "WxWidgetsWindow does not support changing pixel format from/to "
+               << "quad buffered stereo support after initialization." << endl;
+    if( last_render_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
+      renderMode->setValue( "QUAD_BUFFERED_STEREO" );
+    } else {
+      renderMode->setValue( "MONO" );
+    }
+    return;
+  }
   RenderMode::Mode stereo_mode = renderMode->getRenderMode();
 
   int attribList[20];
@@ -122,11 +133,11 @@ void WxWidgetsWindow::initWindow() {
   // TODO: stereo mode does not work with mac
   attribList[i++] = 0;
 #else
-	// On Windows we can not check here if stereo is supported, simply because
-	// on some systems GL_STEREO is false even though QUAD_BUFFERED_STEREO
-	// is supported. The check have to be made after SetCurrent.
+  // On Windows we can not check here if stereo is supported, simply because
+  // on some systems GL_STEREO is false even though QUAD_BUFFERED_STEREO
+  // is supported. The check have to be made after SetCurrent.
   if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
-		check_if_stereo_obtained = true;
+    check_if_stereo_obtained = true;
 #ifndef H3D_WINDOWS
     GLboolean quad_stereo_supported;
     glGetBooleanv( GL_STEREO, &quad_stereo_supported);
@@ -147,10 +158,10 @@ void WxWidgetsWindow::initWindow() {
                         attribList );
 
   if( !theWxGLContext || ( last_render_mode != stereo_mode && ( last_render_mode == RenderMode::QUAD_BUFFERED_STEREO || stereo_mode == RenderMode::QUAD_BUFFERED_STEREO ) ) ) {
-		if( theWxGLContext )
-			delete theWxGLContext;
+    if( theWxGLContext )
+      delete theWxGLContext;
     theWxGLContext = new wxGLContext( theWxGLCanvas );
-	}
+  }
 
   if( old_canvas ) {
     old_canvas->Destroy();
@@ -203,12 +214,12 @@ void WxWidgetsWindow::initWindow() {
 #endif
     //  theWindow->Layout();
   theWindow->Show();
-	setFullscreen( fullscreen->getValue() );
+  setFullscreen( fullscreen->getValue() );
   theWxGLCanvas->Show();
   theWindow->Raise();
   theWindow->Layout();
-	
-	makeWindowActive();
+
+  makeWindowActive();
   if( stereo_mode == RenderMode::NVIDIA_3DVISION )
     theWxGLCanvas->Hide();
   
@@ -224,18 +235,18 @@ void WxWidgetsWindow::setFullscreen( bool fullscreen ) {
 #ifndef MACOSX
     //TODO: fullscreen does not work well on macosx
     if( tlw ) {
-			long style = wxFULLSCREEN_ALL;
-			WxFrame * tmp_frame = dynamic_cast< WxFrame * >( theWindow );
-			if( tmp_frame ) {
-				if( fullscreen )
-					style = tmp_frame->getFullScreenStyle();
-				else
-					tmp_frame->showPreviouslyHiddenDialogs();
-			}
-			tlw->ShowFullScreen( fullscreen, style );
-			if( fullscreen && tmp_frame && style != wxFULLSCREEN_ALL )
-				tmp_frame->hideAllDialogs();
-		}
+      long style = wxFULLSCREEN_ALL;
+      WxFrame * tmp_frame = dynamic_cast< WxFrame * >( theWindow );
+      if( tmp_frame ) {
+        if( fullscreen )
+          style = tmp_frame->getFullScreenStyle();
+        else
+          tmp_frame->showPreviouslyHiddenDialogs();
+      }
+      tlw->ShowFullScreen( fullscreen, style );
+      if( fullscreen && tmp_frame && style != wxFULLSCREEN_ALL )
+        tmp_frame->hideAllDialogs();
+    }
 #endif
     last_fullscreen = fullscreen;
     fullscreen_initialized= true;
@@ -287,10 +298,10 @@ void WxWidgetsWindow::swapBuffers() {
 }
 
 void WxWidgetsWindow::makeWindowActive() {
-	if( theWxGLCanvas->IsShownOnScreen() ) {
-		theWxGLCanvas->SetCurrent( *theWxGLContext );
-		window_is_made_active = true;
-	}
+  if( theWxGLCanvas->IsShownOnScreen() ) {
+    theWxGLCanvas->SetCurrent( *theWxGLContext );
+    window_is_made_active = true;
+  }
 }
 
 BEGIN_EVENT_TABLE(WxWidgetsWindow::MyWxGLCanvas, wxGLCanvas)
@@ -335,9 +346,12 @@ myOwner( _myOwner )
 
 void WxWidgetsWindow::MyWxGLCanvas::OnIdle(wxIdleEvent& event) {
 
-if( myOwner && myOwner->is_initialized ) {
-    if( WxFrame * owner_is_frame = dynamic_cast< WxFrame * >(myOwner->theWindow) )
+  if( myOwner && myOwner->is_initialized ) {
+    if( WxFrame * owner_is_frame = dynamic_cast< WxFrame * >(myOwner->theWindow) ) {
       owner_is_frame->updateFrameRates();
+      if( myOwner->allow_new_pixel_format_creation && owner_is_frame->isFileLoaded() )
+        myOwner->allow_new_pixel_format_creation = false;
+    }
    
     // resize the window if the size is different from the current size.
     int w = myOwner->width->getValue();

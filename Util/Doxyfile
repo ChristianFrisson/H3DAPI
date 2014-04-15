@@ -1600,6 +1600,7 @@ PREDEFINED             = H3D_WINDOWS:=1 \
                          HAVE_FREEIMAGE:=1 \
                          HAVE_TEEM:=1 \
                          HAVE_DCMTK:=1 \
+                         HAVE_PROFILER:=1 \
                          HAVE_OPENHAPTICS:=1 \
                          HAVE_CHAI3D:=1 \
                          CHAI3D_VERSION_2_0:=1 \
@@ -1628,6 +1629,7 @@ PREDEFINED             = H3D_WINDOWS:=1 \
                          HAVE_LIBCURL:=1 \
                          HAVE_SPIDERMONKEY:=1 \
                          HAVE_DSHOW:=1 \
+                         HAVE_SIXENSE:=1 \
                          HAVE_FFMPEG:=1 \
                          HAVE_VIRTUAL_HAND_SDK:=1 \
                          USE_DOUBLE_PRECISION:=1

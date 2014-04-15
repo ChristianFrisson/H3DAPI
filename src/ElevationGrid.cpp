@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -51,7 +51,7 @@ namespace ElevationGridInternals {
   FIELDDB_ELEMENT( ElevationGrid, colorPerVertex, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ElevationGrid, normalPerVertex, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ElevationGrid, solid, INPUT_OUTPUT );
-	FIELDDB_ELEMENT( ElevationGrid, attrib, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ElevationGrid, attrib, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ElevationGrid, creaseAngle, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ElevationGrid, xDimension, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ElevationGrid, zDimension, INPUT_OUTPUT );
@@ -269,7 +269,7 @@ void ElevationGrid::render() {
     // fog coordinates
     if( GLEW_EXT_fog_coord && fog_coord_node ) {
       glPushAttrib( GL_FOG_BIT );
-      glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);	
+      glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);
     }
 
     GLhandleARB shader_program = 0;

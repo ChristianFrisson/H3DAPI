@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,6 +30,7 @@
 #define __GLUTWINDOW_H__
 
 #include <H3D/H3DWindowNode.h>
+#ifdef HAVE_GLUT
 
 namespace H3D {
 
@@ -44,8 +45,8 @@ namespace H3D {
   /// "RIGHT_SIDE", "TOP_LEFT_CORNER", "TOP_RIGHT_CORNER",
   /// "BOTTOM_RIGHT_CORNER", "BOTTOM_LEFT_CORNER",
   /// "FULL_CROSSHAIR", "NONE", "DEFAULT"
-	///
-	/// For example usage of this class see the H3DLoad application.
+  ///
+  /// For example usage of this class see the H3DLoad application.
   class H3DAPI_API GLUTWindow : public H3DWindowNode {
   public:
 
@@ -152,9 +153,10 @@ namespace H3D {
     static bool GLUT_init;
     int window_id;
 
-		// Define these even though they are not used for when we use FREEGLUT.
-		bool last_fullscreen;
-		int last_x_pos, last_y_pos, last_width, last_height;
+    // Define these even though they are not used for when we use FREEGLUT.
+    bool last_fullscreen;
+    int last_x_pos, last_y_pos, last_width, last_height;
   };
 }
+#endif // HAVE_GLUT
 #endif

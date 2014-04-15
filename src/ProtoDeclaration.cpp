@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -44,32 +44,32 @@
 using namespace H3D;
 
 ProtoDeclaration::ProtoDeclaration( const string &_name,
-																		const string &_body,
-																		const vector<string > &_body_extra,
-																		PrototypeVector *_existing_protos ) :
+                                    const string &_body,
+                                    const vector<string > &_body_extra,
+                                    PrototypeVector *_existing_protos ) :
       name( _name ),
-			existing_protos( NULL ),
+      existing_protos( NULL ),
       body( _body ),
       body_extra( _body_extra ) {
-	if( _existing_protos ) {
-		existing_protos = new PrototypeVector;
-		for( PrototypeVector::const_iterator i = _existing_protos->begin();
-				 i != _existing_protos->end(); ++i ) {
-			if( (*i)->name != name )
-				existing_protos->push_back( *i );
-		}
-		if( _existing_protos->getFirstProtoDeclaration() &&
-				_existing_protos->getFirstProtoDeclaration()->name != name ) {
-			existing_protos->setFirstProtoDeclaration( _existing_protos->getFirstProtoDeclaration() );
-		}
-	}
+  if( _existing_protos ) {
+    existing_protos = new PrototypeVector;
+    for( PrototypeVector::const_iterator i = _existing_protos->begin();
+         i != _existing_protos->end(); ++i ) {
+      if( (*i)->name != name )
+        existing_protos->push_back( *i );
+    }
+    if( _existing_protos->getFirstProtoDeclaration() &&
+        _existing_protos->getFirstProtoDeclaration()->name != name ) {
+      existing_protos->setFirstProtoDeclaration( _existing_protos->getFirstProtoDeclaration() );
+    }
+  }
 }
 
 ProtoDeclaration::~ProtoDeclaration() {
-	if( existing_protos ) {
-		delete existing_protos;
-		existing_protos = NULL;
-	}
+  if( existing_protos ) {
+    delete existing_protos;
+    existing_protos = NULL;
+  }
 }
 
 X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() { 
@@ -146,22 +146,22 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
     } else {
       // parse and set the main prodo body node.
       AutoRef<Node> n = createProtoInstanceNodeX3D( proto, &dn, body );
-			string proto_declare_tag = "<ProtoDeclare";
-			bool set_body_instead = !n.get() && body.substr( 0, proto_declare_tag.size() ) == proto_declare_tag;
-			if( !set_body_instead ) {
-				proto->setPrototypedNode( n.get() );
-			}
+      string proto_declare_tag = "<ProtoDeclare";
+      bool set_body_instead = !n.get() && body.substr( 0, proto_declare_tag.size() ) == proto_declare_tag;
+      if( !set_body_instead ) {
+        proto->setPrototypedNode( n.get() );
+      }
       
       // parse and set any extra nodes from the proto body
       for( unsigned int i = 0; i < body_extra.size(); ++i ) {
         if( !body_extra[i].empty() ) {
           AutoRef<Node> n = createProtoInstanceNodeX3D( proto, &dn, body_extra[i] );
-					if( n.get() ) {
-						if( set_body_instead )
-							proto->setPrototypedNode( n.get() );
-						else
-							proto->addPrototypedNodeExtra( n.get() );
-					}
+          if( n.get() ) {
+            if( set_body_instead )
+              proto->setPrototypedNode( n.get() );
+            else
+              proto->addPrototypedNodeExtra( n.get() );
+          }
         }
       }
     }
@@ -189,12 +189,12 @@ AutoRef< Node > ProtoDeclaration::createProtoInstanceNodeVRML( PrototypeInstance
     if ( c && !c->children->empty() ) {
       n.reset( c->children->front() );
       for( unsigned int i = 1; i < c->children->size(); ++i ) {
-				if( c->children->getValueByIndex( i ) )
-					proto->addPrototypedNodeExtra( c->children->getValueByIndex(i) );
+        if( c->children->getValueByIndex( i ) )
+          proto->addPrototypedNodeExtra( c->children->getValueByIndex(i) );
       }
     }
   } else {
-    Console(3) << "WARNING: Could not parse VRML from string" << endl;
+    Console(3) << "Warning: Could not parse VRML from string" << endl;
   }
   return n;
 }
@@ -210,7 +210,7 @@ AutoRef< Node > ProtoDeclaration::createProtoInstanceNodeX3D( PrototypeInstance 
   s << body;
   parser->setContentHandler(&handler);
   parser->setErrorHandler(&handler); 
-	parser->setLexicalHandler( &handler );
+  parser->setLexicalHandler( &handler );
   parser->parse( X3D::IStreamInputSource( s, (const XMLCh*)L"<string input>" ) );
   return handler.getResultingNode();
 #else

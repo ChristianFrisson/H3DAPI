@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -140,7 +140,7 @@ namespace H3D {
         std::map< int, myX3DNodeVector > nodes_per_level;
         std::string name;
         std::map< int,
-					std::vector< std::pair< std::string, int > > > prerequisites;
+          std::vector< std::pair< std::string, int > > > prerequisites;
         int conformance_level;
         int used_level;
         int max_level;

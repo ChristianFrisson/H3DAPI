@@ -23,7 +23,7 @@ ignoreList = ['Bound', 'MFBool', 'MFColor', 'MFColorRGBA', 'MFDouble', 'MFFloat'
 'ProfileSAX2Handlers','SpiderMonkeySAI','SpiderMonkeyTypes','TypedField','TypedFieldCheck','TypedFieldTypesTmpl',
 'TypedFieldAnyTmpl','ResourceResolver','PrototypeVector','SAIFunctions', 'Shape', 'Node', 'Scene', 'Script','MovieTexture','PeriodicUpdate',
 'GeneratedTexture','OpenHapticsSurface','CoordBoundField','VirtualHandGloveSensor','FlexLexer','DEFNodes','DirectShowDecoder',
-'GeneratedTexture3D','PyTypeWrapper','FFmpegDecoder', 'GLUTWindow', 'HapticsRenderers']
+'GeneratedTexture3D','PyTypeWrapper','FFmpegDecoder', 'GLUTWindow', 'HapticsRenderers', 'GraphicsCachingOptions', 'SimplexNoise']
 pendingList = ['AudioFileReader','OggFileReader']
 if os.path.isdir( examples_dir ):
   print "Handling examples directory " + examples_dir

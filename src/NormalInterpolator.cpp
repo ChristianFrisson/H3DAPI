@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -78,17 +78,17 @@ void NormalInterpolator::MFValue::update() {
        (key_index + 2)* value_size - 1 < (int)key_values.size() ) {
     if (weight<=0) 
       for (int x = 0; x < value_size; ++x )
-	value[x] = key_values[ key_index*value_size + x ];
+       value[x] = key_values[ key_index*value_size + x ];
     else if (weight>=1)
       for (int x = 0; x < value_size; ++x )
-	value[x] = key_values[ (key_index+1)*value_size + x];
+        value[x] = key_values[ (key_index+1)*value_size + x];
     else { 
       for (int x = 0; x < value_size; ++x ) {
         Vec3f n1 = key_values[ key_index*value_size + x ];
         Vec3f n2 = key_values[ (key_index+1)*value_size + x  ];
         H3DFloat cos_alpha = n1 * n2;
         if( H3DAbs( 1 - cos_alpha ) < Constants::f_epsilon ) {
-          value[ x ] = n1;	
+          value[ x ] = n1;  
         } else {
           H3DFloat alpha = H3DAcos(cos_alpha);
           H3DFloat sin_alpha = H3DSin( alpha );

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -151,7 +151,7 @@ bool ComposedShader::isTransparent( X3DMaterialNode *material ) {
   } else {
     if( mode != "AS_MATERIAL") {
       Console(4) << "Warning: Invalid transparencyDetectMode \"" << mode << "\" in ComposedShader."
-		 << " Must be one of \"AS_MATERIAL\", \"TRANSPARENT\" or \"OPAQUE\"." << endl;
+     << " Must be one of \"AS_MATERIAL\", \"TRANSPARENT\" or \"OPAQUE\"." << endl;
     }
     if( material ) return material->isTransparent();
   }
@@ -191,7 +191,7 @@ bool ComposedShader::addField( const string &name,
   }else{
     // can not add same field twice,even though it has different name.
     // This is the limit of h3d dynamic field object. 
-    Console(4)<<"Warning: Failed to add field: "<<name<<" to shader"<< getName()
+    Console(4)<<"Warning: Failed to add field: "<<name<<" to shader "<< getName()
       <<", either current node is invalid or the added field is already in the node database!"
       <<endl;
   }

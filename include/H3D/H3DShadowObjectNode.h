@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -61,7 +61,7 @@ namespace H3D {
                                bool render_caps,
                                const Matrix4f &local_to_global = Matrix4f() ) = 0;
 
-		/// Returns the default xml containerField attribute value.
+    /// Returns the default xml containerField attribute value.
     /// For this node it is "children".
     ///
     virtual string defaultXMLContainerField() {

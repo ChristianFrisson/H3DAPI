@@ -4,7 +4,7 @@
     <meta name='title' content='RenderTargetSelectGroup.x3d'/>
     <meta name='description' content='H3DAPI RenderTargetSelectGroup example. It shows how to use it together with the FrameBufferTextureGenerator node. It shows how to render a box to one color texture and a sphere to the other without using a shader and gl_FragData. This example uses H3DAPI node(s) and runs on H3DAPI-supported browsers only. Visit http://www.h3d.org for more information and to download an H3DAPI-
       compatible browser. '/>
-    <meta name='author' content='SenseGraphics AB, 2006-2008'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
   
   <Scene>

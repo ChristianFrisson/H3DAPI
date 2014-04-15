@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -118,11 +118,11 @@ namespace H3D {
       Inst< MFVec3f           > _contactPoint   = 0,
       Inst< MFVec3f           > _contactNormal  = 0,
       Inst< SFCoordinateNode  > _controlPoint   = 0,
-      Inst< SFInt32	          > _tessellation   = 0,
-      Inst< MFDouble          > _weight			    = 0,
-      Inst< MFDouble          > _knot				    = 0,
-      Inst< SFInt32	          > _order				  = 0,
-      Inst< SFBool	          > _closed			    = 0 );
+      Inst< SFInt32           > _tessellation   = 0,
+      Inst< MFDouble          > _weight         = 0,
+      Inst< MFDouble          > _knot           = 0,
+      Inst< SFInt32           > _order          = 0,
+      Inst< SFBool            > _closed         = 0 );
 
 
     /// Render the NurbsCurve with OpenGL.
@@ -204,6 +204,7 @@ namespace H3D {
 
   protected:
     GLUnurbsObj *theNurb;
+    auto_ptr< Field > printWarning;
   };
 }
 

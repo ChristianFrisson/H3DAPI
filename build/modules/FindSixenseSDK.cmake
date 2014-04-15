@@ -22,26 +22,25 @@ SET(SIXENSE_INSTALL_DIR "" CACHE PATH "Path to external Sixense SDK installation
 # Look for the header file.
 FIND_PATH(SIXENSE_INCLUDE_DIR NAMES sixense.h
                            PATHS ${SIXENSE_INSTALL_DIR}/include
-			         $ENV{H3D_EXTERNAL_ROOT}/include
+               $ENV{H3D_EXTERNAL_ROOT}/include
                                  $ENV{H3D_ROOT}/../External/include
                                  ../../External/include
                                  ${module_file_path}/../../../External/include
-				 ${steam_path}/include
-				 $ENV{SIXENSE_SDK_PATH}/include 
+         ${steam_path}/include
+         $ENV{SIXENSE_SDK_PATH}/include 
                            DOC "Path in which the file sixense.h is located." )
 MARK_AS_ADVANCED(SIXENSE_INCLUDE_DIR)
 
 # Look for the library.
-FIND_LIBRARY(SIXENSE_LIBRARY NAMES sixense
+FIND_LIBRARY(SIXENSE_LIBRARY NAMES sixense sixense_${SDK_LIB}
                                 PATHS ${SIXENSE_INSTALL_DIR}/lib/${SDK_LIB}/release_dll
-				      $ENV{H3D_EXTERNAL_ROOT}/${LIB}
+              $ENV{H3D_EXTERNAL_ROOT}/${LIB}
                                       $ENV{H3D_ROOT}/../External/${LIB}
                                       ../../External/${LIB}
                                       ${module_file_path}/../../../External/${LIB}
-				      ${steam_path}/lib/${SDK_LIB}/release_dll
-				      $ENV{SIXENSE_SDK_PATH}/lib/${SDK_LIB}/release_dll
-                                DOC "Path to glew32 library." )
-MESSAGE( STATUS ${steam_path}/lib/{SDK_LIB}/release_dll )
+              ${steam_path}/lib/${SDK_LIB}/release_dll
+              $ENV{SIXENSE_SDK_PATH}/lib/${SDK_LIB}/release_dll
+                                DOC "Path to sixense library." )
 MARK_AS_ADVANCED(SIXENSE_LIBRARY)
 
 # Copy the results to the output variables.

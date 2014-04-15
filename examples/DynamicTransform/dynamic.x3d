@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='dynamic.x3d'/>
     <meta name='description' content='An example of dynamic interaction between the haptics device and an object. The dynamic part of the scene is modeled through python and the DynamicTransform node.'/>
-    <meta name='editors' content='SenseGraphics AB'/>
+    <meta name='author' content='SenseGraphics AB, 2005-2014'/>
   </head>
   <Scene>
     <GlobalSettings>

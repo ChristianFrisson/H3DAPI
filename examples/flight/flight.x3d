@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='flight.x3d'/>
     <meta name='description' content='Simple example on how to create a pod that can be controlled with the haptics device or keyboard. Terrain generation is done through python.'/>
-    <meta name='editors' content='SenseGraphics AB, 2005-2008'/>
+    <meta name='editors' content='SenseGraphics AB, 2005-2014'/>
   </head>
   <!-- H3D Terrain demo
      Copyright 2005 SenseGraphics AB -->

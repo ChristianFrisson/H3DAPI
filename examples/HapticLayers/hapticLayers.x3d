@@ -6,7 +6,7 @@
                                       In the edges of the box only the box should be felt. If however the user
                                       press the haptics device inside the box closer to the middle of one of
                                       the boxes sides an additional shape (sphere) should be felt.'/>
-    <meta name='editors' content='SenseGraphics AB, 2007-2008'/>
+    <meta name='editors' content='SenseGraphics AB, 2007-2014'/>
   </head>
   <Scene>
     <GlobalSettings>

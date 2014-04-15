@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='ThreadExample.x3d'/>
     <meta name='description' content='A simple example showing update in separate thread as well as use of ImportLibrary with custom made binary.'/>
-    <meta name='author' content='SenseGraphics AB, 2006-2013'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
   
   <Scene>

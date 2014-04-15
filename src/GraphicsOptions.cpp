@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -35,10 +35,10 @@ using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase GraphicsOptions::database( "GraphicsOptions", 
-                                           "GraphicsCachingOptions", 
-                                           &(newInstance<GraphicsOptions>),
-                                           typeid( GraphicsOptions ),
-                                           &H3DOptionNode::database );
+             "GraphicsCachingOptions", 
+             &(newInstance<GraphicsOptions>),
+             typeid( GraphicsOptions ),
+             &H3DOptionNode::database );
 
 namespace GraphicsOptionsInternals {
   FIELDDB_ELEMENT( GraphicsOptions, useCaching, INPUT_OUTPUT );

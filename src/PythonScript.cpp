@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -155,7 +155,7 @@ PyObject *PythonScript::getPythonAttribute( const string &name ) {
   return NULL;
 }
 
-Field *PythonScript::lookupField( const string &name ) {
+Field *PythonScript::lookupField( const string &name ) const {
   if( module_dict ) {
     // ensure we have the GIL lock to work with multiple python threads.
     PyGILState_STATE state = PyGILState_Ensure();

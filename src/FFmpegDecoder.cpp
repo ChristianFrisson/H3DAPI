@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB, PolyDimensions
+//    Copyright 2004-2014, SenseGraphics AB, PolyDimensions
 //
 //    This file is part of H3D API.
 //
@@ -97,13 +97,13 @@ void FFmpegDecoder::cleanupFFmpeg(void)
 
     // Close the video file
 
-		if( pFormatCtx != NULL ){
+    if( pFormatCtx != NULL ){
 #if ( ( LIBAVCODEC_VERSION_MAJOR < 53 ) || ( LIBAVCODEC_VERSION_MAJOR == 53 && LIBAVCODEC_VERSION_MINOR < 35 ) )
-		av_close_input_file(pFormatCtx);
+    av_close_input_file(pFormatCtx);
 #else
     avformat_close_input(&pFormatCtx);
 #endif
-		}
+    }
 
     duration = 0;
   }
@@ -164,15 +164,15 @@ bool FFmpegDecoder::testClip( const string &url ) {
   return 0;
 
 #if LIBAVCODEC_VERSION_MAJOR < 53
-	dump_format(pFormatCtx, 0, url.c_str(), 0);
+  dump_format(pFormatCtx, 0, url.c_str(), 0);
 #else
   av_dump_format(pFormatCtx, 0, url.c_str(), 0);
 #endif
  
 #if ( ( LIBAVCODEC_VERSION_MAJOR < 53 ) || ( LIBAVCODEC_VERSION_MAJOR == 53 && LIBAVCODEC_VERSION_MINOR < 35 ) )
-	av_close_input_file(pFormatCtx);
+  av_close_input_file(pFormatCtx);
 #else
-	avformat_close_input(&pFormatCtx);
+  avformat_close_input(&pFormatCtx);
 #endif
   return 1;
 }
@@ -329,7 +329,7 @@ void FFmpegDecoder::getNewFrame( unsigned char *buffer ) {
         // Decode video frame
 #if LIBAVCODEC_VERSION_MAJOR < 53
       avcodec_decode_video(pCodecCtx, pFrame, &frameFinished,
-			   packet.data, packet.size);
+         packet.data, packet.size);
 #else
       avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
 #endif

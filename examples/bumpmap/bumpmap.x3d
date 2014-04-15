@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='bumpmap.x3d'/>
     <meta name='description' content='Shows how to create a bump mapped texture using X3D and Python. Requires a haptics device to move the light source around.'/>
-    <meta name='editors' content='SenseGraphics AB'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
   <Scene>
     <IMPORT inlineDEF='H3D_EXPORTS' exportedDEF='HDEV' AS='HDEV' />

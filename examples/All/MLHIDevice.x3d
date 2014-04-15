@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='2.2'>
+  <head>
+    <meta name='title' content='MLHIDevice.x3d'/>
+    <meta name='description' content='H3DAPI MLHIDevice example.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.
+      For this example to work properly, an installed and active 
+      Maglev haptics device is needed. NOTE, SenseGraphics have never
+      tested this node. Use at your own risk and report any issues to us.'/>
+    <meta name='author' content='SenseGraphics AB, 2014-'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />    
+    <DeviceInfo>
+      <MLHIDevice>
+        <GodObjectRenderer/>
+      </MLHIDevice>
+    </DeviceInfo>    
+  </Scene>
+</X3D>

@@ -88,7 +88,7 @@ namespace yy {
     pop (unsigned int n = 1)
     {
       for (; n; --n)
-	seq_.pop_front ();
+  seq_.pop_front ();
     }
 
     inline
@@ -113,8 +113,8 @@ namespace yy {
   public:
 
     slice (const S& stack,
-	   unsigned int range) : stack_ (stack),
-				 range_ (range)
+     unsigned int range) : stack_ (stack),
+         range_ (range)
     {
     }
 

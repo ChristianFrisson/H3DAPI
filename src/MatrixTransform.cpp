@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -195,10 +195,10 @@ void MatrixTransform::SFTransformedBound::update() {
     s << "Unsupported Bound type " << typeid( *bound ).name();
     throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
   } else {
-		stringstream s;
+    stringstream s;
     s << "Bound is NULL. Congratulations, you found a bug. Please file a bug report.";
     throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
-	}
+  }
 }
 
 bool MatrixTransform::movingSphereIntersect( H3DFloat radius,

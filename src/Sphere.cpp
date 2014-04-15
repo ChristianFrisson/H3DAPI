@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -91,6 +91,9 @@ H3DShadowObjectNode *Sphere::getShadowObject() {
 }
 
 void Sphere::render() {
+  GLboolean norm= glIsEnabled( GL_NORMALIZE );
+  if ( !norm ) 
+    glEnable( GL_NORMALIZE );
   bool prefer_vertex_buffer_object = false;
   if( GLEW_ARB_vertex_buffer_object ) {
     GraphicsOptions * go = NULL;
@@ -115,76 +118,76 @@ void Sphere::render() {
 
   H3DFloat double_pi = (H3DFloat) Constants::pi * 2;
 
-	if( sphere_data.empty() ) {
-		// Only create and transfer data when it has been modified.
-		unsigned int nr_data_vertices = 9; // 9  floats/vertex.
-		sphere_data.resize( (unsigned int)(( theta_parts + 1 ) *
-								(phi_parts+1) * nr_data_vertices), 0 );
-		unsigned int nr_index_data = 6; // 2 triangles, 3 vertices/triangle.
-		sphere_index_data.resize( (unsigned int)(theta_parts *
-															phi_parts *
-															nr_index_data), 0 );
-		// Iterate through the parts to create vertices.
-		// Create sphere of radius 1.
-		for (unsigned int p = 0; p <= phi_parts; ++p ) {
-			for (unsigned int t = 0; t <= theta_parts; ++t ) {
-				H3DFloat phi = p * inc_phi;
-				bool at_seam = t == theta_parts;
-				H3DFloat theta = ( at_seam ? 0 :t * inc_theta );
+  if( sphere_data.empty() ) {
+    // Only create and transfer data when it has been modified.
+    unsigned int nr_data_vertices = 9; // 9  floats/vertex.
+    sphere_data.resize( (unsigned int)(( theta_parts + 1 ) *
+                (phi_parts+1) * nr_data_vertices), 0 );
+    unsigned int nr_index_data = 6; // 2 triangles, 3 vertices/triangle.
+    sphere_index_data.resize( (unsigned int)(theta_parts *
+                              phi_parts *
+                              nr_index_data), 0 );
+    // Iterate through the parts to create vertices.
+    // Create sphere of radius 1.
+    for (unsigned int p = 0; p <= phi_parts; ++p ) {
+      for (unsigned int t = 0; t <= theta_parts; ++t ) {
+        H3DFloat phi = p * inc_phi;
+        bool at_seam = t == theta_parts;
+        H3DFloat theta = ( at_seam ? 0 :t * inc_theta );
 
-				H3DFloat x, y, z;
+        H3DFloat x, y, z;
 
-				x = - H3DSin( phi ) * H3DSin( theta );
-				y = H3DCos( phi );
-				z = - H3DSin( phi ) * H3DCos( theta );
+        x = - H3DSin( phi ) * H3DSin( theta );
+        y = H3DCos( phi );
+        z = - H3DSin( phi ) * H3DCos( theta );
 
-				unsigned int vert_index =
-					(unsigned int)( p * ( theta_parts + 1 ) + t );
-				unsigned int base_data_index =
-					(unsigned int)( vert_index * nr_data_vertices );
-				// Vertex
-				sphere_data[ base_data_index ] = x;
-				sphere_data[ base_data_index + 1 ] = y;
-				sphere_data[ base_data_index + 2 ] = z;
-				// Normal
-				sphere_data[ base_data_index + 3 ] = x;
-				sphere_data[ base_data_index + 4 ] = y;
-				sphere_data[ base_data_index + 5 ] = z;
-				// Texture coordinate
-				sphere_data[ base_data_index + 6 ] =
-					at_seam ? 1 : (GLfloat) (theta / double_pi);
-				sphere_data[ base_data_index + 7 ] =
-					(GLfloat) (1 - phi/ Constants::pi);
-				sphere_data[ base_data_index + 8 ] = 0;
+        unsigned int vert_index =
+          (unsigned int)( p * ( theta_parts + 1 ) + t );
+        unsigned int base_data_index =
+          (unsigned int)( vert_index * nr_data_vertices );
+        // Vertex
+        sphere_data[ base_data_index ] = x;
+        sphere_data[ base_data_index + 1 ] = y;
+        sphere_data[ base_data_index + 2 ] = z;
+        // Normal
+        sphere_data[ base_data_index + 3 ] = x;
+        sphere_data[ base_data_index + 4 ] = y;
+        sphere_data[ base_data_index + 5 ] = z;
+        // Texture coordinate
+        sphere_data[ base_data_index + 6 ] =
+          at_seam ? 1 : (GLfloat) (theta / double_pi);
+        sphere_data[ base_data_index + 7 ] =
+          (GLfloat) (1 - phi/ Constants::pi);
+        sphere_data[ base_data_index + 8 ] = 0;
 
-				if( !at_seam && p != phi_parts ) {
-					// Create indices to define triangles.
-					// If the entire point grid is unfolded onto a flat map then
-					// the triangles created here can be seen as the ones connecting
-					// this point to the three point to the east, south and south-east.
-					// This is the reason why no indices are added for the triangles
-					// at the end of the loop
-					// (there are no more points to the east and south).
-					// First triangle.
-					unsigned int base_index =
-						(unsigned int)( ( p * theta_parts + t ) * nr_index_data );
-					sphere_index_data[ base_index ] = vert_index;
-					sphere_index_data[ base_index + 1 ] =
-						vert_index + (GLuint)theta_parts + 1;
-					sphere_index_data[ base_index + 2 ] = vert_index + 1;
+        if( !at_seam && p != phi_parts ) {
+          // Create indices to define triangles.
+          // If the entire point grid is unfolded onto a flat map then
+          // the triangles created here can be seen as the ones connecting
+          // this point to the three point to the east, south and south-east.
+          // This is the reason why no indices are added for the triangles
+          // at the end of the loop
+          // (there are no more points to the east and south).
+          // First triangle.
+          unsigned int base_index =
+            (unsigned int)( ( p * theta_parts + t ) * nr_index_data );
+          sphere_index_data[ base_index ] = vert_index;
+          sphere_index_data[ base_index + 1 ] =
+            vert_index + (GLuint)theta_parts + 1;
+          sphere_index_data[ base_index + 2 ] = vert_index + 1;
 
-					// Second triangle.
-					sphere_index_data[ base_index + 3 ] = vert_index + 1;
-					sphere_index_data[ base_index + 4 ] =
-						vert_index + (GLuint)theta_parts + 1;
-					sphere_index_data[ base_index + 5 ] =
-						vert_index + (GLuint)theta_parts + 2;
-				}
-			}
-		}
-	}
+          // Second triangle.
+          sphere_index_data[ base_index + 3 ] = vert_index + 1;
+          sphere_index_data[ base_index + 4 ] =
+            vert_index + (GLuint)theta_parts + 1;
+          sphere_index_data[ base_index + 5 ] =
+            vert_index + (GLuint)theta_parts + 2;
+        }
+      }
+    }
+  }
 
-	GLvoid *vertex_pointer = NULL, *normal_pointer = NULL, *texture_pointer = NULL, *index_pointer = NULL;
+  GLvoid *vertex_pointer = NULL, *normal_pointer = NULL, *texture_pointer = NULL, *index_pointer = NULL;
   if( prefer_vertex_buffer_object ) {
     // Use vertex buffer objects to create sphere.
     if( !vbo_initialized ) {
@@ -206,17 +209,17 @@ void Sphere::render() {
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, vbo_id[1] );
     }
 
-		normal_pointer = (GLvoid*)(3*sizeof(GLfloat));
-		texture_pointer = (GLvoid*)(6*sizeof(GLfloat));
-	} else {
-		vector< GLfloat >::iterator start_pointer = sphere_data.begin();
-		vertex_pointer = &(*start_pointer);
-		start_pointer += 3;
-		normal_pointer = &(*start_pointer);
-		start_pointer += 3;
-		texture_pointer = &(*start_pointer);
-		index_pointer = &(*sphere_index_data.begin());
-	}
+    normal_pointer = (GLvoid*)(3*sizeof(GLfloat));
+    texture_pointer = (GLvoid*)(6*sizeof(GLfloat));
+  } else {
+    vector< GLfloat >::iterator start_pointer = sphere_data.begin();
+    vertex_pointer = &(*start_pointer);
+    start_pointer += 3;
+    normal_pointer = &(*start_pointer);
+    start_pointer += 3;
+    texture_pointer = &(*start_pointer);
+    index_pointer = &(*sphere_index_data.begin());
+  }
 
   // Enable all states for vertex buffer objects.
   // Note that the data is interleaved since this supposedly should be
@@ -244,10 +247,12 @@ void Sphere::render() {
   X3DTextureCoordinateNode::disableVBOForActiveTexture();
   glDisableClientState(GL_NORMAL_ARRAY);
   glDisableClientState(GL_VERTEX_ARRAY);
-	if( prefer_vertex_buffer_object ) {
-		glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
-		glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
+  if( prefer_vertex_buffer_object ) {
+    glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+    glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
   }
+  if ( !norm ) 
+    glEnable( GL_NORMALIZE );
 }
 
 void Sphere::traverseSG( TraverseInfo &ti ) {
@@ -357,12 +362,12 @@ bool Sphere::lineIntersect(
                   const Vec3f &from, 
                   const Vec3f &to,    
                   LineIntersectResult &result ) {
-	if( result.detect_pt_device && !result.hasCurrentPointingDevice() ) {
-		// If this function is called because we are detecting pointing device
-		// sensors but there is no current one then there is no use in doing
-		// line intersect on the actual triangles.
-		return false;
-	}
+  if( result.detect_pt_device && !result.hasCurrentPointingDevice() ) {
+    // If this function is called because we are detecting pointing device
+    // sensors but there is no current one then there is no use in doing
+    // line intersect on the actual triangles.
+    return false;
+  }
 
   IntersectionInfo temp_result;
   HAPI::Collision::Sphere temp_sphere( Vec3f( 0.0f, 0.0f, 0.0f ),

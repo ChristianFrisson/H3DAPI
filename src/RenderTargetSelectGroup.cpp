@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -51,9 +51,9 @@ RenderTargetSelectGroup::RenderTargetSelectGroup(
              Inst< SFBound        > _bound,
              Inst< SFVec3f        > _bboxCenter,
              Inst< SFVec3f        > _bboxSize,
-	     Inst< MFInt32        > _renderTargets ) :
+             Inst< MFInt32        > _renderTargets ) :
   X3DGroupingNode( _addChildren, _removeChildren, _children, 
-		   _metadata, _bound, _bboxCenter, _bboxSize ),
+       _metadata, _bound, _bboxCenter, _bboxSize ),
   renderTargets( _renderTargets ),
   support_message_displayed( false ) {
 
@@ -69,8 +69,8 @@ void RenderTargetSelectGroup::render() {
   if( !GLEW_EXT_framebuffer_object ) {
     if( !support_message_displayed ) {
       Console(4) << "Warning: Frame Buffer Objects not supported by your graphics card "
-		 << "(EXT_frame_buffer_object). RenderTargetSelectGroup nodes have no effect. " 
-		 << endl;
+     << "(EXT_frame_buffer_object). RenderTargetSelectGroup nodes have no effect. " 
+     << endl;
       support_message_displayed = true;
     }
     return;
@@ -79,7 +79,7 @@ void RenderTargetSelectGroup::render() {
   if( !GLEW_ARB_draw_buffers ) {
     if( !support_message_displayed ) {
       Console(4) << "Warning: Your graphics card does not support multiple "
-		 << "render targets(ARB_draw_buffers). RenderTargetSelectGroup nodes have no effect. " << endl;
+     << "render targets(ARB_draw_buffers). RenderTargetSelectGroup nodes have no effect. " << endl;
       support_message_displayed = true;
     }
     return;
@@ -111,12 +111,12 @@ void RenderTargetSelectGroup::render() {
     for( size_t i = 0; i < render_targets.size(); ++i ) {
       int target = render_targets[i];
       if( target >= 0 && target < max_nr_draw_buffers ) {
-	draw_buffers.get()[target] = GL_COLOR_ATTACHMENT0_EXT + target;
-	if( target >= draw_buffer_size ) draw_buffer_size = target + 1;
+  draw_buffers.get()[target] = GL_COLOR_ATTACHMENT0_EXT + target;
+  if( target >= draw_buffer_size ) draw_buffer_size = target + 1;
       } else {
-	Console(4) << "Warning: Invalid render target: " << target 
-		   << ". Targets supported by your graphics card are between 0 and "
-		   << max_nr_draw_buffers - 1 << "( in RenderTargetSelectGroup). " << endl;
+  Console(4) << "Warning: Invalid render target: " << target 
+       << ". Targets supported by your graphics card are between 0 and "
+       << max_nr_draw_buffers - 1 << "( in RenderTargetSelectGroup). " << endl;
       }
 
     }

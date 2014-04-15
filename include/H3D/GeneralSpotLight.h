@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -58,20 +58,20 @@ namespace H3D {
 
     /// Constructor.    
     GeneralSpotLight( Inst< SFNode >  _metadata         = 0,
-		      Inst< SFFloat>  _ambientIntensity = 0,
-		      Inst< SFColor>  _color            = 0,
-		      Inst< SFFloat>  _intensity        = 0,
-		      Inst< SFBool >  _global           = 0,
-		      Inst< SFBool >  _on               = 0,
-		      Inst< SFVec3f>  _attenuation      = 0,
-		      Inst< SFFloat>  _beamWidth        = 0,
-		      Inst< SFFloat>  _cutOffAngle      = 0,
-		      Inst< SFVec3f>  _direction        = 0,
-		      Inst< SFVec3f>  _location         = 0,
-		      Inst< SFFloat>  _radius           = 0,
-		      Inst< SFColor>  _ambientColor     = 0,
-		      Inst< SFColor>  _specularColor    = 0,
-		      Inst< SFFloat > _specularIntensity = 0 );
+          Inst< SFFloat>  _ambientIntensity = 0,
+          Inst< SFColor>  _color            = 0,
+          Inst< SFFloat>  _intensity        = 0,
+          Inst< SFBool >  _global           = 0,
+          Inst< SFBool >  _on               = 0,
+          Inst< SFVec3f>  _attenuation      = 0,
+          Inst< SFFloat>  _beamWidth        = 0,
+          Inst< SFFloat>  _cutOffAngle      = 0,
+          Inst< SFVec3f>  _direction        = 0,
+          Inst< SFVec3f>  _location         = 0,
+          Inst< SFFloat>  _radius           = 0,
+          Inst< SFColor>  _ambientColor     = 0,
+          Inst< SFColor>  _specularColor    = 0,
+          Inst< SFFloat > _specularIntensity = 0 );
 
     /// Return the OpenGL parameters for this light.
     GLLightInfo getGLLightInfo();

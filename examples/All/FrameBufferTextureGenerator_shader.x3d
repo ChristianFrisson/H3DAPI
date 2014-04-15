@@ -4,7 +4,7 @@
     <meta name='title' content='FrameBufferTextureGenerator_shader.x3d'/>
     <meta name='description' content='H3DAPI FrameBufferTextureGenerator example. It shows how to use it together with glsl shaders to write to different output textures using gl_FragData. It shows three rectangles with the depth buffer textured on one and two color buffers on the other ones. Each is colored differently according to the glsl shader. This example uses H3DAPI node(s) and runs on H3DAPI-supported browsers only. Visit http://www.h3d.org for more information and to download an H3DAPI-
       compatible browser. '/>
-    <meta name='author' content='SenseGraphics AB, 2006-2008'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
   
   <Scene>

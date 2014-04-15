@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -52,7 +52,7 @@ MultiTextureTransform::MultiTextureTransform(
   
   type_name = "MultiTextureTransform";
   database.initFields( this );
-	textureTransform->route( displayList, id );
+  textureTransform->route( displayList, id );
 }
 
 
@@ -82,7 +82,7 @@ void MultiTextureTransform::renderForTextureUnits( unsigned int start_unit,
   for( unsigned int i = start_unit; i <= end_unit; ++i ) {
     X3DTextureTransformNode *tt = textureTransform->getValueByIndex( i );
     if( tt ) tt->renderForTextureUnit( i );
-  }	  
+  }
 }
 
 void MultiTextureTransform::render() {

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -36,8 +36,8 @@
 #ifdef HAVE_FPARSER
 
 namespace HAPI {
-	// Forward declaration.
-	class ParsedFunction;
+  // Forward declaration.
+  class ParsedFunction;
 }
 
 namespace H3D {

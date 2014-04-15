@@ -89,9 +89,9 @@ ENDIF( TARGET H3DAPI )
 
 # Optional extra library. Makes is possible to used GLUT windows handling with H3D API.
 IF(WIN32)
-  FIND_PACKAGE(GLUTWin)
+  FIND_PACKAGE(GLUTWin REQUIRED)
 ELSE(WIN32)
-  FIND_PACKAGE(GLUT)
+  FIND_PACKAGE(GLUT REQUIRED)
 ENDIF(WIN32)
 
 IF(GLUT_FOUND)

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -83,21 +83,21 @@ namespace H3D {
     
     /// Constructor.
     Background( Inst< SFSetBind > _set_bind    = 0,
-		Inst< SFNode    > _metadata    = 0,
-		Inst< SFTime    > _bindTime    = 0,
-		Inst< SFBool    > _isBound     = 0,
-		Inst< DisplayList > _displayList = 0,
-		Inst< MFFloat   > _groundAngle = 0,
-		Inst< MFColor   > _groundColor = 0,
-		Inst< MFFloat   > _skyAngle    = 0,
-		Inst< MFColor   > _skyColor    = 0,
-		Inst< MFString  > _backUrl     = 0,
-		Inst< MFString  > _frontUrl    = 0,
-		Inst< MFString  > _leftUrl     = 0,
-		Inst< MFString  > _rightUrl    = 0,
-		Inst< MFString  > _topUrl      = 0,
-		Inst< MFString  > _bottomUrl   = 0,
-		Inst< SFFloat   > _transparency   = 0 );
+    Inst< SFNode    > _metadata    = 0,
+    Inst< SFTime    > _bindTime    = 0,
+    Inst< SFBool    > _isBound     = 0,
+    Inst< DisplayList > _displayList = 0,
+    Inst< MFFloat   > _groundAngle = 0,
+    Inst< MFColor   > _groundColor = 0,
+    Inst< MFFloat   > _skyAngle    = 0,
+    Inst< MFColor   > _skyColor    = 0,
+    Inst< MFString  > _backUrl     = 0,
+    Inst< MFString  > _frontUrl    = 0,
+    Inst< MFString  > _leftUrl     = 0,
+    Inst< MFString  > _rightUrl    = 0,
+    Inst< MFString  > _topUrl      = 0,
+    Inst< MFString  > _bottomUrl   = 0,
+    Inst< SFFloat   > _transparency   = 0 );
 
     /// Renders the background with OpenGL.
     virtual void render();

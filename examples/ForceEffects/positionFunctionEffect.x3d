@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='positionFunctionEffect.x3d'/>
     <meta name='description' content='Demos the PositionFunctionEffect node. Requires a haptics device.'/>
-    <meta name='editors' content='SenseGraphics AB, 2007-2008'/>
+    <meta name='editors' content='SenseGraphics AB, 2007-2014'/>
   </head>
   <Scene>
     <ToggleGroup DEF="TG" hapticsOn="false">

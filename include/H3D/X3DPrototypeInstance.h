@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -79,12 +79,12 @@ namespace H3D {
     
     /// Get the node that is the internal scenegraph of the prototype.
     virtual Node *getPrototypedNode() {
-			X3DPrototypeInstance *pi = dynamic_cast< X3DPrototypeInstance * >( prototyped_node.get() );
-			if( pi ) {
-				return pi->getPrototypedNode();
-			} else {
-				return prototyped_node.get();
-			}
+      X3DPrototypeInstance *pi = dynamic_cast< X3DPrototypeInstance * >( prototyped_node.get() );
+      if( pi ) {
+        return pi->getPrototypedNode();
+      } else {
+        return prototyped_node.get();
+      }
     }
 
     /// Set the node that is the internal scenegraph of the prototype.

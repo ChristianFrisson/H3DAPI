@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -195,7 +195,7 @@ void PlanarReflector::renderPostViewpoint ( X3DChildNode *n,
   // set up clip plane to clip everything behind the mirror
   glMultMatrixf( t );
   GLint front_face;
-	glGetIntegerv( GL_FRONT_FACE, &front_face );
+  glGetIntegerv( GL_FRONT_FACE, &front_face );
   // Make sure that there are enough free clip plane indicies and
   // use the correct one and increase nr_active_clip_planes so that
   // ClipPlane nodes work fine.

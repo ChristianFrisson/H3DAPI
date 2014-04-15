@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -123,8 +123,8 @@ void NoiseTexture::SFImage::update() {
   H3DFloat perlinValue;
   H3DFloat perlinGrayValue;
 
-	H3DFloat width_minus_1 = H3DFloat( width-1 );
-	H3DFloat height_minus_1 = H3DFloat( height-1 );
+  H3DFloat width_minus_1 = H3DFloat( width-1 );
+  H3DFloat height_minus_1 = H3DFloat( height-1 );
   for( y = 0; y < height; ++y ) {
     for( x = 0; x < width; ++x) {
       H3DFloat x_norm = x/width_minus_1;
@@ -150,7 +150,7 @@ void NoiseTexture::SFImage::update() {
   }
   value = new PixelImage( width, height, 1, 8, 
                           PixelImage::LUMINANCE,
-                          PixelImage::UNSIGNED, data, false, Vec3f(0.01, 0.01, 0.01) );
+                          PixelImage::UNSIGNED, data, false, Vec3f(0.01f, 0.01f, 0.01f) );
 }
 
 

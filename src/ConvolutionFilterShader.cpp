@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    Any use, or distribution, of this file without permission from the
 //    copyright holders is strictly prohibited. Please contact SenseGraphics,
@@ -91,7 +91,7 @@ void ConvolutionFilterShader::traverseSG( TraverseInfo &ti ) {
   RenderTargetTexture *rtt = dynamic_cast< RenderTargetTexture* >( texture->getValue() );
   Image *image = NULL;
   if( t ){
-	image = t->image->getValue();
+  image = t->image->getValue();
 
   }
 
@@ -196,7 +196,7 @@ string ConvolutionFilterShader::getFragmentShaderString() {
       s << "  const int max_index_v = 0; " << endl;
     } else {
       if( t != "FULL" ) {
-	// print error message
+      // print error message
       }
       s << "  const int min_index_h = " << -(kernel_size - 1)/2<< ";" << endl;
       s << "  const int max_index_h = " <<  (kernel_size - 1)/2<< ";" << endl;

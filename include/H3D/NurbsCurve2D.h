@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -39,10 +39,10 @@ namespace H3D {
   /// \ingroup X3DNode
   /// \class NurbsCurve2D
   /// \brief The NurbsCurve2D node defines a trimming segment that is part of a
-	/// trimming contour in the u,v domain of the surface.
-	/// NurbsCurve2D nodes are used as children of the Contour2D group.
-	/// 
-	/// <b>Examples:</b>
+  /// trimming contour in the u,v domain of the surface.
+  /// NurbsCurve2D nodes are used as children of the Contour2D group.
+  /// 
+  /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/NurbsTrimmedSurface.x3d">NurbsTrimmedSurface.x3d</a>
   ///     ( <a href="examples/NurbsTrimmedSurface.x3d.html">Source</a> )
   ///
@@ -54,78 +54,78 @@ namespace H3D {
   public:
 
     /// Constructor.
-    NurbsCurve2D( Inst< SFNode	 > _metadata		 = 0,
-									Inst< MFVec2d  > _controlPoint = 0,
-									Inst< SFInt32	 > _tessellation = 0,
-									Inst< MFDouble > _weight			 = 0,
-									Inst< MFDouble > _knot				 = 0,
-									Inst< SFInt32	 > _order				 = 0,
-									Inst< SFBool	 > _closed			 = 0 );
+    NurbsCurve2D( Inst< SFNode   > _metadata     = 0,
+                  Inst< MFVec2d  > _controlPoint = 0,
+                  Inst< SFInt32  > _tessellation = 0,
+                  Inst< MFDouble > _weight       = 0,
+                  Inst< MFDouble > _knot         = 0,
+                  Inst< SFInt32  > _order        = 0,
+                  Inst< SFBool   > _closed       = 0 );
 
-		/// The tessellation field gives a hint to the curve tessellator by setting
-		/// an absolute number of subdivision steps. These values shall be greater 
-		/// than or equal to the Order field. A value of 0 indicates that the 
-		/// browser choose a suitable tessellation. Interpretation of values 
-		/// below 0 is implementation dependent.
+    /// The tessellation field gives a hint to the curve tessellator by setting
+    /// an absolute number of subdivision steps. These values shall be greater 
+    /// than or equal to the Order field. A value of 0 indicates that the 
+    /// browser choose a suitable tessellation. Interpretation of values 
+    /// below 0 is implementation dependent.
     ///
     /// <b>Access type:</b> inputOutput \n
-		/// <b>Default value:</b> 0 \n
+    /// <b>Default value:</b> 0 \n
     /// 
     /// \dotfile NurbsCurve2D_tessellation.dot
     auto_ptr< SFInt32 > tessellation;
 
     /// A weight value that shall be greater than zero is assigned to each 
-		/// controlPoint. The ordering of the values is equivalent to the ordering
-		/// of the control point values. The number of values shall be identical 
-		/// to the number of control points. If the length of the weight vector 
-		/// is 0, the default weight 1.0 is assumed for each control point, thus
-		/// defining a non-Rational curve. If the number of weight values is less
-		/// than the number of control points, all weight values shall be ignored 
-		/// and a value of 1.0 shall be used.
+    /// controlPoint. The ordering of the values is equivalent to the ordering
+    /// of the control point values. The number of values shall be identical 
+    /// to the number of control points. If the length of the weight vector 
+    /// is 0, the default weight 1.0 is assumed for each control point, thus
+    /// defining a non-Rational curve. If the number of weight values is less
+    /// than the number of control points, all weight values shall be ignored 
+    /// and a value of 1.0 shall be used.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// 
     /// \dotfile NurbsCurve2D_weight.dot
     auto_ptr< MFDouble >  weight;
 
-		/// A weight value that shall be greater than zero is assigned to each
-		/// controlPoint. The ordering of the values is equivalent to the ordering
-		/// of the control point values. The number of values shall be identical to
-		/// the number of control points. If the length of the weight vector is 0, 
-		/// the default weight 1.0 is assumed for each control point, thus defining 
-		/// a non-Rational curve. If the number of weight values is less than the 
-		/// number of control points, all weight values shall be ignored and a 
-		/// value of 1.0 shall be used.
+    /// A weight value that shall be greater than zero is assigned to each
+    /// controlPoint. The ordering of the values is equivalent to the ordering
+    /// of the control point values. The number of values shall be identical to
+    /// the number of control points. If the length of the weight vector is 0, 
+    /// the default weight 1.0 is assumed for each control point, thus defining 
+    /// a non-Rational curve. If the number of weight values is less than the 
+    /// number of control points, all weight values shall be ignored and a 
+    /// value of 1.0 shall be used.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// 
     /// \dotfile NurbsCurve2D_knot.dot
     auto_ptr< MFDouble >  knot;
 
-		/// Defines the order of curve. From a mathematical point of view, the 
-		/// curve is defined by a polynomial of the degree order?1. The value
-		/// of order shall be greater than or equal to 2. An implementation may
-		/// limit order to a certain number. If it does so, then a warning shall
-		/// be generated and the surface not displayed. An implementation shall at
-		/// least support orders 2,3 and 4. The number of control points shall be 
-		/// at least equal to the order of the curve. The order defines the number
-		/// of adjacent control points that influence a given control point.
+    /// Defines the order of curve. From a mathematical point of view, the 
+    /// curve is defined by a polynomial of the degree order?1. The value
+    /// of order shall be greater than or equal to 2. An implementation may
+    /// limit order to a certain number. If it does so, then a warning shall
+    /// be generated and the surface not displayed. An implementation shall at
+    /// least support orders 2,3 and 4. The number of control points shall be 
+    /// at least equal to the order of the curve. The order defines the number
+    /// of adjacent control points that influence a given control point.
     ///
     /// <b>Access type:</b> inputOutput \n
-		/// <b>Default value:</b> 3 \n
+    /// <b>Default value:</b> 3 \n
     /// 
     /// \dotfile NurbsCurve2D_order.dot
     auto_ptr< SFInt32 >  order;
 
-		/// closed define whether or not to evaluate the curve as closed.
+    /// closed define whether or not to evaluate the curve as closed.
     ///
     /// <b>Access type:</b> inputOutput \n
-		/// <b>Default value:</b> FALSE \n
+    /// <b>Default value:</b> FALSE \n
     /// 
     /// \dotfile NurbsCurve2D_closed.dot
     auto_ptr< SFBool >  closed;
 
-		/// The H3DNodeDatabase for this node.
+    /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   };
 }

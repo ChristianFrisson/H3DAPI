@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -152,7 +152,7 @@ void Composed3DTexture::SFImage::update() {
             bytes_per_pixel % 8 == 0 ? 
             bytes_per_pixel / 8 : bytes_per_pixel / 8 + 1;
       
-	        unsigned int new_size = width*height*bytes_per_pixel;
+          unsigned int new_size = width*height*bytes_per_pixel;
           void * new_data = malloc( new_size );
           gluScaleImage( t->glPixelFormat( tex_image ), 
                          tex_image->width(),
@@ -172,16 +172,16 @@ void Composed3DTexture::SFImage::update() {
        } else {
          if(pixel_size.x == 1 ) pixel_size = tex_image->pixelSize();
        }
-	     memcpy( data + width * height * i * bytes_per_pixel, 
-		           image_data, 
-		           width * height * bytes_per_pixel );
+       memcpy( data + width * height * i * bytes_per_pixel, 
+               image_data, 
+               width * height * bytes_per_pixel );
 
       }
     }
   }
 
   value = new PixelImage( width, height, depth, 
-			                    bits_per_pixel, pixel_type, Image::UNSIGNED, 
-			                    data, false, pixel_size );
+                          bits_per_pixel, pixel_type, Image::UNSIGNED, 
+                          data, false, pixel_size );
 }
 

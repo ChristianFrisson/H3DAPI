@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -30,10 +30,12 @@
 
 
 #include <H3D/RazerHydraSensor.h>
-
 #include <H3D/Scene.h>
 
 #ifdef HAVE_SIXENSE
+#ifdef H3D_WINDOWS
+#include <H3DUtil/DynamicLibrary.h>
+#endif
 #include <sixense.h>
 #endif
 
@@ -85,48 +87,16 @@ namespace RazerHydraSensorInternal {
   H3D_API_EXCEPTION( CouldNotInitRazerHydra );
   H3D_API_EXCEPTION( CreateWindowError );
   H3D_API_EXCEPTION( WindowGetMessageError );
-
-
-  /// The function used as the thread for reading data from
-  /// the Razer Hydra device.
-  PeriodicThread::CallbackCode razerHydraCallback( void* data ) {
-    
-      //pthread_setcanceltype( PTHREAD_CANCEL_ASYNCHRONOUS, NULL );
-      // the creator of this thread
-      RazerHydraSensor *hydra_sensor = 
-        static_cast< RazerHydraSensor * >( data );
-
-//      sixenseAllControllerData controller_data[3];
-
-  //    sixenseGetAllData( 3, controller_data ); 
-
-
-/*
-          Vec3f c0_position( hydra_sensor->controller_data.controllers[0].pos[0] / 1000,
-                       hydra_sensor->controller_data.controllers[0].pos[1] / 1000,
-                       hydra_sensor->controller_data.controllers[0].pos[2] / 1000 );
-
-    Vec3f c1_position( hydra_sensor->controller_data.controllers[1].pos[0] / 1000,
-                       hydra_sensor->controller_data.controllers[1].pos[1] / 1000,
-                       hydra_sensor->controller_data.controllers[1].pos[2] / 1000 );
-
-    hydra_sensor->c0Position->setValue( c0_position, hydra_sensor->id );
-    */
-
-
-   // hydra_sensor->controller_data->controllers[0]
-    //      Console(4) << "0(pos): " << controller_data[0].controllers[0].pos[0] << " " << controller_data[0].controllers[0].pos[1] << " " << controller_data[0].controllers[0].pos[2] << endl;
-      //    Console(4) << "1(pos): " << controller_data[0].controllers[1].pos[0] << " " << controller_data[0].controllers[1].pos[1] << " " << controller_data[0].controllers[1].pos[2] << endl;
-        //  Console(4) << "2(pos): " << controller_data[0].controllers[2].pos[0] << " " << controller_data[0].controllers[2].pos[1] << " " << controller_data[0].controllers[2].pos[2] <<endl;
-         // Console(4) << "3(pos): " << controller_data[0].controllers[3].pos[0] << " " << controller_data[0].controllers[3].pos[1] << " " << controller_data[0].controllers[3].pos[2] <<endl;
-
-
-      return PeriodicThread::CALLBACK_CONTINUE; 
-  }
 }
 
+#ifdef HAVE_SIXENSE
+auto_ptr< H3DUtil::PeriodicThread > RazerHydraSensor::thread_handle = auto_ptr< H3DUtil::PeriodicThread >(NULL);
+list< RazerHydraSensor * > RazerHydraSensor::razer_hydra_instances = list< RazerHydraSensor * >();
+vector< unsigned char > RazerHydraSensor::last_sequence_number = vector< unsigned char >();
+#endif
+
 RazerHydraSensor::RazerHydraSensor( 
-              Inst< SFBool                > _enabled,
+              Inst< EnableHydraSensor     > _enabled,
               Inst< SFNode                > _metadata,
               Inst< SFBool                > _isActive,
 
@@ -196,18 +166,11 @@ X3DSensorNode( _enabled, _metadata, _isActive ),
     c1Button4( _c1Button4 ),
     c1ButtonStart( _c1ButtonStart ),
     c1ButtonBumper( _c1ButtonBumper ),
-    c1ButtonJoystick( _c1ButtonJoystick ),
-    update( new Update ),
-    thread_motion_event( false ),
-    thread_is_active( false ) {
-  
+    c1ButtonJoystick( _c1ButtonJoystick ) {
   type_name = "RazerHydraSensor";
 
   database.initFields( this );
-  
-  update->setOwner(this);
-  Scene::time->routeNoEvent(update);
-  
+
   c0Trigger->setValue( 0, id );
   c0Buttons->setValue( 0, id );
   c0Connected->setValue( false, id );
@@ -222,84 +185,211 @@ X3DSensorNode( _enabled, _metadata, _isActive ),
   c1WhichHand->setValue( 0, id );
   c1HemiTrackingEnabled->setValue( false, id );
   
-#ifdef HAVE_SIXENSE
-  thread_handle.reset( 
-          new H3DUtil::PeriodicThread( H3DUtil::PeriodicThread::NORMAL_PRIORITY, 
-                                                                   60 ) );
-  //thread_handle->asynchronousCallback( RazerHydraSensorInternal::razerHydraCallback, this );
-  thread_handle->setThreadName( "RazerHydraSensor com thread" );
-  sixenseInit();
-#else
+#ifndef HAVE_SIXENSE
   Console(4) << "Warning: H3D API compiled without Sixense SDK. RazerHydraSensor node "
              << "will be unusable." << endl;
 #endif
 }
 
-void RazerHydraSensor::updateValues(){
-  using namespace RazerHydraSensorInternal;
+RazerHydraSensor::~RazerHydraSensor() {
+  enabled->setValue( false );
+}
+
+void RazerHydraSensor::EnableHydraSensor::onValueChange( const bool &new_value ) {
 #ifdef HAVE_SIXENSE
-  if( isActive->getValue() != thread_is_active )
-    isActive->setValue( thread_is_active, id );
-
-    sixenseAllControllerData controller_data[3];
-
-    //sixenseGetAllData( 3, controller_data ); 
-
-    sixenseGetAllNewestData( controller_data );
-
-    Vec3f c0_position( controller_data[0].controllers[0].pos[0] / 1000,
-                       controller_data[0].controllers[0].pos[1] / 1000,
-                       controller_data[0].controllers[0].pos[2] / 1000 );
-
-    Vec3f c1_position( controller_data[0].controllers[1].pos[0] / 1000,
-                       controller_data[0].controllers[1].pos[1] / 1000,
-                       controller_data[0].controllers[1].pos[2] / 1000 );
-
-    Quaternion c0_orientation( controller_data[0].controllers[0].rot_quat[0],
-                               controller_data[0].controllers[0].rot_quat[1],
-                               controller_data[0].controllers[0].rot_quat[2],
-                               controller_data[0].controllers[0].rot_quat[3]);
-
-    Quaternion c1_orientation( controller_data[0].controllers[1].rot_quat[0],
-                               controller_data[0].controllers[1].rot_quat[1],
-                               controller_data[0].controllers[1].rot_quat[2],
-                               controller_data[0].controllers[1].rot_quat[3]);
-
-    c0Position->setValue( c0_position, id );
-    c1Position->setValue( c1_position, id );
-    Matrix3f m( controller_data[0].controllers[0].rot_mat[0][0], controller_data[0].controllers[0].rot_mat[1][0], controller_data[0].controllers[0].rot_mat[2][0],
-                controller_data[0].controllers[0].rot_mat[0][1], controller_data[0].controllers[0].rot_mat[1][1], controller_data[0].controllers[0].rot_mat[2][1], 
-                controller_data[0].controllers[0].rot_mat[0][2], controller_data[0].controllers[0].rot_mat[1][2], controller_data[0].controllers[0].rot_mat[2][2] );
-   // Rotation r(m);
-    c0Orientation->setValue( Rotation(c0_orientation), id );
-    c1Orientation->setValue( Rotation(c1_orientation), id );
-    c0Trigger->setValue( controller_data[0].controllers[0].trigger, id );
-    c1Trigger->setValue( controller_data[0].controllers[1].trigger, id );
- //   Console(4) << m << endl << endl;
-    unsigned int c0_buttons = controller_data[0].controllers[0].buttons;
-    unsigned int c1_buttons = controller_data[0].controllers[1].buttons;
-
-    c0Buttons->setValue( c0_buttons, id );
-    c1Buttons->setValue( c1_buttons, id );
-
-    c0Button1->setValue( c0_buttons & SIXENSE_BUTTON_1, id );
-    c0Button2->setValue( c0_buttons & SIXENSE_BUTTON_2, id );
-    c0Button3->setValue( c0_buttons & SIXENSE_BUTTON_3, id );
-    c0Button4->setValue( c0_buttons & SIXENSE_BUTTON_4, id );
-    c0ButtonStart->setValue( c0_buttons & SIXENSE_BUTTON_START, id );
-    c0ButtonBumper->setValue( c0_buttons & SIXENSE_BUTTON_BUMPER, id );
-    c0ButtonJoystick->setValue( c0_buttons & SIXENSE_BUTTON_JOYSTICK, id );
-
-    c1Button1->setValue( c1_buttons & SIXENSE_BUTTON_1, id );
-    c1Button2->setValue( c1_buttons & SIXENSE_BUTTON_2, id );
-    c1Button3->setValue( c1_buttons & SIXENSE_BUTTON_3, id );
-    c1Button4->setValue( c1_buttons & SIXENSE_BUTTON_4, id );
-    c1ButtonStart->setValue( c1_buttons & SIXENSE_BUTTON_START, id );
-    c1ButtonBumper->setValue( c1_buttons & SIXENSE_BUTTON_BUMPER, id );
-    c1ButtonJoystick->setValue( c1_buttons & SIXENSE_BUTTON_JOYSTICK, id );
-  //RazerHydraSensorInternal::razerHydraCallback( this );
+#ifdef H3D_WINDOWS
+  if( DynamicLibrary::load(
+#ifdef H3D_WIN32
+                            "sixense.dll"
+#else
+                            "sixense_x64.dll"
+#endif
+                                          ) ) {
+#endif
+  RazerHydraSensor * rhs = static_cast< RazerHydraSensor * >(getOwner());
+  if( new_value ) {
+    if( !thread_handle.get() ) {
+      int sixense_initialized = sixenseInit();
+      if( sixense_initialized == SIXENSE_FAILURE ) {
+        Console(4) << "Warning: Could not initialize Sixense SDK. RazerHydraSensor node "
+                   << "will be unusable." << endl;
+        rhs->isActive->setValue( false, rhs->id );
+        return;
+      }
+      razer_hydra_instances.push_back( rhs );
+      thread_handle.reset( 
+            new H3DUtil::PeriodicThread( H3DUtil::PeriodicThread::NORMAL_PRIORITY,
+                                                                    60 ) );
+      thread_handle->setThreadName( "RazerHydraSensor com thread" );
+      thread_handle->asynchronousCallback( razerHydraCallback, NULL );
+    } else
+      thread_handle->synchronousCallback( RazerHydraSensor::addHydraInstanceCB, rhs );
+    rhs->isActive->setValue( true, rhs->id );
+  } else {
+    thread_handle->synchronousCallback( RazerHydraSensor::removeHydraInstanceCB, rhs );
+    if( razer_hydra_instances.empty() && thread_handle.get() ) {
+      thread_handle.reset( NULL );
+      sixenseExit();
+    }
+    rhs->isActive->setValue( false, rhs->id );
+  }
+#ifdef H3D_WINDOWS
+  } else {
+    Console(4) << "Warning: Sixense SDK not found on this system. "
+               << "RazerHydraSensor node will be unusable until sixense.dll "
+               << "is added to PATH environment variable." << endl;
+  }
+#endif
 #endif
 }
 
+void RazerHydraSensor::traverseSG( TraverseInfo &ti ) {
+  X3DSensorNode::traverseSG( ti );
+#ifdef HAVE_SIXENSE
+  if( enabled->getValue() && isActive->getValue() ) {
+    list< RazerHydraData > tmp_hydra_data;
+    data_lock.lock();
+    tmp_hydra_data.swap( hydra_data );
+    data_lock.unlock();
+    while( !tmp_hydra_data.empty() ) {
+      RazerHydraData &current_data = tmp_hydra_data.front();
+      if( current_data.controller == 0 ) {
+        c0Connected->setValue( current_data.connected, id );
+        if( current_data.connected ) {
+          c0Position->setValue( current_data.position, id );
+          c0Orientation->setValue( current_data.orientation, id );
+          c0Joystick->setValue( current_data.joystick, id );
+          c0Trigger->setValue( current_data.trigger, id );
+          c0Buttons->setValue( current_data.buttons, id );
+          c0Docked->setValue( current_data.docked, id );
+          c0WhichHand->setValue( current_data.which_hand, id );
+          c0HemiTrackingEnabled->setValue( current_data.hemi_tracking_enabled, id );
+          c0Button1->setValue( (current_data.buttons & SIXENSE_BUTTON_1) > 0, id );
+          c0Button2->setValue( (current_data.buttons & SIXENSE_BUTTON_2) > 0, id );
+          c0Button3->setValue( (current_data.buttons & SIXENSE_BUTTON_3) > 0, id );
+          c0Button4->setValue( (current_data.buttons & SIXENSE_BUTTON_4) > 0, id );
+          c0ButtonStart->setValue( (current_data.buttons & SIXENSE_BUTTON_START) > 0, id );
+          c0ButtonBumper->setValue( (current_data.buttons & SIXENSE_BUTTON_BUMPER) > 0, id );
+          c0ButtonJoystick->setValue( (current_data.buttons & SIXENSE_BUTTON_JOYSTICK) > 0, id );
+        }
+      } else if( current_data.controller == 1 ) {
+        c1Connected->setValue( current_data.connected, id );
+        if( current_data.connected ) {
+          c1Position->setValue( current_data.position, id );
+          c1Orientation->setValue( current_data.orientation, id );
+          c1Joystick->setValue( current_data.joystick, id );
+          c1Trigger->setValue( current_data.trigger, id );
+          c1Buttons->setValue( current_data.buttons, id );
+          c1Docked->setValue( current_data.docked, id );
+          c1WhichHand->setValue( current_data.which_hand, id );
+          c1HemiTrackingEnabled->setValue( current_data.hemi_tracking_enabled, id );
+          c1Button1->setValue( (current_data.buttons & SIXENSE_BUTTON_1) > 0, id );
+          c1Button2->setValue( (current_data.buttons & SIXENSE_BUTTON_2) > 0, id );
+          c1Button3->setValue( (current_data.buttons & SIXENSE_BUTTON_3) > 0, id );
+          c1Button4->setValue( (current_data.buttons & SIXENSE_BUTTON_4) > 0, id );
+          c1ButtonStart->setValue( (current_data.buttons & SIXENSE_BUTTON_START) > 0, id );
+          c1ButtonBumper->setValue( (current_data.buttons & SIXENSE_BUTTON_BUMPER) > 0, id );
+          c1ButtonJoystick->setValue( (current_data.buttons & SIXENSE_BUTTON_JOYSTICK) > 0, id );
+        }
+      } else {
+        Console(3) << "Warning: Developer forgot to take care of a new case of controller index for RazerHydraSensor " << getName() << " make sure the lazy **** fixes it." << endl;
+      }
+      tmp_hydra_data.pop_front();
+    }
+  }
+#endif
+}
 
+#ifdef HAVE_SIXENSE
+void RazerHydraSensor::transferValues( const vector< RazerHydraData > &new_data ) {
+  // Only call this function when new_data is not empty.
+  data_lock.lock();
+  for( int i = new_data.size() -1; i >= 0; --i )
+    hydra_data.push_back( new_data[i] );
+  data_lock.unlock();
+}
 
+PeriodicThread::CallbackCode RazerHydraSensor::addHydraInstanceCB( void *data ) {
+  RazerHydraSensor * hydra_to_add = static_cast< RazerHydraSensor * >(data);
+  if( find( razer_hydra_instances.begin(),
+      razer_hydra_instances.end(),
+      hydra_to_add ) == razer_hydra_instances.end() ) {
+    razer_hydra_instances.push_back( hydra_to_add );
+  }
+  return PeriodicThread::CALLBACK_DONE;
+}
+
+PeriodicThread::CallbackCode RazerHydraSensor::removeHydraInstanceCB( void *data ) {
+  razer_hydra_instances.remove( static_cast< RazerHydraSensor * >(data) );
+  return PeriodicThread::CALLBACK_DONE;
+}
+
+PeriodicThread::CallbackCode RazerHydraSensor::razerHydraCallback( void* data ) {
+  vector< RazerHydraData > razer_hydra_datas;
+  vector< unsigned char > next_last_sequence_number;
+  vector< bool > controller_updated;
+  controller_updated.resize( 2, false );
+  for( unsigned int i = 0; i < 10; ++i ) {
+    bool all_controller_updated = true;
+    for( unsigned int j = 0; j < controller_updated.size(); ++j )
+      if( !controller_updated[j] ) {
+        all_controller_updated = false;
+        break;
+      }
+    if( all_controller_updated )
+      break;
+    sixenseAllControllerData controller_data;
+    int got_values = sixenseGetAllData( i, &controller_data );
+    if( got_values == SIXENSE_FAILURE )
+      continue;
+    // Currently we only check two controllers, since that is all
+    // our razerHydraSensor has.
+    for( unsigned int j = 0; j < 2; ++j ) {
+      // The check of hardware_revision is basically a "hack way" to figure out if the
+      // returned data is valid, since it seems like the razor hydra returns a lot of
+      // 0 positions for the first frames and I found no other way to test for that.
+      if( controller_updated[j] )
+        continue;
+      if( next_last_sequence_number.size() <= j ) {
+        next_last_sequence_number.resize( j + 1 );
+        next_last_sequence_number[j] = controller_data.controllers[j].sequence_number;
+      }
+      if( last_sequence_number.size() <= j ) {
+        last_sequence_number.resize( j + 1 );
+        last_sequence_number[j] = controller_data.controllers[j].sequence_number - 1;
+      }
+      RazerHydraData razer_hydra_data;
+      razer_hydra_data.controller = j;
+      razer_hydra_data.position = Vec3f( controller_data.controllers[j].pos[0] / 1000,
+                                         controller_data.controllers[j].pos[1] / 1000,
+                                         controller_data.controllers[j].pos[2] / 1000 );
+      // Rotation r(m);
+      razer_hydra_data.orientation = Rotation(Quaternion( controller_data.controllers[j].rot_quat[0],
+                                                          controller_data.controllers[j].rot_quat[1],
+                                                          controller_data.controllers[j].rot_quat[2],
+                                                          controller_data.controllers[j].rot_quat[3]));
+      razer_hydra_data.trigger = controller_data.controllers[j].trigger;
+      razer_hydra_data.buttons = controller_data.controllers[j].buttons;
+      razer_hydra_data.joystick = Vec2f( controller_data.controllers[j].joystick_x,
+                                         controller_data.controllers[j].joystick_y );
+      razer_hydra_data.connected = controller_data.controllers[j].enabled == 1;
+      razer_hydra_data.docked = controller_data.controllers[j].is_docked == 1;
+      razer_hydra_data.hemi_tracking_enabled = controller_data.controllers[j].hemi_tracking_enabled == 1;
+      razer_hydra_data.which_hand = controller_data.controllers[j].which_hand;
+      razer_hydra_datas.push_back( razer_hydra_data );
+      if( (unsigned char)(last_sequence_number[j] + 1) == controller_data.controllers[j].sequence_number ) {
+        controller_updated[j] = true;
+      }
+    }
+  }
+  if( !next_last_sequence_number.empty() )
+    next_last_sequence_number.swap( last_sequence_number );
+  if( !razer_hydra_datas.empty() ) {
+    for( list< RazerHydraSensor * >::iterator i = razer_hydra_instances.begin();
+         i != razer_hydra_instances.end(); ++i ) {
+      (*i)->transferValues( razer_hydra_datas );
+    }
+  }
+  return PeriodicThread::CALLBACK_CONTINUE;
+}
+#endif

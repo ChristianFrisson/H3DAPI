@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='forcefield.x3d'/>
     <meta name='description' content='Demos the ForceField node. Requires a haptics device.'/>
-    <meta name='editors' content='SenseGraphics AB, 2006-2008'/>
+    <meta name='editors' content='SenseGraphics AB, 2006-2014'/>
   </head>
   <Scene>
     <Transform translation="-0.23 0.10 0">

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -47,7 +47,7 @@ namespace H3D {
     
     /// Constructor.
     H3DSingleTextureNode( Inst< DisplayList > _displayList = 0,
-			  Inst< SFNode  > _metadata  = 0 ): 
+                          Inst< SFNode  > _metadata  = 0 ): 
       X3DTextureNode( _displayList, _metadata ) {
     }
 

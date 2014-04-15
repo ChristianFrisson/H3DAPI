@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -51,7 +51,7 @@ MultiTextureCoordinate::MultiTextureCoordinate(
   
   type_name = "MultiTextureCoordinate";
   database.initFields( this );
-	texCoord->route( propertyChanged, id );
+  texCoord->route( propertyChanged, id );
 }
 
 void MultiTextureCoordinate::renderForTextureUnit( int index,

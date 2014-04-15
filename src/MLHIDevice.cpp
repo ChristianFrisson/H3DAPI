@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -85,13 +85,16 @@ void MLHIDevice::initialize() {
   #ifdef HAVE_MLHIAPI
     if( ip != "" ) {
       hapi_device.reset( new HAPI::MLHIHapticsDevice( serverIPAddress ) );
+    } else {
+      Console(4) << "Warning: No server IP address set for node " << getName()
+                 << ". Node will not be initialized properly." << endl;
     }
   #else
     Console(4) << "Cannot use MLHIDevice. HAPI compiled without"
              << " MLHIAPI support. Recompile HAPI with "
              << "HAVE_MLHIAPI defined"
              << " in order to use it."
-						 << " Note that the support for MLHI device is completely untested. "
-						 << "BE CAREFUL IF YOU USE IT." << endl;
+             << " Note that the support for MLHI device is completely untested. "
+             << "BE CAREFUL IF YOU USE IT." << endl;
   #endif
 }

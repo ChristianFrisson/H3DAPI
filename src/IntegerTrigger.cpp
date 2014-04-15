@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -57,7 +57,7 @@ IntegerTrigger::IntegerTrigger( Inst< SFNode          > _metadata,
   type_name = "IntegerTrigger";
   database.initFields( this );
 
-	integerKey->setValue( -1 );
+  integerKey->setValue( -1 );
 
   set_boolean->route( triggerValue, id );
 

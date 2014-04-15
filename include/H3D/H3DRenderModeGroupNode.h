@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -51,12 +51,12 @@ namespace H3D {
     
     /// Constructor.
     H3DRenderModeGroupNode( Inst< AddChildren    > _addChildren    = 0,
-			    Inst< RemoveChildren > _removeChildren = 0,
-			    Inst< MFChild        > _children       = 0,
-			    Inst< SFNode         > _metadata       = 0,
-			    Inst< SFBound        > _bound          = 0,
-			    Inst< SFVec3f        > _bboxCenter     = 0,
-			    Inst< SFVec3f        > _bboxSize       = 0 );
+          Inst< RemoveChildren > _removeChildren = 0,
+          Inst< MFChild        > _children       = 0,
+          Inst< SFNode         > _metadata       = 0,
+          Inst< SFBound        > _bound          = 0,
+          Inst< SFVec3f        > _bboxCenter     = 0,
+          Inst< SFVec3f        > _bboxSize       = 0 );
 
     /// Virtual function that should be implemented by all sub-classes
     /// to save the current OpenGL state of the parameters that is

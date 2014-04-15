@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -76,7 +76,7 @@ namespace H3D {
     public X3DEnvironmentTextureNode,
     public H3DMultiPassRenderObject {
   public:
-		/// The SFTextureProperties is dependent on the propertyChanged field of
+    /// The SFTextureProperties is dependent on the propertyChanged field of
     /// the contained TextureProperties.
     typedef  DependentSFNode< FieldRef<TextureProperties,
                                        Field,
@@ -88,7 +88,7 @@ namespace H3D {
                              Inst< SFNode      > _metadata   = 0,
                              Inst< SFString    > _update     = 0,
                              Inst< SFInt32     > _size       = 0,
-												Inst< SFTextureProperties > _textureProperties = 0 );
+                        Inst< SFTextureProperties > _textureProperties = 0 );
 
     /// Destructor.
     ~GeneratedCubeMapTexture();
@@ -99,7 +99,7 @@ namespace H3D {
     /// Disables cube map texturing.
     virtual void disableTexturing();
 
-		/// Render all OpenGL texture properties.
+    /// Render all OpenGL texture properties.
     virtual void renderTextureProperties();
 
     /// Creates the cube map from the texture fields.
@@ -176,7 +176,7 @@ namespace H3D {
     /// \dotfile GeneratedCubeMapTexture_size.dot
     auto_ptr< SFInt32 > size;
 
-		/// The textureProperties field contains a TextureProperties node
+    /// The textureProperties field contains a TextureProperties node
     /// which allows fine control over a texture's application.
     /// 
     /// <b>Access type:</b> inputOutput \n

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -85,12 +85,12 @@ namespace H3D {
       period( _period ),
       last_up_to_date( TimeStamp() ),
       counter( 0 ) {
-		  this->route( Scene::eventSink );
+      this->route( Scene::eventSink );
     }
     
     /// Destructor.
-    ~PeriodicUpdate( ) {
-		this->unroute( Scene::eventSink );
+    ~PeriodicUpdate() {
+      this->unroute( Scene::eventSink );
     }
 
     /// Determines if it is time to check that the field is updated.

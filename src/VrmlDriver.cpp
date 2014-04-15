@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -152,7 +152,7 @@ void VrmlDriver::setFieldValue( const char *v ) {
     try {
       pfield->setValueFromString( s );
     } catch( const Convert::X3DFieldConversionError & ) {
-      Console(3) << "WARNING: Could not convert field " 
+      Console(3) << "Warning: Could not convert field " 
                  << field->getName() << " argument in node "
                  << node->getName() << " ( " << getOldLocationString()
                  << " ) " << endl;
@@ -165,9 +165,9 @@ void VrmlDriver::setFieldValue( const char *v ) {
       if ( strlen(v)==0 )
         setNodeStatement(1);
       else
-        Console(3) << "WARNING: Attempt to set an MFNode to a string value. Field named " << field_stack.back() << " in " << node->getName() << " ( " << getOldLocationString() << " )" << endl;
+        Console(3) << "Warning: Attempt to set an MFNode to a string value. Field named " << field_stack.back() << " in " << node->getName() << " ( " << getOldLocationString() << " )" << endl;
     } else 
-      Console(3) << "WARNING: Could not find field named " << field_stack.back() << " in " << node->getName() << " ( " << getOldLocationString() << " )" << endl;
+      Console(3) << "Warning: Could not find field named " << field_stack.back() << " in " << node->getName() << " ( " << getOldLocationString() << " )" << endl;
   }  
 }
 
@@ -177,13 +177,13 @@ void VrmlDriver::setNodeStatement( int nullnode ) {
   Node *node_value = NULL;
   if ( !nullnode ) {
     node_value = node_stack.back();
-		if( !node_value->isInitialized() && node_value->getManualInitialize() ) {
+    if( !node_value->isInitialized() && node_value->getManualInitialize() ) {
       node_value->initialize();
-		}
+    }
     node_stack.pop_back();
   }
   if ( node_stack.size() == 0 || field_stack.size() == 0 ) {
-    Console(3) << "WARNING: Could not set field at " << getOldLocationString() << endl;
+    Console(3) << "Warning: Could not set field at " << getOldLocationString() << endl;
     return;
   }
   Node *node = node_stack.back();
@@ -192,7 +192,7 @@ void VrmlDriver::setNodeStatement( int nullnode ) {
 
   Field *field = node->getField( field_stack.back() );
   if ( ! field ) {
-    Console(3) << "WARNING: Cannot set value for field named \"" << field_stack.back() << "\"  - it does not exist in node " << node->getName() << " at " << getOldLocationString() << endl ;
+    Console(3) << "Warning: Cannot set value for field named \"" << field_stack.back() << "\"  - it does not exist in node " << node->getName() << " at " << getOldLocationString() << endl ;
     return;
   }
   SFNode *sf = dynamic_cast< SFNode *>( field );    
@@ -206,7 +206,7 @@ void VrmlDriver::setNodeStatement( int nullnode ) {
       else if ( node_value )
         mf->push_back( node_value );
     } else
-      Console(3) << "WARNING: Could not set field \"" << field_stack.back() << "\" in node " << node->getName() << " at " << getOldLocationString() << endl;
+      Console(3) << "Warning: Could not set field \"" << field_stack.back() << "\" in node " << node->getName() << " at " << getOldLocationString() << endl;
   }
 }
 
@@ -220,7 +220,7 @@ void VrmlDriver::setProtoField( const string& name,
     X3DTypes::X3DType x3d_type = 
       X3DTypes::stringToType(  type.c_str() );
     if( x3d_type == X3DTypes::UNKNOWN_X3D_TYPE ) {
-      Console(3) << "WARNING: Invalid type value field \"" 
+      Console(3) << "Warning: Invalid type value field \"" 
                  << name << "\", " << type << " " 
                  << getLocationString() << endl;
     } else {
@@ -272,9 +272,9 @@ int yyFlexLexer::yylex() {
 
 /// Adds a new field to the current node if it is a H3DDynamicFieldsObject
 bool VrmlDriver::addDynamicField( const string &name, 
-				  const string& type, 
-				  const Field::AccessType &access_type, 
-				  const string & value ) {
+          const string& type, 
+          const Field::AccessType &access_type, 
+          const string & value ) {
   if( node_stack.empty() ) return false;
   
   H3DDynamicFieldsObject *df = 
@@ -296,7 +296,7 @@ bool VrmlDriver::addDynamicField( const string &name,
 /// Connects the current proto instance field with the node field from the
 /// not at the top of the node_stack.
 bool VrmlDriver::connectProtoField( const string &proto_field_name, 
-				    const string &node_field_name ) {
+            const string &node_field_name ) {
   if ( proto_instance != NULL ) {
     Node *node = node_stack.back();
     Field *node_field = node->getField( node_field_name );

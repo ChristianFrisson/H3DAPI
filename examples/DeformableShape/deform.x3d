@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='deform.x3d'/>
     <meta name='description' content='An example which shows how to use the DeformableShape node. Touch the object with a haptics device to notice all features.'/>
-    <meta name='editors' content='SenseGraphics AB'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
   <Scene>
     <Collision enabled="false">

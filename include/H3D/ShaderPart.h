@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -124,8 +124,9 @@ namespace H3D {
     /// The forceReload field is used to force the reloading of this shaderPart
     /// and also cause the composed shader recompile and relink.
     /// Directly change its value from tree view of h3dviewer, or route someother
-    /// field to it will both work
-    /// <b>Access type:<\b> inputOutput \n
+    /// field to it will both work.
+    ///
+    /// <b>Access type:</b> inputOutput \n
     /// \dotfile ShaderPart_forceReload
     auto_ptr< SFBool > forceReload;
 

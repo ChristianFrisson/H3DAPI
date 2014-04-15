@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -125,10 +125,10 @@ GeneralFunction::SFFunctionObject::SFFunctionObject() {
 }
 
 GeneralFunction::SFFunctionObject::~SFFunctionObject() {
-	if( value ) {
-		delete value;
-		value = NULL;
-	}
+  if( value ) {
+    delete value;
+    value = NULL;
+  }
 }
 
 #endif

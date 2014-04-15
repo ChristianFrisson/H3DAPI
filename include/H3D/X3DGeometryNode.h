@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -287,7 +287,7 @@ namespace H3D {
     /// The field contains a contact point for each HapticsDevice with the index
     /// as specified in the DeviceInfo node. The value will be an empty vector
     /// before the first contact.
-		/// The contact point is given in local coordinates of the X3DGeometryNode.
+    /// The contact point is given in local coordinates of the X3DGeometryNode.
     ///
     /// <b>Access type:</b> outputOnly
     auto_ptr< MFVec3f >  contactPoint;
@@ -306,7 +306,7 @@ namespace H3D {
     /// geometry.
     /// The field contains a normal for each of the points in contactPoint. 
     /// The value will be an empty vector before the first contact.
-		/// The contact normal is given in local coordinates of the X3DGeometryNode.
+    /// The contact normal is given in local coordinates of the X3DGeometryNode.
     ///
     /// <b>Access type:</b> outputOnly
     auto_ptr< MFVec3f >  contactNormal;
@@ -358,8 +358,8 @@ namespace H3D {
     GLenum cull_face;
     friend class H3DHapticsDevice;
 
-		// Variable used to indicate if warning is printed.
-		bool print_negative_scaling_warning;
+    // Variable used to indicate if warning is printed.
+    bool print_negative_scaling_warning;
 
   };
 }

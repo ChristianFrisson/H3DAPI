@@ -1,5 +1,5 @@
 ﻿//////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -138,8 +138,8 @@ H3DWindowNode::H3DWindowNode(
   last_render_mode( RenderMode::MONO ),
   current_cursor( "DEFAULT" ),
   h3d_navigation( new H3DNavigation ),
-	window_is_made_active( false ),
-	check_if_stereo_obtained( false ) {
+  window_is_made_active( false ),
+  check_if_stereo_obtained( false ) {
 
   type_name = "H3DWindowNode";
   database.initFields( this );
@@ -570,36 +570,36 @@ bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
 }
 
 void H3DWindowNode::checkIfStereoObtained() {
-	if( window_is_made_active && renderMode->getRenderMode() == RenderMode::QUAD_BUFFERED_STEREO ) {
-		/*// make sure that we got the required pixel format for stereo.
-		HDC hdc = wglGetCurrentDC();
-		int pixel_format = GetPixelFormat( hdc );
-		PIXELFORMATDESCRIPTOR  pfd; 
-		DescribePixelFormat(hdc, pixel_format,  
-											sizeof(PIXELFORMATDESCRIPTOR), &pfd); 
-											GLboolean quad_stereo_supported; 
-											if( !(pfd.dwFlags & PFD_STEREO) || !quad_stereo_supported ) { */
-		GLboolean quad_stereo_supported;
-		glGetBooleanv( GL_STEREO, &quad_stereo_supported);
-		if( !quad_stereo_supported ) {
-			Console(4) << "Warning: Stereo pixel format not supported by your "
-								 << "graphics card(or it is not enabled). Quad buffered "
-								 << "stereo cannot be used. "
-								 << "Using \"MONO\" instead. " <<endl;
-			renderMode->setValue( "MONO", id );
-		}
-		check_if_stereo_obtained = false;
-	}
+  if( window_is_made_active && renderMode->getRenderMode() == RenderMode::QUAD_BUFFERED_STEREO ) {
+    /*// make sure that we got the required pixel format for stereo.
+    HDC hdc = wglGetCurrentDC();
+    int pixel_format = GetPixelFormat( hdc );
+    PIXELFORMATDESCRIPTOR  pfd; 
+    DescribePixelFormat(hdc, pixel_format,  
+                      sizeof(PIXELFORMATDESCRIPTOR), &pfd); 
+                      GLboolean quad_stereo_supported; 
+                      if( !(pfd.dwFlags & PFD_STEREO) || !quad_stereo_supported ) { */
+    GLboolean quad_stereo_supported;
+    glGetBooleanv( GL_STEREO, &quad_stereo_supported);
+    if( !quad_stereo_supported ) {
+      Console(4) << "Warning: Stereo pixel format not supported by your "
+                 << "graphics card(or it is not enabled). Quad buffered "
+                 << "stereo cannot be used. "
+                 << "Using \"MONO\" instead. " <<endl;
+      renderMode->setValue( "MONO", id );
+    }
+    check_if_stereo_obtained = false;
+  }
 }
 
 void H3DWindowNode::initWindowWithContext() {
-	window_is_made_active = false;
-	RenderMode::Mode stereo_mode = renderMode->getRenderMode();
-	if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO )
-		check_if_stereo_obtained = true;
+  window_is_made_active = false;
+  RenderMode::Mode stereo_mode = renderMode->getRenderMode();
+  if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO )
+    check_if_stereo_obtained = true;
   initWindow();
-	if( check_if_stereo_obtained )
-		checkIfStereoObtained();
+  if( check_if_stereo_obtained )
+    checkIfStereoObtained();
 }
 
 struct CallbackData {
@@ -657,9 +657,9 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   }
   
   // make this the active window
-	makeWindowActive();
-	if( check_if_stereo_obtained )
-		checkIfStereoObtained();
+  makeWindowActive();
+  if( check_if_stereo_obtained )
+    checkIfStereoObtained();
 
   // set fullscreen mode
   setFullscreen( fullscreen->getValue() );
@@ -1357,86 +1357,86 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     // If mouse moved the transform mouse to world coordinate space and send
     // to updateX3DPointingDeviceSensors function.
     GLint mono_viewport[4] = { 0, 0, width->getValue(), height->getValue() };
-		GLdouble wx, wy, wz;
+    GLdouble wx, wy, wz;
 
-		H3DInt32 tmp_mouse_pos[2];
-		tmp_mouse_pos[0] = mouse_position[0];
-		tmp_mouse_pos[1] = mono_viewport[3] - mouse_position[1] - 1;
-		// Project to 0, 0.5 and 1.0 and use the values to check if
-		// an infinite clip_far value in a Viewpoint node caused the
-		// unproject to project to the wrong place (behind the near_plane)
-		// if it did then choose a large vector in the other direction.
-		gluUnProject( (GLdouble) tmp_mouse_pos[0], (GLdouble) tmp_mouse_pos[1],
-			0.0, mono_mvmatrix, mono_projmatrix, mono_viewport, &wx, &wy, &wz );
-		Vec3f near_plane_pos( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
-		gluUnProject( (GLdouble) tmp_mouse_pos[0], (GLdouble) tmp_mouse_pos[1],
-			0.5, mono_mvmatrix, mono_projmatrix, mono_viewport, &wx, &wy, &wz );
-		Vec3f middle_plane_pos( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
-		gluUnProject( (GLdouble) tmp_mouse_pos[0], (GLdouble) tmp_mouse_pos[1],
-			1.0, mono_mvmatrix, mono_projmatrix, mono_viewport, &wx, &wy, &wz );
-		Vec3f far_plane_pos( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
-		Vec3f near_middle = middle_plane_pos - near_plane_pos;
-		Vec3f near_far = far_plane_pos - near_plane_pos;
-		if( near_middle * near_far < 0 ) {
-			// Infinite far plane caused problems. Choose a large vector in the
-			// other direction. Note that this is not an optimal solution, the best
-			// solution in this case would be to use a rayIntersect function in
-			// updateX3DPointingDeviceSensors. In this case we choose the point
-			// halfway to infinity, hopefully that should be enough.
-			near_middle.normalizeSafe();
-			far_plane_pos = near_plane_pos + near_far.length() * near_middle;
-		}
+    H3DInt32 tmp_mouse_pos[2];
+    tmp_mouse_pos[0] = mouse_position[0];
+    tmp_mouse_pos[1] = mono_viewport[3] - mouse_position[1] - 1;
+    // Project to 0, 0.5 and 1.0 and use the values to check if
+    // an infinite clip_far value in a Viewpoint node caused the
+    // unproject to project to the wrong place (behind the near_plane)
+    // if it did then choose a large vector in the other direction.
+    gluUnProject( (GLdouble) tmp_mouse_pos[0], (GLdouble) tmp_mouse_pos[1],
+      0.0, mono_mvmatrix, mono_projmatrix, mono_viewport, &wx, &wy, &wz );
+    Vec3f near_plane_pos( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
+    gluUnProject( (GLdouble) tmp_mouse_pos[0], (GLdouble) tmp_mouse_pos[1],
+      0.5, mono_mvmatrix, mono_projmatrix, mono_viewport, &wx, &wy, &wz );
+    Vec3f middle_plane_pos( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
+    gluUnProject( (GLdouble) tmp_mouse_pos[0], (GLdouble) tmp_mouse_pos[1],
+      1.0, mono_mvmatrix, mono_projmatrix, mono_viewport, &wx, &wy, &wz );
+    Vec3f far_plane_pos( (H3DFloat)wx, (H3DFloat)wy, (H3DFloat)wz );
+    Vec3f near_middle = middle_plane_pos - near_plane_pos;
+    Vec3f near_far = far_plane_pos - near_plane_pos;
+    if( near_middle * near_far < 0 ) {
+      // Infinite far plane caused problems. Choose a large vector in the
+      // other direction. Note that this is not an optimal solution, the best
+      // solution in this case would be to use a rayIntersect function in
+      // updateX3DPointingDeviceSensors. In this case we choose the point
+      // halfway to infinity, hopefully that should be enough.
+      near_middle.normalizeSafe();
+      far_plane_pos = near_plane_pos + near_far.length() * near_middle;
+    }
 
-		// Update pointing device sensors in order to have them correctly
-		// calculated for next turn.
-		X3DPointingDeviceSensorNode::
-			updateX3DPointingDeviceSensors( child_to_render,
-			near_plane_pos,
-			far_plane_pos );
-	}
+    // Update pointing device sensors in order to have them correctly
+    // calculated for next turn.
+    X3DPointingDeviceSensorNode::
+      updateX3DPointingDeviceSensors( child_to_render,
+      near_plane_pos,
+      far_plane_pos );
+  }
 
-	for( unsigned int i = 0; i < left_mouse_button.size(); ++i ) {
-		bool tmp_button = left_mouse_button[i];
-		if( previous_left_mouse_button != tmp_button ) {
-			X3DPointingDeviceSensorNode::updateButtonDependentFields( tmp_button );
-			previous_left_mouse_button = tmp_button;
-		}
-	}
-	left_mouse_button.clear();
+  for( unsigned int i = 0; i < left_mouse_button.size(); ++i ) {
+    bool tmp_button = left_mouse_button[i];
+    if( previous_left_mouse_button != tmp_button ) {
+      X3DPointingDeviceSensorNode::updateButtonDependentFields( tmp_button );
+      previous_left_mouse_button = tmp_button;
+    }
+  }
+  left_mouse_button.clear();
 
-	string nav_type = default_nav;
-	bool use_collision = default_collision;
-	vector< H3DFloat > &avatar_size = default_avatar;
-	H3DFloat nav_speed = default_speed;
-	vector< string > &transition_type = default_transition_type;
-	H3DTime transition_time = default_transition_time;
-	if( nav_info ) {
-		nav_type = nav_info->getUsedNavType();
-		use_collision = true;
-		avatar_size = nav_info->avatarSize->getValue();
-		nav_speed = nav_info->speed->getValue();
-		transition_type = nav_info->transitionType->getValue();
-		transition_time = nav_info->transitionTime->getValue();
-	}
+  string nav_type = default_nav;
+  bool use_collision = default_collision;
+  vector< H3DFloat > &avatar_size = default_avatar;
+  H3DFloat nav_speed = default_speed;
+  vector< string > &transition_type = default_transition_type;
+  H3DTime transition_time = default_transition_time;
+  if( nav_info ) {
+    nav_type = nav_info->getUsedNavType();
+    use_collision = true;
+    avatar_size = nav_info->avatarSize->getValue();
+    nav_speed = nav_info->speed->getValue();
+    transition_type = nav_info->transitionType->getValue();
+    transition_time = nav_info->transitionTime->getValue();
+  }
 
-	CollisionOptions *collision_options = NULL;
-	if( default_settings ) {
-		default_settings->getOptionNode( collision_options );
-	}
-	if( collision_options )
-		use_collision = collision_options->avatarCollision->getValue();
+  CollisionOptions *collision_options = NULL;
+  if( default_settings ) {
+    default_settings->getOptionNode( collision_options );
+  }
+  if( collision_options )
+    use_collision = collision_options->avatarCollision->getValue();
 
-	h3d_navigation->doNavigation( nav_type,
-																navigation_vp,
-																child_to_render,
-																use_collision,
-																avatar_size,
-																nav_speed,
-																transition_type,
-																transition_time );
-	// Store previous mouse position
-	previous_mouse_position[0] = mouse_position[0];
-	previous_mouse_position[1] = mouse_position[1];
+  h3d_navigation->doNavigation( nav_type,
+                                navigation_vp,
+                                child_to_render,
+                                use_collision,
+                                avatar_size,
+                                nav_speed,
+                                transition_type,
+                                transition_time );
+  // Store previous mouse position
+  previous_mouse_position[0] = mouse_position[0];
+  previous_mouse_position[1] = mouse_position[1];
 
   if( headlight_index != -1 ) {
     glPopAttrib();

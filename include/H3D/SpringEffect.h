@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -69,7 +69,7 @@ namespace H3D {
                   Inst< MFInt32     > _deviceIndex = 0,
                   Inst< SFNode      >  _metadata = 0,
                   Inst< SFFloat     > _damping = 0,
-									Inst< SFFloat     > _positionInterpolation = 0,
+                  Inst< SFFloat     > _positionInterpolation = 0,
                   Inst< SFVec3f     > _interpolatedPosition = 0 );
 
     /// Adds the effect if within startDistance and removes it when 
@@ -129,16 +129,16 @@ namespace H3D {
     /// <b>Default value:</b> 0 \n
     auto_ptr< SFFloat > damping;  
 
-		/// The positionInterpolation is used to force the haptics loop to
-		/// not move all the way from the last position to the new
-		/// position if the position field, or any of the transform nodes this
-		/// SpringEffect resides in, changes frequently. This can be used to
-		/// not get big changes in force magnitude between graphics frames.
-		/// Default value of 1 means that no position smoothing is introduced.
+    /// The positionInterpolation is used to force the haptics loop to
+    /// not move all the way from the last position to the new
+    /// position if the position field, or any of the transform nodes this
+    /// SpringEffect resides in, changes frequently. This can be used to
+    /// not get big changes in force magnitude between graphics frames.
+    /// Default value of 1 means that no position smoothing is introduced.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 1 \n
-		/// <b>Allowed values:</b> [0,1] \n
+    /// <b>Allowed values:</b> [0,1] \n
     auto_ptr< SFFloat > positionInterpolation;
 
     /// The interpolated position of the spring. See positionInterpolation.

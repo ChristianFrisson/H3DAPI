@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -34,7 +34,7 @@
 namespace H3D {
   /// \ingroup Nodes 
   /// \class MovieTexture
-	/// \brief MovieTexture is a class that is not implemented in H3DAPI yet.
+  /// \brief MovieTexture is a class that is not implemented in H3DAPI yet.
   class H3DAPI_API MovieTexture : public H3DVideoTextureNode {
   public:
     

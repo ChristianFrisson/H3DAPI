@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -40,26 +40,26 @@ namespace H3D {
 
   /// \ingroup X3DNodes
   /// \class HAnimDisplacer
-	/// \brief Applications may need to alter the shape of individual segments.
-	///
-	/// At the most basic level, this is done by writing to the point field of
-	/// the node derived from X3DCoordinateNode that is found in the coord field
-	/// of the HAnimSegment node.
-	///
-	/// In some cases, the application may need to be able to identify specific
-	/// groups of vertices within an HAnimSegment.
-	/// 
-	/// EXAMPLE?The application may need to know which vertices within the skull
-	/// HAnimSegment comprise the left eyebrow.
-	///
-	/// It may also require "hints" as to the direction in which each vertex
-	/// should move. That information is stored in a node called an HAnimDisplacer.
-	/// The HAnimDisplacers for a particular HAnimSegment are stored in the
-	/// displacers field of that HAnimSegment.
+  /// \brief Applications may need to alter the shape of individual segments.
   ///
-	/// <b>Examples:</b>
+  /// At the most basic level, this is done by writing to the point field of
+  /// the node derived from X3DCoordinateNode that is found in the coord field
+  /// of the HAnimSegment node.
+  ///
+  /// In some cases, the application may need to be able to identify specific
+  /// groups of vertices within an HAnimSegment.
+  /// 
+  /// EXAMPLE?The application may need to know which vertices within the skull
+  /// HAnimSegment comprise the left eyebrow.
+  ///
+  /// It may also require "hints" as to the direction in which each vertex
+  /// should move. That information is stored in a node called an HAnimDisplacer.
+  /// The HAnimDisplacers for a particular HAnimSegment are stored in the
+  /// displacers field of that HAnimSegment.
+  ///
+  /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/BoxMan.x3d">BoxMan.x3d</a>
-  ///     ( <a href="examples/BoxMan.html">Source</a> )
+  ///     ( <a href="examples/BoxMan.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile HAnimDisplacer.dot
@@ -81,21 +81,21 @@ namespace H3D {
     inline void displaceCoordinates( VectorType &points,
                                      const Matrix4f &displace_transform  );
 
-		/// The coordIndex field contains the indices into the coordinate array
-		/// for the mesh of the vertices that are affected by the Displacer
+    /// The coordIndex field contains the indices into the coordinate array
+    /// for the mesh of the vertices that are affected by the Displacer
     ///
     /// <b>Access type:</b> inputOutput \n
     ///
     /// \dotfile HAnimDisplacer_coordIndex.dot
     auto_ptr< MFInt32 > coordIndex;
 
-		/// The displacements field, if present, provides a set of 3D values that
-		/// are added to the neutral or resting position of each of the vertices
-		/// referenced in the coordIndex field of the associated mesh. These values
-		/// correspond one-to-one with the values in the coordIndex array of the
-		/// mesh. The values shall be maximum displacements, and the application
-		/// shall scale them using the value of the weight field before adding
-		/// them to the neutral vertex positions.
+    /// The displacements field, if present, provides a set of 3D values that
+    /// are added to the neutral or resting position of each of the vertices
+    /// referenced in the coordIndex field of the associated mesh. These values
+    /// correspond one-to-one with the values in the coordIndex array of the
+    /// mesh. The values shall be maximum displacements, and the application
+    /// shall scale them using the value of the weight field before adding
+    /// them to the neutral vertex positions.
     ///
     /// <b>Access type:</b> inputOutput \n
     ///
@@ -111,8 +111,8 @@ namespace H3D {
     /// \dotfile HAnimDisplacer_name.dot 
     auto_ptr< SFString    >  name;
 
-		/// The displacements shall be uniformly scaled by the
-		/// value of the weight field.
+    /// The displacements shall be uniformly scaled by the
+    /// value of the weight field.
     ///
     /// <b>Access type:</b> inputOutput \n
     ///

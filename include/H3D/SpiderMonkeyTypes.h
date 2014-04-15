@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -1882,7 +1882,7 @@ namespace H3D {
     ///
     template< class MFieldType, class ElementType > 
     struct JS_MField {
-	
+
       /// Returns a new JSObject object encapsulating a field.
       /// \param cx The context in which to create the object.
       /// \param field The field to encapsulate.
@@ -1920,11 +1920,11 @@ namespace H3D {
       static JSPropertySpec properties[1];
 
       static JSBool initClass( JSContext *cx, JSObject *obj, const char *name ) {
-	      
+
         JSPropertySpec p[] = {
           {0} 
         };
-	
+
         properties[0] = p[0];
 
 
@@ -1958,9 +1958,9 @@ namespace H3D {
           NULL, // mark
           NULL //reserveSlots
         };
-	
+
         js_class = c;
-	
+
         JSObject *proto = JS_InitClass( cx, obj, NULL, 
                                         &js_class, construct, 0, 
                                         properties, functions, NULL, NULL );

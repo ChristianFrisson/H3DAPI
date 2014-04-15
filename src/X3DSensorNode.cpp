@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -54,8 +54,8 @@ X3DSensorNode::X3DSensorNode( Inst< SFBool >  _enabled,
   type_name = "X3DSensorNode";
   database.initFields( this );
 
-  enabled->setValue( true );
   isActive->setValue( false, id );
+  enabled->setValue( true );
 }
 
 

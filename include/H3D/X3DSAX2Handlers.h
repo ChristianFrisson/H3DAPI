@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -75,10 +75,12 @@ namespace H3D {
       ///  and the nodes the reference
       /// \param _exported_nodes A structure to store the exported nodes.
       /// \param _proto_declarations Storage of all proto declarations.
+      /// \param _called_from_proto_declaration True if instance is created
+      /// by ProtoDeclaration class.
       X3DSAX2Handlers( DEFNodes *dn = NULL,
                        DEFNodes *_exported_nodes = NULL,
                        PrototypeVector *_proto_declarations = NULL,
-											 bool _called_from_proto_declaration = false ): 
+                       bool _called_from_proto_declaration = false ): 
         proto_instance( NULL ),
         proto_declaration( NULL ),
         proto_body_count( 0 ),
@@ -92,7 +94,7 @@ namespace H3D {
         DEF_map( dn ),
         exported_nodes( _exported_nodes ),
         proto_declarations( _proto_declarations ),
-				called_from_proto_declaration( _called_from_proto_declaration ),
+        called_from_proto_declaration( _called_from_proto_declaration ),
         locator( NULL ),
         profile_set( false ),
         meta_set( false ),
@@ -271,7 +273,8 @@ namespace H3D {
         NodeElement( Node *_node,
                      const string &_container_field = "" ):
           container_field( _container_field ),
-          node( _node ) {
+          node( _node ),
+          have_connect_element( false ) {
           if( node ) node->ref();
         }
 
@@ -281,6 +284,7 @@ namespace H3D {
           container_field = ne.container_field;
           cdata = ne.cdata;
           if( node ) node->ref();
+          have_connect_element = ne.have_connect_element;
         }
 
         /// Destructor.
@@ -326,10 +330,21 @@ namespace H3D {
         const string &getContainerField() { 
           return container_field;
         }
+
+        /// Returns true if the node have a connect element.
+        bool haveConnectElement() {
+          return have_connect_element;
+        }
+
+        /// Set the have_connect_element variable.
+        void setConnectElement( const bool &b ) {
+          have_connect_element = b;
+        }
       private:
         string container_field;
         Node *node;
         string cdata;
+        bool have_connect_element;
       };
 
       /// Returns a string with the current location as given
@@ -347,9 +362,9 @@ namespace H3D {
       /// proto_declaration will be set to NULL again;
       AutoRef< ProtoDeclaration > proto_declaration;
 
-			/// If true then this handler is created in proto_declaration so
-			/// a ProtoDeclare element is allowed at top level.
-			bool called_from_proto_declaration;
+      /// If true then this handler is created in proto_declaration so
+      /// a ProtoDeclare element is allowed at top level.
+      bool called_from_proto_declaration;
 
       /// The string_body string is used when defining ProtoBody. All elements will then
       /// just be translated to a string to be used by the ProtoDeclaration.

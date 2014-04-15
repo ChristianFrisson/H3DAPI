@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -82,7 +82,7 @@ namespace H3D {
     /// <b>Access type:</b> initializeOnly \n
     /// <b>Default value:</b> "" \n
     auto_ptr< SFString > deviceName;
-	
+
     /// Node database entry
     static H3DNodeDatabase database;
   };

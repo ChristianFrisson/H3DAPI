@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2009-2013, SenseGraphics AB
+//    Copyright 2009-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -197,17 +197,17 @@ void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id,
 void H3DViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id, 
                                               list< pair< H3D::Node *, string > > nodes,
                                               H3DViewerTreeViewDialog::ExpandMode expand_new,
-																							bool check_if_expanded ) {
+                                              bool check_if_expanded ) {
 
   // find all children of tree_id
   list< wxTreeItemId > children_ids;
   wxTreeItemIdValue cookie;
 
   wxTreeItemId id = TreeViewTree->GetFirstChild( tree_id, cookie );
-	if( check_if_expanded )
-		if( id.IsOk() && TreeViewTree->HasChildren(tree_id ) && !TreeViewTree->IsExpanded( tree_id ) ) { 
-			return;
-		}
+  if( check_if_expanded )
+    if( id.IsOk() && TreeViewTree->HasChildren(tree_id ) && !TreeViewTree->IsExpanded( tree_id ) ) { 
+      return;
+    }
   while( id.IsOk() ) {
     children_ids.push_back( id );
     id = TreeViewTree->GetNextSibling( id );
@@ -371,12 +371,15 @@ void H3DViewerTreeViewDialog::OnTreeRightClick( wxTreeEvent& event ) {
   TreeViewTree->SelectItem( event.GetItem() );
   TreeIdMap::iterator ni = node_map.find( event.GetItem().m_pItem );
   X3DGeometryNode *geom = NULL;
+	X3DTextureNode * tex = NULL;
   
   if( ni != node_map.end() ) {
    geom = dynamic_cast< X3DGeometryNode * >( (*ni).second.get() );
+	 tex = dynamic_cast< X3DTextureNode * >( (*ni).second.get() );
   }
 
   if(geom) PopupMenu( menu_container->RightClickMenuGeometry );
+	else if(tex) PopupMenu( menu_container->RightClickMenuTexture );
   else PopupMenu( menu_container->RightClickMenu );
 }
 

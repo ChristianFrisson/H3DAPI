@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -64,7 +64,7 @@ GeneralSpotLight::GeneralSpotLight(
                      Inst< SFFloat > _specularIntensity  ) :
   SpotLight( _metadata,_ambientIntensity, _color, _intensity,
                 _global, _on, _attenuation, _beamWidth,
-		_cutOffAngle, _direction, _location, _radius ),
+    _cutOffAngle, _direction, _location, _radius ),
   ambientColor    ( _ambientColor     ),
   specularColor   ( _specularColor    ),
   specularIntensity( _specularIntensity ) {

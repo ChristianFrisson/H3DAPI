@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Box.x3d'/>
+    <meta name='description' content='X3D Box node example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Shape>
+      <Appearance>
+        <Material/>
+        <NoiseTexture repeatS="true" repeatT="true"
+                      frequency="30.0" persistence="0.5" lacunarity="2.20703125" type="SIMPLEX"
+                      tileable="true" octaveCount="1" height="64" width="64" />
+      </Appearance>      
+      <Box size='0.2 0.1 0.05' solid='true' />
+    </Shape>
+  </Scene>
+</X3D>

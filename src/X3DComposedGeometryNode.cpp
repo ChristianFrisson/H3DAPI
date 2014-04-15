@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -34,8 +34,8 @@
 
 using namespace H3D;
 
-H3DNodeDatabase X3DComposedGeometryNode::database( 
-        "X3DComposedGeometryNode", 
+H3DNodeDatabase X3DComposedGeometryNode::database(
+        "X3DComposedGeometryNode",
         NULL,
         typeid( X3DComposedGeometryNode ),
         &X3DGeometryNode::database 
@@ -57,7 +57,7 @@ namespace X3DComposedGeometryNodeInternals {
 X3DComposedGeometryNode::X3DComposedGeometryNode( 
                               Inst< SFNode           > _metadata,
                               Inst< SFBound          > _bound,
-                              Inst< DisplayList      > _displayList,             
+                              Inst< DisplayList      > _displayList,
                               Inst< SFColorNode             > _color,
                               Inst< SFCoordinateNode        > _coord,
                               Inst< SFNormalNode            > _normal,
@@ -105,7 +105,7 @@ X3DComposedGeometryNode::X3DComposedGeometryNode(
 void X3DComposedGeometryNode::DisplayList::callList( bool build_list ) {
   X3DComposedGeometryNode *cgn = 
     static_cast< X3DComposedGeometryNode * >( owner );
-    
+
   bool ccw = cgn->ccw->getValue();  
   // determine which side of polygons is front and back face. Since the 
   // GLWindow renderCamera() function might scale the y-axis with -1 and
@@ -116,11 +116,11 @@ void X3DComposedGeometryNode::DisplayList::callList( bool build_list ) {
   glGetIntegerv( GL_FRONT_FACE, &front_face );
   if( front_face == GL_CW ) {
     // we are in mirrored mode, so we have to set the front face
-      // to the opposite in order for it to be right when mirrored.
+    // to the opposite in order for it to be right when mirrored.
     if( ccw )
       glFrontFace( GL_CW );
-      else  
-        glFrontFace( GL_CCW );
+    else
+      glFrontFace( GL_CCW );
   } else {
     if( ccw )
       glFrontFace( GL_CCW );
@@ -129,7 +129,7 @@ void X3DComposedGeometryNode::DisplayList::callList( bool build_list ) {
   }
 
   X3DGeometryNode::DisplayList::callList( build_list );
-  
+
   // Restore the front face to its previuos value.
   glFrontFace( front_face );
 }
@@ -146,64 +146,64 @@ Matrix4f X3DComposedGeometryNode::getDefaultTexGenMatrix() {
     H3DFloat *sparams = m[0];
     H3DFloat *tparams = m[1];
     H3DFloat *rparams = m[2];
-      
+
     H3DFloat size_vec[]   = { size.x, size.y, size.z };
     H3DFloat center_vec[] = { center.x, center.y, center.z };
-    
+
     // these variables are set to an index representing 
     // sides of the bounding box. 0 is the x-axis, 1 the y-axis
     // and 2 the z-axis.
     int largest_side, middle_side, smallest_side;
-      
+
     if( size.x >= size.y ) {
       if( size.x >= size.z ) {
-	largest_side = 0; 
-	if( size.y >= size.z ) {
-	  // size.x >= size.y >= size.z
-	  middle_side   = 1;
-	  smallest_side = 2;
-	} else { 
-	  // size.x >= size.z > size.y
-	  middle_side   = 2;
-	  smallest_side = 1;
-	}
+        largest_side = 0; 
+        if( size.y >= size.z ) {
+          // size.x >= size.y >= size.z
+          middle_side   = 1;
+          smallest_side = 2;
+        } else { 
+          // size.x >= size.z > size.y
+          middle_side   = 2;
+          smallest_side = 1;
+        }
       } else {
-	// size.z > size.x >= size.y
-	largest_side  = 2; 
-	middle_side   = 0;
-	smallest_side = 1;
+        // size.z > size.x >= size.y
+        largest_side  = 2; 
+        middle_side   = 0;
+        smallest_side = 1;
       }
     } else {
       if( size.z >= size.y ) {
-	// size.z >= size.y > size.x
-	largest_side  = 2; 
-	middle_side   = 1;
-	smallest_side = 0;
+        // size.z >= size.y > size.x
+        largest_side  = 2; 
+        middle_side   = 1;
+        smallest_side = 0;
       } else if( size.x >= size.z ) {
-	// size.y > size.x >=size.z
-	largest_side  = 1; 
-	middle_side   = 0;
-	smallest_side = 2;
+        // size.y > size.x >=size.z
+        largest_side  = 1; 
+        middle_side   = 0;
+        smallest_side = 2;
       } else {
-	// size.y > size.z > size.x
-	largest_side  = 1; 
-	middle_side   = 2;
-	smallest_side = 0;
+        // size.y > size.z > size.x
+        largest_side  = 1; 
+        middle_side   = 2;
+        smallest_side = 0;
       }
     }
-    
+
     H3DFloat largest_length = size_vec[ largest_side ];
     if( H3DAbs( largest_length ) > Constants::f_epsilon ) {
       // parameters for the s coordinate
       H3DFloat length_inv = 1/largest_length;
       sparams[ largest_side ] = length_inv;
       sparams[3] = 0.5f - center_vec[ largest_side ] / largest_length;
-      
+
       // parameters for the t coordinate
       tparams[ middle_side ] = length_inv;
       H3DFloat tcenter = size_vec[ middle_side ] / (2*largest_length);
       tparams[3] = tcenter - center_vec[ middle_side ] / largest_length;
-      
+
       // parameters for the r coordinate
       rparams[ smallest_side ] = -length_inv;
       H3DFloat rcenter = size_vec[ smallest_side ] / (2*largest_length);
@@ -223,95 +223,95 @@ Matrix4f X3DComposedGeometryNode::getDefaultTexGenMatrix() {
 }
 
 void X3DComposedGeometryNode::startTexGen( 
-                            X3DTextureCoordinateNode *tex_coord_node ) {
-  if( !tex_coord_node ) {
-    
-    Matrix4f m = getDefaultTexGenMatrix();
-    
-    H3DFloat *sparams = m[0];
-    H3DFloat *tparams = m[1];
-    H3DFloat *rparams = m[2];
+  X3DTextureCoordinateNode *tex_coord_node ) {
+    if( !tex_coord_node ) {
 
-    // TODO: maybe let the texture handle the texture coordinate
-    // generation. Wait until implementation of TextureCoordinateGenerator
-    // before deciding on how to do it.
-    MultiTexture *mt = 
-      dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
-    if( mt ) {
-      size_t texture_units = mt->texture->size();
-      for( size_t i = 0; i < texture_units; ++i ) {
-	glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
-	glTexGend( GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
-	glTexGend( GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
-	glTexGend( GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
-	glTexGenfv( GL_S, GL_OBJECT_PLANE, sparams );
-	glTexGenfv( GL_T, GL_OBJECT_PLANE, tparams );
-	glTexGenfv( GL_R, GL_OBJECT_PLANE, rparams );
-	glEnable( GL_TEXTURE_GEN_S );
-	glEnable( GL_TEXTURE_GEN_T );
-	glEnable( GL_TEXTURE_GEN_R );
+      Matrix4f m = getDefaultTexGenMatrix();
+
+      H3DFloat *sparams = m[0];
+      H3DFloat *tparams = m[1];
+      H3DFloat *rparams = m[2];
+
+      // TODO: maybe let the texture handle the texture coordinate
+      // generation. Wait until implementation of TextureCoordinateGenerator
+      // before deciding on how to do it.
+      MultiTexture *mt = 
+        dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
+      if( mt ) {
+        size_t texture_units = mt->texture->size();
+        for( size_t i = 0; i < texture_units; ++i ) {
+          glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
+          glTexGend( GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
+          glTexGend( GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
+          glTexGend( GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
+          glTexGenfv( GL_S, GL_OBJECT_PLANE, sparams );
+          glTexGenfv( GL_T, GL_OBJECT_PLANE, tparams );
+          glTexGenfv( GL_R, GL_OBJECT_PLANE, rparams );
+          glEnable( GL_TEXTURE_GEN_S );
+          glEnable( GL_TEXTURE_GEN_T );
+          glEnable( GL_TEXTURE_GEN_R );
+        }
+      } else {
+        glTexGend( GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
+        glTexGend( GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
+        glTexGend( GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
+        glTexGenfv( GL_S, GL_OBJECT_PLANE, sparams );
+        glTexGenfv( GL_T, GL_OBJECT_PLANE, tparams );
+        glTexGenfv( GL_R, GL_OBJECT_PLANE, rparams );
+        glEnable( GL_TEXTURE_GEN_S );
+        glEnable( GL_TEXTURE_GEN_T );
+        glEnable( GL_TEXTURE_GEN_R );
       }
     } else {
-      glTexGend( GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
-      glTexGend( GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
-      glTexGend( GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR );
-      glTexGenfv( GL_S, GL_OBJECT_PLANE, sparams );
-      glTexGenfv( GL_T, GL_OBJECT_PLANE, tparams );
-      glTexGenfv( GL_R, GL_OBJECT_PLANE, rparams );
-      glEnable( GL_TEXTURE_GEN_S );
-      glEnable( GL_TEXTURE_GEN_T );
-      glEnable( GL_TEXTURE_GEN_R );
-    }
-  } else {
-    tex_coord_node->startTexGenForActiveTexture();
-  }    
+      tex_coord_node->startTexGenForActiveTexture();
+    }    
 }
 
 void X3DComposedGeometryNode::stopTexGen( 
-                       X3DTextureCoordinateNode *tex_coord_node ) {
-  if( !tex_coord_node ) {
-    MultiTexture *mt = 
-      dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
-    if( mt ) {
-      size_t texture_units = mt->texture->size();
-      for( size_t i = 0; i < texture_units; ++i ) {
-        glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
+  X3DTextureCoordinateNode *tex_coord_node ) {
+    if( !tex_coord_node ) {
+      MultiTexture *mt = 
+        dynamic_cast< MultiTexture * >( X3DTextureNode::getActiveTexture() );
+      if( mt ) {
+        size_t texture_units = mt->texture->size();
+        for( size_t i = 0; i < texture_units; ++i ) {
+          glActiveTexture( GL_TEXTURE0_ARB + (unsigned int) i );
+          glDisable( GL_TEXTURE_GEN_S );
+          glDisable( GL_TEXTURE_GEN_T );
+          glDisable( GL_TEXTURE_GEN_R );
+        }
+      } else {
         glDisable( GL_TEXTURE_GEN_S );
         glDisable( GL_TEXTURE_GEN_T );
         glDisable( GL_TEXTURE_GEN_R );
       }
     } else {
-      glDisable( GL_TEXTURE_GEN_S );
-      glDisable( GL_TEXTURE_GEN_T );
-      glDisable( GL_TEXTURE_GEN_R );
+      tex_coord_node->stopTexGenForActiveTexture();
     }
-  } else {
-    tex_coord_node->stopTexGenForActiveTexture();
-  }
 }
 
 void X3DComposedGeometryNode::renderTexCoord( int index, 
                                               X3DTextureCoordinateNode *tc ) {
-  tc->renderForActiveTexture( index );
+    tc->renderForActiveTexture( index );
 }
 
 void X3DComposedGeometryNode::renderTexCoordArray(  
                                       X3DTextureCoordinateNode *tc ) {
-  tc->renderArrayForActiveTexture();
+    tc->renderArrayForActiveTexture();
 }
 
 void X3DComposedGeometryNode::disableTexCoordArray(  
                                       X3DTextureCoordinateNode *tc ) {
-  tc->disableArrayForActiveTexture();
+    tc->disableArrayForActiveTexture();
 }
 
 void X3DComposedGeometryNode::renderTexCoordVertexBufferObject(
                                       X3DTextureCoordinateNode *tc ) {
-  tc->renderVertexBufferObjectForActiveTexture();
+    tc->renderVertexBufferObjectForActiveTexture();
 }
 
 void X3DComposedGeometryNode::disableTexCoordVertexBufferObject(
                                       X3DTextureCoordinateNode *tc ) {
-  tc->disableVertexBufferObjectForActiveTexture();
+    tc->disableVertexBufferObjectForActiveTexture();
 }
 

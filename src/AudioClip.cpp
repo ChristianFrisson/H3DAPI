@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -108,7 +108,7 @@ void AudioClip::ALrender() {
     }
 
     if( reader.get() ) { 
-	    if( reader->nrChannels() == 1 )
+      if( reader->nrChannels() == 1 )
         if( reader->bitsPerSample() == 16 )
           al_format = AL_FORMAT_MONO16;
         else if( reader->bitsPerSample() == 8 ) 

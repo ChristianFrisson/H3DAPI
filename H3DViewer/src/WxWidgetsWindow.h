@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2006-2013, SenseGraphics AB
+//    Copyright 2006-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -117,7 +117,7 @@ namespace H3D {
       // Seems like wxWidgets 2.9 does not destruct explicit wxGLCanvas.
       if( theWxGLContext ) {
         delete theWxGLContext;
-				theWxGLContext = NULL;
+        theWxGLContext = NULL;
       }
     }
 
@@ -204,7 +204,8 @@ namespace H3D {
     wxGLContext * theWxGLContext;
     bool last_fullscreen;
 
-  bool fullscreen_initialized;
+    bool fullscreen_initialized;
+    bool allow_new_pixel_format_creation;
 
  
 

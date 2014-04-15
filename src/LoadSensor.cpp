@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -86,7 +86,7 @@ void LoadSensor::traverseSG( TraverseInfo &ti ) {
     for( MFUrlObject::const_iterator i = watchList->begin();
          i != watchList->end(); ++i ) {
       X3DUrlObject *url_object = dynamic_cast< X3DUrlObject * >(*i);
-	  if( url_object ) {
+      if( url_object ) {
       X3DUrlObject::LoadStatus status = url_object->loadStatus();
       all_loaded = all_loaded && ( status == X3DUrlObject::LOADED );
       is_active = is_active && ( status == X3DUrlObject::LOADED ||
@@ -94,7 +94,7 @@ void LoadSensor::traverseSG( TraverseInfo &ti ) {
       failed = failed || ( status == X3DUrlObject::FAILED );
       if( url_object->loadProgress() < load_progress )
         load_progress = url_object->loadProgress();
-	  }
+    }
     }
     
     if( !isActive->getValue() && is_active && !all_loaded ) {

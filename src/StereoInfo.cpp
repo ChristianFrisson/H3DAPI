@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -37,7 +37,7 @@ H3DNodeDatabase StereoInfo::database(
                                     "StereoInfo", 
                                     &(newInstance<StereoInfo>), 
                                     typeid( StereoInfo ),
-				    &X3DBindableNode::database );
+                                    &X3DBindableNode::database );
 
 namespace StereoInfoInternals {
   FIELDDB_ELEMENT( StereoInfo, interocularDistance, INPUT_OUTPUT );

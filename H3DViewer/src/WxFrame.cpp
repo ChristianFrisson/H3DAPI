@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2006-2013, SenseGraphics AB
+//    Copyright 2006-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -100,7 +100,7 @@ void insertLineBreak(stringstream &inputstream, stringstream &outputstream, int 
     outputstream << l << endl;
     counter += charCount;
   }
-	delete []line;
+  delete []line;
 }
 /*******************Required Class***********************/
 
@@ -175,8 +175,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
                         const wxString& _title, const wxPoint& _pos,
                         const wxSize& _size, long _style,
                         const wxString& _name,
-												bool cmd_line_filename,
-												bool disable_plugin_dialog ):
+                        bool cmd_line_filename,
+                        bool disable_plugin_dialog ):
   wxFrame(_parent, _id, _title, _pos, _size, _style, _name ),
   navTypeCount(0),
   deviceCount(0),
@@ -187,8 +187,10 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   handle_action_key( new HandleActionKey ),
   itemIdViewpointMap(),
   current_viewpoint_id(0),
-	check_dialogs_position_because_of_fullscreen_and_not_quadro( false ),
-	glwindow( NULL )
+  check_dialogs_position_because_of_fullscreen_and_not_quadro( false ),
+  glwindow( NULL ),
+  updateStereoModeMenu( new UpdateStereoModeMenu ),
+  a_file_is_loaded( false )
 {
   lastOpenedFilepath = "";
   wxAcceleratorEntry entries[1];
@@ -216,8 +218,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   program_settings_dialog->destroy_on_close = false;
 #endif
   plugins_dialog = new H3DViewerPluginsDialog( this ); 
-	if( disable_plugin_dialog )
-		plugins_dialog->DisablePluginsCheckBox->SetValue( true );
+  if( disable_plugin_dialog )
+    plugins_dialog->DisablePluginsCheckBox->SetValue( true );
   frameRates = new FrameRateDialog( this );
 
   current_viewpoint = (X3DViewpointNode *) NULL;
@@ -400,25 +402,25 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
    advancedMenu->Append(FRAME_PROGRAMSETTINGS, wxT("Show Program Settings\tF7"),
                         wxT("Show the program settings for the current scene."));  
 #endif
-	advancedMenu->AppendSeparator();
-	advancedMenu->AppendCheckItem( FRAME_KEEPVIEWPOINTONLOAD, wxT("New viewpoint on load file"),
-																 wxT("If checked new viewpoints are loaded when a new file is loaded, otherwise old viewpoint is kept.") );
-	advancedMenu->AppendCheckItem( FRAME_ROUTESENDSEVENTS, wxT("Route sends events"),
-																 wxT("If checked routes sends events when set up, i.e. not as in X3D spec.") );
-	advancedMenu->AppendCheckItem( FRAME_LOADTEXTURESINTHREAD, wxT("Load textures in thread"),
-																 wxT("If checked textures are loaded in a separate thread.") );
-	h3dConfig->SetPath(wxT("/Settings"));
+  advancedMenu->AppendSeparator();
+  advancedMenu->AppendCheckItem( FRAME_KEEPVIEWPOINTONLOAD, wxT("New viewpoint on load file"),
+                                 wxT("If checked new viewpoints are loaded when a new file is loaded, otherwise old viewpoint is kept.") );
+  advancedMenu->AppendCheckItem( FRAME_ROUTESENDSEVENTS, wxT("Route sends events"),
+                                 wxT("If checked routes sends events when set up, i.e. not as in X3D spec.") );
+  advancedMenu->AppendCheckItem( FRAME_LOADTEXTURESINTHREAD, wxT("Load textures in thread"),
+                                 wxT("If checked textures are loaded in a separate thread.") );
+  h3dConfig->SetPath(wxT("/Settings"));
   bool new_viewpoint_on_load = true;
   h3dConfig->Read(wxT("new_viewpoint_on_load"), &new_viewpoint_on_load);
-	advancedMenu->Check( FRAME_KEEPVIEWPOINTONLOAD, new_viewpoint_on_load );
-	bool route_sends_events = true;
+  advancedMenu->Check( FRAME_KEEPVIEWPOINTONLOAD, new_viewpoint_on_load );
+  bool route_sends_events = true;
   h3dConfig->Read(wxT("route_sends_events"), &route_sends_events);
-	advancedMenu->Check( FRAME_ROUTESENDSEVENTS, route_sends_events );
-	global_settings->x3dROUTESendsEvent->setValue( route_sends_events );
-	bool load_textures_in_thread = true;
+  advancedMenu->Check( FRAME_ROUTESENDSEVENTS, route_sends_events );
+  global_settings->x3dROUTESendsEvent->setValue( route_sends_events );
+  bool load_textures_in_thread = true;
   h3dConfig->Read(wxT("load_textures_in_thread"), &load_textures_in_thread);
-	advancedMenu->Check( FRAME_LOADTEXTURESINTHREAD, load_textures_in_thread );
-	global_settings->loadTexturesInThread->setValue( load_textures_in_thread );
+  advancedMenu->Check( FRAME_LOADTEXTURESINTHREAD, load_textures_in_thread );
+  global_settings->loadTexturesInThread->setValue( load_textures_in_thread );
   //Help Menu
   helpMenu = new wxMenu;
   //helpMenu->Append(FRAME_HELP, wxT("Help"));
@@ -444,14 +446,13 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   //Certain options in rendererMenu
   rendererMenu->Enable(FRAME_CHOOSERENDERER, false);
   rendererMenu->Enable(FRAME_RENDERMODE, false);
-  rendererMenu->Enable(FRAME_STEREORENDERMODE, false);
 
 #ifdef WIN32
   wxIcon tmpIcon( wxT( "IDI_ICON1" ), wxBITMAP_TYPE_ICO_RESOURCE );
   SetIcon( tmpIcon );
 #endif
 
-	glwindow = new WxWidgetsWindow(this);
+  glwindow = new WxWidgetsWindow(this);
 #if wxUSE_DRAG_AND_DROP
   glwindow->onFileDraggedAndDroppedFunction( &onDropFiles, this );
 #endif
@@ -459,26 +460,27 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   GetClientSize(&width, &height);
   glwindow->width->setValue(width);
   glwindow->height->setValue(height);
-	loadIniFile();
-	glwindow->renderMode->setValue(render_mode);
-	if( cmd_line_filename )
-		glwindow->fullscreen->setValue( ini_fullscreen );
-
+  loadIniFile();
+  glwindow->renderMode->setValue(render_mode);
+  if( cmd_line_filename )
+    glwindow->fullscreen->setValue( ini_fullscreen );
+  updateStereoModeMenu->setOwnerWindow( this );
+  glwindow->renderMode->route( updateStereoModeMenu );
   change_nav_type->setOwnerWindows( glwindow, this );
   handle_action_key->setOwnerWindows( glwindow, this );
   ks->keyPress->route( change_nav_type );
   ks->actionKeyPress->route( handle_action_key );
 
-	scene->window->push_back( glwindow );
-	// Create settings dialog
+  scene->window->push_back( glwindow );
+  // Create settings dialog
   settings = new SettingsDialog(this );
-	
+  
   // Load settings for dialog
   LoadSettings( true );
 
   LoadPlugins();
-	Raise();
-	Layout();
+  Raise();
+  Layout();
 }
 
 void WxFrame::ChangeNavType::update() {
@@ -558,6 +560,65 @@ void WxFrame::HandleActionKey::update() {
   }
 }
 
+void WxFrame::UpdateStereoModeMenu::update() {
+  string stereo_mode = static_cast< SFString * >(routes_in[0])->getValue();
+  frame->stereoRenderMode->Enable( FRAME_QUADBUFFERED, !frame->a_file_is_loaded );
+  if( stereo_mode == "MONO" )
+    frame->stereoRenderMode->Check( FRAME_MONO, true );
+  else if( stereo_mode == "QUAD_BUFFERED_STEREO" ) {
+    frame->stereoRenderMode->Check( FRAME_QUADBUFFERED, true );
+    if( frame->a_file_is_loaded ) {
+      frame->stereoRenderMode->Enable( FRAME_MONO, false );
+      frame->stereoRenderMode->Enable( FRAME_QUADBUFFERED, true );
+      frame->stereoRenderMode->Enable( FRAME_HORZSPLIT, false );
+      frame->stereoRenderMode->Enable( FRAME_HORZSPLITKEEPASPECT, false );
+      frame->stereoRenderMode->Enable( FRAME_VERTSPLIT, false );
+      frame->stereoRenderMode->Enable( FRAME_VERTSPLITKEEPASPECT, false );
+      frame->stereoRenderMode->Enable( FRAME_HORZINTERLACED, false );
+      frame->stereoRenderMode->Enable( FRAME_VERTINTERLACED, false );
+      frame->stereoRenderMode->Enable( FRAME_CHECKERINTERLACED, false );
+      frame->stereoRenderMode->Enable( FRAME_SHARPDISPLAY, false );
+      frame->stereoRenderMode->Enable( FRAME_REDBLUE, false );
+      frame->stereoRenderMode->Enable( FRAME_REDGREEN, false );
+      frame->stereoRenderMode->Enable( FRAME_REDCYAN, false );
+      frame->stereoRenderMode->Enable( FRAME_HDMI720P, false );
+      frame->stereoRenderMode->Enable( FRAME_HDMI1080P, false );
+#ifdef HAVE_DX9
+      frame->stereoRenderMode->Enable( FRAME_NVIDIA_3DVISION, false );
+#endif
+    }
+  } else if( stereo_mode == "HORIZONTAL_SPLIT" )
+    frame->stereoRenderMode->Check( FRAME_HORZSPLIT, true );
+  else if( stereo_mode == "HORIZONTAL_SPLIT_KEEP_RATIO" )
+    frame->stereoRenderMode->Check( FRAME_HORZSPLITKEEPASPECT, true );
+  else if( stereo_mode == "VERTICAL_SPLIT" )
+    frame->stereoRenderMode->Check( FRAME_VERTSPLIT, true );
+  else if( stereo_mode == "VERTICAL_SPLIT_KEEP_RATIO" )
+    frame->stereoRenderMode->Check( FRAME_VERTSPLITKEEPASPECT, true );
+  else if( stereo_mode == "HORIZONTAL_INTERLACED" )
+    frame->stereoRenderMode->Check( FRAME_HORZINTERLACED, true );
+  else if( stereo_mode == "VERTICAL_INTERLACED" )
+    frame->stereoRenderMode->Check( FRAME_VERTINTERLACED, true );
+  else if( stereo_mode == "CHECKER_INTERLACED" )
+    frame->stereoRenderMode->Check( FRAME_CHECKERINTERLACED, true );
+  else if( stereo_mode == "VERTICAL_INTERLACED_GREEN_SHIFT" )
+    frame->stereoRenderMode->Check( FRAME_SHARPDISPLAY, true );
+  else if( stereo_mode == "RED_BLUE_STEREO" )
+    frame->stereoRenderMode->Check( FRAME_REDBLUE, true );
+  else if( stereo_mode == "RED_GREEN_STEREO" )
+    frame->stereoRenderMode->Check( FRAME_REDGREEN, true );
+  else if( stereo_mode == "RED_CYAN_STEREO" )
+    frame->stereoRenderMode->Check( FRAME_REDCYAN, true );
+  else if( stereo_mode == "HDMI_FRAME_PACKED_720P" )
+    frame->stereoRenderMode->Check( FRAME_HDMI720P, true );
+  else if( stereo_mode == "HDMI_FRAME_PACKED_1080P" )
+    frame->stereoRenderMode->Check( FRAME_HDMI1080P, true );
+#ifdef HAVE_DX9
+  else if( stereo_mode == "NVIDIA_3DVISION" )
+    frame->stereoRenderMode->Check( FRAME_NVIDIA_3DVISION, true );
+#endif
+}
+
 /*******************Event Table*********************/
 BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_EXIT, WxFrame::OnExit)
@@ -567,7 +628,7 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_OPEN_URL, WxFrame::OnOpenFileURL)
   EVT_MENU (FRAME_CLOSE, WxFrame::OnCloseFile)
   EVT_MENU (FRAME_CHOOSEDIR, WxFrame::OnChooseDir)
-  EVT_MENU (FRAME_FULLSCREEN, WxFrame::OnFullscreen)
+  EVT_MENU (FRAME_FULLSCREEN, WxFrame::ToggleFullscreen)
   EVT_MENU (FRAME_SETTINGS, WxFrame::OnSettings)
   EVT_MENU (FRAME_TOGGLE_FULLSCREEN, WxFrame::ToggleFullscreen)
   EVT_MENU (FRAME_MIRROR, WxFrame::MirrorScene)
@@ -582,9 +643,9 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_PLUGINS, WxFrame::ShowPluginsDialog)
   EVT_MENU (FRAME_FRAMERATE, WxFrame::ShowFrameRate)
   EVT_MENU (FRAME_PROGRAMSETTINGS, WxFrame::ShowProgramSettings)
-	EVT_MENU (FRAME_KEEPVIEWPOINTONLOAD, WxFrame::OnKeepViewpointOnLoadCheck )
-	EVT_MENU (FRAME_ROUTESENDSEVENTS, WxFrame::OnRouteSendsEventsCheck )
-	EVT_MENU (FRAME_LOADTEXTURESINTHREAD, WxFrame::OnLoadTexturesInThreadCheck )
+  EVT_MENU (FRAME_KEEPVIEWPOINTONLOAD, WxFrame::OnKeepViewpointOnLoadCheck )
+  EVT_MENU (FRAME_ROUTESENDSEVENTS, WxFrame::OnRouteSendsEventsCheck )
+  EVT_MENU (FRAME_LOADTEXTURESINTHREAD, WxFrame::OnLoadTexturesInThreadCheck )
   EVT_MENU (FRAME_VIEWPOINT, WxFrame::ChangeViewpoint)
   EVT_MENU (FRAME_RESET_VIEWPOINT, WxFrame::ResetViewpoint)
   EVT_MENU (FRAME_NAVIGATION, WxFrame::ChangeNavigation)
@@ -653,11 +714,11 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
       go->useCaching->setValue( event.IsChecked() );
     } else if( id == ID_CACHE_ONLY_GEOMS ){ 
       go->cacheOnlyGeometries->setValue( event.IsChecked() );
-	} else if( id == ID_CULLING ) {
-	  int i = event.GetSelection();
-	  if (i == 0 ) go->frustumCullingMode->setValue(WxFrameInternals::no_culling);
-	  else if (i == 1 ) go->frustumCullingMode->setValue(WxFrameInternals::geometry);
-	  else if (i == 2 ) go->frustumCullingMode->setValue(WxFrameInternals::all);
+  } else if( id == ID_CULLING ) {
+    int i = event.GetSelection();
+    if (i == 0 ) go->frustumCullingMode->setValue(WxFrameInternals::no_culling);
+    else if (i == 1 ) go->frustumCullingMode->setValue(WxFrameInternals::geometry);
+    else if (i == 2 ) go->frustumCullingMode->setValue(WxFrameInternals::all);
     } else if (id == ID_DEFAULT_SHADOWS ) {
       go->useDefaultShadows->setValue( event.IsChecked() );
     } else if (id == ID_VERTEX_BUFFER_OBJECT) {
@@ -754,14 +815,14 @@ void SettingsDialog::handleSliderEvent( wxScrollEvent &event ) {
   GraphicsOptions *go = NULL;
     wx_frame->global_settings->getOptionNode( go );
   int id = event.GetId();
-	if (id == ID_SHADOW_DARKNESS ) {
-	  H3DFloat new_value = H3DFloat( event.GetPosition() ) /
-			shadow_darkness_slider->GetMax();
-		stringstream darkness_value;
-		darkness_value << new_value ;
-		shadow_darkness_static_text->SetLabel( wxString( darkness_value.str().c_str(), wxConvUTF8 ));
-		go->defaultShadowDarkness->setValue( new_value );
-	}
+  if (id == ID_SHADOW_DARKNESS ) {
+    H3DFloat new_value = H3DFloat( event.GetPosition() ) /
+      shadow_darkness_slider->GetMax();
+    stringstream darkness_value;
+    darkness_value << new_value ;
+    shadow_darkness_static_text->SetLabel( wxString( darkness_value.str().c_str(), wxConvUTF8 ));
+    go->defaultShadowDarkness->setValue( new_value );
+  }
 }
 
 void SettingsDialog::handleSpinEvent (wxSpinEvent & event) {
@@ -798,7 +859,7 @@ void SettingsDialog::handleSpinEvent (wxSpinEvent & event) {
 }
 
 bool WxFrame::loadIniFile() {
-	char *r = getenv( "H3D_ROOT" );
+  char *r = getenv( "H3D_ROOT" );
   string h3d_root = r ? r : ""; 
 
 #ifdef WIN32
@@ -827,8 +888,8 @@ bool WxFrame::loadIniFile() {
     check_ini_file.close();
   }
 
-	INIFile ini_file( ini_file_path );
-	common_path =  h3d_root + "/settings/common/";
+  INIFile ini_file( ini_file_path );
+  common_path =  h3d_root + "/settings/common/";
   settings_path = 
     GET_ENV_INI_DEFAULT( "H3D_DISPLAY",
                          h3d_root + "/settings/display/",
@@ -896,7 +957,7 @@ bool WxFrame::loadIniFile() {
                  << "\" on environment "
                  << "variable H3D_MIRRORED. Must be TRUE or FALSE. "<< endl;
   }
-	return ini_file_exists;
+  return ini_file_exists;
 }
 
 
@@ -914,13 +975,13 @@ bool WxFrame::loadFile( const string &filename) {
   viewpoint.reset( NULL );
   tree_view_dialog->clearTreeView();
 
-	bool ini_file_exists = loadIniFile();
+  bool ini_file_exists = loadIniFile();
 
   bool use_space_mouse = false;
 
   // Loading X3D file and setting up VR environment ---
   
-	DeviceInfo *di_before = DeviceInfo::getActive();
+  DeviceInfo *di_before = DeviceInfo::getActive();
   try {
     X3D::DEFNodes dn;
 
@@ -994,7 +1055,6 @@ bool WxFrame::loadFile( const string &filename) {
 
     //Enable graphical rendering options in rendererMenu
     rendererMenu->Enable(FRAME_RENDERMODE, true);
-    rendererMenu->Enable(FRAME_STEREORENDERMODE, true);
     rendererMenu->Enable(FRAME_CHOOSERENDERER, true);
 
     /****************************Device Info****************************/
@@ -1142,41 +1202,11 @@ bool WxFrame::loadFile( const string &filename) {
       this->glwindow->fullscreen->setValue( ini_fullscreen );
       this->glwindow->mirrored->setValue( ini_mirrored );
       this->glwindow->manualCursorControl->setValue( manualCursorControl );
-      this->glwindow->renderMode->setValue( render_mode );
-      if( render_mode == "MONO" )
-        stereoRenderMode->Check( FRAME_MONO, true );
-      else if( render_mode == "QUAD_BUFFERED_STEREO" )
-        stereoRenderMode->Check( FRAME_QUADBUFFERED, true );
-      else if( render_mode == "HORIZONTAL_SPLIT" )
-        stereoRenderMode->Check( FRAME_HORZSPLIT, true );
-      else if( render_mode == "HORIZONTAL_SPLIT_KEEP_RATIO" )
-        stereoRenderMode->Check( FRAME_HORZSPLITKEEPASPECT, true );
-      else if( render_mode == "VERTICAL_SPLIT" )
-        stereoRenderMode->Check( FRAME_VERTSPLIT, true );
-      else if( render_mode == "VERTICAL_SPLIT_KEEP_RATIO" )
-        stereoRenderMode->Check( FRAME_VERTSPLITKEEPASPECT, true );
-      else if( render_mode == "HORIZONTAL_INTERLACED" )
-        stereoRenderMode->Check( FRAME_HORZINTERLACED, true );
-      else if( render_mode == "VERTICAL_INTERLACED" )
-        stereoRenderMode->Check( FRAME_VERTINTERLACED, true );
-      else if( render_mode == "CHECKER_INTERLACED" )
-        stereoRenderMode->Check( FRAME_CHECKERINTERLACED, true );
-      else if( render_mode == "VERTICAL_INTERLACED_GREEN_SHIFT" )
-        stereoRenderMode->Check( FRAME_SHARPDISPLAY, true );
-      else if( render_mode == "RED_BLUE_STEREO" )
-        stereoRenderMode->Check( FRAME_REDBLUE, true );
-      else if( render_mode == "RED_GREEN_STEREO" )
-        stereoRenderMode->Check( FRAME_REDGREEN, true );
-      else if( render_mode == "RED_CYAN_STEREO" )
-        stereoRenderMode->Check( FRAME_REDCYAN, true );
-      else if( render_mode == "HDMI_FRAME_PACKED_720P" )
-        stereoRenderMode->Check( FRAME_HDMI720P, true );
-      else if( render_mode == "HDMI_FRAME_PACKED_1080P" )
-        stereoRenderMode->Check( FRAME_HDMI1080P, true );
-#ifdef HAVE_DX9
-      else if( render_mode == "NVIDIA_3DVISION" )
-        stereoRenderMode->Check( FRAME_NVIDIA_3DVISION, true );
-#endif
+    }
+    if( !a_file_is_loaded ) {
+      a_file_is_loaded = true;
+      // Just making sure that we trigger update of the menu.
+      this->glwindow->renderMode->touch();
     }
 
     tree_view_dialog->showEntireSceneAsTree( H3DViewerTreeViewDialog::EXPAND_GROUP );
@@ -1186,11 +1216,11 @@ bool WxFrame::loadFile( const string &filename) {
     }
     catch (const Exception::H3DException &e) {
     viewpoint.reset( new Viewpoint );
-		if( !di_before ) {
-			DeviceInfo *di = DeviceInfo::getActive();
-			if( di )
-				di->set_bind->setValue( false );
-		}
+    if( !di_before ) {
+      DeviceInfo *di = DeviceInfo::getActive();
+      if( di )
+        di->set_bind->setValue( false );
+    }
     stringstream org,reformated;
     org << e;
     insertLineBreak(org,reformated,100);
@@ -1205,32 +1235,32 @@ bool WxFrame::loadFile( const string &filename) {
   global_settings.reset( GlobalSettings::getActive() );
   if( !global_settings.get() ) {
     global_settings.reset( new GlobalSettings );
-		// Set x3dROUTESendsEvent
-		global_settings->x3dROUTESendsEvent->setValue( advancedMenu->IsChecked( FRAME_ROUTESENDSEVENTS ) );
-		// Set loadTexturesInThread
-		global_settings->loadTexturesInThread->setValue( advancedMenu->IsChecked( FRAME_LOADTEXTURESINTHREAD ) );
-		wxCommandEvent fake_event;
-		if( !renderMode->IsChecked( FRAME_RENDERMODE_DEFAULT ) ) {
-		  if( renderMode->IsChecked(FRAME_RENDERMODE_FILLED ) )
-				global_settings->renderMode->setValue( "FILLED" );
-			else if( renderMode->IsChecked(FRAME_RENDERMODE_WIREFRAME ) )
-				global_settings->renderMode->setValue( "WIREFRAME" );
-			else if( renderMode->IsChecked(FRAME_RENDERMODE_POINTS ) )
-				global_settings->renderMode->setValue( "POINTS" );
-		}
+    // Set x3dROUTESendsEvent
+    global_settings->x3dROUTESendsEvent->setValue( advancedMenu->IsChecked( FRAME_ROUTESENDSEVENTS ) );
+    // Set loadTexturesInThread
+    global_settings->loadTexturesInThread->setValue( advancedMenu->IsChecked( FRAME_LOADTEXTURESINTHREAD ) );
+    wxCommandEvent fake_event;
+    if( !renderMode->IsChecked( FRAME_RENDERMODE_DEFAULT ) ) {
+      if( renderMode->IsChecked(FRAME_RENDERMODE_FILLED ) )
+        global_settings->renderMode->setValue( "FILLED" );
+      else if( renderMode->IsChecked(FRAME_RENDERMODE_WIREFRAME ) )
+        global_settings->renderMode->setValue( "WIREFRAME" );
+      else if( renderMode->IsChecked(FRAME_RENDERMODE_POINTS ) )
+        global_settings->renderMode->setValue( "POINTS" );
+    }
   } else {
-		advancedMenu->Check( FRAME_ROUTESENDSEVENTS, global_settings->x3dROUTESendsEvent->getValue() );
-		advancedMenu->Check( FRAME_LOADTEXTURESINTHREAD, global_settings->loadTexturesInThread->getValue() );
-		string global_settings_render_mode = global_settings->renderMode->getValue();
-		if( global_settings_render_mode == "DEFAULT" )
-			renderMode->Check( FRAME_RENDERMODE_DEFAULT, true );
-		else if( global_settings_render_mode == "FILLED" )
-			renderMode->Check( FRAME_RENDERMODE_FILLED, true );
-		else if( global_settings_render_mode == "WIREFRAME" )
-			renderMode->Check( FRAME_RENDERMODE_WIREFRAME, true );
-		else if( global_settings_render_mode == "POINTS" )
-			renderMode->Check( FRAME_RENDERMODE_POINTS, true );
-	}
+    advancedMenu->Check( FRAME_ROUTESENDSEVENTS, global_settings->x3dROUTESendsEvent->getValue() );
+    advancedMenu->Check( FRAME_LOADTEXTURESINTHREAD, global_settings->loadTexturesInThread->getValue() );
+    string global_settings_render_mode = global_settings->renderMode->getValue();
+    if( global_settings_render_mode == "DEFAULT" )
+      renderMode->Check( FRAME_RENDERMODE_DEFAULT, true );
+    else if( global_settings_render_mode == "FILLED" )
+      renderMode->Check( FRAME_RENDERMODE_FILLED, true );
+    else if( global_settings_render_mode == "WIREFRAME" )
+      renderMode->Check( FRAME_RENDERMODE_WIREFRAME, true );
+    else if( global_settings_render_mode == "POINTS" )
+      renderMode->Check( FRAME_RENDERMODE_POINTS, true );
+  }
 
   // Set CollisionOptions or update page.
   CollisionOptions * co = 0;
@@ -1314,7 +1344,7 @@ bool WxFrame::loadFile( const string &filename) {
       SetLabel( wxString( dsd.str().c_str(), wxConvUTF8 ) );
     settings->shadow_darkness_slider->
       SetValue( go->defaultShadowDarkness->getValue() *
-			          settings->shadow_darkness_slider->GetMax() );
+                settings->shadow_darkness_slider->GetMax() );
     
     stringstream dsdo;
     dsdo << go->defaultShadowDepthOffset->getValue();
@@ -1341,7 +1371,7 @@ bool WxFrame::loadFile( const string &filename) {
     
     go->defaultShadowDarkness->setValue(
                     H3DFloat( settings->shadow_darkness_slider->GetValue() ) /
-										settings->shadow_darkness_slider->GetMax() );
+                    settings->shadow_darkness_slider->GetMax() );
     go->defaultShadowDepthOffset->setValueFromString(
                     toStr( settings->shadow_depth_offset_text->GetValue() ) );
 
@@ -1529,16 +1559,16 @@ bool WxFrame::loadFile( const string &filename) {
 //Clear data when closing file
 void WxFrame::clearData () {
   scene->setSceneRoot( NULL );
-	h3dConfig->SetPath(wxT("/Settings"));
+  h3dConfig->SetPath(wxT("/Settings"));
   bool new_viewpoint_on_load = true;
   h3dConfig->Read(wxT("new_viewpoint_on_load"), &new_viewpoint_on_load);
-	if( new_viewpoint_on_load ) {
-		X3DViewpointNode::ViewpointList viewpoint_list = X3DViewpointNode::getAllViewpoints();
-		for( X3DViewpointNode::ViewpointList::iterator i = viewpoint_list.begin();
-				 i != viewpoint_list.end(); ++i ) {
-			(*i)->set_bind->setValue( false );
-		}
-	}
+  if( new_viewpoint_on_load ) {
+    X3DViewpointNode::ViewpointList viewpoint_list = X3DViewpointNode::getAllViewpoints();
+    for( X3DViewpointNode::ViewpointList::iterator i = viewpoint_list.begin();
+         i != viewpoint_list.end(); ++i ) {
+      (*i)->set_bind->setValue( false );
+    }
+  }
   viewpoint.reset( new Viewpoint );
 
   DestroyViewpointsMenu();
@@ -1560,9 +1590,9 @@ void WxFrame::clearData () {
       navigationMenu->Remove( temp_menu_item->GetId() );
     }
   }
-	if( global_settings.get() ) {
-		global_settings->set_bind->setValue( false );
-	}
+  if( global_settings.get() ) {
+    global_settings->set_bind->setValue( false );
+  }
   global_settings.reset( NULL );
   stereo_info.reset( NULL );
 }
@@ -1656,10 +1686,11 @@ void WxFrame::OnCloseFile(wxCommandEvent & event) {
   menuBar->EnableTop(2, false);
   menuBar->EnableTop(3, false);
 
+  a_file_is_loaded = false;
+  this->glwindow->renderMode->touch();
   //Disable items in rendererMenu again
   rendererMenu->Enable(FRAME_CHOOSERENDERER, false);
   rendererMenu->Enable(FRAME_RENDERMODE, false);
-  rendererMenu->Enable(FRAME_STEREORENDERMODE, false);
 }
 
 void WxFrame::OnChooseDir(wxCommandEvent & event) {
@@ -1703,31 +1734,25 @@ void WxFrame::OnIdle(wxIdleEvent &event) {
   }
 }
 
-//Fullscreen mode
-void WxFrame::OnFullscreen (wxCommandEvent & event)
-{
-  SetFullscreen( true );
-}
-
 void WxFrame::SetFullscreen( bool fullscreen ) {
   if( glwindow->fullscreen->getValue() != fullscreen ) {
     if( fullscreen ) {
-			long style = getFullScreenStyle();
+      long style = getFullScreenStyle();
       ShowFullScreen(true, style);
-			if( style != wxFULLSCREEN_ALL ) {
-				hideAllDialogs();
-			}
-			glwindow->fullscreen->setValue( true );
+      if( style != wxFULLSCREEN_ALL ) {
+        hideAllDialogs();
+      }
+      glwindow->fullscreen->setValue( true );
       rendererMenu->Check(FRAME_FULLSCREEN, true);
       SetStatusText(wxT("Press F11 to exit fullscreen mode"), 0);
       SetStatusText(wxT("Viewing in Fullscreen"), 1);
     } else {
-			ShowFullScreen(false, wxFULLSCREEN_ALL);
-			glwindow->fullscreen->setValue( false );
+      ShowFullScreen(false, wxFULLSCREEN_ALL);
+      glwindow->fullscreen->setValue( false );
       rendererMenu->Check(FRAME_FULLSCREEN, false);
       SetStatusText(currentFilename, 0);
       SetStatusText(currentPath, 1);
-			showPreviouslyHiddenDialogs();
+      showPreviouslyHiddenDialogs();
     }
   }
 }
@@ -1922,39 +1947,39 @@ void WxFrame::ChangeRenderer(wxCommandEvent & event)
 //Show console event
 void WxFrame::ShowConsole(wxCommandEvent & event)
 {
-	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
-			GetScreenRect().Intersects( the_console->GetScreenRect() ) ) ) {
-		if( the_console->IsIconized() )
-			the_console->Iconize(false);
-		if( !the_console->Show())
-		// already shown, bring it up
-			the_console->SetFocus();
-	}
+  if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
+      GetScreenRect().Intersects( the_console->GetScreenRect() ) ) ) {
+    if( the_console->IsIconized() )
+      the_console->Iconize(false);
+    if( !the_console->Show())
+    // already shown, bring it up
+      the_console->SetFocus();
+  }
 }
 
 #ifdef HAVE_PROFILER
 //Show profiled result event
 void WxFrame::ShowProfiledResult(wxCommandEvent & event)
 {
-	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
-			GetScreenRect().Intersects( the_profiled_result->GetScreenRect() ) ) ) {
-		if( the_profiled_result->IsIconized() )
-			the_profiled_result->Iconize(false);
-		if( !the_profiled_result->Show())
-		// already shown, bring it up
-			the_profiled_result->SetFocus();
-	}
+  if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
+      GetScreenRect().Intersects( the_profiled_result->GetScreenRect() ) ) ) {
+    if( the_profiled_result->IsIconized() )
+      the_profiled_result->Iconize(false);
+    if( !the_profiled_result->Show())
+    // already shown, bring it up
+      the_profiled_result->SetFocus();
+  }
 }
 #endif
 //Show console event
 void WxFrame::ShowTreeView(wxCommandEvent & event)
 {
-	if( tree_view_dialog->IsIconized() )
-		tree_view_dialog->Iconize(false);
-	if (!tree_view_dialog->Show()) {
-		// already shown, bring it up
-		tree_view_dialog->SetFocus();
-	}
+  if( tree_view_dialog->IsIconized() )
+    tree_view_dialog->Iconize(false);
+  if (!tree_view_dialog->Show()) {
+    // already shown, bring it up
+    tree_view_dialog->SetFocus();
+  }
 }
 
 //Show program settings window
@@ -1962,11 +1987,11 @@ void WxFrame::ShowProgramSettings(wxCommandEvent & event)
 {
 #ifdef HAVE_WXPROPGRID
   if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
-	GetScreenRect().Intersects( program_settings_dialog->GetScreenRect() ) ) ) {
+      GetScreenRect().Intersects( program_settings_dialog->GetScreenRect() ) ) ) {
     if( program_settings_dialog->IsIconized() )
       program_settings_dialog->Iconize(false);
     if( !program_settings_dialog->Show())
-      // already shown, bring it up
+    // already shown, bring it up
       program_settings_dialog->SetFocus();
   }
   program_settings_dialog->displayFieldsFromProgramSettings();
@@ -1976,37 +2001,37 @@ void WxFrame::ShowProgramSettings(wxCommandEvent & event)
 // Save option
 void WxFrame::OnKeepViewpointOnLoadCheck(wxCommandEvent & event)
 {
-	h3dConfig = wxConfigBase::Get();
+  h3dConfig = wxConfigBase::Get();
   h3dConfig->SetPath(wxT("/Settings"));
   h3dConfig->Write(wxT("new_viewpoint_on_load"), event.IsChecked());
 }
 
 void WxFrame::OnRouteSendsEventsCheck(wxCommandEvent & event)
 {
-	h3dConfig = wxConfigBase::Get();
+  h3dConfig = wxConfigBase::Get();
   h3dConfig->SetPath(wxT("/Settings"));
   h3dConfig->Write(wxT("route_sends_events"), event.IsChecked());
-	global_settings->x3dROUTESendsEvent->setValue( event.IsChecked() );
+  global_settings->x3dROUTESendsEvent->setValue( event.IsChecked() );
 }
 
 void WxFrame::OnLoadTexturesInThreadCheck(wxCommandEvent & event)
 {
-	h3dConfig = wxConfigBase::Get();
+  h3dConfig = wxConfigBase::Get();
   h3dConfig->SetPath(wxT("/Settings"));
   h3dConfig->Write(wxT("load_textures_in_thread"), event.IsChecked());
-	global_settings->loadTexturesInThread->setValue( event.IsChecked() );
+  global_settings->loadTexturesInThread->setValue( event.IsChecked() );
 }
 
 void WxFrame::ShowPluginsDialog(wxCommandEvent & event)
 {
-	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
-			GetScreenRect().Intersects( plugins_dialog->GetScreenRect() ) ) ) {
-		if( plugins_dialog->IsIconized() )
-			plugins_dialog->Iconize(false);
-		if( !plugins_dialog->Show())
-		// already shown, bring it up
-			plugins_dialog->SetFocus();
-	}
+  if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
+      GetScreenRect().Intersects( plugins_dialog->GetScreenRect() ) ) ) {
+    if( plugins_dialog->IsIconized() )
+      plugins_dialog->Iconize(false);
+    if( !plugins_dialog->Show())
+    // already shown, bring it up
+      plugins_dialog->SetFocus();
+  }
 }
 
 void WxFrame::ShowFrameRate(wxCommandEvent & event)
@@ -2019,14 +2044,14 @@ void WxFrame::ShowFrameRate(wxCommandEvent & event)
   frameRates->graphics_rate->SetLabel( wxT("100") );
   frameRates->haptics_rate->SetLabel( wxT("1000") );
   frameRates->haptics_time->SetLabel( wxT("100") );
-	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
-			GetScreenRect().Intersects( frameRates->GetScreenRect() ) ) ) {
-		if( frameRates->IsIconized() )
-			frameRates->Iconize(false);
-		if( !frameRates->Show())
-		// already shown, bring it up
-			frameRates->SetFocus();
-	}
+  if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
+      GetScreenRect().Intersects( frameRates->GetScreenRect() ) ) ) {
+    if( frameRates->IsIconized() )
+      frameRates->Iconize(false);
+    if( !frameRates->Show())
+    // already shown, bring it up
+      frameRates->SetFocus();
+  }
 }
 
 //Change Viewpoint
@@ -2067,10 +2092,10 @@ void WxFrame::ChangeCollision (wxCommandEvent & event) {
 }
 
 void WxFrame::OnSpeed( wxCommandEvent & event ) {
-	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
-			GetScreenRect().Intersects( speed_slider->GetScreenRect() ) ) && !speed_slider->Show()) {
-		speed_slider->Show();
-	}
+  if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
+      GetScreenRect().Intersects( speed_slider->GetScreenRect() ) ) && !speed_slider->Show()) {
+    speed_slider->Show();
+  }
 }
 
 //Change Navigation
@@ -2239,31 +2264,31 @@ void WxFrame::SaveGraphicsCachingOptions( bool to_config ) {
     bool use_caching = go->useCaching->getValue();
     bool cache_only_geometries = go->cacheOnlyGeometries->getValue();
     int caching_delay = go->cachingDelay->getValue();
-	string frustum_culling_mode = go->frustumCullingMode->getValue();
-	bool use_default_shadows = go->useDefaultShadows->getValue();
-	bool prefer_vertex_buffer_object = go->preferVertexBufferObject->getValue();
-	float default_shadow_darkness = go->defaultShadowDarkness->getValue();
-	float default_shadow_depth_offset = go->defaultShadowDepthOffset->getValue();
+  string frustum_culling_mode = go->frustumCullingMode->getValue();
+  bool use_default_shadows = go->useDefaultShadows->getValue();
+  bool prefer_vertex_buffer_object = go->preferVertexBufferObject->getValue();
+  float default_shadow_darkness = go->defaultShadowDarkness->getValue();
+  float default_shadow_depth_offset = go->defaultShadowDepthOffset->getValue();
     if( to_config ) {
       h3dConfig = wxConfigBase::Get();
       h3dConfig->SetPath(wxT("/Settings/GraphicsCaching"));
       h3dConfig->Write( wxT("useCaching"), use_caching );
       h3dConfig->Write( wxT("cacheOnlyGeometries"), cache_only_geometries );
       h3dConfig->Write( wxT("cachingDelay"), caching_delay );
-	  h3dConfig->Write( wxT("frustumCullingMode"), wxString( frustum_culling_mode.c_str(), wxConvUTF8 ));
-	  h3dConfig->Write( wxT("useDefaultShadows"), use_default_shadows);
-	  h3dConfig->Write( wxT("preferVertexBufferObject"), prefer_vertex_buffer_object);
-	  h3dConfig->Write( wxT("defaultShadowDarkness"), default_shadow_darkness);
-	  h3dConfig->Write( wxT("defaultShadowDepthOffset"), default_shadow_depth_offset);
+    h3dConfig->Write( wxT("frustumCullingMode"), wxString( frustum_culling_mode.c_str(), wxConvUTF8 ));
+    h3dConfig->Write( wxT("useDefaultShadows"), use_default_shadows);
+    h3dConfig->Write( wxT("preferVertexBufferObject"), prefer_vertex_buffer_object);
+    h3dConfig->Write( wxT("defaultShadowDarkness"), default_shadow_darkness);
+    h3dConfig->Write( wxT("defaultShadowDepthOffset"), default_shadow_depth_offset);
     } else {
       non_conf_opt.use_caching = use_caching;
       non_conf_opt.cache_only_geometries = cache_only_geometries;
       non_conf_opt.caching_delay = caching_delay;
-	  non_conf_opt.frustum_culling_mode = frustum_culling_mode;
-	  non_conf_opt.use_default_shadows = use_default_shadows;
-	  non_conf_opt.prefer_vertex_buffer_object = prefer_vertex_buffer_object;
-	  non_conf_opt.default_shadow_darkness = default_shadow_darkness;
-	  non_conf_opt.default_shadow_depth_offset = default_shadow_depth_offset;
+    non_conf_opt.frustum_culling_mode = frustum_culling_mode;
+    non_conf_opt.use_default_shadows = use_default_shadows;
+    non_conf_opt.prefer_vertex_buffer_object = prefer_vertex_buffer_object;
+    non_conf_opt.default_shadow_darkness = default_shadow_darkness;
+    non_conf_opt.default_shadow_depth_offset = default_shadow_depth_offset;
     }
   }
 }
@@ -2574,10 +2599,10 @@ void WxFrame::LoadSettings( bool from_config ) {
         cache_only_geometries = go->cacheOnlyGeometries->getValue();
         caching_delay = go->cachingDelay->getValue();
         frustum_culling_mode = go->frustumCullingMode->getValue();
-		use_default_shadows = go->useDefaultShadows->getValue();
-		prefer_vertex_buffer_object = go->preferVertexBufferObject->getValue();
-		default_shadow_darkness = go->defaultShadowDarkness->getValue();
-		default_shadow_depth_offset = go->defaultShadowDepthOffset->getValue();
+    use_default_shadows = go->useDefaultShadows->getValue();
+    prefer_vertex_buffer_object = go->preferVertexBufferObject->getValue();
+    default_shadow_darkness = go->defaultShadowDarkness->getValue();
+    default_shadow_depth_offset = go->defaultShadowDepthOffset->getValue();
       }
     } else {
       use_caching = non_conf_opt.use_caching;
@@ -2987,10 +3012,10 @@ bool WxFrame::validateNavType (string a) {
 
 void WxFrame::OnSettings (wxCommandEvent & event) {
   SaveSettings( false );
-	if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
-			GetScreenRect().Intersects( settings->GetScreenRect() ) ) && !settings->Show()) {
-		settings->SetFocus();
-	}
+  if (!(check_dialogs_position_because_of_fullscreen_and_not_quadro &&
+      GetScreenRect().Intersects( settings->GetScreenRect() ) ) && !settings->Show()) {
+    settings->SetFocus();
+  }
 }
 
 
@@ -3190,61 +3215,61 @@ list< Node * > WxFrame::GetTopLevelViews() {
 }
 
 long WxFrame::getFullScreenStyle() {
-	long style = wxFULLSCREEN_ALL;
+  long style = wxFULLSCREEN_ALL;
 #if defined( H3D_WINDOWS ) && defined( H3D_MODIFICATION_MS_BUILD_OF_WX )
-			H3DWindowNode::RenderMode::Mode stereo_mode = glwindow->renderMode->getRenderMode();
-			if( stereo_mode == H3DWindowNode::RenderMode::QUAD_BUFFERED_STEREO ) {
-				AutoRef< GraphicsHardwareInfo > graphics_hardware_info( new GraphicsHardwareInfo );
-				string vendor = graphics_hardware_info->vendor->getValue();
-				transform( vendor.begin(), vendor.end(), vendor.begin(), ::tolower );
-				if( vendor.find( "nvidia" ) != string::npos ) {
-					string renderer = graphics_hardware_info->renderer->getValue();
-					transform( renderer.begin(), renderer.end(), renderer.begin(), ::tolower );
-					if( renderer.find( "quadro" ) == string::npos ) {
-						style |= wxFULLSCREEN_POPUP;
-						check_dialogs_position_because_of_fullscreen_and_not_quadro = true;
-					}
-				}
-			}
+      H3DWindowNode::RenderMode::Mode stereo_mode = glwindow->renderMode->getRenderMode();
+      if( stereo_mode == H3DWindowNode::RenderMode::QUAD_BUFFERED_STEREO ) {
+        AutoRef< GraphicsHardwareInfo > graphics_hardware_info( new GraphicsHardwareInfo );
+        string vendor = graphics_hardware_info->vendor->getValue();
+        transform( vendor.begin(), vendor.end(), vendor.begin(), ::tolower );
+        if( vendor.find( "nvidia" ) != string::npos ) {
+          string renderer = graphics_hardware_info->renderer->getValue();
+          transform( renderer.begin(), renderer.end(), renderer.begin(), ::tolower );
+          if( renderer.find( "quadro" ) == string::npos ) {
+            style |= wxFULLSCREEN_POPUP;
+            check_dialogs_position_because_of_fullscreen_and_not_quadro = true;
+          }
+        }
+      }
 #endif
-	return style;
+  return style;
 }
 
 void WxFrame::hideAllDialogs() {
-	wxRect frame_rect = GetScreenRect();
-	if( the_console->IsShown() && frame_rect.Intersects( the_console->GetScreenRect() ) ) {
-		the_console->Show(false);
-		dialogs_hidden_because_of_fullscreen.push_back( the_console );
-	}
-	if( frameRates->IsShown() && frame_rect.Intersects( frameRates->GetScreenRect() ) ) {
-		frameRates->Show(false);
-		dialogs_hidden_because_of_fullscreen.push_back( frameRates );
-	}
+  wxRect frame_rect = GetScreenRect();
+  if( the_console->IsShown() && frame_rect.Intersects( the_console->GetScreenRect() ) ) {
+    the_console->Show(false);
+    dialogs_hidden_because_of_fullscreen.push_back( the_console );
+  }
+  if( frameRates->IsShown() && frame_rect.Intersects( frameRates->GetScreenRect() ) ) {
+    frameRates->Show(false);
+    dialogs_hidden_because_of_fullscreen.push_back( frameRates );
+  }
 #ifdef HAVE_PROFILER
-	if( the_profiled_result->IsShown() && frame_rect.Intersects( the_profiled_result->GetScreenRect() ) ) {
-		the_profiled_result->Show(false);
-		dialogs_hidden_because_of_fullscreen.push_back( the_profiled_result );
-	}
+  if( the_profiled_result->IsShown() && frame_rect.Intersects( the_profiled_result->GetScreenRect() ) ) {
+    the_profiled_result->Show(false);
+    dialogs_hidden_because_of_fullscreen.push_back( the_profiled_result );
+  }
 #endif
-	if( plugins_dialog->IsShown() && frame_rect.Intersects( plugins_dialog->GetScreenRect() ) ) {
-		plugins_dialog->Show(false);
-		dialogs_hidden_because_of_fullscreen.push_back( plugins_dialog );
-	}
-	if( speed_slider->IsShown() && frame_rect.Intersects( speed_slider->GetScreenRect() ) ) {
-		speed_slider->Show(false);
-		dialogs_hidden_because_of_fullscreen.push_back( speed_slider );
-	}
-	if( settings->IsShown() && frame_rect.Intersects( settings->GetScreenRect() ) ) {
-		settings->Show(false);
-		dialogs_hidden_because_of_fullscreen.push_back( settings );
-	}
+  if( plugins_dialog->IsShown() && frame_rect.Intersects( plugins_dialog->GetScreenRect() ) ) {
+    plugins_dialog->Show(false);
+    dialogs_hidden_because_of_fullscreen.push_back( plugins_dialog );
+  }
+  if( speed_slider->IsShown() && frame_rect.Intersects( speed_slider->GetScreenRect() ) ) {
+    speed_slider->Show(false);
+    dialogs_hidden_because_of_fullscreen.push_back( speed_slider );
+  }
+  if( settings->IsShown() && frame_rect.Intersects( settings->GetScreenRect() ) ) {
+    settings->Show(false);
+    dialogs_hidden_because_of_fullscreen.push_back( settings );
+  }
 }
 
 void WxFrame::showPreviouslyHiddenDialogs() {
-	for( unsigned int i = 0; i < dialogs_hidden_because_of_fullscreen.size(); ++i )
-		dialogs_hidden_because_of_fullscreen[i]->Show();
-	dialogs_hidden_because_of_fullscreen.clear();
-	check_dialogs_position_because_of_fullscreen_and_not_quadro = false;
+  for( unsigned int i = 0; i < dialogs_hidden_because_of_fullscreen.size(); ++i )
+    dialogs_hidden_because_of_fullscreen[i]->Show();
+  dialogs_hidden_because_of_fullscreen.clear();
+  check_dialogs_position_because_of_fullscreen_and_not_quadro = false;
 }
 
 void WxFrame::setProxyRadius( float r ) {
@@ -3585,16 +3610,16 @@ wxPanel* SettingsDialog::CreateGeneralSettingsPage(wxWindow* parent ) {
   graphics_caching_sizer->Add(vertex_buffer_object_sizer, 0, wxGROW|wxALL, 0);
   
   wxBoxSizer* shadow_darkness_sizer = new wxBoxSizer( wxHORIZONTAL );
-	shadow_darkness_sizer->Add(new wxStaticText(panel, wxID_ANY,
+  shadow_darkness_sizer->Add(new wxStaticText(panel, wxID_ANY,
                                          wxT("&Default Shadow Darkness:")), 0,
                                          wxALL|wxALIGN_CENTER_VERTICAL, 5);
-	shadow_darkness_static_text = new wxStaticText(panel, wxID_ANY,
+  shadow_darkness_static_text = new wxStaticText(panel, wxID_ANY,
                                          wxT("0.4") );
   shadow_darkness_sizer->Add(shadow_darkness_static_text, 0, wxALL|wxALIGN_CENTER_VERTICAL,5);
 
   shadow_darkness_slider = new wxSlider( panel, ID_SHADOW_DARKNESS, 40, 0, 100,
-																					wxDefaultPosition,
-																					wxSize(80, wxDefaultCoord) );
+                                          wxDefaultPosition,
+                                          wxSize(80, wxDefaultCoord) );
   shadow_darkness_sizer->Add(shadow_darkness_slider, 0, wxALL|wxALIGN_CENTER_VERTICAL,5);
   graphics_caching_sizer->Add(shadow_darkness_sizer, 0, wxGROW|wxALL, 5);
   

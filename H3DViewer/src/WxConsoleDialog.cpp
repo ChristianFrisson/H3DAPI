@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2006-2013, SenseGraphics AB
+//    Copyright 2006-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -133,7 +133,7 @@ WxConsoleDialog::~WxConsoleDialog() {
   
   console_stream.reset( NULL );
   delete tmp_buf;
-	delete clip_board;
+  delete clip_board;
 }
 
 /*******************Event Table*********************/

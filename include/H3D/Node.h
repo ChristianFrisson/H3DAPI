@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -291,10 +291,10 @@ namespace H3D {
           current_pt_device.pop();
       }
 
-			/// Check if there aer any pointing device sensors added.
-			bool hasCurrentPointingDevice() {
-				return !current_pt_device.empty();
-			}
+      /// Check if there aer any pointing device sensors added.
+      bool hasCurrentPointingDevice() {
+        return !current_pt_device.empty();
+      }
 
     protected:
       /// The top of the stack contains the X3DPointingDeviceNodes that is to
@@ -345,7 +345,7 @@ namespace H3D {
     }
     
     /// return a pointer to the field specified by name within this instance 
-    virtual Field *getField( const string &name );
+    virtual Field *getField( const string &name ) const;
     
     /// Add a callback function to be run on destruction of node.
     /// Returns 0 on success.

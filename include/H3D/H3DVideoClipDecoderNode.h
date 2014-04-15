@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -66,7 +66,7 @@ namespace H3D {
       name( _name ),
       create_func( _create ),
       supports_func( _supports ) {
-		  
+
         if( !H3DVideoClipDecoderNode::initialized ) {
           H3DVideoClipDecoderNode::registered_decoders.reset( 
             new list< DecoderRegistration >);

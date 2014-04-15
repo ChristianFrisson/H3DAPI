@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -54,7 +54,7 @@ namespace H3D {
       ~TmpFileNameList() {
         for( list< string >::iterator i = begin();
            i != end(); ++i ) {
-		  std::remove( (*i).c_str() );
+          std::remove( (*i).c_str() );
         }
       }
     };
@@ -119,9 +119,7 @@ namespace H3D {
     /// This function should be implemented by resource resolvers that
     /// extract file data and wish to avoid the use of temporary files
     ///
-    /// \param[in]   url     The URL to resolve
-    /// \param[out]  success True iff the resolver could resolve the URL
-    ///
+    /// \param[in]   urn     The URL to resolve
     static string resolveURLAsString ( const string &urn ) {
       return resolveURLAs(urn,NULL,false,true);
     }
@@ -151,12 +149,12 @@ namespace H3D {
     /// Resolves a URN and returns either a local file name or the file
     /// contents itself.
     ///
-    /// \param urn[in]              The URN to resolve.
-    /// \param is_tmp_file[out]     Will be set to true if the filename returned is temporary
+    /// \param[in] urn              The URN to resolve.
+    /// \param[out] is_tmp_file     Will be set to true if the filename returned is temporary
     ///                             the caller should then remove the file once it is no longer 
     ///                             needed.
-    /// \param folder[in]           True if the resource is a folder.
-    /// \param return_contents[in]  If true then the file contents is returned, 
+    /// \param[in] folder           True if the resource is a folder.
+    /// \param[in] return_contents  If true then the file contents is returned, 
     ///                             otherwise the local file name is returned.
     static string resolveURLAs( const string &urn,
                                 bool *is_tmp_file,

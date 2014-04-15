@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2006-2013, SenseGraphics AB
+//    Copyright 2006-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -108,7 +108,7 @@ public:
     ~SettingsDialog();
 
   void handleSettingsChange (wxCommandEvent & event);
-	void handleSliderEvent( wxScrollEvent &event );
+  void handleSliderEvent( wxScrollEvent &event );
   void handleSpinEvent (wxSpinEvent & event);
   void OnOk (wxCommandEvent & event);
   void OnCancel (wxCommandEvent & event);
@@ -119,7 +119,7 @@ public:
   wxPanel* CreateDebugSettingsPage(wxWindow* parent);
 
   float getProxyRadius() {
-		return X3D::Convert::atof( proxy_radius_text->GetValue().mb_str() );
+    return X3D::Convert::atof( proxy_radius_text->GetValue().mb_str() );
   }
 
   // DebugOptionsUI
@@ -137,7 +137,7 @@ public:
   wxChoice *culling_choice;
   wxCheckBox *default_shadows_checkbox;
   wxSlider *shadow_darkness_slider;
-	wxStaticText *shadow_darkness_static_text;
+  wxStaticText *shadow_darkness_static_text;
   wxTextCtrl *shadow_depth_offset_text;
   wxCheckBox *vertex_buffer_object_checkbox;
 
@@ -185,11 +185,11 @@ protected:
     ID_USE_DISPLAY_LISTS,
     ID_CACHE_ONLY_GEOMS,
     ID_CACHING_DELAY,
-	ID_CULLING,
-	ID_DEFAULT_SHADOWS,
-	ID_VERTEX_BUFFER_OBJECT,
-	ID_SHADOW_DARKNESS,
-	ID_SHADOW_DEPTH_OFFSET,
+    ID_CULLING,
+    ID_DEFAULT_SHADOWS,
+    ID_VERTEX_BUFFER_OBJECT,
+    ID_SHADOW_DARKNESS,
+    ID_SHADOW_DEPTH_OFFSET,
     ID_PROXY_RADIUS,
     ID_BOUND_TYPE,
     ID_MAX_DISTANCE,
@@ -249,8 +249,8 @@ public:
               const wxPoint& _pos, const wxSize& _size,
               long _style = wxDEFAULT_FRAME_STYLE,
               const wxString& name = wxT("H3D Player"),
-							bool cmd_line_filename = false,
-							bool disable_plugin_dialog = false );
+              bool cmd_line_filename = false,
+              bool disable_plugin_dialog = false );
 
   ~WxFrame() {
     if( recentFiles )
@@ -279,7 +279,7 @@ public:
   //Config object to save information (settings, file history etc...)
   wxConfigBase *h3dConfig;
 
-	bool loadIniFile();
+  bool loadIniFile();
   bool loadFile( const std::string &file );
   void clearData();
 
@@ -293,7 +293,6 @@ public:
   void OnWindowExit( wxCloseEvent & event );
   void OnAbout( wxCommandEvent & event );
   void OnHelp( wxCommandEvent & event );
-  void OnFullscreen( wxCommandEvent & event );
   void ToggleFullscreen( wxCommandEvent & event );
   void MirrorScene( wxCommandEvent & event );
   void RenderMode( wxCommandEvent & event );
@@ -306,9 +305,9 @@ public:
   void ShowPluginsDialog( wxCommandEvent & event );
   void ShowFrameRate( wxCommandEvent & event );
   void ShowProgramSettings( wxCommandEvent & event );
-	void OnKeepViewpointOnLoadCheck( wxCommandEvent & event );
-	void OnRouteSendsEventsCheck( wxCommandEvent & event );
-	void OnLoadTexturesInThreadCheck( wxCommandEvent & event );
+  void OnKeepViewpointOnLoadCheck( wxCommandEvent & event );
+  void OnRouteSendsEventsCheck( wxCommandEvent & event );
+  void OnLoadTexturesInThreadCheck( wxCommandEvent & event );
   void ChangeViewpoint( wxCommandEvent & event );
   void ResetViewpoint( wxCommandEvent & event );
   void ChangeNavigation( wxCommandEvent & event );
@@ -353,6 +352,10 @@ public:
 
   void updateFrameRates() {
     frameRates->updateFrameRates();
+  }
+
+  bool isFileLoaded() {
+    return a_file_is_loaded;
   }
 private:
   struct NonConfigOptions {
@@ -417,6 +420,8 @@ private:
 
   // Check if the first file is loaded.
   bool loaded_first_file;
+  // True if a file is currently loaded.
+  bool a_file_is_loaded;
 
   // One time intialization variables
   string settings_path;
@@ -425,8 +430,8 @@ private:
   string stylus_file;
   string viewpoint_file;
   string render_mode;
-	bool ini_fullscreen;
-	bool ini_mirrored;
+  bool ini_fullscreen;
+  bool ini_mirrored;
   bool manualCursorControl;
 
   // Autoref Variables
@@ -464,11 +469,11 @@ public:
 
   AutoRef< StereoInfo > stereo_info;
 
-	long getFullScreenStyle();
-	void hideAllDialogs();
-	void showPreviouslyHiddenDialogs();
-	bool check_dialogs_position_because_of_fullscreen_and_not_quadro;
-	vector< wxWindow * > dialogs_hidden_because_of_fullscreen;
+  long getFullScreenStyle();
+  void hideAllDialogs();
+  void showPreviouslyHiddenDialogs();
+  bool check_dialogs_position_because_of_fullscreen_and_not_quadro;
+  vector< wxWindow * > dialogs_hidden_because_of_fullscreen;
 
   friend class SettingsDialog;
 
@@ -512,6 +517,21 @@ public:
   };
   auto_ptr< HandleActionKey > handle_action_key;
 
+  class UpdateStereoModeMenu : public PeriodicUpdate< SFString > {
+  public:
+    UpdateStereoModeMenu() : frame( NULL ) {}
+
+    inline void setOwnerWindow( WxFrame *_frame ) {
+      frame = _frame;
+    }
+
+  protected:
+    virtual void update();
+
+    WxFrame * frame;
+  };
+  auto_ptr< UpdateStereoModeMenu > updateStereoModeMenu;
+
 protected:
   DECLARE_EVENT_TABLE()
 };
@@ -536,9 +556,9 @@ enum
   FRAME_PLUGINS,
   FRAME_FRAMERATE,
   FRAME_PROGRAMSETTINGS,
-	FRAME_KEEPVIEWPOINTONLOAD,
-	FRAME_ROUTESENDSEVENTS,
-	FRAME_LOADTEXTURESINTHREAD,
+  FRAME_KEEPVIEWPOINTONLOAD,
+  FRAME_ROUTESENDSEVENTS,
+  FRAME_LOADTEXTURESINTHREAD,
   FRAME_SELECTION,
   FRAME_VIEWPOINT,
   FRAME_NAVIGATION = 6500,

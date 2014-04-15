@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -198,7 +198,7 @@ void X3DTexture3DNode::glTexImage( Image *i, GLenum texture_target,
   glPixelStorei( GL_UNPACK_ALIGNMENT, i->byteAlignment() );
 
   if( texture_properties ) {
-    glPushAttrib( GL_PIXEL_MODE_BIT );	
+    glPushAttrib( GL_PIXEL_MODE_BIT );
     const Vec4f &scale = texture_properties->textureTransferScale->getValue();
     glPixelTransferf( GL_RED_SCALE, scale.x );
     glPixelTransferf( GL_BLUE_SCALE, scale.y );
@@ -359,7 +359,7 @@ void X3DTexture3DNode::renderSubImage( Image *image,
 
   TextureProperties *texture_properties = textureProperties->getValue();
   if( texture_properties ) {
-    glPushAttrib( GL_PIXEL_MODE_BIT );	
+    glPushAttrib( GL_PIXEL_MODE_BIT );
     const Vec4f &scale = texture_properties->textureTransferScale->getValue();
     glPixelTransferf( GL_RED_SCALE, scale.x );
     glPixelTransferf( GL_BLUE_SCALE, scale.y );
@@ -390,7 +390,7 @@ void X3DTexture3DNode::enableTexturing() {
   if( texture_target != GL_TEXTURE_2D_ARRAY_EXT ) 
     glEnable( texture_target );
   Image * i = static_cast< Image * >(image->getValue());
-  if( i&&!imageNeedsUpdate->isUpToDate() ) {
+  if( i ) {
     Image::PixelType pixel_type = i->pixelType();
     if( pixel_type == Image::LUMINANCE_ALPHA ||
       pixel_type == Image::RGBA ||
@@ -409,7 +409,7 @@ void X3DTexture3DNode::disableTexturing() {
   if( texture_target != GL_TEXTURE_2D_ARRAY_EXT ) 
     glDisable( texture_target );
   Image * i = static_cast< Image * >(image->getValue());
-  if( i&&!imageNeedsUpdate->isUpToDate() ) {
+  if( i ) {
     Image::PixelType pixel_type = i->pixelType();
     if( pixel_type == Image::LUMINANCE_ALPHA ||
       pixel_type == Image::RGBA ||
@@ -427,10 +427,10 @@ GLenum X3DTexture3DNode::getTextureTarget() {
     if( target_type == "2D_ARRAY" ) return GL_TEXTURE_2D_ARRAY_EXT;
     else if( target_type == "2D_RECTANGLE" ) {
       Console(3) << "Warning: Invalid textureType \"2D_RECTANGLE\" in TextureProperties for "
-		 << "X3DTexture2DNode. \"2D_RECTANGLE\" can only be used for 2D textures" << endl;
+     << "X3DTexture2DNode. \"2D_RECTANGLE\" can only be used for 2D textures" << endl;
     } else if( target_type != "NORMAL" ) {
       Console(3) << "Warning: Invalid textureType: \"" << target_type << "\" in TextureProperties for "
-		 << "X3DTexture3DNode. " << endl;
+     << "X3DTexture3DNode. " << endl;
     }
   }
   return GL_TEXTURE_3D;

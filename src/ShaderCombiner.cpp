@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -57,32 +57,32 @@ namespace ShaderCombinerInternals {
 }
 
 ShaderCombiner::ShaderCombiner( Inst< DisplayList  > _displayList,
-				Inst< SFNode       > _metadata,
-				Inst< SFBool       > _isSelected ,
-				Inst< SFBool       > _isValid,
-				Inst< SFBool       > _activate,
-				Inst< SFString     > _language,
-				Inst< MFShaderPart > _parts,
-				Inst< SFBool       > _suppressUniformWarnings,
-				Inst< MFString > _fragmentShaderString,
-				Inst< MFString > _vertexShaderString,
-				Inst< MFGeneratedFragmentShaderNode > _shaders,
+        Inst< SFNode       > _metadata,
+        Inst< SFBool       > _isSelected ,
+        Inst< SFBool       > _isValid,
+        Inst< SFBool       > _activate,
+        Inst< SFString     > _language,
+        Inst< MFShaderPart > _parts,
+        Inst< SFBool       > _suppressUniformWarnings,
+        Inst< MFString > _fragmentShaderString,
+        Inst< MFString > _vertexShaderString,
+        Inst< MFGeneratedFragmentShaderNode > _shaders,
                                 Inst< SFString     > _function ,
-				Inst< SFString     > _arg0Modifier,
-				Inst< SFString     > _arg1Modifier,
-				Inst< SFFloat      > _value,
-				Inst< SFFloat      > _arg0Value,
-				Inst< SFFloat      > _arg1Value,
-				Inst< SFString     > _alphaFunction ,
-				Inst< SFString     > _alphaArg0Modifier,
-				Inst< SFString     > _alphaArg1Modifier,
-				Inst< SFFloat      > _alphaValue,
-				Inst< SFFloat      > _alphaArg0Value,
-				Inst< SFFloat      > _alphaArg1Value ) :
+        Inst< SFString     > _arg0Modifier,
+        Inst< SFString     > _arg1Modifier,
+        Inst< SFFloat      > _value,
+        Inst< SFFloat      > _arg0Value,
+        Inst< SFFloat      > _arg1Value,
+        Inst< SFString     > _alphaFunction ,
+        Inst< SFString     > _alphaArg0Modifier,
+        Inst< SFString     > _alphaArg1Modifier,
+        Inst< SFFloat      > _alphaValue,
+        Inst< SFFloat      > _alphaArg0Value,
+        Inst< SFFloat      > _alphaArg1Value ) :
   H3DGeneratedFragmentShaderNode( _displayList, _metadata, _isSelected, 
-				  _isValid, _activate, _language, _parts, 
-				  _suppressUniformWarnings, _fragmentShaderString, 
-				  _vertexShaderString ),
+          _isValid, _activate, _language, _parts, 
+          _suppressUniformWarnings, _fragmentShaderString, 
+          _vertexShaderString ),
   shaders( _shaders ),
   function( _function ),
   arg0Modifier( _arg0Modifier ),
@@ -208,55 +208,55 @@ string ShaderCombiner::addUniformFields( ComposedShader *shader  ) {
   const string &f = function->getValue();
   if( f == "BLEND_VALUE" ) {
     s << addUniformToFragmentShader( shader,
-				     uniqueShaderName( "value" ), 
-				     "float",
-				     H3D::Field::INPUT_OUTPUT,
-				     copyAndRouteField( value ) );
+             uniqueShaderName( "value" ), 
+             "float",
+             H3D::Field::INPUT_OUTPUT,
+             copyAndRouteField( value ) );
   }
 
   const string &m0 = arg0Modifier->getValue();
   if( m0 == "ADD" || m0 == "SUBTRACT" || m0 == "MULTIPLY" || m0 == "DIVIDE" ) {
     s << addUniformToFragmentShader( shader,
-				     uniqueShaderName( "arg0Value" ), 
-				     "float",
-				     H3D::Field::INPUT_OUTPUT,
-				     copyAndRouteField( arg0Value ) );
+             uniqueShaderName( "arg0Value" ), 
+             "float",
+             H3D::Field::INPUT_OUTPUT,
+             copyAndRouteField( arg0Value ) );
   }
 
   const string &m1 = arg1Modifier->getValue();
   if( m1 == "ADD" || m1 == "SUBTRACT" || m1 == "MULTIPLY" || m1 == "DIVIDE" ) {
     s << addUniformToFragmentShader( shader,
-				     uniqueShaderName( "arg1Value" ), 
-				     "float",
-				     H3D::Field::INPUT_OUTPUT,
-				     copyAndRouteField( arg1Value ) );
+             uniqueShaderName( "arg1Value" ), 
+             "float",
+             H3D::Field::INPUT_OUTPUT,
+             copyAndRouteField( arg1Value ) );
   }
 
   const string &af = alphaFunction->getValue();
   if( af == "BLEND_VALUE" ) {
     s << addUniformToFragmentShader( shader,
-				     uniqueShaderName( "alphaValue" ), 
-				     "float",
-				     H3D::Field::INPUT_OUTPUT,
-				     copyAndRouteField( alphaValue ) );
+             uniqueShaderName( "alphaValue" ), 
+             "float",
+             H3D::Field::INPUT_OUTPUT,
+             copyAndRouteField( alphaValue ) );
   }
 
   const string &am0 = alphaArg0Modifier->getValue();
   if( am0 == "ADD" || am0 == "SUBTRACT" || am0 == "MULTIPLY" || am0 == "DIVIDE" ) {
     s << addUniformToFragmentShader( shader,
-				     uniqueShaderName( "alphaArg0Value" ), 
-				     "float",
-				     H3D::Field::INPUT_OUTPUT,
-				     copyAndRouteField( alphaArg0Value ) );
+             uniqueShaderName( "alphaArg0Value" ), 
+             "float",
+             H3D::Field::INPUT_OUTPUT,
+             copyAndRouteField( alphaArg0Value ) );
   }
 
   const string &am1 = alphaArg1Modifier->getValue();
   if( am1 == "ADD" || am1 == "SUBTRACT" || am1 == "MULTIPLY" || am1 == "DIVIDE" ) {
     s << addUniformToFragmentShader( shader,
-				     uniqueShaderName( "alphaArg1Value" ), 
-				     "float",
-				     H3D::Field::INPUT_OUTPUT,
-				     copyAndRouteField( alphaArg1Value ) );
+             uniqueShaderName( "alphaArg1Value" ), 
+             "float",
+             H3D::Field::INPUT_OUTPUT,
+             copyAndRouteField( alphaArg1Value ) );
   }
 
   return s.str();
@@ -321,8 +321,8 @@ string ShaderCombiner::getVertexShaderString() {
 }
 
 string ShaderCombiner::applyModifier( const string &variable_name,
-				      const string &modifier,
-				      const string &value ) {
+              const string &modifier,
+              const string &value ) {
 
   if( modifier == "COMPLEMENT" ) {
     return variable_name + ".rgb = 1.0 - " + variable_name + ".rgb;";
@@ -349,8 +349,8 @@ string ShaderCombiner::applyModifier( const string &variable_name,
 }
 
 string ShaderCombiner::applyAlphaModifier( const string &variable_name,
-					   const string &modifier,
-					   const string &value ) {
+             const string &modifier,
+             const string &value ) {
 
   if( modifier == "COMPLEMENT" ) {
     return variable_name + ".a = 1.0 - " + variable_name + ".a;";
@@ -372,9 +372,9 @@ string ShaderCombiner::applyAlphaModifier( const string &variable_name,
 }
 
 string ShaderCombiner::combineFunction( const string &v0,
-					const string &v1,
-					const string &function,
-					const string &value ) {
+          const string &v1,
+          const string &function,
+          const string &value ) {
 
   if( function == "SELECT0" ) {
     return v0;

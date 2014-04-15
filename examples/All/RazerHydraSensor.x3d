@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='2.3'>
+  <head>
+    <meta name='title' content='RazerHydraSensor.x3d'/>
+    <meta name='description' content='H3DAPI RazerHydraSensor.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.
+      Demonstrates the RazerHydraSensor node.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
+  </head>
+  <Scene>
+    <Viewpoint position="0 0 1" />
+  
+    <ExternProtoDeclare name='RazerHydraGeometry' url='"./RazerHydraGeometryProto.x3d#RazerHydraGeometry"'>
+      <field accessType='inputOnly' name='position' type='SFVec3f'/>
+      <field accessType='inputOnly' name='orientation' type='SFRotation'/>
+      <field accessType='inputOutput' name='color' type='SFColor'/>
+      <field accessType='inputOnly' name='button1Color' type='SFBool'/>
+      <field accessType='inputOnly' name='button2Color' type='SFBool'/>
+      <field accessType='inputOnly' name='button3Color' type='SFBool'/>
+      <field accessType='inputOnly' name='button4Color' type='SFBool'/>
+      <field accessType='inputOnly' name='buttonStart' type='SFBool'/>
+      <field accessType='inputOnly' name='buttonTrigger' type='SFFloat'/>
+      <field accessType='inputOnly' name='buttonBumper' type='SFBool'/>
+      <field accessType='inputOnly' name='buttonJoystick' type='SFBool'/>
+      <field accessType='inputOnly' name='joystickPosition' type='SFVec2f'/>
+    </ExternProtoDeclare>
+    
+    <RazerHydraSensor DEF="RAZER_HYDRA"/>
+    <ProtoInstance DEF="RazerHydraC0" name='RazerHydraGeometry' containerField='children' >
+      <fieldValue name='color' value='0.1 0.7 0' />
+    </ProtoInstance>
+    <ProtoInstance DEF="RazerHydraC1" name='RazerHydraGeometry' containerField='children' >
+      <fieldValue name='color' value='0.7 0.1 0' />
+    </ProtoInstance>
+    
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c0Position"
+           toNode="RazerHydraC0" toField="position" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c0Orientation"
+           toNode="RazerHydraC0" toField="orientation" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c0Button1"
+           toNode="RazerHydraC0" toField="button1Color" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c0Button2"
+           toNode="RazerHydraC0" toField="button2Color" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c0Button3"
+           toNode="RazerHydraC0" toField="button3Color" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c0Button4"
+           toNode="RazerHydraC0" toField="button4Color" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c0ButtonStart"
+           toNode="RazerHydraC0" toField="buttonStart" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c0Trigger"
+           toNode="RazerHydraC0" toField="buttonTrigger" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c0ButtonBumper"
+           toNode="RazerHydraC0" toField="buttonBumper" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c0ButtonJoystick"
+           toNode="RazerHydraC0" toField="buttonJoystick" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c0Joystick"
+           toNode="RazerHydraC0" toField="joystickPosition" />
+
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c1Position"
+           toNode="RazerHydraC1" toField="position" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c1Orientation"
+           toNode="RazerHydraC1" toField="orientation" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c1Button1"
+           toNode="RazerHydraC1" toField="button1Color" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c1Button2"
+           toNode="RazerHydraC1" toField="button2Color" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c1Button3"
+           toNode="RazerHydraC1" toField="button3Color" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c1Button4"
+           toNode="RazerHydraC1" toField="button4Color" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c1ButtonStart"
+           toNode="RazerHydraC1" toField="buttonStart" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c1Trigger"
+           toNode="RazerHydraC1" toField="buttonTrigger" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c1ButtonBumper"
+           toNode="RazerHydraC1" toField="buttonBumper" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c1ButtonJoystick"
+           toNode="RazerHydraC1" toField="buttonJoystick" />
+    <ROUTE fromNode="RAZER_HYDRA" fromField="c1Joystick"
+           toNode="RazerHydraC1" toField="joystickPosition" />
+  </Scene>
+</X3D>

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -70,7 +70,8 @@ X3DParametricGeometryNode( _metadata, _bound, _displayList,
                           order( _order ),
                           closed( _closed ),
                           controlPoint (_controlPoint ),
-                          theNurb( NULL ){
+                          theNurb( NULL ),
+                          printWarning( new Field ) {
 
   type_name = "NurbsCurve";
   database.initFields( this );
@@ -87,6 +88,13 @@ X3DParametricGeometryNode( _metadata, _bound, _displayList,
   order->route ( displayList );
   closed->route ( displayList );
   controlPoint->route ( displayList );
+
+  tessellation->route( printWarning );
+  weight->route( printWarning );
+  knot->route( printWarning );
+  order->route( printWarning );
+  closed->route( printWarning );
+  controlPoint->route( printWarning );
 }
 
 
@@ -142,15 +150,21 @@ void NurbsCurve::render( ) {
           ++consecutiveKnots;
           if( consecutiveKnots > (local_order - 1) ){
             if (!generate_uniform) generate_uniform = true;
-            Console(3) << "Warning: There are more consecutive knots than"
-              << " the order -1 in " << getTypeName() << " node( " << getName()
-              << "). Default knots are calculated." << endl;
+            if( !printWarning->isUpToDate() ) {
+              Console(3) << "Warning: There are more consecutive knots than"
+                << " the order -1 in " << getTypeName() << " node( " << getName()
+                << "). Default knots are calculated." << endl;
+                printWarning->upToDate();
+            }
           }
           if( knots[ i - 1 ] > knots[i] ){
             if (!generate_uniform) generate_uniform = true;
-            Console(3) << "Warning: Change the order of the values of knots so "
-              << "they are non-decreasing in " << getTypeName() << " node( "
-              << getName() << ") or default knot values are used." << endl;
+            if( !printWarning->isUpToDate() ) {
+              Console(3) << "Warning: Change the order of the values of knots so "
+                << "they are non-decreasing in " << getTypeName() << " node( "
+                << getName() << ") or default knot values are used." << endl;
+              printWarning->upToDate();
+            }
           }
         }
         else{
@@ -174,19 +188,24 @@ void NurbsCurve::render( ) {
     for (unsigned int j = 0; j<w.size(); ++j){
       weight_float[j]= (GLfloat)w[j];
     }
-  } 
-  else{
-    Console(3) << "Warning: The number of weight values is not the same as "
-      << "the number of control points. Default weight 1.0 is assumed." << endl;
+  } else {
+    if( !printWarning->isUpToDate() ) {
+      Console(3) << "Warning: The number of weight values is not the same as "
+        << "the number of control points. Default weight 1.0 is assumed." << endl;
+      printWarning->upToDate();
+    }
     if( valid_weight ) valid_weight = false;
   }
 
 
   // Order has to be 2 or greater to define the nurbsCurve
   if( local_order < 2 ) {
-    Console(3) << "Warning: order is less than 2 in " << getTypeName()
-      << " node( "  << getName() 
-      << "). Node will not be rendered. " << endl;
+    if( !printWarning->isUpToDate() ) {
+      Console(3) << "Warning: order is less than 2 in " << getTypeName()
+        << " node( "  << getName() 
+        << "). Node will not be rendered. " << endl;
+      printWarning->upToDate();
+    }
     if (valid_order) valid_order=false;
     return;
   }
@@ -194,9 +213,12 @@ void NurbsCurve::render( ) {
   // the number of controlPoints should be equal to 
   // or greater than the order
   if( no_of_control_points < local_order )  {
-    Console(3) << "Warning: The size of controlPoint does not match "
-      << "order in " << getTypeName() << " node( "
-      << getName() << "). Node will not be rendered. " << endl;
+    if( !printWarning->isUpToDate() ) {
+      Console(3) << "Warning: The size of controlPoint does not match "
+        << "order in " << getTypeName() << " node( "
+        << getName() << "). Node will not be rendered. " << endl;
+      printWarning->upToDate();
+    }
     if (valid_controlPoints) valid_controlPoints = false;
     return;
   }
@@ -257,6 +279,7 @@ void NurbsCurve::render( ) {
         );
 
       gluEndCurve( theNurb);
+      delete [] control_point_f;
     }
   }
   delete [] weight_float;

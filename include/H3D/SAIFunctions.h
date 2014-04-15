@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -199,29 +199,29 @@ namespace H3D{
 
     
     struct H3DAPI_API ExecutionContext: public H3DUtil::RefCountedClass {
-			ExecutionContext( bool _clean_up = false ) :
-				clean_up( _clean_up ) {
-				instances.push_back( this );
-			}
+      ExecutionContext( bool _clean_up = false ) :
+        clean_up( _clean_up ) {
+        instances.push_back( this );
+      }
 
-			virtual ~ExecutionContext() {
-				instances.remove( this );
-			}
+      virtual ~ExecutionContext() {
+        instances.remove( this );
+      }
 
-			static list< ExecutionContext * > instances;
+      static list< ExecutionContext * > instances;
 
-			static void cleanUp() {
-				for( list< ExecutionContext * >::iterator i = instances.begin();
-						 i != instances.end(); i++ ) {
-					if( (*i)->clean_up ) {
-						(*i)->root_node.reset( NULL );
-						(*i)->named_nodes.clear();
-						(*i)->exported_nodes.clear();
-						(*i)->protos.clear();
-						(*i)->world_url = "";
-					}
-				}
-			}
+      static void cleanUp() {
+        for( list< ExecutionContext * >::iterator i = instances.begin();
+             i != instances.end(); i++ ) {
+          if( (*i)->clean_up ) {
+            (*i)->root_node.reset( NULL );
+            (*i)->named_nodes.clear();
+            (*i)->exported_nodes.clear();
+            (*i)->protos.clear();
+            (*i)->world_url = "";
+          }
+        }
+      }
       
       //const string &getSpecificationVersion();
       //const string &getEncoding();
@@ -256,7 +256,7 @@ namespace H3D{
       X3D::DEFNodes exported_nodes;
       X3D::PrototypeVector protos;
       string world_url;
-			bool clean_up;
+      bool clean_up;
     };
 
     struct H3DAPI_API SAIScene: public ExecutionContext {
@@ -319,24 +319,24 @@ namespace H3D{
 
       /// The getName service returns the name of the browser. 
       inline string getName() {
-	return name;
+        return name;
       }
 
       /// The setName function sets the name of the browser. 
       inline void setName( const string &n) {
-	name = n;
+        name = n;
       }
 
       /// The getVersion service returns the current version of the 
       /// browser application. The version number of the browser is
       /// implementation dependent.
       inline string getVersion() {
-	return version;
+        return version;
       }
 
       /// The setVersion function sets the version string of the browser. 
       inline void setVersion( const string &n) {
-	version = n;
+        version = n;
       }
 
     /// The getCurrentSpeed service returns the navigation speed 

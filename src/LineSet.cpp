@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -115,7 +115,7 @@ void LineSet::render() {
     // set fog to get fog depth from fog coordinates if available
     if( GLEW_EXT_fog_coord && fog_coord_node ) {
       glPushAttrib( GL_FOG_BIT );
-      glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);	
+      glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);
     }
 
     bool prefer_vertex_buffer_object = false;

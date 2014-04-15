@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -114,7 +114,7 @@ namespace H3D {
     /// \dotfile SimpleAudioClip_audioState.dot
     auto_ptr< SFString > audioState;
 
-	protected:
+  protected:
     /// update the playing of audio
     auto_ptr< UpdateAudioPlay > updateAudioPlay;
   };

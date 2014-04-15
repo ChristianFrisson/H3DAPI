@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -739,52 +739,52 @@ void X3D::writeNodeAsX3DHelp( ostream& os,
 H3DAPI_API void X3D::writeGeometryAsSTL( ostream &os,
                                     X3DGeometryNode *geom,
                                     const string &name,
-																		bool use_binary_format ) {
+                                    bool use_binary_format ) {
   vector< HAPI::Collision::Triangle > tris;
   tris.reserve( geom->nrTriangles() );
   geom->boundTree->getValue()->getAllTriangles( tris );
 
-	if( use_binary_format ) {
-		unsigned char header[80];
-		unsigned int triangles = geom->nrTriangles();
-		unsigned short abc = 0;
+  if( use_binary_format ) {
+    unsigned char header[80];
+    unsigned int triangles = geom->nrTriangles();
+    unsigned short abc = 0;
   
-		os.write( (char*)header, sizeof(header) );
-		os.write( (char*)&triangles, sizeof(unsigned int) );
+    os.write( (char*)header, sizeof(header) );
+    os.write( (char*)&triangles, sizeof(unsigned int) );
   
-		for( vector< HAPI::Collision::Triangle >::iterator i = tris.begin();
-				 i != tris.end(); ++i ) {
+    for( vector< HAPI::Collision::Triangle >::iterator i = tris.begin();
+         i != tris.end(); ++i ) {
     
-			float normal[3] = { (float) (*i).normal.x, 
-													(float) (*i).normal.y, 
-													(float) (*i).normal.z };
+      float normal[3] = { (float) (*i).normal.x, 
+                          (float) (*i).normal.y, 
+                          (float) (*i).normal.z };
     
-			float a[3]      = { (float)(*i).a.x, (float)(*i).a.y, (float)(*i).a.z };
-			float b[3]      = { (float)(*i).b.x, (float)(*i).b.y, (float)(*i).b.z };
-			float c[3]      = { (float)(*i).c.x, (float)(*i).c.y, (float)(*i).c.z };
+      float a[3]      = { (float)(*i).a.x, (float)(*i).a.y, (float)(*i).a.z };
+      float b[3]      = { (float)(*i).b.x, (float)(*i).b.y, (float)(*i).b.z };
+      float c[3]      = { (float)(*i).c.x, (float)(*i).c.y, (float)(*i).c.z };
 
-			os.write( (char*)& normal, sizeof(float) * 3 );
-			os.write( (char*)& a, sizeof(float) * 3 );
-			os.write( (char*)& b, sizeof(float) * 3 );
-			os.write( (char*)& c, sizeof(float) * 3 );
+      os.write( (char*)& normal, sizeof(float) * 3 );
+      os.write( (char*)& a, sizeof(float) * 3 );
+      os.write( (char*)& b, sizeof(float) * 3 );
+      os.write( (char*)& c, sizeof(float) * 3 );
     
-			os.write( (char*)&abc, sizeof(unsigned short) );
-		}
-	} else {
+      os.write( (char*)&abc, sizeof(unsigned short) );
+    }
+  } else {
 
-		os << "solid " << name << endl;
+    os << "solid " << name << endl;
 
-		for( vector< HAPI::Collision::Triangle >::iterator i = tris.begin();
-				 i != tris.end(); ++i ) {
-			os << "  facet normal " << (*i).normal << endl;
-			os << "    outer loop" << endl;
-			os << "      vertex " << (*i).a << endl;
-			os << "      vertex " << (*i).b << endl;
-			os << "      vertex " << (*i).c << endl;
-			os << "    endloop" << endl;
-			os << "  endfacet" << endl;
-		}
+    for( vector< HAPI::Collision::Triangle >::iterator i = tris.begin();
+         i != tris.end(); ++i ) {
+      os << "  facet normal " << (*i).normal << endl;
+      os << "    outer loop" << endl;
+      os << "      vertex " << (*i).a << endl;
+      os << "      vertex " << (*i).b << endl;
+      os << "      vertex " << (*i).c << endl;
+      os << "    endloop" << endl;
+      os << "  endfacet" << endl;
+    }
   
-		os << "endsolid " << name << endl;
-	}
+    os << "endsolid " << name << endl;
+  }
 }

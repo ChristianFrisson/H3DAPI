@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -293,8 +293,8 @@ namespace H3D {
       /// \param coord_index The indices in coord for the vertices.
       /// \param tex_coord_index The indices in tex_coord for the texture
       /// coordinates.
-			/// \param tangent Variable in which generated tangents are set.
-			/// \param binormal Variable in which generated binormals are set.
+      /// \param tangent Variable in which generated tangents are set.
+      /// \param binormal Variable in which generated binormals are set.
       virtual void generateTangentsPerVertex( 
                                               X3DCoordinateNode *coord,
                                               X3DTextureCoordinateNode *tex_coord,
@@ -326,8 +326,8 @@ namespace H3D {
       /// vertices appear to be oriented in a counterclockwise order when 
       /// the vertices are viewed (in the local coordinate system of the Shape)
       /// from the opposite direction as the normal.
-			/// \param tangent Variable in which generated tangents are set.
-			/// \param binormal Variable in which generated binormals are set.
+      /// \param tangent Variable in which generated tangents are set.
+      /// \param binormal Variable in which generated binormals are set.
       virtual void generateTangentsPerVertex( 
                                              X3DCoordinateNode *coord,
                                              X3DTextureCoordinateNode *tex_coord,
@@ -350,8 +350,8 @@ namespace H3D {
       /// coordinates.
       /// \param normalize_values If true the resulting tangents and binormals
       /// will be normalized.
-			/// \param tangent Variable in which generated tangents are set.
-			/// \param binormal Variable in which generated binormals are set.
+      /// \param tangent Variable in which generated tangents are set.
+      /// \param binormal Variable in which generated binormals are set.
       virtual void generateTangentsPerFace( 
                                            X3DCoordinateNode *coord,
                                            X3DTextureCoordinateNode *tex_coord,

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -59,7 +59,7 @@ SphereSensor::SphereSensor(
   offset( _offset ),
   rotation_changed( _rotation_changed ),
   new_radius( true ),
-	prev_new_radius( true ),
+  prev_new_radius( true ),
   center( Vec3f( 0, 0, 0 ) ) {
 
   type_name = "SphereSensor";
@@ -117,12 +117,12 @@ void SphereSensor::setDragOutputEvents( bool _enabled,
         send_warning_message = true;
         last_intersection = geometry_intersection;
         active_global_to_local_matrix = geometry_global_to_local;
-				prev_new_radius = new_radius;
+        prev_new_radius = new_radius;
         new_radius = false;
         radius = last_intersection.length();
-				// I interpret the text in 20.4.3 in the X3D specification in the same
-				// was as 20.4.1 and 20.4.2 when to send the events. Those should only
-				// be sent for subsequent operations, not at activation.
+        // I interpret the text in 20.4.3 in the X3D specification in the same
+        // was as 20.4.1 and 20.4.2 when to send the events. Those should only
+        // be sent for subsequent operations, not at activation.
         last_intersection.normalize();
       } else {
         // Calculate intersection and send events.
@@ -151,17 +151,17 @@ void SphereSensor::setDragOutputEvents( bool _enabled,
             send_warning_message = false;
           }
           trackPoint_changed->touch();
-					if( prev_new_radius )
-						 rotation_changed->setValue( offset->getValue(), id );
-					else
-						rotation_changed->touch();
+          if( prev_new_radius )
+             rotation_changed->setValue( offset->getValue(), id );
+          else
+            rotation_changed->touch();
         }
-				prev_new_radius = new_radius;
+        prev_new_radius = new_radius;
       }
     } else {
       // Reset variables when isActive is set to false after being true.
       if( !new_radius ) {
-				prev_new_radius = new_radius;
+        prev_new_radius = new_radius;
         new_radius = true;
         if( autoOffset->getValue() )
           offset->setValue( rotation_changed->getValue(), id );

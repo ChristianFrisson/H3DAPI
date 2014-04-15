@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -127,7 +127,7 @@ void TriangleSet::render() {
     // set fog to get fog depth from fog coordinates if available
     if( GLEW_EXT_fog_coord && fog_coord_node ) {
       glPushAttrib( GL_FOG_BIT );
-      glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);	
+      glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);
     }
 
     GLhandleARB shader_program = 0;
@@ -265,7 +265,7 @@ X3DNormalNode *TriangleSet::AutoNormal::generateNormalsPerVertex(
     unsigned int nr_coords = coord->nrAvailableCoords();
     vector< Vec3f > normals( nr_coords, 
                              Vec3f( 0, 0, 0 ) );
-    for( unsigned int j = 0; j < coord->nrAvailableCoords(); j+=3 ) {
+    for( unsigned int j = 0; j + 2 < nr_coords; j+=3 ) {
       Vec3f norm, A, B, C, AB, BC;
       // make sure we have a valid face. If not use a dummy normal. 
       if( j+2 >= nr_coords ) {

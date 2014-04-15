@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -308,7 +308,7 @@ void HAnimHumanoid::traverseSG( TraverseInfo &ti ) {
       Console(4) << "Unsupported X3DNormalNode: \"" 
                    << base_normal->getTypeName() << "\" in HAnimHumanoid." << endl;
       normals_single.clear();
-		}
+    }
   }
   
   X3DChildNode::traverseSG( ti );

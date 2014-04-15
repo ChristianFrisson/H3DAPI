@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -513,8 +513,8 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     return false;
   }
   X3DTypes::X3DType x3d_type = field->getX3DType();
-	switch(x3d_type)
-	{
+  switch(x3d_type)
+  {
   case X3DTypes::SFFLOAT:
     {
       // implicit SFUniform field, check actualChanged
@@ -844,7 +844,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
         }
       }
       glUniform1ivARB( location, size, v );
-			delete[] v;
+      delete[] v;
       break;
     }
   case X3DTypes::SFCOLOR:

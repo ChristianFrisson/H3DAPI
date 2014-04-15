@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -429,15 +429,15 @@ namespace H3D {
     /// <b>Default value:</b> NULL
     auto_ptr< SFViewpointNode > viewpoint;
 
-	/// The NavigationInfo to be used when rendering the scene. Currently, it is
-	/// just used for providing far and near cliping distance. If NULL, the
-	/// current active viewpoint is used, if no current navigationinfo exists,
-	/// near clip distance will be 0.01, far clip distance is set to be -1 which
-	/// means infinite
-	/// 
-	/// <b>Access type:</b> inputOutput
-	/// <b>Default value:</b> NULL
-	auto_ptr<SFNavigationInfo> navigationInfo;
+    /// The NavigationInfo to be used when rendering the scene. Currently, it is
+    /// just used for providing far and near cliping distance. If NULL, the
+    /// current active viewpoint is used, if no current navigationinfo exists,
+    /// near clip distance will be 0.01, far clip distance is set to be -1 which
+    /// means infinite
+    /// 
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> NULL
+    auto_ptr<SFNavigationInfo> navigationInfo;
 
     /// The X3DBackgroundNode to use when rendering the scene. If NULL,
     /// then no background is rendered.
@@ -576,6 +576,7 @@ namespace H3D {
     /// \param srcY The y component of low left corner of the area to be copied
     /// \param w    The width of area to be copied
     /// \param h    The height of area to be copied
+    /// \param depth The depth of area to be copied
     void preProcessFBO(int srcX, int srcY, int w, int h, int depth);
 
     /// Blit the depth buffer from src fbo to dst fbo.
@@ -595,7 +596,7 @@ namespace H3D {
     /// \param w    The width of area to be copied
     /// \param h    The height of area to be copied
     /// \param src_index  The color buffer index to be copied
-    /// \param src_index  The color buffer index to be used as target
+    /// \param dst_index  The color buffer index to be used as target
     void blitColorBuffer(GLenum src, GLenum dst, 
       int srcX, int srcY, int w, int h, int src_index, int dst_index);
 

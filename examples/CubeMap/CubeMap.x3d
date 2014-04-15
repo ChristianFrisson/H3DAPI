@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='CubeMap.x3d'/>
     <meta name='description' content='An example on how to use a ComposedCubeMapTexture.'/>
-    <meta name='editors' content='SenseGraphics AB'/>
+    <meta name='author' content='SenseGraphics AB, 2005-2014'/>
   </head>
   <Scene>
     <NavigationInfo type = "NONE" />

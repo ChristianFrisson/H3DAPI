@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -52,7 +52,7 @@ H3DRenderModeGroupNode::H3DRenderModeGroupNode( Inst< AddChildren    > _addChild
                                   Inst< SFVec3f        > _bboxCenter,
                                   Inst< SFVec3f        > _bboxSize ) :
   X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
-		   _bboxCenter, _bboxSize ) {
+                   _bboxCenter, _bboxSize ) {
 
   type_name = "H3DRenderModeGroupNode";
   database.initFields( this );

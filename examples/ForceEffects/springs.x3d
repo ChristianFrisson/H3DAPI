@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='springs.x3d'/>
     <meta name='description' content='Demos the SpringEffect node. Move the haptics device stylus inside the red sphere.'/>
-    <meta name='editors' content='SenseGraphics AB, 2006-2008'/>
+    <meta name='editors' content='SenseGraphics AB, 2006-2014'/>
   </head>
   <Scene>
     <Transform translation="-0.15 0.10 0">

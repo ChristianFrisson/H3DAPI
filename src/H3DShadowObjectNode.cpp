@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -44,7 +44,7 @@ namespace H3DShadowObjectNodeInternals {
 }
 
 H3DShadowObjectNode::H3DShadowObjectNode(  Inst< SFNode>  _metadata,
-					   Inst< SFTransformNode > _transform ) :
+             Inst< SFTransformNode > _transform ) :
   X3DNode( _metadata ),
   transform( _transform ) {
   type_name = "H3DShadowObjectNode";

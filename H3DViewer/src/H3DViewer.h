@@ -1,13 +1,15 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Sep  8 2010)
+// C++ code generated with wxFormBuilder (version Nov  6 2013)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
 ///////////////////////////////////////////////////////////////////////////
 
-#ifndef __H3DViewer__
-#define __H3DViewer__
+#ifndef __H3DVIEWER_H__
+#define __H3DVIEWER_H__
 
+#include <wx/artprov.h>
+#include <wx/xrc/xmlres.h>
 #include <wx/treectrl.h>
 #include <wx/gdicmn.h>
 #include <wx/font.h>
@@ -57,6 +59,7 @@ class TreeViewDialog : public wxFrame
 		wxTreeCtrl* TreeViewTree;
 		
 		TreeViewDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Scene tree view"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 594,496 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		
 		~TreeViewDialog();
 		
 		void SplitterWindowOnIdle( wxIdleEvent& )
@@ -95,7 +98,7 @@ class PluginsDialog : public wxDialog
 	public:
 		wxCheckBox* DisablePluginsCheckBox;
 		
-		PluginsDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Plugins"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 420,336 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER );
+		PluginsDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Plugins"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 420,336 ), long style = wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER ); 
 		~PluginsDialog();
 	
 };
@@ -121,6 +124,7 @@ class MenuContainer : public wxFrame
 		virtual void OnTreeViewSaveVRML( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTreeViewSaveTrianglesX3D( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTreeViewSaveNrrd( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTreeViewSavePng( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTreeViewSaveSTL( wxCommandEvent& event ) { event.Skip(); }
 		
 	
@@ -130,6 +134,7 @@ class MenuContainer : public wxFrame
 		wxMenu* RightClickMenuGeometry;
 		
 		MenuContainer( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		
 		~MenuContainer();
 	
 };
@@ -150,4 +155,4 @@ class MenuContainer2 : public wxMenuBar
 	
 };
 
-#endif //__H3DViewer__
+#endif //__H3DVIEWER_H__

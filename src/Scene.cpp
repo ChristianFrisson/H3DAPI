@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -35,6 +35,7 @@
 #endif
 #include <H3D/DeviceInfo.h>
 #include <GL/glew.h>
+#ifdef HAVE_GLUT
 #ifdef MACOSX
 #include <GLUT/glut.h>
 #else
@@ -43,6 +44,7 @@
 #ifdef FREEGLUT
 #include <GL/freeglut.h>
 #endif
+#endif // HAVE_GLUT
 #include <H3D/PeriodicUpdate.h>
 #include <H3D/GLUTWindow.h>
 #include <H3D/X3DShapeNode.h>
@@ -299,7 +301,7 @@ void Scene::idle() {
   shadow_caster->light->clear();
   
   DeviceInfo *di = DeviceInfo::getActive();
-	X3DChildNode *scene_root = static_cast< X3DChildNode * >( sceneRoot->getValue() );
+  X3DChildNode *scene_root = static_cast< X3DChildNode * >( sceneRoot->getValue() );
   if( di ) {
     vector< H3DHapticsDevice * > hds;
     // update the values for all H3DHapticsDevices
@@ -548,7 +550,7 @@ Scene::Scene( Inst< SFChildNode >  _sceneRoot,
 
 Scene::~Scene() {
   scenes.erase( this );
-	setSceneRoot( NULL );
+  setSceneRoot( NULL );
 
   if( last_traverseinfo )
     delete last_traverseinfo;
@@ -557,11 +559,13 @@ Scene::~Scene() {
 #endif
 }
 
+#ifdef HAVE_GLUT
 void Scene::mainLoop() {
   GLUTWindow::initGLUT();
   glutIdleFunc( SceneInternal::idle );
   glutMainLoop();
 }
+#endif
 
 void Scene::EventSink::update() {
   for( unsigned int i = 0; i < routes_in.size(); ++i ) {
@@ -590,7 +594,7 @@ void Scene::loadSceneRoot( const string &url ) {
 }
 
 void Scene::setSceneRoot( SAI::SAIScene *scene ) {
-	SAI::ExecutionContext::cleanUp();
+  SAI::ExecutionContext::cleanUp();
   SAI_browser.replaceWorld( scene );
 }
 
@@ -708,7 +712,7 @@ H3D::Node* Scene::findChildNode(H3D::Group *group, const std::string &nodeType, 
     for( unsigned int i = 0; i < c.size(); ++i ) {
       if( c[i]){
         H3D::Group *childgroup = dynamic_cast<H3D::Group*>(c[i]);
-        if (childgroup){	
+        if (childgroup){
           H3D::Node *node = findChildNode(childgroup, nodeType, nodeName);
           if (node)
             return node;
@@ -775,7 +779,7 @@ H3D::Node* Scene::findNodeType(H3D::Node *node, const std::string &nodeType, con
         {
           H3D::Node *node = findNodeType(appearance, nodeType, nodeName);
           if (node)
-            return node;			
+            return node;
         }
       }
       return NULL;

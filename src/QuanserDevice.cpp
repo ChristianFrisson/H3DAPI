@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -62,14 +62,14 @@ QuanserDevice::QuanserDevice(
                Inst< SFInt32         > _hapticsRate,
                Inst< SFInt32         > _desiredHapticsRate,
                Inst< SFNode          > _stylus,
-	       Inst< SFString        > _uri ) :
+               Inst< SFString        > _uri ) :
   H3DHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
-		    _trackerOrientation, _positionCalibration, 
-		    _orientationCalibration, _proxyPosition,
-		    _weightedProxyPosition, _proxyWeighting, _mainButton,
+        _trackerOrientation, _positionCalibration, 
+        _orientationCalibration, _proxyPosition,
+        _weightedProxyPosition, _proxyWeighting, _mainButton,
                     _secondaryButton, _buttons,
-		    _force, _torque, _inputDOF, _outputDOF, _hapticsRate,
-		    _desiredHapticsRate, _stylus ),
+        _force, _torque, _inputDOF, _outputDOF, _hapticsRate,
+        _desiredHapticsRate, _stylus ),
   uri( _uri ) { 
 
   type_name = "QuanserDevice";  
@@ -83,9 +83,9 @@ void QuanserDevice::initialize() {
   hapi_device.reset( new HAPI::QuanserHapticsDevice( uri->getValue() ) );
 #else
   Console(4) << "Cannot use QuanserDevice. HAPI compiled without"
-	     << " Quanser support. Recompile HAPI with "
-	     << "HAVE_QUANSERAPI defined"
-	     << " in order to use it." << endl;
+             << " Quanser support. Recompile HAPI with "
+             << "HAVE_QUANSERAPI defined"
+             << " in order to use it." << endl;
 #endif
 }
 

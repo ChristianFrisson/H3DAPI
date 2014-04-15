@@ -19,6 +19,9 @@
   Var ADD_TO_PATH_CURRENT_USER
 
   Var IS_DEFAULT_INSTALLDIR
+  ; H3D defined variables
+  Var H3D_VERSION_TO_INSTALL
+  Var ADD_64_BIT_VERSION
 ;--------------------------------
 ; Include x64 functions
   !include x64.nsh
@@ -55,6 +58,7 @@
 ; CPACK_ADD_H3DDOC_LINKS - If set to "ON" extra start menu links to documentation will be added.
 ; CPACK_ADD_H3DSETTINGS_LINKS - If set to "ON" extra start menu links to the SettingsGUI.exe will be added.
 ; CPACK_EXTERNAL_BIN - Contains the name of the binary folder in External.
+; CPACK_NSIS_INSTALLOPTIONS_64 - Contains the file path to NSIS.InstallOptions_64.ini file which should be used when installing on a 64 bit system.
 @CPACK_NSIS_DEFINES@
 
   !include Sections.nsh
@@ -824,12 +828,26 @@ Section "-Core installation"
 
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   
+  ;Read a value from an InstallOptions INI file
+  !insertmacro MUI_INSTALLOPTIONS_READ $DO_NOT_ADD_TO_PATH "NSIS.InstallOptions.ini" "Field 2" "State"
+  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_ALL_USERS "NSIS.InstallOptions.ini" "Field 3" "State"
+  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_CURRENT_USER "NSIS.InstallOptions.ini" "Field 4" "State"
+  ${If} ${RunningX64}
+    !insertmacro MUI_INSTALLOPTIONS_READ $ADD_64_BIT_VERSION "NSIS.InstallOptions.ini" "Field 5" "State"
+  ${Else}
+    StrCpy $ADD_64_BIT_VERSION "0"
+  ${EndIf}
+  StrCmp $ADD_64_BIT_VERSION "1" 0 +3
+    StrCpy $H3D_VERSION_TO_INSTALL "bin64"
+    Goto +2
+    StrCpy $H3D_VERSION_TO_INSTALL "bin32"
+  
   ;Create shortcuts
   CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
 @CPACK_NSIS_CREATE_ICONS@
 @CPACK_NSIS_CREATE_ICONS_EXTRA@
   ${If} $H3DAPI_cpack_runtime_selected > 0
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\H3DViewer.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DViewer.exe"'
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\H3DViewer.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DViewer.exe"'
   ${EndIf}
   
   StrCmp "@CPACK_ADD_H3DLOAD_DEMOS_LINKS@" "ON" 0 AddedH3DLoadDemosDone
@@ -844,42 +862,42 @@ Section "-Core installation"
 
     ;Add Example shortcuts.
     ${If} $H3DAPI_cpack_sources_selected > 0
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Cg Glass Shader.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\cg_glass.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Cubemap.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\CubeMap\CubeMap.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Deformable Shape.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DeformableShape\deform.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Depth map surface.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DepthMapSurface\depthMappedITS.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Dynamic.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DynamicTransform\dynamic.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Fish.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\x3dmodels\fish\Kumanomi.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Flight.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\flight\flight.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Force Field.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\forcefield.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\GLSL Earth Shader.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\glsl_earthshader.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Haptic Layers.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\HapticLayers\hapticLayers.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Sound.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Sound\Sound.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\SpaceTennis.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\SpaceTennis\SpaceTennis.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Spring.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\springs.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Cg Glass Shader.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\cg_glass.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Cubemap.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\CubeMap\CubeMap.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Deformable Shape.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DeformableShape\deform.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Depth map surface.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DepthMapSurface\depthMappedITS.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Dynamic.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\DynamicTransform\dynamic.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Fish.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\x3dmodels\fish\Kumanomi.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Flight.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\flight\flight.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Force Field.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\forcefield.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\GLSL Earth Shader.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Shader nodes\glsl_earthshader.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Haptic Layers.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\HapticLayers\hapticLayers.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Sound.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\Sound\Sound.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\SpaceTennis.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\SpaceTennis\SpaceTennis.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Spring.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DLoad.exe"' '"$INSTDIR\H3DAPI\examples\ForceEffects\springs.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     ${EndIf}
     
     ${If} $MedX3D_cpack_sources_selected > 0
       StrCmp "@CPACK_ADD_MedX3D_DEMOS_LINKS@" "ON" 0 +3
-        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\OpacityMappedFoot.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DViewer.exe"' '"$INSTDIR\MedX3D\x3d\OpacityMapVolumeStyle.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
-        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Segmented head.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DViewer.exe"' '"$INSTDIR\MedX3D\x3d\SegmentedVolumeData.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\OpacityMappedFoot.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DViewer.exe"' '"$INSTDIR\MedX3D\x3d\OpacityMapVolumeStyle.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Segmented head.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DViewer.exe"' '"$INSTDIR\MedX3D\x3d\SegmentedVolumeData.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     ${EndIf}
     
     ${If} $UI_cpack_sources_selected > 0
       StrCmp "@CPACK_ADD_UI_DEMOS_LINKS@" "ON" 0 +2
-        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\UI Demo.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DViewer.exe"' '"$INSTDIR\UI\x3d\Super_UI_Demo.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\UI Demo.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DViewer.exe"' '"$INSTDIR\UI\x3d\Super_UI_Demo.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
     ${EndIf}
     
     ${If} $H3DPhysics_cpack_sources_selected > 0
       StrCmp "@CPACK_ADD_H3DPhysics_DEMOS_LINKS@" "ON" 0 +2
-        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Tower.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DViewer.exe"' '"$INSTDIR\H3DPhysics\examples\Tower\Tower.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+        CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\Tower.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DViewer.exe"' '"$INSTDIR\H3DPhysics\examples\Tower\Tower.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
       ${If} $UI_cpack_sources_selected > 0
         StrCmp "@CPACK_ADD_H3DPhysics_DEMOS_LINKS@" "ON" 0 +2
-          CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\NewtonsCradle.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DViewer.exe"' '"$INSTDIR\H3DPhysics\examples\NewtonsCradle\NewtonsCradle.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+          CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\NewtonsCradle.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DViewer.exe"' '"$INSTDIR\H3DPhysics\examples\NewtonsCradle\NewtonsCradle.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
       ${EndIf}
     ${EndIf}
     StrCmp "@CPACK_ADD_VHTK_DEMOS_LINKS@" "ON" 0 +2
-      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\VHTK Demo.lnk" '"$INSTDIR\@CPACK_EXTERNAL_BIN@\H3DViewer.exe"' '"$INSTDIR\H3DAPI\examples\VHTK\x3d\setup_dichloroethane2.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Demos\VHTK Demo.lnk" '"$INSTDIR\$H3D_VERSION_TO_INSTALL\H3DViewer.exe"' '"$INSTDIR\H3DAPI\examples\VHTK\x3d\setup_dichloroethane2.x3d"' "$INSTDIR\H3DAPI\settings\icons\gem.ico"
 
   AddedH3DLoadDemosDone:
 
@@ -899,6 +917,16 @@ Section "-Core installation"
     ${If} $HAPI_cpack_headers_selected > 0
       CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\HAPI Manual.lnk" "$INSTDIR\doc\HAPI Manual.pdf"
     ${EndIf}
+    ${If} $H3DPhysics_cpack_headers_selected > 0
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\H3DPhysics C++ Reference Guide.lnk" "$INSTDIR\H3DPhysics\doc\html\index.html"
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\H3DPhysics Python Reference Guide.lnk" "$INSTDIR\H3DPhysics\doc\python\doc\html\index.html"
+    ${EndIf}
+    ${If} $MedX3D_cpack_headers_selected > 0
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\MedX3D C++ Reference Guide.lnk" "$INSTDIR\MedX3D\doc\html\index.html"
+    ${EndIf}
+    ${If} $UI_cpack_headers_selected > 0
+      CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Docs\UI C++ Reference Guide.lnk" "$INSTDIR\UI\doc\html\index.html"
+    ${EndIf}
   doc_links_added:
   
   ${If} $H3DAPI_cpack_runtime_selected > 0
@@ -910,11 +938,6 @@ Section "-Core installation"
   ${EndIf}
 
   CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
-
-  ;Read a value from an InstallOptions INI file
-  !insertmacro MUI_INSTALLOPTIONS_READ $DO_NOT_ADD_TO_PATH "NSIS.InstallOptions.ini" "Field 2" "State"
-  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_ALL_USERS "NSIS.InstallOptions.ini" "Field 3" "State"
-  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_CURRENT_USER "NSIS.InstallOptions.ini" "Field 4" "State"
 
   ; Write special uninstall registry entries
   Push "StartMenu"
@@ -929,11 +952,29 @@ Section "-Core installation"
   Push "AddToPathCurrentUser"
   Push "$ADD_TO_PATH_CURRENT_USER"
   Call ConditionalAddToRegisty
+  Push "H3DVersionToInstall"
+  Push "$H3D_VERSION_TO_INSTALL"
+  Call ConditionalAddToRegisty
 
   !insertmacro MUI_STARTMENU_WRITE_END
 
 @CPACK_NSIS_EXTRA_INSTALL_COMMANDS@
 
+  
+  StrCmp $ADD_64_BIT_VERSION "1" 0 +14
+    Rename "$INSTDIR\H3DUtil\include\H3DUtil\H3DUtil.h" "$INSTDIR\H3DUtil\include\H3DUtil\H3DUtil_32.h"
+    Rename "$INSTDIR\H3DUtil\include\H3DUtil\H3DUtil_64.h" "$INSTDIR\H3DUtil\include\H3DUtil\H3DUtil.h"
+    Rename "$INSTDIR\HAPI\include\HAPI\HAPI.h" "$INSTDIR\HAPI\include\HAPI\HAPI_32.h"
+    Rename "$INSTDIR\HAPI\include\HAPI\HAPI_64.h" "$INSTDIR\HAPI\include\HAPI\HAPI.h"
+    Rename "$INSTDIR\H3DAPI\include\H3D\H3DApi.h" "$INSTDIR\H3DAPI\include\H3D\H3DApi_32.h"
+    Rename "$INSTDIR\H3DAPI\include\H3D\H3DApi_64.h" "$INSTDIR\H3DAPI\include\H3D\H3DApi.h"
+    Rename "$INSTDIR\MedX3D\include\H3D\MedX3D\MedX3D.h" "$INSTDIR\MedX3D\include\H3D\MedX3D\MedX3D_32.h"
+    Rename "$INSTDIR\MedX3D\include\H3D\MedX3D\MedX3D_64.h" "$INSTDIR\MedX3D\include\H3D\MedX3D\MedX3D.h"
+    Rename "$INSTDIR\H3DPhysics\include\H3D\H3DPhysics\H3DPhysics.h" "$INSTDIR\H3DPhysics\include\H3D\H3DPhysics\H3DPhysics_32.h"
+    Rename "$INSTDIR\H3DPhysics\include\H3D\H3DPhysics\H3DPhysics_64.h" "$INSTDIR\H3DPhysics\include\H3D\H3DPhysics\H3DPhysics.h"
+    Rename "$INSTDIR\UI\include\H3D\UI\UI.h" "$INSTDIR\UI\include\H3D\UI\UI_32.h"
+    Rename "$INSTDIR\UI\include\H3D\UI\UI_64.h" "$INSTDIR\UI\include\H3D\UI\UI.h"
+    ClearErrors
   
   Push H3D_ROOT
   Push $INSTDIR\H3DAPI
@@ -946,12 +987,12 @@ Section "-Core installation"
 SectionEnd
 
 Section "-Add to path"
-   DetailPrint "Add $INSTDIR\@CPACK_EXTERNAL_BIN@ to PATH"
-  Push $INSTDIR\@CPACK_EXTERNAL_BIN@
+   DetailPrint "Add $INSTDIR\$H3D_VERSION_TO_INSTALL to PATH"
+  Push $INSTDIR\$H3D_VERSION_TO_INSTALL
   StrCmp "@CPACK_NSIS_MODIFY_PATH@" "ON" 0 doNotAddToPath
   StrCmp $DO_NOT_ADD_TO_PATH "1" doNotAddToPath 0
     Call AddToPath
-    Push $INSTDIR\External\@CPACK_EXTERNAL_BIN@
+    Push $INSTDIR\External\$H3D_VERSION_TO_INSTALL
     Call AddToPath
   doNotAddToPath:
 SectionEnd
@@ -967,7 +1008,7 @@ FunctionEnd
 ;--------------------------------
 ; determine admin versus local install
 Function un.onInit
-  StrCmp @CPACK_H3D_64_BIT@ "TRUE" 0 done_64_bit_checking_uninit
+  StrCmp "@CPACK_H3D_64_BIT@" "TRUE" 0 done_64_bit_checking_uninit
     ${If} ${RunningX64}
       DetailPrint "Installer running on 64-bit host"
       ; disable registry redirection (enable access to 64-bit portion of registry)
@@ -1046,9 +1087,18 @@ Section "Uninstall"
     "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "AddToPathAllUsers"
   ReadRegStr $ADD_TO_PATH_CURRENT_USER SHCTX \
     "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "AddToPathCurrentUser"
+  ReadRegStr $H3D_VERSION_TO_INSTALL SHCTX \
+    "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "H3DVersionToInstall"
   ;MessageBox MB_OK "Add to path: $DO_NOT_ADD_TO_PATH all users: $ADD_TO_PATH_ALL_USERS"
 
 @CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS@
+
+  Delete "$INSTDIR\H3DUtil\include\H3DUtil\H3DUtil_32.h"
+  Delete "$INSTDIR\HAPI\include\HAPI\HAPI_32.h"
+  Delete "$INSTDIR\H3DAPI\include\H3D\H3DApi_32.h"
+  Delete "$INSTDIR\H3DPhysics\include\H3D\H3DPhysics\H3DPhysics_32.h"
+  Delete "$INSTDIR\MedX3D\include\H3D\MedX3D\MedX3D_32.h"
+  Delete "$INSTDIR\UI\include\H3D\UI\UI_32.h"
 
   ;Remove files we installed.
   ;Keep the list of directories here in sync with the File commands above.
@@ -1120,6 +1170,10 @@ Section "Uninstall"
     Delete "$SMPROGRAMS\$MUI_TEMP\Docs\H3D Python Reference Guide.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Docs\H3D API Manual.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Docs\HAPI Manual.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\Docs\H3DPhysics C++ Reference Guide.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\Docs\H3DPhysics Python Reference Guide.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\Docs\MedX3D C++ Reference Guide.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\Docs\UI C++ Reference Guide.lnk"
     
     ;Remove Docs folder.
     RMDir "$SMPROGRAMS\$MUI_TEMP\Docs"
@@ -1191,6 +1245,10 @@ Section "Uninstall"
     Delete "$SMPROGRAMS\$MUI_TEMP\Docs\H3D API Manual.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Docs\HAPI Manual.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\Docs\C++ Reference Guide.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\Docs\H3DPhysics C++ Reference Guide.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\Docs\H3DPhysics Python Reference Guide.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\Docs\MedX3D C++ Reference Guide.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\Docs\UI C++ Reference Guide.lnk"
     
     ;Remove Docs folder.
     RMDir "$SMPROGRAMS\$MUI_TEMP\Docs"
@@ -1214,13 +1272,25 @@ Section "Uninstall"
     StrCmp "$MUI_TEMP" "$SMPROGRAMS" secondStartMenuDeleteLoopDone secondStartMenuDeleteLoop
   secondStartMenuDeleteLoopDone:
   
-  ClearErrors
-  ; Apparently wxWidgets writes to HKCU and HKU. Which means that we have to remove it here.
-  DeleteRegKey HKCU "Software\@CPACK_PACKAGE_VENDOR@\H3DViewer @CPACK_PACKAGE_VERSION_MAJOR@.@CPACK_PACKAGE_VERSION_MINOR@(dev)"
-  ClearErrors
-  ; Delete the vendor name if it is empty.
+  ${If} ${RunningX64}
+    SetRegView 64
+  ${EndIf}
+  DeleteRegKey HKCU "$1\Software\@CPACK_PACKAGE_VENDOR@\H3DViewer @CPACK_PACKAGE_VERSION_MAJOR@.@CPACK_PACKAGE_VERSION_MINOR@.@CPACK_PACKAGE_VERSION_PATCH@(x86)(dev)"
+  DeleteRegKey HKCU "$1\Software\@CPACK_PACKAGE_VENDOR@\H3DViewer @CPACK_PACKAGE_VERSION_MAJOR@.@CPACK_PACKAGE_VERSION_MINOR@.@CPACK_PACKAGE_VERSION_PATCH@(x64)(dev)"
   DeleteRegKey /ifempty HKCU "Software\@CPACK_PACKAGE_VENDOR@"
-  ClearErrors
+  StrCpy $0 0
+  loop_remove_reg_key:
+    EnumRegKey $1 HKU "" $0
+    StrCmp $1 "" done_remove_reg_key
+    IntOp $0 $0 + 1
+    DeleteRegKey HKU "$1\Software\@CPACK_PACKAGE_VENDOR@\H3DViewer @CPACK_PACKAGE_VERSION_MAJOR@.@CPACK_PACKAGE_VERSION_MINOR@.@CPACK_PACKAGE_VERSION_PATCH@(x86)(dev)"
+    DeleteRegKey HKU "$1\Software\@CPACK_PACKAGE_VENDOR@\H3DViewer @CPACK_PACKAGE_VERSION_MAJOR@.@CPACK_PACKAGE_VERSION_MINOR@.@CPACK_PACKAGE_VERSION_PATCH@(x64)(dev)"
+    DeleteRegKey /ifempty HKU "$1\Software\@CPACK_PACKAGE_VENDOR@"
+    Goto loop_remove_reg_key
+  done_remove_reg_key:
+  ${If} ${RunningX64}
+    SetRegView 32
+  ${EndIf}
 
   Push H3D_ROOT
   Call un.DeleteEnvStr
@@ -1229,10 +1299,10 @@ Section "Uninstall"
   Call un.DeleteEnvStr
 
 
-  Push $INSTDIR\@CPACK_EXTERNAL_BIN@
+  Push $INSTDIR\$H3D_VERSION_TO_INSTALL
   StrCmp $DO_NOT_ADD_TO_PATH "1" doNotRemoveFromPath 0
     Call un.RemoveFromPath
-    Push $INSTDIR\External\@CPACK_EXTERNAL_BIN@
+    Push $INSTDIR\External\$H3D_VERSION_TO_INSTALL
     Call un.RemoveFromPath
   doNotRemoveFromPath:
   DeleteRegKey /ifempty SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
@@ -1261,7 +1331,7 @@ exitBecauseNotVistaOrLater:
   ${EndIf}
 
 instAnyways:
-  StrCmp @CPACK_H3D_64_BIT@ "TRUE" 0 done_64_bit_checking
+  StrCmp "@CPACK_H3D_64_BIT@" "TRUE" 0 done_64_bit_checking
     ${If} ${RunningX64}
       DetailPrint "Installer running on 64-bit host"
       ; disable registry redirection (enable access to 64-bit portion of registry)
@@ -1451,7 +1521,11 @@ inst:
   alreadyinstalledchecked:
 
   StrCmp "@CPACK_NSIS_MODIFY_PATH@" "ON" 0 noOptionsPage
-    !insertmacro MUI_INSTALLOPTIONS_EXTRACT "NSIS.InstallOptions.ini"
+    ${If} ${RunningX64}
+      !insertmacro INSTALLOPTIONS_EXTRACT_AS "@CPACK_NSIS_INSTALLOPTIONS_64@" "NSIS.InstallOptions.ini"
+    ${Else}
+      !insertmacro MUI_INSTALLOPTIONS_EXTRACT "NSIS.InstallOptions.ini"
+    ${EndIf}
 
   noOptionsPage:
 FunctionEnd

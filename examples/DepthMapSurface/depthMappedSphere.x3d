@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='depthMappedSphere.x3d'/>
     <meta name='description' content='An example of how a surface specified through the DepthMapSurface node can feel. The example only works for GodObjectRenderer and RuspiniRenderer.'/>
-    <meta name='editors' content='SenseGraphics AB'/>
+    <meta name='author' content='SenseGraphics AB, 2008-2014'/>
   </head>
   <Scene>
     <Shape>

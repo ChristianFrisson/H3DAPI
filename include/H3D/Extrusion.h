@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -52,6 +52,7 @@ namespace H3D {
   ///
   /// \par Internal routes:
   /// \dotfile Extrusion.dot 
+  /// \todo Implement vertex arrays in no-normal-per-face cases.
   class H3DAPI_API Extrusion : public X3DGeometryNode {
   public:
 
@@ -97,7 +98,7 @@ namespace H3D {
     /// The resulting Normal node will contain normals per face if
     /// creaseAngle <=0. If creaseAngle >= pi, then the normals returned will
     /// be a normal per vertex in vertexVector and finally the normals returned
-    /// will contain  a normal per vertex in each face if 0 < creaseAngle < pi.
+    /// will contain a normal per vertex in each face if 0 < creaseAngle < pi.
     ///
     /// routes_in[0] is the vertexVector field.
     /// routes_in[1] is the creaseAngle field.

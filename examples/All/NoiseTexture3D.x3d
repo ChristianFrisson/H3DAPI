@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='NoiseTexture3D.x3d'/>
+    <meta name='description' content='NoiseTexture3D example with TextureCoordinate3D.'/>
+    <meta name='author' content='SenseGraphics AB, 2013-2014'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0.6 0 0.6' orientation='0 1 0 0.78' />
+    
+    <Transform rotation='1 0 -1 0.6'>
+      <Shape>
+        <Appearance>
+          <Material />
+          <NoiseTexture3D repeatS="true" repeatT="true" repeatR="true"
+                          frequency="30.0" persistence="0.5" lacunarity="2.20703125" type="SIMPLEX"
+                          tileable="true" octaveCount="1" height="64" width="64" depth="64" />
+        </Appearance>
+        <IndexedFaceSet
+            coordIndex='0 1 2 3 -1 4 0 3 7 -1 5 4 7 6 -1
+                        1 5 6 2 -1 1 0 4 5 -1 3 2 6 7'
+            texCoordIndex='0 1 2 3 -1 4 0 3 7 -1 5 4 7 6 -1
+                        1 5 6 2 -1 1 0 4 5 -1 3 2 6 7'>
+            <Coordinate
+                point=' 0.1  0.1  0.1, -0.1  0.1  0.1,
+                       -0.1 -0.1  0.1,  0.1 -0.1  0.1,
+                        0.1  0.1 -0.1, -0.1  0.1 -0.1,
+                       -0.1 -0.1 -0.1,  0.1 -0.1 -0.1' />
+            <TextureCoordinate3D
+                point='1 1 0 0 1 0 0 0 0 1 0 0 1 1 1 0 1 1 0 0 1 1 0 1' />
+        </IndexedFaceSet>
+      </Shape>
+    </Transform>
+    
+  </Scene>
+</X3D>

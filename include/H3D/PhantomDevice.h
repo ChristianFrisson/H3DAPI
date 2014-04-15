@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -110,12 +110,12 @@ namespace H3D {
     /// with name deviceName
     virtual void initialize();
 
-		/// This function is called for all devices in a DeviceInfo node for which the
-		/// initDevice has been called. It is not called until all initDevice calls
-		/// have been completed for all devices in the DeviceInfo. This function can
-		/// be used for functionality that require all devices to be initialized.
-		/// For this node it is used to start the OpenHaptics scheduler.
-		virtual void postInit();
+    /// This function is called for all devices in a DeviceInfo node for which the
+    /// initDevice has been called. It is not called until all initDevice calls
+    /// have been completed for all devices in the DeviceInfo. This function can
+    /// be used for functionality that require all devices to be initialized.
+    /// For this node it is used to start the OpenHaptics scheduler.
+    virtual void postInit();
 
     /// The name of the device, as specified in Phantom Configuration
     /// utility. If set to "", the default device will be used. 

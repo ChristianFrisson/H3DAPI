@@ -4,7 +4,7 @@
     <meta name='title' content='FrameBufferTextureGenerator_texturearray.x3d'/>
     <meta name='description' content='H3DAPI FrameBufferTextureGenerator example. It shows generate a 2D texture array from the rendering of two sub-scenes and display them on to separate rectangles.  This example uses H3DAPI node(s) and runs on H3DAPI-supported browsers only. Visit http://www.h3d.org for more information and to download an H3DAPI-
       compatible browser. '/>
-    <meta name='author' content='SenseGraphics AB, 2006-2008'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
   
   <Scene>

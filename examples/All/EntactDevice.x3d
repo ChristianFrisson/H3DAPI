@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='EntactDevice.x3d'/>
+    <meta name='description' content='H3DAPI EntactDevice example.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.
+      For this example to work properly, an installed and active 
+      Falcon haptics device is needed.'/>
+    <meta name='author' content='SenseGraphics AB, 2014'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />    
+    <DeviceInfo>
+      <EntactDevice>
+        <GodObjectRenderer/>
+      </EntactDevice>
+    </DeviceInfo>    
+  </Scene>
+</X3D>

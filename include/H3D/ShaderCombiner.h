@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -135,28 +135,28 @@ namespace H3D {
 
     /// Constructor.
     ShaderCombiner( Inst< DisplayList  > _displayList = 0,
-		    Inst< SFNode       > _metadata    = 0,
-		    Inst< SFBool       > _isSelected  = 0,
-		    Inst< SFBool       > _isValid     = 0,
-		    Inst< SFBool       > _activate    = 0,
-		    Inst< SFString     > _language    = 0,
-		    Inst< MFShaderPart > _parts       = 0,
-		    Inst< SFBool       > _suppressUniformWarnings = 0,
-		    Inst< MFString     > _fragmentShaderString = 0,
-		    Inst< MFString     > _vertexShaderString = 0,
-		    Inst< MFGeneratedFragmentShaderNode > _shaders = 0,
-		    Inst< SFString     > _function = 0,
-		    Inst< SFString     > _arg0Modifier = 0,
-		    Inst< SFString     > _arg1Modifier = 0,
-		    Inst< SFFloat      > _value = 0,
-		    Inst< SFFloat      > _arg0Value = 0,
-		    Inst< SFFloat      > _arg1Value = 0,
-		    Inst< SFString     > _alphaFunction = 0,
-		    Inst< SFString     > _alphaArg0Modifier = 0,
-		    Inst< SFString     > _alphaArg1Modifier = 0,
-		    Inst< SFFloat      > _alphaValue = 0,
-		    Inst< SFFloat      > _alphaArg0Value = 0,
-		    Inst< SFFloat      > _alphaArg1Value = 0 );
+        Inst< SFNode       > _metadata    = 0,
+        Inst< SFBool       > _isSelected  = 0,
+        Inst< SFBool       > _isValid     = 0,
+        Inst< SFBool       > _activate    = 0,
+        Inst< SFString     > _language    = 0,
+        Inst< MFShaderPart > _parts       = 0,
+        Inst< SFBool       > _suppressUniformWarnings = 0,
+        Inst< MFString     > _fragmentShaderString = 0,
+        Inst< MFString     > _vertexShaderString = 0,
+        Inst< MFGeneratedFragmentShaderNode > _shaders = 0,
+        Inst< SFString     > _function = 0,
+        Inst< SFString     > _arg0Modifier = 0,
+        Inst< SFString     > _arg1Modifier = 0,
+        Inst< SFFloat      > _value = 0,
+        Inst< SFFloat      > _arg0Value = 0,
+        Inst< SFFloat      > _arg1Value = 0,
+        Inst< SFString     > _alphaFunction = 0,
+        Inst< SFString     > _alphaArg0Modifier = 0,
+        Inst< SFString     > _alphaArg1Modifier = 0,
+        Inst< SFFloat      > _alphaValue = 0,
+        Inst< SFFloat      > _alphaArg0Value = 0,
+        Inst< SFFloat      > _alphaArg1Value = 0 );
     
 
     /// Traverse the scene-graph.
@@ -376,8 +376,8 @@ namespace H3D {
     /// Possible values for modifier is the same as for the arg0Modifier
     /// field.
     string applyModifier( const string &variable_name,
-			  const string &modifier,
-			  const string &value = "0" );
+        const string &modifier,
+        const string &value = "0" );
 
     /// Returns a glsl string to perform the specified modifier function.
     /// It returns a line
@@ -386,17 +386,17 @@ namespace H3D {
     /// Possible values for modifier is the same as for the alphaArg0Modifier
     /// field.
     string applyAlphaModifier( const string &variable_name,
-			       const string &modifier,
-			       const string &value = "0" );
+             const string &modifier,
+             const string &value = "0" );
 
     /// Returns a glsl string that evaluates to the variable v0 and v1 combined
     /// with the specified funtion.
     /// Possible values for modifier is the same as for the function
     /// field.
     string combineFunction( const string &v0,
-			    const string &v1,
-			    const string &function,
-			    const string &value = "0" );
+          const string &v1,
+          const string &function,
+          const string &value = "0" );
   };
 }
 

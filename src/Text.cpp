@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -491,12 +491,12 @@ bool Text::lineIntersect(
                   const Vec3f &from, 
                   const Vec3f &to,    
                   LineIntersectResult &result ) {
-	if( result.detect_pt_device && !result.hasCurrentPointingDevice() ) {
-		// If this function is called because we are detecting pointing device
-		// sensors but there is no current one then there is no use in doing
-		// line intersect on the actual triangles.
-		return false;
-	}
+  if( result.detect_pt_device && !result.hasCurrentPointingDevice() ) {
+    // If this function is called because we are detecting pointing device
+    // sensors but there is no current one then there is no use in doing
+    // line intersect on the actual triangles.
+    return false;
+  }
 
   bool returnValue = false;
   Bound * the_bound = bound->getValue();
@@ -529,13 +529,13 @@ void Text::OutputUpdater::update() {
     static_cast< MFString * >( routes_in[1] )->getValue();
   
   const Vec3f &size = bb->size->getValue();
-	Vec3f center = bb->center->getValue();
+  Vec3f center = bb->center->getValue();
 
-	// update textBounds
-	text_node->textBounds->setValue( 
+  // update textBounds
+  text_node->textBounds->setValue( 
     Vec2f(size.x, size.y), text_node->id );
-	// update origin
-	text_node->origin->setValue( 
+  // update origin
+  text_node->origin->setValue( 
     Vec3f(center.x-(size.x/2), center.y+(size.y/2), 0), text_node->id );
   // update line bounds
   text_node->updateLineBounds();

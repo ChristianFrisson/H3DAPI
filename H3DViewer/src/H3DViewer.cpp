@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Sep  8 2010)
+// C++ code generated with wxFormBuilder (version Nov  6 2013)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -32,6 +32,7 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	TreeViewTree = new wxTreeCtrl( TreeViewPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE );
 	bSizer3->Add( TreeViewTree, 1, wxALL|wxEXPAND, 5 );
 	
+	
 	TreeViewPanel->SetSizer( bSizer3 );
 	TreeViewPanel->Layout();
 	bSizer3->Fit( TreeViewPanel );
@@ -42,7 +43,9 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	btnClose = new wxButton( this, wxID_CANCEL, wxT("Close"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer14->Add( btnClose, 0, wxALIGN_RIGHT|wxALL, 5 );
 	
+	
 	bSizer1->Add( bSizer14, 1, wxEXPAND, 5 );
+	
 	
 	this->SetSizer( bSizer1 );
 	this->Layout();
@@ -92,10 +95,12 @@ PluginsDialog::PluginsDialog( wxWindow* parent, wxWindowID id, const wxString& t
 	RemovePluginButton = new wxButton( this, wxID_ANY, wxT("Remove.."), wxDefaultPosition, wxDefaultSize, 0 );
 	AddRemoveButtonSizer->Add( RemovePluginButton, 0, wxALL, 5 );
 	
+	
 	PluginsSizer->Add( AddRemoveButtonSizer, 1, wxEXPAND, 5 );
 	
 	DisablePluginsCheckBox = new wxCheckBox( this, wxID_ANY, wxT("Disable plugins"), wxDefaultPosition, wxDefaultSize, 0 );
 	PluginsSizer->Add( DisablePluginsCheckBox, 0, wxALL, 5 );
+	
 	
 	bSizer5->Add( PluginsSizer, 1, wxEXPAND, 5 );
 	
@@ -107,7 +112,9 @@ PluginsDialog::PluginsDialog( wxWindow* parent, wxWindowID id, const wxString& t
 	
 	bSizer7->Add( PluginInfoText, 1, wxEXPAND | wxALL, 5 );
 	
+	
 	bSizer5->Add( bSizer7, 1, wxEXPAND, 5 );
+	
 	
 	this->SetSizer( bSizer5 );
 	this->Layout();
@@ -152,8 +159,7 @@ MenuContainer::MenuContainer( wxWindow* parent, wxWindowID id, const wxString& t
 	TreeViewCollapseChildren = new wxMenuItem( RightClickMenu, wxID_ANY, wxString( wxT("Collapse children") ) , wxEmptyString, wxITEM_NORMAL );
 	RightClickMenu->Append( TreeViewCollapseChildren );
 	
-	wxMenuItem* m_separator1;
-	m_separator1 = RightClickMenu->AppendSeparator();
+	RightClickMenu->AppendSeparator();
 	
 	wxMenuItem* TreeViewDeleteNode;
 	TreeViewDeleteNode = new wxMenuItem( RightClickMenu, wxID_ANY, wxString( wxT("Delete node") ) , wxEmptyString, wxITEM_NORMAL );
@@ -163,8 +169,7 @@ MenuContainer::MenuContainer( wxWindow* parent, wxWindowID id, const wxString& t
 	TreeViewAddChildNode = new wxMenuItem( RightClickMenu, wxID_ANY, wxString( wxT("Add/replace child node..") ) , wxEmptyString, wxITEM_NORMAL );
 	RightClickMenu->Append( TreeViewAddChildNode );
 	
-	wxMenuItem* m_separator2;
-	m_separator2 = RightClickMenu->AppendSeparator();
+	RightClickMenu->AppendSeparator();
 	
 	wxMenuItem* TreeViewNodeWatch;
 	TreeViewNodeWatch = new wxMenuItem( RightClickMenu, wxID_ANY, wxString( wxT("Add node field watch") ) , wxEmptyString, wxITEM_NORMAL );
@@ -197,8 +202,7 @@ MenuContainer::MenuContainer( wxWindow* parent, wxWindowID id, const wxString& t
 	TreeViewCollapseChildren11 = new wxMenuItem( RightClickMenuTexture, wxID_ANY, wxString( wxT("Collapse children") ) , wxEmptyString, wxITEM_NORMAL );
 	RightClickMenuTexture->Append( TreeViewCollapseChildren11 );
 	
-	wxMenuItem* m_separator31;
-	m_separator31 = RightClickMenuTexture->AppendSeparator();
+	RightClickMenuTexture->AppendSeparator();
 	
 	wxMenuItem* TreeViewDeleteNode11;
 	TreeViewDeleteNode11 = new wxMenuItem( RightClickMenuTexture, wxID_ANY, wxString( wxT("Delete node") ) , wxEmptyString, wxITEM_NORMAL );
@@ -208,8 +212,7 @@ MenuContainer::MenuContainer( wxWindow* parent, wxWindowID id, const wxString& t
 	TreeViewAddChildNode11 = new wxMenuItem( RightClickMenuTexture, wxID_ANY, wxString( wxT("Add/replace child node..") ) , wxEmptyString, wxITEM_NORMAL );
 	RightClickMenuTexture->Append( TreeViewAddChildNode11 );
 	
-	wxMenuItem* m_separator41;
-	m_separator41 = RightClickMenuTexture->AppendSeparator();
+	RightClickMenuTexture->AppendSeparator();
 	
 	wxMenuItem* TreeViewNodeWatch11;
 	TreeViewNodeWatch11 = new wxMenuItem( RightClickMenuTexture, wxID_ANY, wxString( wxT("Add node field watch") ) , wxEmptyString, wxITEM_NORMAL );
@@ -218,6 +221,10 @@ MenuContainer::MenuContainer( wxWindow* parent, wxWindowID id, const wxString& t
 	wxMenuItem* TreeViewSaveNrrd;
 	TreeViewSaveNrrd = new wxMenuItem( RightClickMenuTexture, wxID_ANY, wxString( wxT("Save texture image in NRRD format..") ) , wxEmptyString, wxITEM_NORMAL );
 	RightClickMenuTexture->Append( TreeViewSaveNrrd );
+	
+	wxMenuItem* TreeViewSavePng;
+	TreeViewSavePng = new wxMenuItem( RightClickMenuTexture, wxID_ANY, wxString( wxT("Save texture image in png format..") ) , wxT("For 3D-textures depth will be 0."), wxITEM_NORMAL );
+	RightClickMenuTexture->Append( TreeViewSavePng );
 	
 	m_menubar2->Append( RightClickMenuTexture, wxT("Action") ); 
 	
@@ -234,8 +241,7 @@ MenuContainer::MenuContainer( wxWindow* parent, wxWindowID id, const wxString& t
 	TreeViewCollapseChildren1 = new wxMenuItem( RightClickMenuGeometry, wxID_ANY, wxString( wxT("Collapse children") ) , wxEmptyString, wxITEM_NORMAL );
 	RightClickMenuGeometry->Append( TreeViewCollapseChildren1 );
 	
-	wxMenuItem* m_separator3;
-	m_separator3 = RightClickMenuGeometry->AppendSeparator();
+	RightClickMenuGeometry->AppendSeparator();
 	
 	wxMenuItem* TreeViewDeleteNode1;
 	TreeViewDeleteNode1 = new wxMenuItem( RightClickMenuGeometry, wxID_ANY, wxString( wxT("Delete node") ) , wxEmptyString, wxITEM_NORMAL );
@@ -245,8 +251,7 @@ MenuContainer::MenuContainer( wxWindow* parent, wxWindowID id, const wxString& t
 	TreeViewAddChildNode1 = new wxMenuItem( RightClickMenuGeometry, wxID_ANY, wxString( wxT("Add/replace child node..") ) , wxEmptyString, wxITEM_NORMAL );
 	RightClickMenuGeometry->Append( TreeViewAddChildNode1 );
 	
-	wxMenuItem* m_separator4;
-	m_separator4 = RightClickMenuGeometry->AppendSeparator();
+	RightClickMenuGeometry->AppendSeparator();
 	
 	wxMenuItem* TreeViewNodeWatch1;
 	TreeViewNodeWatch1 = new wxMenuItem( RightClickMenuGeometry, wxID_ANY, wxString( wxT("Add node field watch") ) , wxEmptyString, wxITEM_NORMAL );
@@ -288,6 +293,7 @@ MenuContainer::MenuContainer( wxWindow* parent, wxWindowID id, const wxString& t
 	this->Connect( TreeViewAddChildNode11->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewAddChildNode ) );
 	this->Connect( TreeViewNodeWatch11->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewNodeWatch ) );
 	this->Connect( TreeViewSaveNrrd->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveNrrd ) );
+	this->Connect( TreeViewSavePng->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSavePng ) );
 	this->Connect( TreeViewCollapseAll1->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseAll ) );
 	this->Connect( TreeViewExpandAll1->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewExpandAll ) );
 	this->Connect( TreeViewCollapseChildren1->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseChildren ) );
@@ -318,6 +324,7 @@ MenuContainer::~MenuContainer()
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewAddChildNode ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewNodeWatch ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveNrrd ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSavePng ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseAll ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewExpandAll ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseChildren ) );

@@ -5,7 +5,7 @@
 
 %{
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -124,10 +124,10 @@ exportStatement:         EXPORT nodeNameId AS exportedNodeNameId {
     if ( driver.DEF_export )
       driver.DEF_export->addNode( $4, node );
     else
-      Console(3) << "WARNING: EXPORT error. No export DEF map provided!"
+      Console(3) << "Warning: EXPORT error. No export DEF map provided!"
                  << driver.getLocationString() << endl;
   } else {
-    Console(3) << "WARNING: EXPORT error. Node named \"" 
+    Console(3) << "Warning: EXPORT error. Node named \"" 
                << $2 << "\" does not exist."
                << driver.getLocationString() << endl;
   }
@@ -142,7 +142,7 @@ if( !driver.insideProtoDeclaration() ) {
     if( import_node ) {
       driver.DEF_map->addNode( $6, import_node ); 
     } else {
-      Console(3) << "WARNING: IMPORT error. H3D_EXPORTS " 
+      Console(3) << "Warning: IMPORT error. H3D_EXPORTS " 
                  << "does not include \""
                  << $4 << "\"" 
                  << driver.getLocationString() << endl;
@@ -157,18 +157,18 @@ if( !driver.insideProtoDeclaration() ) {
         driver.DEF_map->addNode( $6, 
                           import_node ); 
       } else {
-        Console(3) << "WARNING: IMPORT error. Inline node \"" 
+        Console(3) << "Warning: IMPORT error. Inline node \"" 
                    << $2 << "\" does not EXPORT \""
                    << $4 << "\"" 
                    << driver.getLocationString() << endl;
       }
     } else {
       if( n ) {
-        Console(3) << "WARNING: IMPORT error. Node \"" 
+        Console(3) << "Warning: IMPORT error. Node \"" 
                    << $2 << "\" is not an Inline node "
                    << driver.getLocationString() << endl;
       } else {
-        Console(3) << "WARNING: IMPORT error. Node named \"" 
+        Console(3) << "Warning: IMPORT error. Node named \"" 
                    << $2 << "\" does not exist."
                    << driver.getLocationString() << endl;
       }
@@ -315,25 +315,25 @@ if ( !driver.insideProtoDeclaration() ) {
            if( event ) frf->route( tof );
            else frf->routeNoEvent( tof );
 	} else {
-          Console(3) << "WARNING: Route error. Could not find field named \"" 
+          Console(3) << "Warning: Route error. Could not find field named \"" 
                      <<  $8
                      << "\" in \"" << $6 << "\" Node " 
                      << driver.getLocationString() << endl;
         }
       } else {
-        Console(3) << "WARNING: Route error. Could not find destination Node named \"" 
+        Console(3) << "Warning: Route error. Could not find destination Node named \"" 
                    << $6
                    << "\" " 
                    << driver.getLocationString() << endl;
       }
     } else {
-      Console(3) << "WARNING: Route error. Could not find field named \"" 
+      Console(3) << "Warning: Route error. Could not find field named \"" 
                  << $4
                  << "\" in \"" << $2 << "\" Node " 
                  << driver.getLocationString() << endl;
     }  
   } else {
-    Console(3) << "WARNING: Route error. Could not find source Node named \"" 
+    Console(3) << "Warning: Route error. Could not find source Node named \"" 
                << $2
                << "\" " 
                << driver.getLocationString() << endl;
@@ -360,7 +360,7 @@ if ( !driver.insideProtoDeclaration() ) {
          new_node = proto->newProtoInstance();
       }
       if ( !new_node )
-        Console(3) << "WARNING: Could not create node \"" << yylval << 
+        Console(3) << "Warning: Could not create node \"" << yylval << 
           "\" - name not found in the node database and is not a proto name ( " <<
           driver.getLocationString() << " )." << endl;
     } else {

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -33,32 +33,32 @@
 using namespace H3D;
 
 H3DNodeDatabase NurbsCurve2D::database( 
-	"NurbsCurve2D", 
-	&(newInstance<NurbsCurve2D>),
-	typeid( NurbsCurve2D ),
-	&X3DNurbsControlCurveNode::database );
+  "NurbsCurve2D", 
+  &(newInstance<NurbsCurve2D>),
+  typeid( NurbsCurve2D ),
+  &X3DNurbsControlCurveNode::database );
 
 namespace NurbsCurve2DInternals {
-	FIELDDB_ELEMENT( NurbsCurve2D, tessellation, INPUT_OUTPUT );
-	FIELDDB_ELEMENT( NurbsCurve2D, weight, INPUT_OUTPUT );
-	FIELDDB_ELEMENT( NurbsCurve2D, knot, INPUT_OUTPUT );
-	FIELDDB_ELEMENT( NurbsCurve2D, order, INPUT_OUTPUT );
-	FIELDDB_ELEMENT( NurbsCurve2D, closed, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( NurbsCurve2D, tessellation, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( NurbsCurve2D, weight, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( NurbsCurve2D, knot, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( NurbsCurve2D, order, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( NurbsCurve2D, closed, INPUT_OUTPUT );
 }
 
-NurbsCurve2D::NurbsCurve2D( Inst< SFNode	 > _metadata,
-														Inst< MFVec2d  > _controlPoint,
-														Inst< SFInt32	 > _tessellation,
-														Inst< MFDouble > _weight,
-														Inst< MFDouble > _knot,
-														Inst< SFInt32	 > _order,
-														Inst< SFBool	 > _closed ):
-											X3DNurbsControlCurveNode( _metadata, _controlPoint ),
-											tessellation( _tessellation ),
-											weight( _weight ),
-											knot( _knot ),
-											order( _order ),
-											closed( _closed ) {
+NurbsCurve2D::NurbsCurve2D( Inst< SFNode   > _metadata,
+                            Inst< MFVec2d  > _controlPoint,
+                            Inst< SFInt32   > _tessellation,
+                            Inst< MFDouble > _weight,
+                            Inst< MFDouble > _knot,
+                            Inst< SFInt32   > _order,
+                            Inst< SFBool   > _closed ):
+                      X3DNurbsControlCurveNode( _metadata, _controlPoint ),
+                      tessellation( _tessellation ),
+                      weight( _weight ),
+                      knot( _knot ),
+                      order( _order ),
+                      closed( _closed ) {
 type_name = "NurbsCurve2D";
 database.initFields( this );
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -43,28 +43,28 @@ namespace LocalFogInternals {
   FIELDDB_ELEMENT( LocalFog, color, INPUT_OUTPUT );
   FIELDDB_ELEMENT( LocalFog, fogType, INPUT_OUTPUT );
   FIELDDB_ELEMENT( LocalFog, visibilityRange, INPUT_OUTPUT );
-	FIELDDB_ELEMENT( LocalFog, enabled, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( LocalFog, enabled, INPUT_OUTPUT );
 }
 
 LocalFog::LocalFog( Inst< SFNode    > _metadata,
                     Inst< SFColor   > _color,
                     Inst< SFString  > _fogType,
                     Inst< SFFloat   > _visibilityRange,
-										Inst< SFBool   > _enabled ) :
+                    Inst< SFBool   > _enabled ) :
   X3DChildNode( _metadata ),
   X3DFogObject( _color, _fogType, _visibilityRange ),
   H3DRenderStateObject(),
-	enabled( _enabled ) {
+  enabled( _enabled ) {
   
   type_name = "LocalFog";
   database.initFields( this );
-	enabled->setValue( true );
+  enabled->setValue( true );
 }
 
 void LocalFog::enableGraphicsState() {
   glPushAttrib( GL_FOG_BIT );
-	if( !enabled->getValue() )
-		return;
+  if( !enabled->getValue() )
+    return;
   H3DFloat visibility_range = visibilityRange->getValue();
   if( visibility_range != 0.0f ) {
     const RGB &localFog_color = color->getValue(); 

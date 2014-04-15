@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -32,6 +32,7 @@
 #include <H3D/TouchSensor.h>
 #include <H3D/X3D.h>
 #include <H3D/H3DNavigation.h>
+#include <H3D/ResourceResolver.h>
 
 using namespace H3D;
 
@@ -51,6 +52,8 @@ static int temp_internname = 0;
 AutoRef< Anchor > Anchor::old_anchor(0);
 string Anchor::new_world_url = "";
 string Anchor::new_world_vp = "";
+string Anchor::new_world_base_url = "";
+
 Anchor::Anchor( 
              Inst< AddChildren    > _addChildren,
              Inst< RemoveChildren > _removeChildren,
@@ -81,6 +84,7 @@ Anchor::Anchor(
   ++temp_internname;
   pt_dev_sensors.push_back( intern_pdsn.get() );
   pt_dev_sens_index[ intern_pdsn.get() ] = -1;
+  internal_base_url = ResourceResolver::getBaseURL();
 }
 
 Anchor::~Anchor() {
@@ -114,12 +118,25 @@ void Anchor::GeometrySelected::update() {
         size_t vp_list_size =
           X3DViewpointNode::getAllViewpoints().size();
         int prev_outputlevel = Console.getOutputLevel();
+        bool use_internal_base_url = false;
+        string base_url_to_use = ResourceResolver::getBaseURL();
         Console.setOutputLevel( 100 );
         try {
           new_world.reset(
             X3D::createX3DFromURL( base_url, &node_names, NULL, NULL ) );
         } catch( const Exception::H3DException & ) {
-          file_exist = false;
+          try {
+            
+            ResourceResolver::setBaseURL( anchor->internal_base_url );
+            new_world.reset(
+              X3D::createX3DFromURL( base_url, &node_names, NULL, NULL ) );
+            // reset to old base url before setting base_url_to_use to the one
+            // we want to use.
+            ResourceResolver::setBaseURL( base_url_to_use );
+            base_url_to_use = anchor->internal_base_url;
+          } catch( const Exception::H3DException & ) {
+            file_exist = false;
+          }
         }
         Console.setOutputLevel( prev_outputlevel );
         if( pos != string::npos )
@@ -139,6 +156,7 @@ void Anchor::GeometrySelected::update() {
           old_anchor.reset( anchor );
           new_world_url = base_url;
           new_world_vp = vp_name;
+          new_world_base_url = base_url_to_use;
 
           no_valid_things = false;
           break;
@@ -206,8 +224,11 @@ void Anchor::replaceSceneRoot( Scene * the_scene ) {
                          old_anchor.get() ) ) {
       scene_root->children->clear();
       X3D::DEFNodes node_names;
+      string old_base_url = ResourceResolver::getBaseURL();
+      ResourceResolver::setBaseURL( new_world_base_url );
       the_scene->sceneRoot->setValue(
         X3D::createX3DFromURL( new_world_url, &node_names, NULL, NULL ) );
+      ResourceResolver::setBaseURL( old_base_url );
       if( new_world_vp != "" ) {
         // if there are more than one viewpoint with vp_name results are
         // undefined.
@@ -220,6 +241,7 @@ void Anchor::replaceSceneRoot( Scene * the_scene ) {
       old_anchor.reset( 0 );
       new_world_url = "";
       new_world_vp = "";
+      new_world_base_url = "";
     }
   }
 }

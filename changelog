@@ -1,3 +1,66 @@
+Changes for version 2.3.0:
+- Generated header is moved to CMake build directory and can only be found
+ in H3DUtil/include after INSTALL project has been built.
+- Speed optimizations that could affect some compilers.
+- Updates to CMake build system to build properly when TortoiseSVN is installed
+ but the current H3D build is not a TortoiseSVN checkout.
+- Added a InstallH3DAPIAndExternals.cmake package file which can be used by
+ applications to package up needed files by the current H3DAPI build.
+- Added profiling of haptics and graphics thread if built with profile support.
+ Profiling is not enabled in the released binaries.
+- A lot of performance improvements. H3DAPI should render faster in many cases
+ now.
+- Scene::findNode* functions now handle Inline. FindNode* functions are now
+ static.
+- Updates to fix artifacts with GPU shadows.
+- X3DTextureNode nodes can now have their current state saved as PNG.
+- Fixed issues with QUAD_BUFFERED_STEREO.
+- Updates to handle protos better.
+- If GLUT gameMode is used then GLUTWindow now still handle keyboard inputs
+ properly.
+- Many updates to FrameBufferTextureGenerator. Such as setting local
+ NavigationInfo, handling shadows, support for new DEPTH_BUFFER types and
+ support for external color and/or depth buffer for buffer storage. It should
+ also now work properly with QUAD_BUFFERED_STEREO mode.
+- Memory leak fixes.
+- Some field types had unitialized default values, this is fixed now.
+- Added optional COPY option for USE statement. Can be useful when there are
+ nodes which does not handle the DEF/USE system that well.
+- Use F11 to switch to/from fullscreen in H3DLoad.
+- Renamed FindTeem.cmake to FindH3DTeem.cmake in order to use CMakes new
+ FindTeem module if it exists. Did the same for FindFreeType.cmake.
+- DirectShowDecoder now plays wmv files.
+- PointSet, LineSet, IndexedLineSet now have vertex attribute support.
+- Doxygen documentation now links to python documentation as well.
+- Extrusion now calculates normal per triangle face instead of per quad face.
+
+New H3D nodes:
+FBODebugger
+GeometryGroup
+PlaybackDevice
+NoiseTexture
+NoiseTexture3D
+RazerHydraSensor
+SimpleAudioClip
+
+New python functionality:
+- Added getTypeName, getValueAsString, setValueAsString, setName, getName,
+ getFullName, isUpToDate, upToDate, replaceRoute, replaceRouteNoEvent,
+ unrouteAll, getOwner and setOwner functions for fields.
+
+H3DViewer updates:
+- Can now copy current log text to clipboard.
+- Added dialog to show profiling information if profiling is enabled.
+- TreeViewer only expand X3DGroupingNode at first view now.
+- QUAD_BUFFERED_STEREO should work properly again.
+- Updates to handle QUAD_BUFFERED_STEREO on an NVIDIA_3DVISION ready display
+ with a non-quadro card. Note that this requires a special built wxWidgets.
+ WxWidgets adopted a patch supplied by us so in the future this should work
+ for standard releases of WxWidgets.
+
+Compatability issues:
+- Changed default depth buffer type of FrameBufferTextureGenerator.
+
 Changes for version 2.2.0:
 - Added functionality for more convenient Import/Export use of Inlined files.
 - Added a node clone function. Exposed in python.

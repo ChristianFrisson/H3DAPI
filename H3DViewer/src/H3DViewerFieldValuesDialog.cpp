@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2009-2013, SenseGraphics AB
+//    Copyright 2009-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -34,10 +34,10 @@
 #include <H3D/PythonScript.h>
 
 H3DViewerFieldValuesPanel::H3DViewerFieldValuesPanel( wxWindow* parent,
-						      wxWindowID id, 
-						      const wxPoint& pos, 
-						      const wxSize& size, 
-						      long style ) : 
+                  wxWindowID id, 
+                  const wxPoint& pos, 
+                  const wxSize& size, 
+                  long style ) : 
   wxPanel( parent, id, pos, size, style ),
   displayed_node( NULL )
 {
@@ -281,8 +281,8 @@ void H3DViewerFieldValuesPanel::OnIdle( wxIdleEvent& event ) {
     if( IsShown() ) {
       TimeStamp now;
       if( now - last_fields_update > 0.1 ) {
-	displayFieldsFromNode( displayed_node.get() );
-	last_fields_update = now;
+  displayFieldsFromNode( displayed_node.get() );
+  last_fields_update = now;
       }
     }
   } catch( ... ) {
@@ -496,11 +496,11 @@ void H3DViewerFieldValuesPanel::updateRowFromField( wxGrid *FieldValuesGrid,
 
 
 H3DViewerFieldValuesDialog::H3DViewerFieldValuesDialog( wxWindow* parent, 
-							wxWindowID id, 
-							const wxString& title, 
-							const wxPoint& pos, 
-							const wxSize& size, 
-							long style ) : 
+              wxWindowID id, 
+              const wxString& title, 
+              const wxPoint& pos, 
+              const wxSize& size, 
+              long style ) : 
   wxFrame( parent, id, title, pos, size, style ) {
 
   this->SetSizeHints( wxDefaultSize, wxDefaultSize );
@@ -509,7 +509,7 @@ H3DViewerFieldValuesDialog::H3DViewerFieldValuesDialog( wxWindow* parent,
   bSizer2 = new wxBoxSizer( wxVERTICAL );
   
   field_values_panel = new H3DViewerFieldValuesPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize );
-	
+
   bSizer2->Add( field_values_panel, 1, wxALL|wxEXPAND, 5 );
   this->SetSizer( bSizer2 );
   this->Layout();

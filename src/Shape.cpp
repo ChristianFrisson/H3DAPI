@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -37,7 +37,7 @@ H3DNodeDatabase Shape::database(
                                 "Shape", 
                                 &(newInstance<Shape>), 
                                 typeid( Shape ),
-				                &X3DShapeNode::database 
+                        &X3DShapeNode::database
  );
 
 namespace ShapeInternals {

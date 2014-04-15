@@ -5,7 +5,7 @@
     <meta name='description' content='X3D LOD example. Geometry changes when
       viewing distance to the object changes. Use the UP and DOWN keys to 
       move closer to/further from the object to see the difference.'/>
-    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
   
   <Scene>

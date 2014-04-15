@@ -707,6 +707,26 @@ Section "Uninstall"
   secondStartMenuDeleteLoopDone:
 
   DeleteRegKey /ifempty SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
+  ; Make sure we look in 64 bit registry on 64 bit versions to get rid of the registry entries
+  ; that H3DViewer put in.
+  ${If} ${RunningX64}
+    SetRegView 64
+  ${EndIf}
+  DeleteRegKey HKCU "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_H3DViewer_RegEntry@"
+  DeleteRegKey /ifempty HKCU "Software\@CPACK_PACKAGE_VENDOR@"
+  StrCpy $0 0
+  loop_remove_reg_key:
+    EnumRegKey $1 HKU "" $0
+    StrCmp $1 "" done_remove_reg_key
+    IntOp $0 $0 + 1
+    ;MessageBox MB_YESNO|MB_ICONQUESTION "$1\Software\@CPACK_PACKAGE_VENDOR@\@CPACK_H3DViewer_RegEntry@$\n$\nMore?" IDYES loop_remove_reg_key
+    DeleteRegKey HKU "$1\Software\@CPACK_PACKAGE_VENDOR@\@CPACK_H3DViewer_RegEntry@"
+    DeleteRegKey /ifempty HKU "$1\Software\@CPACK_PACKAGE_VENDOR@"
+    Goto loop_remove_reg_key
+  done_remove_reg_key:
+  ${If} ${RunningX64}
+    SetRegView 32
+  ${EndIf}
 SectionEnd
 
 ;--------------------------------

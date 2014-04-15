@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2009-2013, SenseGraphics AB
+//    Copyright 2009-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -102,7 +102,7 @@ void H3DViewerPluginsDialog::OnInstalledPluginSelected( wxCommandEvent& event ) 
   // plugin name
   PluginInfoText->BeginBold();
   PluginInfoText->WriteText( wxT( "Plugin: " ) );
-	PluginInfoText->EndBold();
+  PluginInfoText->EndBold();
   wxString web;
   bool s = h3dConfig->Read( wxT( "Web" ), &web );
   if( s && !web.IsEmpty() ) {
@@ -121,7 +121,7 @@ void H3DViewerPluginsDialog::OnInstalledPluginSelected( wxCommandEvent& event ) 
   if( success && !str.IsEmpty() ) {
     PluginInfoText->BeginBold();
     PluginInfoText->WriteText( wxT( "Version: " ) );
-	  PluginInfoText->EndBold();
+    PluginInfoText->EndBold();
     PluginInfoText->WriteText( str );
     PluginInfoText->Newline();
   }
@@ -131,7 +131,7 @@ void H3DViewerPluginsDialog::OnInstalledPluginSelected( wxCommandEvent& event ) 
   if( success && !str.IsEmpty() ) {
     PluginInfoText->BeginBold();
     PluginInfoText->WriteText( wxT( "Developer: " ) );
-	  PluginInfoText->EndBold();
+    PluginInfoText->EndBold();
     wxString web;
     bool s = h3dConfig->Read( wxT( "DeveloperWeb" ), &web );
     if( s && !web.IsEmpty() ) {
@@ -151,7 +151,7 @@ void H3DViewerPluginsDialog::OnInstalledPluginSelected( wxCommandEvent& event ) 
   if( success && !str.IsEmpty() ) {
     PluginInfoText->BeginBold();
     PluginInfoText->WriteText( wxT( "Info: " ) );
-  	PluginInfoText->EndBold();
+    PluginInfoText->EndBold();
     PluginInfoText->WriteText( str );
     PluginInfoText->Newline();
   }
@@ -161,7 +161,7 @@ void H3DViewerPluginsDialog::OnInstalledPluginSelected( wxCommandEvent& event ) 
   if( success && !str.IsEmpty() ) {
     PluginInfoText->BeginBold();
     PluginInfoText->WriteText( wxT( "Library: " ) );
-	  PluginInfoText->EndBold();
+    PluginInfoText->EndBold();
     PluginInfoText->WriteText( str );
     PluginInfoText->Newline();
   }
@@ -203,7 +203,7 @@ void H3DViewerPluginsDialog::OnRemovePluginButton( wxCommandEvent& event ) {
   int selected_index = InstalledPluginsList->GetSelection();
   if( selected_index == wxNOT_FOUND ) return;
 
-	wxString selected_plugin = InstalledPluginsList->GetStringSelection();
+  wxString selected_plugin = InstalledPluginsList->GetStringSelection();
   
   removePlugin( selected_plugin );
 }

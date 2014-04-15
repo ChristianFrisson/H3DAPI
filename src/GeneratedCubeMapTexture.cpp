@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -45,7 +45,7 @@ H3DNodeDatabase GeneratedCubeMapTexture::database(
 namespace GeneratedCubeMapTextureInternals {
   FIELDDB_ELEMENT( GeneratedCubeMapTexture, size, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( GeneratedCubeMapTexture, update, INPUT_OUTPUT );
-	FIELDDB_ELEMENT( GeneratedCubeMapTexture, textureProperties, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GeneratedCubeMapTexture, textureProperties, INPUT_OUTPUT );
 }
 
 GeneratedCubeMapTexture::GeneratedCubeMapTexture( 
@@ -53,12 +53,12 @@ GeneratedCubeMapTexture::GeneratedCubeMapTexture(
                                           Inst< SFNode      > _metadata,
                                           Inst< SFString    > _update,
                                           Inst< SFInt32     > _size,
-												Inst< SFTextureProperties > _textureProperties ) :
+                        Inst< SFTextureProperties > _textureProperties ) :
   X3DEnvironmentTextureNode( _displayList, _metadata ),
   H3DMultiPassRenderObject(),
   update( _update ),
   size( _size ),
-	textureProperties( _textureProperties ),
+  textureProperties( _textureProperties ),
   textures_initialized( false ),
   generating_textures( false ) {
     
@@ -71,7 +71,7 @@ GeneratedCubeMapTexture::GeneratedCubeMapTexture(
   update->addValidValue( "ALWAYS" );
   update->setValue( "NONE" );
 
-	textureProperties->route( displayList );
+  textureProperties->route( displayList );
 }
 
 GeneratedCubeMapTexture::~GeneratedCubeMapTexture() {
@@ -131,7 +131,7 @@ void GeneratedCubeMapTexture::initializeTextures() {
 void GeneratedCubeMapTexture::renderTextureProperties(){
   // GL_TEXTURE_RECTANGLE_ARB target do not support GL_REPEAT
   TextureProperties *texture_properties = textureProperties->getValue();
-	if( texture_properties ) {
+  if( texture_properties ) {
       // set up texture parameters 
     glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
@@ -150,7 +150,7 @@ void GeneratedCubeMapTexture::render() {
     if( !textures_initialized )
       initializeTextures();
     glGetIntegerv( GL_ACTIVE_TEXTURE_ARB, &texture_unit );
-		renderTextureProperties();
+    renderTextureProperties();
     enableTexturing();
   }
 }

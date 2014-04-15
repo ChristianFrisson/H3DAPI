@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -41,8 +41,8 @@ namespace H3D {
   public:
     MFTime(){}
     MFTime( size_type sz ) {
-	  value.resize( sz );	
-	}
+    value.resize( sz );
+  }
     virtual string getTypeName() { return classTypeName(); }
     static string classTypeName() { return "MFTime"; }
     virtual X3DTypes::X3DType getX3DType() { return X3DTypes::MFTIME; }

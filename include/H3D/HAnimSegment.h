@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -48,10 +48,10 @@ namespace H3D {
   /// The displacers field contains a list of HAnimDisplacer objects that are
   /// used to morph the deformable mesh using the morph targets defined
   /// in the Displacer objects.
-	///
-	/// <b>Examples:</b>
+  ///
+  /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/BoxMan.x3d">BoxMan.x3d</a>
-  ///     ( <a href="examples/BoxMan.html">Source</a> )
+  ///     ( <a href="examples/BoxMan.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
   /// \dotfile HAnimSegment.dot
@@ -80,19 +80,19 @@ namespace H3D {
     //virtual void render();
     virtual void traverseSG( TraverseInfo &ti );
 
-		/// The X3D specification does not describe this field at all.
-		/// The H3D team have no idea what it is supposed to do and as such it
-		/// is ignored.
+    /// The X3D specification does not describe this field at all.
+    /// The H3D team have no idea what it is supposed to do and as such it
+    /// is ignored.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0 0 0 \n
     /// \dotfile HAnimSegment_centerOfMass.dot
     auto_ptr< SFVec3f    > centerOfMass;
 
-		/// Contains the coordinate node for the segment. The HAnimDisplacer
-		/// nodes in the displacer field will morph the coordinates contained
-		/// in the point field of the coordinate node.
-		///
+    /// Contains the coordinate node for the segment. The HAnimDisplacer
+    /// nodes in the displacer field will morph the coordinates contained
+    /// in the point field of the coordinate node.
+    ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0 0 0 \n
     /// \dotfile HAnimSegment_coord.dot
@@ -108,9 +108,9 @@ namespace H3D {
     /// \dotfile HAnimSegment_displacers.dot  
     auto_ptr< MFDisplacer >  displacers;
 
-		/// The X3D specification does not describe this field at all.
-		/// The H3D team have no idea what it is supposed to do and as such it
-		/// is ignored.
+    /// The X3D specification does not describe this field at all.
+    /// The H3D team have no idea what it is supposed to do and as such it
+    /// is ignored.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0 \n
@@ -118,8 +118,8 @@ namespace H3D {
     auto_ptr< SFFloat > mass;
 
     /// The X3D specification does not describe this field at all.
-		/// The H3D team have no idea what it is supposed to do and as such it
-		/// is ignored.
+    /// The H3D team have no idea what it is supposed to do and as such it
+    /// is ignored.
     ///
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0 0 0 0 0 0 0 0 0 \n

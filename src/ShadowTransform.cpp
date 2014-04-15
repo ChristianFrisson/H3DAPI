@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -34,9 +34,9 @@ using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase ShadowTransform::database( "ShadowTransform", 
-					   &(newInstance<ShadowTransform>), 
-					   typeid( ShadowTransform ),
-					   &H3DShadowObjectNode::database );
+             &(newInstance<ShadowTransform>), 
+             typeid( ShadowTransform ),
+             &H3DShadowObjectNode::database );
 
 namespace ShadowTransformInternals {
   FIELDDB_ELEMENT( ShadowTransform, shadowVolume, INPUT_OUTPUT );
@@ -44,8 +44,8 @@ namespace ShadowTransformInternals {
 }
 
 ShadowTransform::ShadowTransform( Inst< SFNode>  _metadata,
-				  Inst< SFTransformNode > _transform,
-				  Inst< MFShadowObjectNode > _shadowVolume ) :
+          Inst< SFTransformNode > _transform,
+          Inst< MFShadowObjectNode > _shadowVolume ) :
   H3DShadowObjectNode( _metadata, _transform ),
   shadowVolume( _shadowVolume ) {
 
@@ -55,8 +55,8 @@ ShadowTransform::ShadowTransform( Inst< SFNode>  _metadata,
 }
 
 void ShadowTransform::renderShadow( X3DLightNode *light, 
-				   bool draw_caps,
-				   const Matrix4f &local_to_global ) {
+           bool draw_caps,
+           const Matrix4f &local_to_global ) {
   
   MatrixTransform *t = transform->getValue();
   for( MFShadowObjectNode::const_iterator i = shadowVolume->begin();

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -55,7 +55,7 @@ using namespace X3D;
 class VrmlDriver;
 
 struct VRMLFlexLexer : public yyFlexLexer {
-	VRMLFlexLexer( istream* arg_yyin = 0, ostream* arg_yyout = 0 ) :
+  VRMLFlexLexer( istream* arg_yyin = 0, ostream* arg_yyout = 0 ) :
     yyFlexLexer( arg_yyin, arg_yyout ) {};
 
   int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver);
@@ -101,9 +101,9 @@ public:
 
   /// Adds a new field to the current node if it is a H3DDynamicFieldsObject
   bool addDynamicField( const string &name, 
-			const string& type, 
-			const Field::AccessType &access_type, 
-			const string & value = "" );
+      const string& type, 
+      const Field::AccessType &access_type, 
+      const string & value = "" );
 
   /// Connects the current proto instance field with the node field from the
   /// not at the top of the node_stack.

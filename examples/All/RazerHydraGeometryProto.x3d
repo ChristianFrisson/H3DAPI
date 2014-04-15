@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='2.3'>
+  <head>
+    <meta name='title' content='RazerHydraGeometryProto.x3d'/>
+    <meta name='description' content='Proto used by RazerHydraSensor.x3d
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.
+      Proto file used by RazerHydraSensor.x3d file.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
+  </head>
+  <Scene>
+    <ProtoDeclare name='RazerHydraGeometry'>
+      <ProtoInterface>
+        <field accessType='inputOnly' name='position' type='SFVec3f'/>
+        <field accessType='inputOnly' name='orientation' type='SFRotation'/>
+        <field accessType='inputOutput' name='color' type='SFColor'/>
+        <field accessType='inputOnly' name='button1Color' type='SFBool'/>
+        <field accessType='inputOnly' name='button2Color' type='SFBool'/>
+        <field accessType='inputOnly' name='button3Color' type='SFBool'/>
+        <field accessType='inputOnly' name='button4Color' type='SFBool'/>
+        <field accessType='inputOnly' name='buttonStart' type='SFBool'/>
+        <field accessType='inputOnly' name='buttonTrigger' type='SFFloat'/>
+        <field accessType='inputOnly' name='buttonBumper' type='SFBool'/>
+        <field accessType='inputOnly' name='buttonJoystick' type='SFBool'/>
+        <field accessType='inputOnly' name='joystickPosition' type='SFVec2f'/>
+      </ProtoInterface>
+      <ProtoBody>
+        <Transform>
+          <IS>
+            <connect nodeField='translation' protoField='position' />
+          </IS>
+          <IS>
+            <connect nodeField='rotation' protoField='orientation' />
+          </IS>
+          
+          <Transform rotation="1 0 0 2.1" >
+            <Shape>
+              <Appearance DEF="MODEL_APP" >
+                <Material DEF="MODEL_MAT" diffuseColor='1 1 1' >
+                  <IS>
+                    <connect nodeField='diffuseColor' protoField='color' />
+                  </IS>
+                </Material>
+              </Appearance>
+              <Cylinder radius="0.03" height="0.2" />
+            </Shape>
+          </Transform>
+          <Transform rotation="1 0 0 0" translation="0 0.057 -0.06" >
+            <Shape>
+              <Appearance USE="MODEL_APP" />
+              <Cylinder radius="0.03" height="0.04" />
+            </Shape>
+            <Transform translation="-0.015 0.02 0.015" >
+              <Shape>
+                <Appearance>
+                  <Material DEF="BUTTON_MAT_1" diffuseColor="0.5 0.5 0.5" />
+                </Appearance>
+                <Sphere DEF="BUTTON_GEOM" radius="0.004" />
+              </Shape>
+            </Transform>
+            <Transform translation="0.015 0.02 0.015" >
+              <Shape>
+                <Appearance>
+                  <Material DEF="BUTTON_MAT_2" diffuseColor="0.5 0.5 0.5" />
+                </Appearance>
+                <Sphere USE="BUTTON_GEOM"/>
+              </Shape>
+            </Transform>
+            <Transform translation="-0.025 0.02 0" >
+              <Shape>
+                <Appearance>
+                  <Material DEF="BUTTON_MAT_3" diffuseColor="0.5 0.5 0.5" />
+                </Appearance>
+                <Sphere USE="BUTTON_GEOM"/>
+              </Shape>
+            </Transform>
+            <Transform translation="0.025 0.02 0" >
+              <Shape>
+                <Appearance>
+                  <Material DEF="BUTTON_MAT_4" diffuseColor="0.5 0.5 0.5" />
+                </Appearance>
+                <Sphere USE="BUTTON_GEOM"/>
+              </Shape>
+            </Transform>
+            <Transform translation="0 0.02 0.02" >
+              <Shape>
+                <Appearance>
+                  <Material DEF="BUTTON_MAT_START" diffuseColor="0.5 0.5 0.5" />
+                </Appearance>
+                <Box size="0.003 0.008 0.008"/>
+              </Shape>
+            </Transform>
+            <Transform translation="0 0.02 -0.01" >
+              <Transform DEF="JOYSTICK_TRANSFORM" >
+                <Shape>
+                  <Appearance>
+                    <Material DEF="BUTTON_MAT_JOYSTICK" diffuseColor="0.5 0.5 0.5" />
+                  </Appearance>
+                  <Cylinder height="0.015" radius="0.004"/>
+                </Shape>
+                <Transform translation="0 0.009 0">
+                  <Shape>
+                    <Appearance>
+                      <Material USE="BUTTON_MAT_JOYSTICK"/>
+                    </Appearance>
+                    <Cylinder height="0.004" radius="0.01"/>
+                  </Shape>
+                </Transform>
+              </Transform>
+            </Transform>
+            <Transform translation="0 0.01 -0.025" >
+              <Shape>
+                <Appearance>
+                  <Material DEF="BUTTON_MAT_BUMPER" diffuseColor="0.5 0.5 0.5" />
+                </Appearance>
+                <Cylinder radius="0.014" height="0.01"/>
+              </Shape>
+            </Transform>
+            <Transform DEF="TRIGGER_TRANSFORM" translation="0 -0.01 -0.025" >
+              <Shape>
+                <Appearance>
+                  <Material diffuseColor="0.5 0.5 0.5" />
+                </Appearance>
+                <Cylinder radius="0.014" height="0.01"/>
+              </Shape>
+            </Transform>
+          </Transform>
+          <PythonScript DEF="PS">
+          <![CDATA[python:from H3DInterface import *
+class SFBoolToColor( TypedField( SFColor, SFBool ) ):
+  def update( self, event ):
+    if event.getValue():
+      return RGB( 1, 1, 1 )
+    else:
+      return RGB( 0.5, 0.5, 0.5 )
+
+button1Color = SFBoolToColor()
+button2Color = SFBoolToColor()
+button3Color = SFBoolToColor()
+button4Color = SFBoolToColor()
+buttonStart = SFBoolToColor()
+buttonBumper = SFBoolToColor()
+buttonJoystick = SFBoolToColor()
+
+button1ColorTrigger = SFBool()
+button2ColorTrigger = SFBool()
+button3ColorTrigger = SFBool()
+button4ColorTrigger = SFBool()
+buttonStartTrigger = SFBool()
+buttonBumperTrigger = SFBool()
+buttonJoyStickTrigger = SFBool()
+
+button1ColorTrigger.route( button1Color )
+button2ColorTrigger.route( button2Color )
+button3ColorTrigger.route( button3Color )
+button4ColorTrigger.route( button4Color )
+buttonStartTrigger.route( buttonStart )
+buttonBumperTrigger.route( buttonBumper )
+buttonJoyStickTrigger.route( buttonJoystick )
+
+class SFJoystickRotation( TypedField( SFRotation, SFVec2f ) ):
+  def update( self, event ):
+    event_value = event.getValue()
+    to_vec = Vec3f( event_value.x, 1, -event_value.y )
+    to_vec.normalize()
+    return Rotation( Vec3f( 0, 1, 0 ), to_vec )
+
+joystickRotation = SFJoystickRotation()
+joystickPosition = SFVec2f()
+joystickPosition.setValue( Vec2f( 0, 0 ) )
+joystickPosition.route( joystickRotation )
+]]>
+            <IS>
+              <connect nodeField='button1ColorTrigger' protoField='button1Color' />
+            </IS>
+            <IS>
+              <connect nodeField='button2ColorTrigger' protoField='button2Color' />
+            </IS>
+            <IS>
+              <connect nodeField='button3ColorTrigger' protoField='button3Color' />
+            </IS>
+            <IS>
+              <connect nodeField='button4ColorTrigger' protoField='button4Color' />
+            </IS>
+            <IS>
+              <connect nodeField='buttonStartTrigger' protoField='buttonStart' />
+            </IS>
+            <IS>
+              <connect nodeField='buttonBumperTrigger' protoField='buttonBumper' />
+            </IS>
+            <IS>
+              <connect nodeField='buttonJoyStickTrigger' protoField='buttonJoystick' />
+            </IS>
+            <IS>
+              <connect nodeField='joystickPosition' protoField='joystickPosition' />
+            </IS>
+         </PythonScript>
+        <PositionInterpolator DEF='TRIGGER_INTERPOLATOR'
+            key='0 1'
+            keyValue='0 -0.01 -0.025 0 -0.01 -0.02' >
+          <IS>
+            <connect nodeField='set_fraction' protoField='buttonTrigger' />
+          </IS>
+        </PositionInterpolator>
+        <ROUTE fromNode="PS" fromField="button1Color"
+               toNode="BUTTON_MAT_1" toField="diffuseColor" />
+        <ROUTE fromNode="PS" fromField="button2Color"
+               toNode="BUTTON_MAT_2" toField="diffuseColor" />
+        <ROUTE fromNode="PS" fromField="button3Color"
+               toNode="BUTTON_MAT_3" toField="diffuseColor" />
+        <ROUTE fromNode="PS" fromField="button4Color"
+               toNode="BUTTON_MAT_4" toField="diffuseColor" />
+        <ROUTE fromNode="PS" fromField="buttonStart"
+               toNode="BUTTON_MAT_START" toField="diffuseColor" />
+        <ROUTE fromNode="TRIGGER_INTERPOLATOR" fromField="value_changed"
+               toNode="TRIGGER_TRANSFORM" toField="translation" />
+        <ROUTE fromNode="PS" fromField="buttonBumper"
+               toNode="BUTTON_MAT_BUMPER" toField="diffuseColor" />
+        <ROUTE fromNode="PS" fromField="buttonJoystick"
+               toNode="BUTTON_MAT_JOYSTICK" toField="diffuseColor" />
+        <ROUTE fromNode="PS" fromField="joystickRotation"
+               toNode="JOYSTICK_TRANSFORM" toField="rotation" />
+        </Transform>
+      </ProtoBody>
+    </ProtoDeclare>
+  </Scene>
+</X3D>

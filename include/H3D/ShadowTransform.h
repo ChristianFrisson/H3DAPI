@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -42,7 +42,7 @@ namespace H3D {
   /// \class ShadowTransform
   /// The ShadowTransform transforms another H3DShadowObjectNode with
   /// the values from the transform field.
-	///
+  ///
   /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/ShadowCaster.x3d">ShadowCaster.x3d</a>
   ///     ( <a href="examples/ShadowCaster.x3d.html">Source</a> )
@@ -56,13 +56,13 @@ namespace H3D {
 
     /// Constructor.
     ShadowTransform( Inst< SFNode          > _metadata  = 0,
-		     Inst< SFTransformNode > _transform = 0,
-		     Inst< MFShadowObjectNode  > _shadowVolume  = 0);
+         Inst< SFTransformNode > _transform = 0,
+         Inst< MFShadowObjectNode  > _shadowVolume  = 0);
 
     /// Render the shadow volume for this shadow object.
     virtual void renderShadow( X3DLightNode *light, 
-			       bool render_caps,
-			       const Matrix4f &local_to_global = Matrix4f() );      
+             bool render_caps,
+             const Matrix4f &local_to_global = Matrix4f() );
 
   public:
     /// The shadow volume we want to transform.

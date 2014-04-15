@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -46,19 +46,19 @@ namespace H3D {
   /// \ingroup X3DNodes
   /// \class HAnimHumanoid
   /// \brief The HAnimHumanoid node is a container for the entire humanoid.
-	///
-	/// In addition it is used to store human-readable data such
-	/// as author and copyright information, as well as to store references to
-	/// the HAnimJoint, HAnimSegment, and HAnimSite nodes in addition to serving
-	/// as a container for the entire humanoid. Thus, it serves as a central node
-	/// for moving the humanoid through its environment.
-	/// 
-	/// \note This nodes functionality is not fully implemented, only joints are used.
-	///
-	/// <b>Examples:</b>
+  ///
+  /// In addition it is used to store human-readable data such
+  /// as author and copyright information, as well as to store references to
+  /// the HAnimJoint, HAnimSegment, and HAnimSite nodes in addition to serving
+  /// as a container for the entire humanoid. Thus, it serves as a central node
+  /// for moving the humanoid through its environment.
+  /// 
+  /// \note This nodes functionality is not fully implemented, only joints are used.
+  ///
+  /// <b>Examples:</b>
   ///   - <a href="../../../H3DAPI/examples/All/BoxMan.x3d">BoxMan.x3d</a>
-  ///     ( <a href="examples/BoxMan.html">Source</a> )
-	///
+  ///     ( <a href="examples/BoxMan.x3d.html">Source</a> )
+  ///
   /// \par Internal routes:
   /// \dotfile HAnimHumanoid.dot
   class H3DAPI_API HAnimHumanoid : 

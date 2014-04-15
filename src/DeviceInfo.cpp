@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -110,7 +110,7 @@ void DeviceInfo::toStackTop() {
   DeviceInfo *active = NULL;
   if( s.size() > 0 ) active = static_cast< DeviceInfo * >( s.front() );
 
-	vector< H3DHapticsDevice * > initialized_devices;
+  vector< H3DHapticsDevice * > initialized_devices;
   if( active != this ) {
     if( active ) {
       for( MFDevice::const_iterator i = active->device->begin();
@@ -127,7 +127,7 @@ void DeviceInfo::toStackTop() {
       H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
       if( hd ) {
         hd->initDevice();
-				initialized_devices.push_back( hd );
+        initialized_devices.push_back( hd );
       }
     }
   } else {
@@ -137,29 +137,29 @@ void DeviceInfo::toStackTop() {
       H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
       if( hd && !hd->initialized->getValue() ) {
         hd->initDevice();
-				initialized_devices.push_back( hd );
+        initialized_devices.push_back( hd );
       }
     }
   }
-	for( unsigned int i = 0; i < initialized_devices.size(); ++i ) {
-			initialized_devices[i]->postInit();
-		}
+  for( unsigned int i = 0; i < initialized_devices.size(); ++i ) {
+      initialized_devices[i]->postInit();
+    }
 }
 
 void DeviceInfo::initialize() {
   X3DBindableNode::initialize();
   if( isStackTop() ) {
-		vector< H3DHapticsDevice * > initialized_devices;
+    vector< H3DHapticsDevice * > initialized_devices;
     for( MFDevice::const_iterator i = device->begin();
          i != device->end(); ++i ) {
       H3DHapticsDevice *hd = static_cast< H3DHapticsDevice * >( *i );
       if( hd && !hd->initialized->getValue() ) {
         hd->initDevice();
-				initialized_devices.push_back( hd );
+        initialized_devices.push_back( hd );
       }
     }
-		for( unsigned int i = 0; i < initialized_devices.size(); ++i ) {
-			initialized_devices[i]->postInit();
-		}
+    for( unsigned int i = 0; i < initialized_devices.size(); ++i ) {
+      initialized_devices[i]->postInit();
+    }
   }
 }

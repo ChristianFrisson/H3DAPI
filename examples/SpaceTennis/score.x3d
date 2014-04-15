@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='score.x3d'/>
     <meta name='description' content='Help file to the simple tennis game. Do not start game with this file.'/>
-    <meta name='editors' content='SenseGraphics AB, 2006-2008'/>
+    <meta name='editors' content='SenseGraphics AB, 2006-2014'/>
   </head>
   <Scene>
     <Transform DEF="TRANS" translation="0.1 0.1 0">

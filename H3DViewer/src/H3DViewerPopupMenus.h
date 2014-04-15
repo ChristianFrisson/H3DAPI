@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2011-2013, SenseGraphics AB
+//    Copyright 2011-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -71,6 +71,9 @@ public:
 
   /// Callback for node save nrrd menu choice.
   virtual void OnTreeViewSaveNrrd( wxCommandEvent& event );
+
+   /// Callback for node save png menu choice.
+  virtual void OnTreeViewSavePng( wxCommandEvent& event );
 
   /// Callback for node save VRML menu choice.
   virtual void OnTreeViewSaveVRML( wxCommandEvent& event );

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -48,9 +48,9 @@ namespace H3D {
   /// \class Scene
   /// \brief The Scene node is topmost node that takes care of the rendering
   /// of the scene graph both haptically and graphically. Scene::mainLoop() 
-  /// can be called to start the main event loop, e.g. start the haptic and
-  /// graphical rendering. Before this function is called at least one instance
-  /// of Scene must have created and be active. 
+  /// can be called to start the main event loop when using GLUT, e.g. start
+  /// the haptic and graphical rendering. Before this function is called at
+  /// least one instance of Scene must have created and be active. 
   /// 
   class H3DAPI_API Scene : public Node {
   public:
@@ -178,10 +178,12 @@ namespace H3D {
       return shadow_caster.get();
     }
     
+#ifdef HAVE_GLUT
     /// Static function that is called to start the main event loop.
     /// Before this function is called at least one instance
     /// of Scene must have created and be active. 
     static void mainLoop();
+#endif
 
     /// The scene graph to render in this scene.
     ///

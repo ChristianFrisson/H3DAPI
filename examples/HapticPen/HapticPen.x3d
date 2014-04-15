@@ -1,27 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='HapticPen.x3d'/>
+    <meta name='description' content='Small scene demonstrating how to "draw" in free air using a haptics device.'/>
+    <meta name='author' content='SenseGraphics AB, 2010-2014'/>
+  </head>
   <Scene>
-    <DeviceInfo>
-      <AnyDevice DEF='DEVICE'>
-        <Shape containerField='stylus'>
-          <Appearance>
-            <Material/>
-          </Appearance>
-          <Sphere radius='0.0025'/>
-        </Shape>
-        <RuspiniRenderer />
-      </AnyDevice>
-    </DeviceInfo>
-    <Transform>
-      <Shape>
-        <PointSet>
-          <Coordinate DEF='COORD' />
-        </PointSet>
-        <Appearance>
-          <Material emissiveColor='1 1 0' />
-        </Appearance>
-      </Shape>
-    </Transform>
+    <ToggleGroup DEF="DRAW_GROUP"/>
     
     <ToggleGroup graphicsOn="true" DEF='TEXT_TOGGLE'>
       <Transform>
@@ -30,23 +15,33 @@
             <Material diffuseColor='0 1 1' />
           </Appearance>      
           <Text 
-              string='"Hold haptic button to draw""Press `spacebar` to erase the screen""Press h to hide this message"' 
+              string='"Hold haptic button to draw.""Press `spacebar` to erase the screen.""Press n to switch draw geometry.""Press c to change color.""Press h to toggle haptics.""Press t to toggle this message"' 
               length='' maxExtent='0' solid='true'>
             <FontStyle DEF='F' size='0.02' spacing='1.0' justify='MIDDLE'/>
           </Text>
         </Shape>
+        <Transform translation="0 -0.13 0">
+          <Shape>
+            <Appearance DEF='A'>
+              <Material diffuseColor='0 0.7 1' />
+            </Appearance>      
+            <Text DEF="GEOM_TYPE_TEXT"
+                string='"Geometry is: PointSet"' 
+                length='' maxExtent='0' solid='true'>
+              <FontStyle DEF='F' size='0.02' spacing='1.0' justify='MIDDLE'/>
+            </Text>
+          </Shape>
+        </Transform>
       </Transform>
     </ToggleGroup>
     
     <KeySensor DEF='KS' />
     
     <PythonScript url="HapticPen.py" DEF='PY'>
-      <Coordinate USE='COORD' containerField='references' />
+      <ToggleGroup USE='DRAW_GROUP' containerField='references' />
       <ToggleGroup USE='TEXT_TOGGLE' containerField='references' />
+      <Text USE='GEOM_TYPE_TEXT' containerField='references' />
     </PythonScript>
-
-    <ROUTE_NO_EVENT fromNode='DEVICE' fromField='mainButton' toNode='PY' toField='position_change' />
-    <ROUTE fromNode='DEVICE' fromField='trackerPosition' toNode='PY' toField='position_change' />
     
     <ROUTE_NO_EVENT fromNode='KS' fromField='keyPress' toNode='PY' toField='keypress' />
 

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2009-2013, SenseGraphics AB
+//    Copyright 2009-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -37,15 +37,15 @@
 class H3DViewerPluginsDialog : public PluginsDialog
 {
 protected:
-	// Handlers for PluginsDialog events.
-	void OnInstalledPluginSelected( wxCommandEvent& event );
-	void OnAddPluginButton( wxCommandEvent& event );
-	void OnRemovePluginButton( wxCommandEvent& event );
-	void OnDisablePluginCheckbox( wxCommandEvent& event );
-	void OnURLEvent( wxTextUrlEvent& event );
+  // Handlers for PluginsDialog events.
+  void OnInstalledPluginSelected( wxCommandEvent& event );
+  void OnAddPluginButton( wxCommandEvent& event );
+  void OnRemovePluginButton( wxCommandEvent& event );
+  void OnDisablePluginCheckbox( wxCommandEvent& event );
+  void OnURLEvent( wxTextUrlEvent& event );
 public:
-	/** Constructor */
-	H3DViewerPluginsDialog( wxWindow* parent );
+  /** Constructor */
+  H3DViewerPluginsDialog( wxWindow* parent );
 
   bool addPlugin( const wxString &path, bool force_overwrite = false );
   bool removePlugin( const wxString &plugin_name );

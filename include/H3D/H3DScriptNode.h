@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -62,7 +62,7 @@ namespace H3D {
     
     virtual void loadScript( const string &script_filename, const string &script_content= "" )= 0;
     
-    virtual Field* lookupField( const string &name ) = 0;
+    virtual Field* lookupField( const string &name ) const = 0;
 
     /// Add all nodes from the given DEFNodes instance to the scripts
     /// set of named nodes. If nodes with the same name already exists

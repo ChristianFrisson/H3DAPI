@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -112,7 +112,7 @@ namespace H3D {
         geometry( NULL ),
         distance_from_viewer( 0 ),
         user_data ( NULL ),
-		new_particle ( true ) {}
+        new_particle ( true ) {}
       
       inline void updateParticle( const Matrix4f &_global_to_local,
                                   Vec3f vp_pos_local,
@@ -180,7 +180,7 @@ namespace H3D {
       Vec3f position;
       Vec3f velocity;
 
-	  bool new_particle;
+      bool new_particle;
 
       H3DTime time_lived;
       // the total lifetime of the particle

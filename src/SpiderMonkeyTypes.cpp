@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -83,7 +83,7 @@ void changePixelImageComponent(PixelImage* img, int comp) {
 
 template< class FieldType >
 void setValueNoAccessCheck( FieldType *field, 
-			    const typename FieldType::value_type &v ) {
+          const typename FieldType::value_type &v ) {
   bool access = field->isAccessCheckOn();
   field->setAccessCheck( false );
   field->setValue(v);
@@ -144,7 +144,7 @@ const typename FieldType::vector_return_type &MField_getValueNoAccessCheck( Fiel
 
 template< class FieldType >
 void MField_setValueNoAccessCheck( FieldType *field, 
-				   const typename FieldType::vector_return_type &v ) {
+           const typename FieldType::vector_return_type &v ) {
   bool access = field->isAccessCheckOn();
   field->setAccessCheck( false );
   field->setValue( v);
@@ -189,7 +189,7 @@ JSBool SpiderMonkey::FieldObject_toString2(JSContext *cx, JSObject *obj, uintN a
 
     FieldType* f = new FieldType( v );
     string s = f->getValueAsString();
-		delete f;
+    delete f;
     *rval = STRING_TO_JSVAL( JS_NewStringCopyN( cx, (char *)s.c_str(), s.length() ) );
     return JS_TRUE;
   }
@@ -319,18 +319,18 @@ JSBool SpiderMonkey::JS_MField< MFieldType, ElementType >::setProperty(JSContext
       else if (index == 1) changePixelImageDimension(img, -1, intval);
       else if (index == 2) changePixelImageComponent(img, intval );
       else if( index < 0 ) {
-				stringstream s;
-				s << "Index out of SFImage.array bounds. Index value is" << index;
-				JS_ReportError(cx, s.str().c_str() );
-				return JS_FALSE;
-			} else {
+        stringstream s;
+        s << "Index out of SFImage.array bounds. Index value is" << index;
+        JS_ReportError(cx, s.str().c_str() );
+        return JS_FALSE;
+      } else {
         index = index - 3;
-				if( index >= (int)(img->width() * img->height()) ) {
-					stringstream s;
-				s << "Index out of SFImage.array bounds. Index value is" << index + 3;
-				JS_ReportError(cx, s.str().c_str() );
-				return JS_FALSE;
-				}
+        if( index >= (int)(img->width() * img->height()) ) {
+          stringstream s;
+        s << "Index out of SFImage.array bounds. Index value is" << index + 3;
+        JS_ReportError(cx, s.str().c_str() );
+        return JS_FALSE;
+        }
         int ix = index % img->width();
         int iy = index / img->width();
         unsigned char bytes_per_pixel = img->pixelType() + 1;
@@ -646,7 +646,7 @@ JSObject *SpiderMonkey::SFVec2f_newInstance( JSContext *cx, Field *field, bool i
   JS_DefineProperties(cx, js_field, SFVec2f_properties );
   JS_DefineFunctions(cx, js_field, SFVec2f_functions );
   JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, 
-							       internal_field, array_index ) );
+                     internal_field, array_index ) );
   return js_field; 
 }
 
@@ -896,12 +896,12 @@ JSObject *SpiderMonkey::SFVec2d_newInstance( JSContext *cx, Field *field, bool i
   JSObject *js_field;
 
   js_field = JS_NewObject( cx, 
-			   &SFVec2dClass, NULL, NULL );  
+         &SFVec2dClass, NULL, NULL );  
 
   JS_DefineProperties(cx, js_field, SFVec2d_properties );
   JS_DefineFunctions(cx, js_field, SFVec2d_functions );
   JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, 
-							       internal_field, array_index ) );
+                     internal_field, array_index ) );
   return js_field; 
 }
 
@@ -1181,12 +1181,12 @@ JSObject *SpiderMonkey::SFVec3f_newInstance( JSContext *cx, Field *field, bool i
   JSObject *js_field;
 
   js_field = JS_NewObject( cx, 
-			   &SFVec3fClass, NULL, NULL );  
+         &SFVec3fClass, NULL, NULL );  
 
   JS_DefineProperties(cx, js_field, SFVec3f_properties );
   JS_DefineFunctions(cx, js_field, SFVec3f_functions );
   JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, 
-							       internal_field,  array_index ) );
+                     internal_field,  array_index ) );
   return js_field; 
 }
 
@@ -1469,12 +1469,12 @@ JSObject *SpiderMonkey::SFVec3d_newInstance( JSContext *cx, Field *field, bool i
   JSObject *js_field;
 
   js_field = JS_NewObject( cx, 
-			   &SFVec3dClass, NULL, NULL );  
+         &SFVec3dClass, NULL, NULL );  
 
   JS_DefineProperties(cx, js_field, SFVec3d_properties );
   JS_DefineFunctions(cx, js_field, SFVec3d_functions );
   JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, 
-							       internal_field ,  array_index) );
+                     internal_field ,  array_index) );
   return js_field; 
 }
 
@@ -1727,7 +1727,7 @@ JSObject *SpiderMonkey::SFVec4f_newInstance( JSContext *cx, Field *field, bool i
   JS_DefineProperties(cx, js_field, SFVec4f_properties );
   JS_DefineFunctions(cx, js_field, SFVec4f_functions );
   JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, 
-							       internal_field,  array_index ) );
+                     internal_field,  array_index ) );
   return js_field; 
 }
 
@@ -1981,7 +1981,7 @@ JSObject *SpiderMonkey::SFVec4d_newInstance( JSContext *cx, Field *field, bool i
   JS_DefineProperties(cx, js_field, SFVec4d_properties );
   JS_DefineFunctions(cx, js_field, SFVec4d_functions );
   JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field, 
-							       internal_field, array_index ) );
+                     internal_field, array_index ) );
   return js_field; 
 }
 
@@ -2282,8 +2282,8 @@ JSBool SpiderMonkey::SFNode_construct(JSContext *cx, JSObject *obj,
   return_node->setValue( NULL );
   
   *rval = OBJECT_TO_JSVAL( SFNode_newInstance( cx, 
-					       return_node,
-					       true ) ); 
+                 return_node,
+                 true ) ); 
   return JS_TRUE;
 }
 
@@ -2353,13 +2353,13 @@ JSObject *SpiderMonkey::SFNode_newInstance( JSContext *cx,Field *field,bool inte
   js_field = JS_NewObject( cx, &SFNodeClass, NULL, NULL );  
 
   JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field,
-							       internal_field, array_index) );
+                     internal_field, array_index) );
   return js_field;
 }
 
 JSBool SpiderMonkey::SFNode_getNodeName(JSContext *cx, JSObject *obj, 
-					uintN argc, jsval *argv,
-					jsval *rval) {
+          uintN argc, jsval *argv,
+          jsval *rval) {
   // check that this object is a SFNode_class 
   if (!JS_InstanceOf(cx, obj, &SFNodeClass, argv))
     return JS_FALSE;
@@ -2391,8 +2391,8 @@ JSBool SpiderMonkey::SFNode_getNodeName(JSContext *cx, JSObject *obj,
     type_name = "NULL";
   }
   *rval = STRING_TO_JSVAL( JS_NewStringCopyN( cx, 
-					      type_name.c_str(), 
-					      type_name.size()) ); 
+                type_name.c_str(), 
+                type_name.size()) ); 
   return JS_TRUE;
 }
 
@@ -2404,8 +2404,8 @@ JSBool SpiderMonkey::SFNode_getNodeType(JSContext *cx, JSObject *obj,
 }
 
 JSBool SpiderMonkey::SFNode_getFieldDefinitions(JSContext *cx, JSObject *obj, 
-					uintN argc, jsval *argv,
-					jsval *rval) {
+          uintN argc, jsval *argv,
+          jsval *rval) {
    cerr << "SFNode_getFieldDefinitions" << endl;
    return JS_TRUE;
 }
@@ -2441,8 +2441,8 @@ JSBool SpiderMonkey::SFNode_toX3DString(JSContext *cx, JSObject *obj,
   X3D::writeNodeAsX3D( s, this_sfnode->getValue() );
   string x3d_string = s.str();
   *rval = STRING_TO_JSVAL( JS_NewStringCopyN( cx, 
-					      x3d_string.c_str(), 
-					      x3d_string.size()) ); 
+                x3d_string.c_str(), 
+                x3d_string.size()) ); 
   return JS_TRUE;
 }
 
@@ -2572,9 +2572,9 @@ JSBool SpiderMonkey::SFColor_getProperty(JSContext *cx, JSObject *obj, jsval id,
     if( *vp == JSVAL_VOID ) {
       JSString *s = JSVAL_TO_STRING( id );
       JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
-	    return JS_FALSE;
+      return JS_FALSE;
     } else {
-	    return JS_TRUE;
+      return JS_TRUE;
     }
   }
 }
@@ -2640,7 +2640,7 @@ JSObject *SpiderMonkey::SFColor_newInstance( JSContext *cx, Field *field, bool i
   JS_DefineProperties(cx, js_field, SFColor_properties );
   JS_DefineFunctions(cx, js_field, SFColor_functions );
   JS_SetPrivate(cx, js_field, (void *) new FieldObjectPrivate( field,
-							       internal_field, array_index) );
+                     internal_field, array_index) );
   return js_field;
 }
 
@@ -2722,10 +2722,10 @@ JSBool SpiderMonkey::SFImage_getProperty(JSContext *cx, JSObject *obj, jsval id,
     if( *vp == JSVAL_VOID ) {
       JSString *s = JSVAL_TO_STRING( id );
       JS_ReportError(cx, "Field object does not have property \"%s\".", JS_GetStringBytes( s ) );
-	return JS_FALSE;
-      } else {
-	return JS_TRUE;
-      }
+      return JS_FALSE;
+    } else {
+      return JS_TRUE;
+    }
     }
 }
 
@@ -2841,9 +2841,9 @@ JSObject *SpiderMonkey::SFImage_newInstance( JSContext *cx, /*SFImage*/ Field *f
 // X3DExecutionContext object
 
 JSBool SpiderMonkey::X3DExecutionContext_createNode(JSContext *cx, 
-						    JSObject *obj, 
-						    uintN argc, jsval *argv,
-						    jsval *rval) {
+                JSObject *obj, 
+                uintN argc, jsval *argv,
+                jsval *rval) {
   // check that this object is a X3DExecutionContext_class 
   if (!JS_InstanceOf(cx, obj, &X3DExecutionContextClass, argv))
     return JS_FALSE;
@@ -2882,8 +2882,8 @@ JSBool SpiderMonkey::X3DExecutionContext_createNode(JSContext *cx,
   return_sfnode->setValue( n );
   
   *rval = OBJECT_TO_JSVAL( SFNode_newInstance( cx, 
-					       return_sfnode,
-					       true ) ); 
+                 return_sfnode,
+                 true ) ); 
   return JS_TRUE;
 }
 
@@ -2986,17 +2986,17 @@ SpiderMonkey::X3DExecutionContext_setProperty(JSContext *cx, JSObject *obj, jsva
 
 
 JSObject *SpiderMonkey::X3DExecutionContext_newInstance( JSContext *cx,
-							 SAI::ExecutionContext *context,
-							 bool internal_field ) {
+               SAI::ExecutionContext *context,
+               bool internal_field ) {
   JSObject *js_field;
 
   js_field = JS_NewObject( cx, 
-			   &X3DExecutionContextClass, NULL, NULL );  
+         &X3DExecutionContextClass, NULL, NULL );  
 
   JS_DefineProperties(cx, js_field, X3DExecutionContext_properties );
   JS_DefineFunctions(cx, js_field, X3DExecutionContext_functions );
   JS_SetPrivate(cx, js_field, (void *) new ExecutionContextPrivate( context, 
-								    internal_field ) );
+                    internal_field ) );
   return js_field;
 }
 
@@ -3049,17 +3049,17 @@ SpiderMonkey::X3DScene_setProperty(JSContext *cx, JSObject *obj, jsval id, jsval
 
 
 JSObject *SpiderMonkey::X3DScene_newInstance( JSContext *cx,
-					      SAI::SAIScene *context,
-					      bool internal_field ) {
+                SAI::SAIScene *context,
+                bool internal_field ) {
   JSObject *js_field;
 
   js_field = JS_NewObject( cx, 
-			   &X3DSceneClass, NULL, NULL );  
+         &X3DSceneClass, NULL, NULL );  
 
   JS_DefineProperties(cx, js_field, X3DScene_properties );
   JS_DefineFunctions(cx, js_field, X3DScene_functions );
   JS_SetPrivate(cx, js_field, (void *) new ExecutionContextPrivate( context, 
-								    internal_field ) );
+                    internal_field ) );
   return js_field;
 }
 
@@ -3099,8 +3099,8 @@ JSBool SpiderMonkey::Browser_print(JSContext *cx,
 }
 
 JSBool SpiderMonkey::Browser_println(JSContext *cx, 
-				     JSObject *obj, uintN argc, 
-				     jsval *argv, jsval *rval) {
+             JSObject *obj, uintN argc, 
+             jsval *argv, jsval *rval) {
 
   const char *s;
   if (!JS_ConvertArguments(cx, argc, argv, "s", &s))
@@ -3163,8 +3163,8 @@ JSBool SpiderMonkey::Browser_createX3DFromString(JSContext *cx, JSObject *obj,
 }
 
 JSBool SpiderMonkey::Browser_createX3DFromURL(JSContext *cx, 
-					      JSObject *obj, uintN argc, 
-					      jsval *argv, jsval *rval) {
+                JSObject *obj, uintN argc, 
+                jsval *argv, jsval *rval) {
   
   if( argc == 0 ) {
     JS_ReportError(cx, "createX3DFromURL requires at least one argument." );
@@ -3229,14 +3229,14 @@ JSBool SpiderMonkey::Browser_getProperty(JSContext *cx, JSObject *obj, jsval id,
           *vp = STRING_TO_JSVAL( JS_NewStringCopyN( cx, (char * )name.c_str(), name.length() ) );
           break;
         }
-	case BROWSER_CURRENT_SCENE: {
-	  // TODO: sometime should return scene instead of 
-	  // execution context
-	  SAI::ExecutionContext *c = browser->getExecutionContext();
-		c->clean_up = true;
-	  *vp = OBJECT_TO_JSVAL(X3DExecutionContext_newInstance( cx, c, true ));
-	  break;
-	}
+  case BROWSER_CURRENT_SCENE: {
+    // TODO: sometime should return scene instead of 
+    // execution context
+    SAI::ExecutionContext *c = browser->getExecutionContext();
+    c->clean_up = true;
+    *vp = OBJECT_TO_JSVAL(X3DExecutionContext_newInstance( cx, c, true ));
+    break;
+  }
         }
         return JS_TRUE;
     } else {
@@ -3246,11 +3246,11 @@ JSBool SpiderMonkey::Browser_getProperty(JSContext *cx, JSObject *obj, jsval id,
       // of this function it contains the current value of the attribute.
       // If it is JSVAL_VOID the attribute does not exist.
       if( *vp == JSVAL_VOID ) {
-	JSString *s = JSVAL_TO_STRING( id );
-	JS_ReportError(cx, "Browser object does not have property \"%s\".", JS_GetStringBytes( s ) );
-	return JS_FALSE;
+  JSString *s = JSVAL_TO_STRING( id );
+  JS_ReportError(cx, "Browser object does not have property \"%s\".", JS_GetStringBytes( s ) );
+  return JS_FALSE;
       } else {
-	return JS_TRUE;
+  return JS_TRUE;
       }
     }
 }
@@ -3260,36 +3260,36 @@ JSBool SpiderMonkey::Browser_getProperty(JSContext *cx, JSObject *obj, jsval id,
 bool SpiderMonkey::insertH3DTypes( JSContext *cx, JSObject *obj ) {
   // TODO: FIX!!
   JS_InitClass( cx, obj, NULL, 
-				  &SFVec2fClass, SFVec2f_construct, 3, 
-				  SFVec2f_properties, SFVec2f_functions, NULL, NULL );
+          &SFVec2fClass, SFVec2f_construct, 3, 
+          SFVec2f_properties, SFVec2f_functions, NULL, NULL );
 
   JS_InitClass( cx, obj, NULL, 
-				  &SFVec2dClass, SFVec2d_construct, 3, 
-				  SFVec2d_properties, SFVec2d_functions, NULL, NULL );
+          &SFVec2dClass, SFVec2d_construct, 3, 
+          SFVec2d_properties, SFVec2d_functions, NULL, NULL );
 
   JS_InitClass( cx, obj, NULL, 
-				  &SFVec3fClass, SFVec3f_construct, 3, 
-				  SFVec3f_properties, SFVec3f_functions, NULL, NULL );
+          &SFVec3fClass, SFVec3f_construct, 3, 
+          SFVec3f_properties, SFVec3f_functions, NULL, NULL );
 
   JS_InitClass( cx, obj, NULL, 
-				  &SFVec3dClass, SFVec3d_construct, 3, 
-				  SFVec3d_properties, SFVec3d_functions, NULL, NULL );
+          &SFVec3dClass, SFVec3d_construct, 3, 
+          SFVec3d_properties, SFVec3d_functions, NULL, NULL );
 
   JS_InitClass( cx, obj, NULL, 
-				  &SFVec4fClass, SFVec4f_construct, 3, 
-				  SFVec4f_properties, SFVec4f_functions, NULL, NULL );
+          &SFVec4fClass, SFVec4f_construct, 3, 
+          SFVec4f_properties, SFVec4f_functions, NULL, NULL );
 
   JS_InitClass( cx, obj, NULL, 
-				  &SFVec4dClass, SFVec4d_construct, 3, 
-				  SFVec4d_properties, SFVec4d_functions, NULL, NULL );
+          &SFVec4dClass, SFVec4d_construct, 3, 
+          SFVec4d_properties, SFVec4d_functions, NULL, NULL );
 
   JS_InitClass( cx, obj, NULL, 
-			&SFNodeClass, SFNode_construct, 3, 
-			NULL, SFNode_functions, NULL, NULL );
+      &SFNodeClass, SFNode_construct, 3, 
+      NULL, SFNode_functions, NULL, NULL );
 
   JS_InitClass( cx, obj, NULL, 
-			&SFColorClass, SFColor_construct, 3, 
-			SFColor_properties, SFColor_functions, NULL, NULL );
+      &SFColorClass, SFColor_construct, 3, 
+      SFColor_properties, SFColor_functions, NULL, NULL );
 
   JS_InitClass( cx, obj, NULL, &SFImageClass, SFImage_construct, 3,
     SFImage_properties, SFImage_functions, NULL, NULL);
@@ -3522,7 +3522,7 @@ JSBool setFieldValueFromjsvalTmpl( JSContext *cx, Field *field, jsval value ) {
    // Field *value_field = private_data->getPointer();
    // if( value_field->getX3DType() == x3d_type ) {
    //   const typename FieldType::value_type &c = 
-	  //getValueNoAccessCheck( static_cast< FieldType * >( value_field ) );
+    //getValueNoAccessCheck( static_cast< FieldType * >( value_field ) );
    //   setValueNoAccessCheck( f, c ); 
    //   return JS_TRUE;
    // }
@@ -3536,8 +3536,8 @@ JSBool setFieldValueFromjsvalTmpl( JSContext *cx, Field *field, jsval value ) {
 
 template< class FieldType, X3DTypes::X3DType x3d_type >
 JSBool MField_setFieldValueFromjsvalTmpl( JSContext *cx, 
-					  Field *field, 
-					  jsval value ) {
+            Field *field, 
+            jsval value ) {
   FieldType *f = static_cast< FieldType * >( field );
 
   if( JSVAL_IS_OBJECT( value ) ) {
@@ -3549,7 +3549,7 @@ JSBool MField_setFieldValueFromjsvalTmpl( JSContext *cx,
     Field *value_field = private_data->getPointer();
     if( value_field->getX3DType() == x3d_type ) {
       const typename FieldType::vector_return_type &c = 
-	  MField_getValueNoAccessCheck( static_cast< FieldType * >( value_field ) );
+    MField_getValueNoAccessCheck( static_cast< FieldType * >( value_field ) );
       MField_setValueNoAccessCheck( f, c ); 
       return JS_TRUE;
     } 
@@ -3648,18 +3648,18 @@ JSBool SpiderMonkey::setFieldValueFromjsval( JSContext *cx, Field *field, jsval 
       JSObject *js_object = JSVAL_TO_OBJECT( value );
       
       FieldObjectPrivate *private_data = 
-	static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,js_object));
+  static_cast<FieldObjectPrivate *>(JS_GetPrivate(cx,js_object));
 
       Field *value_field = private_data->getPointer();
       if( value_field->getX3DType() == X3DTypes::SFNODE ) {
-	Node *n = getValueNoAccessCheck( static_cast< SFNode * >( value_field ) );
-	setValueNoAccessCheck( f, n ); 
-	return JS_TRUE;
+  Node *n = getValueNoAccessCheck( static_cast< SFNode * >( value_field ) );
+  setValueNoAccessCheck( f, n ); 
+  return JS_TRUE;
       } else if( value_field->getX3DType() == X3DTypes::MFNODE && private_data->getArrayIndex() != -1 ) {
-				Node *n = MField_getValueNoAccessCheck( static_cast< MFNode * >( value_field ) )[private_data->getArrayIndex()];
-				setValueNoAccessCheck( f, n ); 
-				return JS_TRUE;
-			}
+        Node *n = MField_getValueNoAccessCheck( static_cast< MFNode * >( value_field ) )[private_data->getArrayIndex()];
+        setValueNoAccessCheck( f, n ); 
+        return JS_TRUE;
+      }
     }
 
     stringstream s;

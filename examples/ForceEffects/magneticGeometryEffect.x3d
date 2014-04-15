@@ -3,7 +3,7 @@
   <head>
     <meta name='title' content='magneticGeometryEffect.x3d'/>
     <meta name='description' content='Demos the MagneticGeometryEffect node. Requires a haptics device.'/>
-    <meta name='editors' content='SenseGraphics AB, 2007-2008'/>
+    <meta name='editors' content='SenseGraphics AB, 2007-2014'/>
   </head>
   <Scene>
     <Transform translation="0 -0.05 0">

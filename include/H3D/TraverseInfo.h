@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -231,7 +231,7 @@ namespace H3D {
 
     /// When called, future calls to addHapticShapes() and addForceEffects() 
     /// functions will not add any shapes until enableHaptics() is called.
-    inline void disableHaptics( unsigned int i = -1 ) {
+    inline void disableHaptics( int i = -1 ) {
       if( i == -1 ) {
         for( unsigned int j = 0; j < haptics_enabled.size(); ++j ) {
           haptics_enabled[j] = false;
@@ -243,7 +243,7 @@ namespace H3D {
 
     /// When called, the addHapticShapes() and addForceEffects() functions
     /// calls will add HapticShapes to render. Haptics is enabled by default.
-    inline void enableHaptics( unsigned int i = -1 ) {
+    inline void enableHaptics( int i = -1 ) {
       if( i == -1 ) {
         for( unsigned int j = 0; j < haptics_enabled.size(); ++j ) {
           haptics_enabled[j] = true;

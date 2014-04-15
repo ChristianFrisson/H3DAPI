@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -93,7 +93,7 @@ X3DGeometryNode::X3DGeometryNode(
   allow_culling( true ),
   draw_debug_options( true ),
   cull_face( GL_BACK ),
-	print_negative_scaling_warning( true ) {
+  print_negative_scaling_warning( true ) {
 
   type_name = "X3DGeometryNode";
   
@@ -654,16 +654,16 @@ void X3DGeometryNode::createAndAddHapticShapes(
     }
   }
 
-	if( print_negative_scaling_warning ) {
-		Matrix3f m3 = ti.getAccForwardMatrix().getScaleRotationPart();
-		if( ( m3.getRow( 0 ) % m3.getRow( 1 ) ) * m3.getRow(2) < 0 ) {
-			Console(3) << "Warning: A parent transform node to the X3DGeometryNode "
-								 << getName() << " contains a negative scaling coefficient. "
-								 << " Haptics will most likely not be rendered correctly."
-								 << endl;
-			print_negative_scaling_warning = false;
-		}
-	}
+  if( print_negative_scaling_warning ) {
+    Matrix3f m3 = ti.getAccForwardMatrix().getScaleRotationPart();
+    if( ( m3.getRow( 0 ) % m3.getRow( 1 ) ) * m3.getRow(2) < 0 ) {
+      Console(3) << "Warning: A parent transform node to the X3DGeometryNode "
+                 << getName() << " contains a negative scaling coefficient. "
+                 << " Haptics will most likely not be rendered correctly."
+                 << endl;
+      print_negative_scaling_warning = false;
+    }
+  }
   if( tris.size() > 0 )  {
     // Increase ref-count to have cleanupfunction decrease
     // it when the HapticTriangleSet is destructed.
@@ -825,12 +825,12 @@ bool X3DGeometryNode::lineIntersect(
                   const Vec3f &from, 
                   const Vec3f &to,    
                   LineIntersectResult &result ) {
-	if( result.detect_pt_device && !result.hasCurrentPointingDevice() ) {
-		// If this function is called because we are detecting pointing device
-		// sensors but there is no current one then there is no use in doing
-		// line intersect on the actual triangles.
-		return false;
-	}
+  if( result.detect_pt_device && !result.hasCurrentPointingDevice() ) {
+    // If this function is called because we are detecting pointing device
+    // sensors but there is no current one then there is no use in doing
+    // line intersect on the actual triangles.
+    return false;
+  }
   Bound * the_bound = bound->getValue();
   if( !the_bound || the_bound->lineSegmentIntersect( from, to ) ) {
     IntersectionInfo temp_result;

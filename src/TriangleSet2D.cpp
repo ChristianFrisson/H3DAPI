@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -150,7 +150,7 @@ void TriangleSet2D::render() {
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, *vbo_id);
     }
 
-		glNormal3f( 0.f, 0.f, 1.f );
+    glNormal3f( 0.f, 0.f, 1.f );
     // Enable all states for vertex buffer objects.
     // Note that the data is interleaved since this supposedly should be
     // faster on some systems.

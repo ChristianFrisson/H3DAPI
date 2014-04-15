@@ -73,7 +73,6 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
     SET( CPACK_PACKAGE_START_MENU_NAME "H3DViewer ${H3DViewer_MAJOR_VERSION}.${H3DViewer_MINOR_VERSION}" )
                            
     SET( EXTERNAL_BIN_PATH "bin32" )
-    SET( EXTERNAL_BIN_REPLACE_PATH "bin64" )
     SET( CPACK_PACKAGE_NAME "H3DViewer" )
     # CPACK_NSIS_INSTALL_ROOT must be set properly because cmake does not set it correctly
     # for a 64 bit build.
@@ -81,17 +80,18 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
     SET( CPACK_NSIS_DISPLAY_NAME_POSTFIX "(x86)" )
     SET( CPACK_H3D_64_BIT "FALSE" )
     SET( CPACK_NSIS_EXECUTABLES_DIRECTORY bin32 )
+    SET( CPACK_H3DViewer_RegEntry "H3DViewer ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}(x86)" )
     IF( CMAKE_SIZEOF_VOID_P EQUAL 8 ) # check if the system is 64 bit
       SET( EXTERNAL_BIN_PATH "bin64" )
       SET( CPACK_NSIS_EXECUTABLES_DIRECTORY bin64 )
-      SET( EXTERNAL_BIN_REPLACE_PATH "bin32" )
       SET( CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64" )
       SET( CPACK_H3D_64_BIT "TRUE" )
       SET( CPACK_NSIS_DISPLAY_NAME_POSTFIX "" )
+      SET( CPACK_H3DViewer_RegEntry "H3DViewer ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}(x64)" )
     ENDIF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     SET(CPACK_NSIS_DISPLAY_NAME "H3DViewer${CPACK_NSIS_DISPLAY_NAME_POSTFIX} ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}" )
 
-    set( FEATURES_TO_INSTALL "bin" "H3DViewer/bin32" )
+    set( FEATURES_TO_INSTALL "bin" "H3DViewer/${EXTERNAL_BIN_PATH}" )
     SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "\\n" )
     SET( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "\\n" )
     SET( TMP_CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} )
@@ -126,14 +126,22 @@ IF( GENERATE_H3DVIEWER_CPACK_PROJECT )
   
     IF( EXISTS ${H3DViewer_CPACK_EXTERNAL_ROOT} )
       SET( EXTERNAL_BINARIES ${EXTERNAL_BINARIES}
-                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase295u_vc_custom.dll
-                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase295u_xml_vc_custom.dll
-                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw295u_adv_vc_custom.dll
-                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw295u_core_vc_custom.dll
-                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw295u_gl_vc_custom.dll
-                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw295u_html_vc_custom.dll
-                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw295u_propgrid_vc_custom.dll
-                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw295u_richtext_vc_custom.dll
+                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase30u_vc_custom.dll
+                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase30u_xml_vc_custom.dll
+                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30u_adv_vc_custom.dll
+                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30u_core_vc_custom.dll
+                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30u_gl_vc_custom.dll
+                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30u_html_vc_custom.dll
+                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30u_propgrid_vc_custom.dll
+                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30u_richtext_vc_custom.dll
+                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase30u_vc_x64_custom.dll
+                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxbase30u_xml_vc_x64_custom.dll
+                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30u_adv_vc_x64_custom.dll
+                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30u_core_vc_x64_custom.dll
+                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30u_gl_vc_x64_custom.dll
+                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30u_html_vc_x64_custom.dll
+                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30u_propgrid_vc_x64_custom.dll
+                             ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/wxmsw30u_richtext_vc_x64_custom.dll
                              ${H3DViewer_CPACK_EXTERNAL_ROOT}/${EXTERNAL_BIN_PATH}/ode_double.dll )
       INSTALL( FILES "${H3DViewer_CPACK_EXTERNAL_ROOT}/include/ACKNOWLEDGEMENTS"
                DESTINATION H3DViewer )

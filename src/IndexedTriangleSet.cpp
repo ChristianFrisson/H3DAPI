@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -451,7 +451,7 @@ void IndexedTriangleSet::render() {
     // restore previous fog attributes
     if( GLEW_EXT_fog_coord && fog_coord_node ) {
       glPopAttrib();
-    }      
+    }
 
     // disable texture coordinate generation.
     if( tex_coord_gen ) {
@@ -494,7 +494,7 @@ void IndexedTriangleSet::traverseSG( TraverseInfo &ti ) {
     render_patches= render_patches_new;
     if ( !GLEW_ARB_tessellation_shader ) {
       if ( render_patches_new ) {
-        Console(4) << "WARNING: Tessellation shaders are not supported by your graphics hardware! "
+        Console(4) << "Warning: Tessellation shaders are not supported by your graphics hardware! "
           "IndexedTriangleSet " << getName() << " will not be rendered as GL_PATCHES." << endl;
       }
     } else {

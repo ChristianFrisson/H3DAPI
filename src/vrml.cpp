@@ -39,7 +39,7 @@
 #line 6 "vrml.bison"
 
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -135,26 +135,26 @@ int yylex (YYSTYPE* yylval, yy::location* yylloc, VrmlDriver& driver);
 /* A pseudo ostream that takes yydebug_ into account.  */
 # define YYCDEBUG if (yydebug_) (*yycdebug_)
 
-# define YY_SYMBOL_PRINT(Title, Type, Value, Location)	\
-do {							\
-  if (yydebug_)						\
-    {							\
-      *yycdebug_ << Title << ' ';			\
-      yy_symbol_print_ ((Type), (Value), (Location));	\
-      *yycdebug_ << std::endl;				\
-    }							\
+# define YY_SYMBOL_PRINT(Title, Type, Value, Location)  \
+do {              \
+  if (yydebug_)            \
+    {              \
+      *yycdebug_ << Title << ' ';      \
+      yy_symbol_print_ ((Type), (Value), (Location));  \
+      *yycdebug_ << std::endl;        \
+    }              \
 } while (false)
 
-# define YY_REDUCE_PRINT(Rule)		\
-do {					\
-  if (yydebug_)				\
-    yy_reduce_print_ (Rule);		\
+# define YY_REDUCE_PRINT(Rule)    \
+do {          \
+  if (yydebug_)        \
+    yy_reduce_print_ (Rule);    \
 } while (false)
 
-# define YY_STACK_PRINT()		\
-do {					\
-  if (yydebug_)				\
-    yystack_print_ ();			\
+# define YY_STACK_PRINT()    \
+do {          \
+  if (yydebug_)        \
+    yystack_print_ ();      \
 } while (false)
 
 #else /* !YYDEBUG */
@@ -166,12 +166,12 @@ do {					\
 
 #endif /* !YYDEBUG */
 
-#define yyerrok		(yyerrstatus_ = 0)
-#define yyclearin	(yychar = yyempty_)
+#define yyerrok    (yyerrstatus_ = 0)
+#define yyclearin  (yychar = yyempty_)
 
-#define YYACCEPT	goto yyacceptlab
-#define YYABORT		goto yyabortlab
-#define YYERROR		goto yyerrorlab
+#define YYACCEPT  goto yyacceptlab
+#define YYABORT    goto yyabortlab
+#define YYERROR    goto yyerrorlab
 #define YYRECOVERING()  (!!yyerrstatus_)
 
 
@@ -245,25 +245,25 @@ namespace yy {
 
   inline void
   VrmlParser::yy_symbol_value_print_ (int yytype,
-			   const semantic_type* yyvaluep, const location_type* yylocationp)
+         const semantic_type* yyvaluep, const location_type* yylocationp)
   {
     YYUSE (yylocationp);
     YYUSE (yyvaluep);
     switch (yytype)
       {
          default:
-	  break;
+    break;
       }
   }
 
 
   void
   VrmlParser::yy_symbol_print_ (int yytype,
-			   const semantic_type* yyvaluep, const location_type* yylocationp)
+         const semantic_type* yyvaluep, const location_type* yylocationp)
   {
     *yycdebug_ << (yytype < yyntokens_ ? "token" : "nterm")
-	       << ' ' << yytname_[yytype] << " ("
-	       << *yylocationp << ": ";
+         << ' ' << yytname_[yytype] << " ("
+         << *yylocationp << ": ";
     yy_symbol_value_print_ (yytype, yyvaluep, yylocationp);
     *yycdebug_ << ')';
   }
@@ -271,7 +271,7 @@ namespace yy {
 
   void
   VrmlParser::yydestruct_ (const char* yymsg,
-			   int yytype, semantic_type* yyvaluep, location_type* yylocationp)
+         int yytype, semantic_type* yyvaluep, location_type* yylocationp)
   {
     YYUSE (yylocationp);
     YYUSE (yymsg);
@@ -282,8 +282,8 @@ namespace yy {
     switch (yytype)
       {
   
-	default:
-	  break;
+  default:
+    break;
       }
   }
 
@@ -399,21 +399,21 @@ namespace yy {
     /* Read a lookahead token.  */
     if (yychar == yyempty_)
       {
-	YYCDEBUG << "Reading a token: ";
-	yychar = yylex (&yylval, &yylloc, driver);
+  YYCDEBUG << "Reading a token: ";
+  yychar = yylex (&yylval, &yylloc, driver);
       }
 
 
     /* Convert token to internal form.  */
     if (yychar <= yyeof_)
       {
-	yychar = yytoken = yyeof_;
-	YYCDEBUG << "Now at end of input." << std::endl;
+  yychar = yytoken = yyeof_;
+  YYCDEBUG << "Now at end of input." << std::endl;
       }
     else
       {
-	yytoken = yytranslate_ (yychar);
-	YY_SYMBOL_PRINT ("Next token is", yytoken, &yylval, &yylloc);
+  yytoken = yytranslate_ (yychar);
+  YY_SYMBOL_PRINT ("Next token is", yytoken, &yylval, &yylloc);
       }
 
     /* If the proper action on seeing token YYTOKEN is to reduce or to
@@ -426,10 +426,10 @@ namespace yy {
     yyn = yytable_[yyn];
     if (yyn <= 0)
       {
-	if (yyn == 0 || yyn == yytable_ninf_)
-	goto yyerrlab;
-	yyn = -yyn;
-	goto yyreduce;
+  if (yyn == 0 || yyn == yytable_ninf_)
+  goto yyerrlab;
+  yyn = -yyn;
+  goto yyreduce;
       }
 
     /* Shift the lookahead token.  */
@@ -481,7 +481,7 @@ namespace yy {
     YY_REDUCE_PRINT (yyn);
     switch (yyn)
       {
-	  case 2:
+    case 2:
 
 /* Line 678 of lalr1.cc  */
 #line 100 "vrml.bison"
@@ -498,10 +498,10 @@ namespace yy {
     if ( driver.DEF_export )
       driver.DEF_export->addNode( (yysemantic_stack_[(4) - (4)]), node );
     else
-      Console(3) << "WARNING: EXPORT error. No export DEF map provided!"
+      Console(3) << "Warning: EXPORT error. No export DEF map provided!"
                  << driver.getLocationString() << endl;
   } else {
-    Console(3) << "WARNING: EXPORT error. Node named \"" 
+    Console(3) << "Warning: EXPORT error. Node named \"" 
                << (yysemantic_stack_[(4) - (2)]) << "\" does not exist."
                << driver.getLocationString() << endl;
   }
@@ -520,7 +520,7 @@ if( !driver.insideProtoDeclaration() ) {
     if( import_node ) {
       driver.DEF_map->addNode( (yysemantic_stack_[(6) - (6)]), import_node ); 
     } else {
-      Console(3) << "WARNING: IMPORT error. H3D_EXPORTS " 
+      Console(3) << "Warning: IMPORT error. H3D_EXPORTS " 
                  << "does not include \""
                  << (yysemantic_stack_[(6) - (4)]) << "\"" 
                  << driver.getLocationString() << endl;
@@ -535,18 +535,18 @@ if( !driver.insideProtoDeclaration() ) {
         driver.DEF_map->addNode( (yysemantic_stack_[(6) - (6)]), 
                           import_node ); 
       } else {
-        Console(3) << "WARNING: IMPORT error. Inline node \"" 
+        Console(3) << "Warning: IMPORT error. Inline node \"" 
                    << (yysemantic_stack_[(6) - (2)]) << "\" does not EXPORT \""
                    << (yysemantic_stack_[(6) - (4)]) << "\"" 
                    << driver.getLocationString() << endl;
       }
     } else {
       if( n ) {
-        Console(3) << "WARNING: IMPORT error. Node \"" 
+        Console(3) << "Warning: IMPORT error. Node \"" 
                    << (yysemantic_stack_[(6) - (2)]) << "\" is not an Inline node "
                    << driver.getLocationString() << endl;
       } else {
-        Console(3) << "WARNING: IMPORT error. Node named \"" 
+        Console(3) << "Warning: IMPORT error. Node named \"" 
                    << (yysemantic_stack_[(6) - (2)]) << "\" does not exist."
                    << driver.getLocationString() << endl;
       }
@@ -698,27 +698,27 @@ if ( !driver.insideProtoDeclaration() ) {
            if( gs ) event = gs->x3dROUTESendsEvent->getValue();
            if( event ) frf->route( tof );
            else frf->routeNoEvent( tof );
-	}
+  }
         else {
-          Console(3) << "WARNING: Route error. Could not find field named \"" 
+          Console(3) << "Warning: Route error. Could not find field named \"" 
                      <<  (yysemantic_stack_[(8) - (8)])
                      << "\" in \"" << (yysemantic_stack_[(8) - (6)]) << "\" Node " 
                      << driver.getLocationString() << endl;
         }
       } else {
-        Console(3) << "WARNING: Route error. Could not find destination Node named \"" 
+        Console(3) << "Warning: Route error. Could not find destination Node named \"" 
                    << (yysemantic_stack_[(8) - (6)])
                    << "\" " 
                    << driver.getLocationString() << endl;
       }
     } else {
-      Console(3) << "WARNING: Route error. Could not find field named \"" 
+      Console(3) << "Warning: Route error. Could not find field named \"" 
                  << (yysemantic_stack_[(8) - (4)])
                  << "\" in \"" << (yysemantic_stack_[(8) - (2)]) << "\" Node " 
                  << driver.getLocationString() << endl;
     }  
   } else {
-    Console(3) << "WARNING: Route error. Could not find source Node named \"" 
+    Console(3) << "Warning: Route error. Could not find source Node named \"" 
                << (yysemantic_stack_[(8) - (2)])
                << "\" " 
                << driver.getLocationString() << endl;
@@ -745,7 +745,7 @@ if ( !driver.insideProtoDeclaration() ) {
          new_node = proto->newProtoInstance();
       }
       if ( !new_node )
-        Console(3) << "WARNING: Could not create node \"" << yylval << 
+        Console(3) << "Warning: Could not create node \"" << yylval << 
           "\" - name not found in the node database and is not a proto name ( " <<
           driver.getLocationString() << " )." << endl;
     } else {
@@ -772,8 +772,8 @@ if ( !driver.insideProtoDeclaration() ) {
 /* Line 678 of lalr1.cc  */
 #line 397 "vrml.bison"
     { 
-			   if( !driver.insideProtoDeclaration() )	
-                             driver.field_stack.push_back( (yysemantic_stack_[(1) - (1)]) );		
+         if( !driver.insideProtoDeclaration() )  
+                             driver.field_stack.push_back( (yysemantic_stack_[(1) - (1)]) );    
                          }
     break;
 
@@ -801,8 +801,8 @@ if ( !driver.insideProtoDeclaration() ) {
 /* Line 678 of lalr1.cc  */
 #line 410 "vrml.bison"
     {
-                            driver.addDynamicField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::INPUT_ONLY );		 
-			 }
+                            driver.addDynamicField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::INPUT_ONLY );     
+       }
     break;
 
   case 80:
@@ -810,7 +810,7 @@ if ( !driver.insideProtoDeclaration() ) {
 /* Line 678 of lalr1.cc  */
 #line 413 "vrml.bison"
     {
-                           driver.addDynamicField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::OUTPUT_ONLY );		 
+                           driver.addDynamicField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::OUTPUT_ONLY );     
                          }
     break;
 
@@ -819,9 +819,9 @@ if ( !driver.insideProtoDeclaration() ) {
 /* Line 678 of lalr1.cc  */
 #line 416 "vrml.bison"
     {
-                           if( !driver.insideProtoDeclaration() )	
-                             driver.field_stack.push_back( (yysemantic_stack_[(3) - (3)]) );	
-			   driver.addDynamicField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::INITIALIZE_ONLY );
+                           if( !driver.insideProtoDeclaration() )  
+                             driver.field_stack.push_back( (yysemantic_stack_[(3) - (3)]) );  
+         driver.addDynamicField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::INITIALIZE_ONLY );
                          }
     break;
 
@@ -831,7 +831,7 @@ if ( !driver.insideProtoDeclaration() ) {
 #line 421 "vrml.bison"
     {
                            if( !driver.insideProtoDeclaration() ) {
-			     driver.field_stack.pop_back();
+           driver.field_stack.pop_back();
                            }
                          }
     break;
@@ -841,9 +841,9 @@ if ( !driver.insideProtoDeclaration() ) {
 /* Line 678 of lalr1.cc  */
 #line 426 "vrml.bison"
     {
-                           if( !driver.insideProtoDeclaration() )	
-                             driver.field_stack.push_back( (yysemantic_stack_[(3) - (3)]) );	
-			   driver.addDynamicField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::INPUT_OUTPUT );
+                           if( !driver.insideProtoDeclaration() )  
+                             driver.field_stack.push_back( (yysemantic_stack_[(3) - (3)]) );  
+         driver.addDynamicField( (yysemantic_stack_[(3) - (3)]), (yysemantic_stack_[(3) - (2)]), Field::INPUT_OUTPUT );
                          }
     break;
 
@@ -853,7 +853,7 @@ if ( !driver.insideProtoDeclaration() ) {
 #line 431 "vrml.bison"
     {
                            if( !driver.insideProtoDeclaration() ) {
-			     driver.field_stack.pop_back();
+           driver.field_stack.pop_back();
                            }
                          }
     break;
@@ -865,7 +865,7 @@ if ( !driver.insideProtoDeclaration() ) {
     {
                             driver.addDynamicField( (yysemantic_stack_[(5) - (3)]), (yysemantic_stack_[(5) - (2)]), Field::INPUT_ONLY );
                             driver.connectProtoField( (yysemantic_stack_[(5) - (5)]), (yysemantic_stack_[(5) - (3)]) );
-			 }
+       }
     break;
 
   case 86:
@@ -883,7 +883,7 @@ if ( !driver.insideProtoDeclaration() ) {
 /* Line 678 of lalr1.cc  */
 #line 444 "vrml.bison"
     {
-			   driver.addDynamicField( (yysemantic_stack_[(5) - (3)]), (yysemantic_stack_[(5) - (2)]), Field::INITIALIZE_ONLY );
+         driver.addDynamicField( (yysemantic_stack_[(5) - (3)]), (yysemantic_stack_[(5) - (2)]), Field::INITIALIZE_ONLY );
                            driver.connectProtoField( (yysemantic_stack_[(5) - (5)]), (yysemantic_stack_[(5) - (3)]) );
                          }
     break;
@@ -893,7 +893,7 @@ if ( !driver.insideProtoDeclaration() ) {
 /* Line 678 of lalr1.cc  */
 #line 448 "vrml.bison"
     {
-			   driver.addDynamicField( (yysemantic_stack_[(5) - (3)]), (yysemantic_stack_[(5) - (2)]), Field::INPUT_OUTPUT );
+         driver.addDynamicField( (yysemantic_stack_[(5) - (3)]), (yysemantic_stack_[(5) - (2)]), Field::INPUT_OUTPUT );
                            driver.connectProtoField( (yysemantic_stack_[(5) - (5)]), (yysemantic_stack_[(5) - (3)]) );
                          }
     break;
@@ -1025,7 +1025,7 @@ if ( !driver.insideProtoDeclaration() )
 
 /* Line 678 of lalr1.cc  */
 #line 1022 "vrml.cpp"
-	default:
+  default:
           break;
       }
     YY_SYMBOL_PRINT ("-> $$ =", yyr1_[yyn], &yyval, &yyloc);
@@ -1041,7 +1041,7 @@ if ( !driver.insideProtoDeclaration() )
     yyn = yyr1_[yyn];
     yystate = yypgoto_[yyn - yyntokens_] + yystate_stack_[0];
     if (0 <= yystate && yystate <= yylast_
-	&& yycheck_[yystate] == yystate_stack_[0])
+  && yycheck_[yystate] == yystate_stack_[0])
       yystate = yytable_[yystate];
     else
       yystate = yydefgoto_[yyn - yyntokens_];
@@ -1054,27 +1054,27 @@ if ( !driver.insideProtoDeclaration() )
     /* If not already recovering from an error, report this error.  */
     if (!yyerrstatus_)
       {
-	++yynerrs_;
-	error (yylloc, yysyntax_error_ (yystate, yytoken));
+  ++yynerrs_;
+  error (yylloc, yysyntax_error_ (yystate, yytoken));
       }
 
     yyerror_range[0] = yylloc;
     if (yyerrstatus_ == 3)
       {
-	/* If just tried and failed to reuse lookahead token after an
-	 error, discard it.  */
+  /* If just tried and failed to reuse lookahead token after an
+   error, discard it.  */
 
-	if (yychar <= yyeof_)
-	  {
-	  /* Return failure if at end of input.  */
-	  if (yychar == yyeof_)
-	    YYABORT;
-	  }
-	else
-	  {
-	    yydestruct_ ("Error: discarding", yytoken, &yylval, &yylloc);
-	    yychar = yyempty_;
-	  }
+  if (yychar <= yyeof_)
+    {
+    /* Return failure if at end of input.  */
+    if (yychar == yyeof_)
+      YYABORT;
+    }
+  else
+    {
+      yydestruct_ ("Error: discarding", yytoken, &yylval, &yylloc);
+      yychar = yyempty_;
+    }
       }
 
     /* Else will try to reuse lookahead token after shifting the error
@@ -1105,33 +1105,33 @@ if ( !driver.insideProtoDeclaration() )
   | yyerrlab1 -- common code for both syntax error and YYERROR.  |
   `-------------------------------------------------------------*/
   yyerrlab1:
-    yyerrstatus_ = 3;	/* Each real token shifted decrements this.  */
+    yyerrstatus_ = 3;  /* Each real token shifted decrements this.  */
 
     for (;;)
       {
-	yyn = yypact_[yystate];
-	if (yyn != yypact_ninf_)
-	{
-	  yyn += yyterror_;
-	  if (0 <= yyn && yyn <= yylast_ && yycheck_[yyn] == yyterror_)
-	    {
-	      yyn = yytable_[yyn];
-	      if (0 < yyn)
-		break;
-	    }
-	}
+  yyn = yypact_[yystate];
+  if (yyn != yypact_ninf_)
+  {
+    yyn += yyterror_;
+    if (0 <= yyn && yyn <= yylast_ && yycheck_[yyn] == yyterror_)
+      {
+        yyn = yytable_[yyn];
+        if (0 < yyn)
+    break;
+      }
+  }
 
-	/* Pop the current state because it cannot handle the error token.  */
-	if (yystate_stack_.height () == 1)
-	YYABORT;
+  /* Pop the current state because it cannot handle the error token.  */
+  if (yystate_stack_.height () == 1)
+  YYABORT;
 
-	yyerror_range[0] = yylocation_stack_[0];
-	yydestruct_ ("Error: popping",
-		     yystos_[yystate],
-		     &yysemantic_stack_[0], &yylocation_stack_[0]);
-	yypop_ ();
-	yystate = yystate_stack_[0];
-	YY_STACK_PRINT ();
+  yyerror_range[0] = yylocation_stack_[0];
+  yydestruct_ ("Error: popping",
+         yystos_[yystate],
+         &yysemantic_stack_[0], &yylocation_stack_[0]);
+  yypop_ ();
+  yystate = yystate_stack_[0];
+  YY_STACK_PRINT ();
       }
 
     yyerror_range[1] = yylloc;
@@ -1143,7 +1143,7 @@ if ( !driver.insideProtoDeclaration() )
 
     /* Shift the error token.  */
     YY_SYMBOL_PRINT ("Shifting", yystos_[yyn],
-		     &yysemantic_stack_[0], &yylocation_stack_[0]);
+         &yysemantic_stack_[0], &yylocation_stack_[0]);
 
     yystate = yyn;
     goto yynewstate;
@@ -1167,11 +1167,11 @@ if ( !driver.insideProtoDeclaration() )
     yypop_ (yylen);
     while (yystate_stack_.height () != 1)
       {
-	yydestruct_ ("Cleanup: popping",
-		   yystos_[yystate_stack_[0]],
-		   &yysemantic_stack_[0],
-		   &yylocation_stack_[0]);
-	yypop_ ();
+  yydestruct_ ("Cleanup: popping",
+       yystos_[yystate_stack_[0]],
+       &yysemantic_stack_[0],
+       &yylocation_stack_[0]);
+  yypop_ ();
       }
 
     return yyresult;
@@ -1187,38 +1187,38 @@ if ( !driver.insideProtoDeclaration() )
     int yyn = yypact_[yystate];
     if (yypact_ninf_ < yyn && yyn <= yylast_)
       {
-	/* Start YYX at -YYN if negative to avoid negative indexes in
-	   YYCHECK.  */
-	int yyxbegin = yyn < 0 ? -yyn : 0;
+  /* Start YYX at -YYN if negative to avoid negative indexes in
+     YYCHECK.  */
+  int yyxbegin = yyn < 0 ? -yyn : 0;
 
-	/* Stay within bounds of both yycheck and yytname.  */
-	int yychecklim = yylast_ - yyn + 1;
-	int yyxend = yychecklim < yyntokens_ ? yychecklim : yyntokens_;
-	int count = 0;
-	for (int x = yyxbegin; x < yyxend; ++x)
-	  if (yycheck_[x + yyn] == x && x != yyterror_)
-	    ++count;
+  /* Stay within bounds of both yycheck and yytname.  */
+  int yychecklim = yylast_ - yyn + 1;
+  int yyxend = yychecklim < yyntokens_ ? yychecklim : yyntokens_;
+  int count = 0;
+  for (int x = yyxbegin; x < yyxend; ++x)
+    if (yycheck_[x + yyn] == x && x != yyterror_)
+      ++count;
 
-	// FIXME: This method of building the message is not compatible
-	// with internationalization.  It should work like yacc.c does it.
-	// That is, first build a string that looks like this:
-	// "syntax error, unexpected %s or %s or %s"
-	// Then, invoke YY_ on this string.
-	// Finally, use the string as a format to output
-	// yytname_[tok], etc.
-	// Until this gets fixed, this message appears in English only.
-	res = "syntax error, unexpected ";
-	res += yytnamerr_ (yytname_[tok]);
-	if (count < 5)
-	  {
-	    count = 0;
-	    for (int x = yyxbegin; x < yyxend; ++x)
-	      if (yycheck_[x + yyn] == x && x != yyterror_)
-		{
-		  res += (!count++) ? ", expecting " : " or ";
-		  res += yytnamerr_ (yytname_[x]);
-		}
-	  }
+  // FIXME: This method of building the message is not compatible
+  // with internationalization.  It should work like yacc.c does it.
+  // That is, first build a string that looks like this:
+  // "syntax error, unexpected %s or %s or %s"
+  // Then, invoke YY_ on this string.
+  // Finally, use the string as a format to output
+  // yytname_[tok], etc.
+  // Until this gets fixed, this message appears in English only.
+  res = "syntax error, unexpected ";
+  res += yytnamerr_ (yytname_[tok]);
+  if (count < 5)
+    {
+      count = 0;
+      for (int x = yyxbegin; x < yyxend; ++x)
+        if (yycheck_[x + yyn] == x && x != yyterror_)
+    {
+      res += (!count++) ? ", expecting " : " or ";
+      res += yytnamerr_ (yytname_[x]);
+    }
+    }
       }
     else
 #endif
@@ -1566,7 +1566,7 @@ if ( !driver.insideProtoDeclaration() )
   {
     *yycdebug_ << "Stack now";
     for (state_stack_type::const_iterator i = yystate_stack_.begin ();
-	 i != yystate_stack_.end (); ++i)
+   i != yystate_stack_.end (); ++i)
       *yycdebug_ << ' ' << *i;
     *yycdebug_ << std::endl;
   }
@@ -1579,13 +1579,13 @@ if ( !driver.insideProtoDeclaration() )
     int yynrhs = yyr2_[yyrule];
     /* Print the symbols being reduced, and their result.  */
     *yycdebug_ << "Reducing stack by rule " << yyrule - 1
-	       << " (line " << yylno << "):" << std::endl;
+         << " (line " << yylno << "):" << std::endl;
     /* The symbols being reduced.  */
     for (int yyi = 0; yyi < yynrhs; yyi++)
       YY_SYMBOL_PRINT ("   $" << yyi + 1 << " =",
-		       yyrhs_[yyprhs_[yyrule] + yyi],
-		       &(yysemantic_stack_[(yynrhs) - (yyi + 1)]),
-		       &(yylocation_stack_[(yynrhs) - (yyi + 1)]));
+           yyrhs_[yyprhs_[yyrule] + yyi],
+           &(yysemantic_stack_[(yynrhs) - (yyi + 1)]),
+           &(yylocation_stack_[(yynrhs) - (yyi + 1)]));
   }
 #endif // YYDEBUG
 

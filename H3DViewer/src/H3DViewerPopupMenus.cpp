@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2011-2013, SenseGraphics AB
+//    Copyright 2011-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -453,7 +453,7 @@ void H3DViewerPopupMenus::OnTreeViewAddChildNode( wxCommandEvent& event ) {
   } 
 }
 
-/// Callback for node save VRML menu choice.
+// Callback for node save Nrrd menu choice.
 void H3DViewerPopupMenus::OnTreeViewSaveNrrd( wxCommandEvent& event ) {
 #ifdef HAVE_TEEM
   wxTreeItemId id = treeview_dialog->TreeViewTree->GetSelection();
@@ -488,6 +488,55 @@ void H3DViewerPopupMenus::OnTreeViewSaveNrrd( wxCommandEvent& event ) {
                                           image ) != 0 ) {
           stringstream s;
           s << "Error saving nrrd file";
+          wxMessageBox( wxString(s.str().c_str(),wxConvUTF8), wxT("Error"),
+                        wxOK | wxICON_EXCLAMATION);
+        }
+      } catch (const Exception::H3DException &e) {
+        stringstream s;
+        s << e;
+        wxMessageBox( wxString(s.str().c_str(),wxConvUTF8), wxT("Error"),
+                      wxOK | wxICON_EXCLAMATION);
+      }
+    }
+  }
+#endif
+}
+
+// Callback for node save Png menu choice.
+void H3DViewerPopupMenus::OnTreeViewSavePng( wxCommandEvent& event ) {
+#ifdef HAVE_FREEIMAGE
+  wxTreeItemId id = treeview_dialog->TreeViewTree->GetSelection();
+  
+  H3DViewerTreeViewDialog::TreeIdMap::iterator ni = treeview_dialog->node_map.find( id.m_pItem );
+  if( ni == treeview_dialog->node_map.end() ) {
+    wxMessageBox( wxT("Selected tree item is not a node"),
+                  wxT("Error"),
+                  wxOK | wxICON_EXCLAMATION);
+  } else {
+    auto_ptr< wxFileDialog > file_dialog ( new wxFileDialog ( this,
+                                                              wxT("File to save as.."),
+                                                              wxT(""),
+                                                              wxT(""),
+                                                              wxT("*.png"),
+                                                              wxFD_SAVE,
+                                                              wxDefaultPosition) );
+
+    if (file_dialog->ShowModal() == wxID_OK) {
+      try {
+        Node *n = (*ni).second.get();
+        Image *image = NULL;
+        if( X3DTexture2DNode * tex = 
+            dynamic_cast< X3DTexture2DNode * >( n ) ) {
+          image = tex->image->getValue();
+        } else if( X3DTexture3DNode * tex = 
+                   dynamic_cast< X3DTexture3DNode * >( n ) ) {
+          image = tex->image->getValue();
+        }
+ 
+        if( !H3DUtil::saveFreeImagePNG( string(file_dialog->GetPath().mb_str()),
+                                          *image ) ) {
+          stringstream s;
+          s << "Error saving png file";
           wxMessageBox( wxString(s.str().c_str(),wxConvUTF8), wxT("Error"),
                         wxOK | wxICON_EXCLAMATION);
         }

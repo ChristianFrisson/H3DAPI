@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2004-2013, SenseGraphics AB
+//    Copyright 2004-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -49,7 +49,7 @@ X3DAppearanceNode::X3DAppearanceNode( Inst< DisplayList > _displayList,
   X3DNode( _metadata ),
   H3DDisplayListObject( _displayList ),
   surface( _surface )
-	{
+  {
 
   type_name = "X3DAppearanceNode";
   database.initFields( this );

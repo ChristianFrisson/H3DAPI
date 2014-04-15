@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////
-//    Copyright 2006-2013, SenseGraphics AB
+//    Copyright 2006-2014, SenseGraphics AB
 //
 //    This file is part of H3D API.
 //
@@ -66,7 +66,7 @@ inline string GET_ENV_INI_DEFAULT_FILE( INIFile &ini_file,
     if(!inp.fail()) return full_path;
     inp.clear();
 
-	full_path = (COMMON_PATH + option);
+  full_path = (COMMON_PATH + option);
     inp.open( full_path.c_str() );
     inp.close();
     if(!inp.fail()) return full_path;

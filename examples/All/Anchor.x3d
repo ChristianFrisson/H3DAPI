@@ -3,18 +3,75 @@
   <head>
     <meta name='title' content='Anchor.x3d'/>
     <meta name='description' content='X3D Anchor node example.'/>
-    <meta name='author' content='SenseGraphics AB, 2006-2009'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
-    <Viewpoint position='0 0 0.6' />
-    <Anchor url='"http://www.h3d.org"' description='Hyperlink to H3D.org'>
-      <Shape>
-        <Appearance>
-          <Material diffuseColor='1 0 0' />
-        </Appearance>      
-        <Sphere radius='0.05' />
-      </Shape>
-    </Anchor>
+    <Viewpoint DEF="FIRST_VIEW" position='0 0 0.6' />
+    <Viewpoint DEF="OTHER_VIEW" position='-0.01 0.05 0.8' />
+    <ExternProtoDeclare name='Text' url='"./Prototype.x3d#Text"'>
+      <field accessType='inputOutput' name='offset' type='SFVec3f'/>
+      <field accessType='inputOutput' name='string' type='MFString'/>
+    </ExternProtoDeclare>
+
+    <Transform translation="0 0.05 0">
+      <Transform translation="-0.2 0 0" >
+        <Anchor url='"#OTHER_VIEW"' description='Anchor to local viewpoint.'>
+          <Shape>
+            <Appearance DEF="GEOMETRY_APP" >
+              <Material diffuseColor='1 0 0' />
+            </Appearance>
+            <Cone bottomRadius='0.05' height="0.1" />
+          </Shape>
+          <ProtoInstance name='Text'>
+            <fieldValue name='offset' value='0 0.07 0' />
+            <fieldValue name='string' value='"Anchor to local viewpoint."' />
+          </ProtoInstance>
+        </Anchor>
+      </Transform>
+
+      <Anchor url='"AnchorHelp.x3d"' description='Anchor to local file.'>
+        <Shape>
+          <Appearance USE="GEOMETRY_APP" />
+          <Sphere radius='0.05' />
+        </Shape>
+        <ProtoInstance name='Text'>
+          <fieldValue name='offset' value='0 0.07 0' />
+          <fieldValue name='string' value='"Anchor to local file."' />
+        </ProtoInstance>
+      </Anchor>
+
+      <Transform translation="0.2 0 0" >
+        <Anchor url='"AnchorHelp.x3d#SecondViewpoint"' description='Anchor to local file using other viewpoint.'>
+          <Shape>
+            <Appearance DEF="GEOMETRY_APP" >
+              <Material diffuseColor='1 0 0' />
+            </Appearance>
+            <Sphere radius='0.05' />
+          </Shape>
+          <ProtoInstance name='Text'>
+            <fieldValue name='offset' value='0 0.07 0' />
+            <fieldValue name='string' value='"Anchor to local file" "using other viewpoint."' />
+          </ProtoInstance>
+        </Anchor>
+      </Transform>
+    </Transform>
+
+    <Transform translation="0 -0.12 0" >
+      <Anchor url='"ftp://www.h3dapi.org/pub/examples/Anchor/AnchorHelpOnline.x3d#TheViewpoint"' description='Anchor to file online.'>
+        <Shape>
+          <Appearance DEF="GEOMETRY_APP" >
+            <Material diffuseColor='1 0 0' />
+          </Appearance>
+          <Box size='0.05 0.04 0.05' />
+        </Shape>
+        <ProtoInstance name='Text'>
+          <fieldValue name='offset' value='0 0.03 0' />
+          <fieldValue name='string' value='"Anchor to file online."' />
+        </ProtoInstance>
+      </Anchor>
+    </Transform>
+
+
   </Scene>
 </X3D>
