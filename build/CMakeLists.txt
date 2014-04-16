@@ -488,12 +488,6 @@ IF( MSVC )
   ENDIF( SubWCRev AND ${H3DAPI_is_working_copy} EQUAL 0 )
 ENDIF(MSVC)
 
-# Needed to link correctly on MSVC70 and MSVC71 because the dependency is not enough
-# to generate correct project files with this version of CMake.
-IF( (MSVC70 OR MSVC71) AND ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.7 )
-  SET(HAPI_requiredLibs ${HAPI_requiredLibs} H3DUtil )
-ENDIF( (MSVC70 OR MSVC71) AND ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} GREATER 2.7 )
-
 # add the libraries needed for linking
 TARGET_LINK_LIBRARIES( H3DAPI ${requiredLibs} ${optionalLibs} )
 
