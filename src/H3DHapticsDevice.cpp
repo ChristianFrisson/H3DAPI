@@ -292,6 +292,10 @@ void H3DHapticsDevice::updateDeviceValues() {
       profiledResult->setValue(device_profiled_result);
     }
 #endif
+    // Ensure that calibration matrices are up to date before we set them in HAPI
+    positionCalibration->upToDate();
+    orientationCalibration->upToDate();
+
     hapi_device->setForceLimit( forceLimit->getValue() );
     hapi_device->setTorqueLimit( torqueLimit->getValue() );
 
