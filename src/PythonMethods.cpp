@@ -3283,9 +3283,9 @@ call the base class __init__ function." );
       string success = H3DWindowNode::takeScreenShot( url );
       if( success != "" ) {
         PyErr_SetString( PyExc_ValueError, success.c_str() );
-        return 0;
+        return NULL;
       }
-      return NULL;
+      return Py_True;
     }
   }
 }
