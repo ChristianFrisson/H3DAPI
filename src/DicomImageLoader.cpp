@@ -76,15 +76,15 @@ bool DicomImageLoader::supportsFileType( const string &url ) {
 
   // temporarily shut down console to avoid warning messages from
   // dcmtk while checking if supported.
-  int output_level = H3DUtil::Console.getOutputLevel();
-  H3DUtil::Console.setOutputLevel( -1 );
+  H3DUtil::Console.disable();
 
   DcmFileFormat fileformat;
   OFCondition status = fileformat.loadFile( url.c_str(), EXS_Unknown, 
                                             EGL_noChange, 0 );
 
   // restore console output level.
-  H3DUtil::Console.setOutputLevel( output_level );
+  H3DUtil::Console.enable();
+  
   return status.good();
 }
 
