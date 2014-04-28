@@ -119,6 +119,8 @@ void Anchor::GeometrySelected::update() {
           X3DViewpointNode::getAllViewpoints().size();
         bool use_internal_base_url = false;
         string base_url_to_use = ResourceResolver::getBaseURL();
+        // Disable console output to hide warnings about invalid URLs
+        Console.disable ();
         try {
           new_world.reset(
             X3D::createX3DFromURL( base_url, &node_names, NULL, NULL ) );
@@ -136,6 +138,7 @@ void Anchor::GeometrySelected::update() {
             file_exist = false;
           }
         }
+        Console.enable();
         if( pos != string::npos )
           vp_name = (*i).substr( pos + 1, (*i).size() - pos );
 
