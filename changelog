@@ -33,9 +33,13 @@ Changes for version 2.3.0:
 - PointSet, LineSet, IndexedLineSet now have vertex attribute support.
 - Doxygen documentation now links to python documentation as well.
 - Extrusion now calculates normal per triangle face instead of per quad face.
+- Improved the static and dynamic database so getField function is now faster.
+- H3DWindowNode has a takeScreenShot static function.
+- Made it possible to put multiple objects in a ShadowTransform node.
 
 New H3D nodes:
 FBODebugger
+GaussianFilterShader
 GeometryGroup
 PlaybackDevice
 NoiseTexture
@@ -47,6 +51,7 @@ New python functionality:
 - Added getTypeName, getValueAsString, setValueAsString, setName, getName,
  getFullName, isUpToDate, upToDate, replaceRoute, replaceRouteNoEvent,
  unrouteAll, getOwner and setOwner functions for fields.
+- Added takeScreenshot and findNodes function.
 
 H3DViewer updates:
 - Can now copy current log text to clipboard.
@@ -57,9 +62,12 @@ H3DViewer updates:
  with a non-quadro card. Note that this requires a special built wxWidgets.
  WxWidgets adopted a patch supplied by us so in the future this should work
  for standard releases of WxWidgets.
+- Faster startup due to optimizations.
 
 Compatability issues:
 - Changed default depth buffer type of FrameBufferTextureGenerator.
+- Not binary compatible due to changes to database and inheritance for some nodes.
+- ShadowTransform::shadowVolume is now of MFNode type, was SFNode.
 
 Changes for version 2.2.0:
 - Added functionality for more convenient Import/Export use of Inlined files.

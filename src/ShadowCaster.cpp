@@ -178,7 +178,8 @@ void ShadowCaster::render() {
     generator->render();
 
     // render fbo color buffer with shader applied.
-    shape->traverseSG( TraverseInfo( vector< H3DHapticsDevice *>() ) );
+    TraverseInfo tmp_traverse_inf = TraverseInfo( vector< H3DHapticsDevice *>() );
+    shape->traverseSG( tmp_traverse_inf );
     shape->render();
   } else {
     // render shadows without fbo

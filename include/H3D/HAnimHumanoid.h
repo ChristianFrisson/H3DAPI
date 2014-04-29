@@ -386,7 +386,7 @@ namespace H3D {
     protected:
     
       /// Template function to apply the joint movements and displacements
-      /// to original skin coordinates and notmals. Since the points can
+      /// to original skin coordinates and normals. Since the points can
       /// be both floats or doubles a template is used.
       /// \param orig_points The original points before any deformation.
       /// \param orig_normals The original normals before any deformation.

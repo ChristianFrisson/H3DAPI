@@ -15,6 +15,9 @@ ENDIF(WIN32 OR APPLE)
 #INCLUDE(FindPkgConfig)
 # pkg-config is disabled for now since it does not seem to find
 # the directories we want always. 
+# explicitly set the PKG_CONFIG_FOUND to be False as it can be set to be
+# True by other module before FindFFmpeg module
+SET( PKG_CONFIG_FOUND False )
 IF( PKG_CONFIG_FOUND )
   PKG_CHECK_MODULES(FFMPEGMODULES libavcodec libavformat libswscale)
 ELSE( PKG_CONFIG_FOUND )
