@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='ShaderAtomicCounter.x3d'/>
+    <meta name='description' content='H3DAPI ShaderAtomicCounter example. Blends the output from a NormalShader and a PhongShader by 0.5 of each. This example uses H3DAPI node(s) and runs on H3DAPI-supported browsers only. Visit http://www.h3d.org for more information and to download an H3DAPI-
+      compatible browser. '/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
+  </head>
+
+  <Scene>
+    <Viewpoint position="0 0 0.6" />
+
+    <Shape>
+      <Appearance>
+        <Material diffuseColor='1 0 0' />
+        <ComposedShader DEF="SHADER" language="GLSL" suppressUniformWarnings="false">
+            <field name="ac" type="SFNode" accessType="inputOutput">
+                <ShaderAtomicCounter initialValue="0" ></ShaderAtomicCounter>
+            </field>
+            
+            <field name="width" type="SFInt32" value="518" accessType="inputOutput"></field>
+            
+            <field name="height" type="SFInt32" value="784" accessType="inputOutput"></field>
+            
+            <ShaderPart type="VERTEX" url="shaders/visualizeRenderOrder.vert"/>
+            <ShaderPart type="FRAGMENT" url="shaders/visualizeRenderOrder.frag"/>
+            
+        </ComposedShader>
+      </Appearance>
+      <FullscreenRectangle zValue="0"></FullscreenRectangle>
+    </Shape>
+    <PythonScript url="shader_atomic_counter.py"></PythonScript>
+  </Scene>
+</X3D>

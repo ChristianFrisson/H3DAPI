@@ -35,12 +35,18 @@
 
 namespace H3D {
 
-  /// \ingroup AbstractNodes
+  /// \ingroup X3DNodes
   /// \class ShaderAtomicCounter
-  /// \brief This is the base node type for the child nodes of the
-  ///  ComposedShader node.
-  ///
+  /// \brief A ShaderAtomicCounter is a atomic counter can be used in GLSL shader.
   /// 
+  /// It is fast and can only be used to be incremented or decremented by 1.
+  /// The initialValue field is used to set the initial value for this counter,
+  /// by default this value is zero if not being set. And this counter will be
+  /// reset to its initial value once per rendering loop in the scene.
+  /// 
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ShaderAtomicCounter.x3d">ShaderAtomicCounter.x3d</a>
+  ///     ( <a href="examples/ShaderAtomicCounter.x3d.html">Source</a> )
   class H3DAPI_API ShaderAtomicCounter : 
     public ShaderChildNode {
   public:
@@ -51,7 +57,7 @@ namespace H3D {
                          Inst< SFInt32      >  _initialValue = 0
                          );
 
-
+	/// initial value for the atomic counter 
     auto_ptr<SFInt32> initialValue;
 
     /// specify the texture_unit will be used for rendering this shader image
@@ -72,17 +78,12 @@ namespace H3D {
     ~ShaderAtomicCounter ( );
 
     // traverse func.
+	// override to reset the counter to its initial value
     virtual void traverseSG( TraverseInfo &ti ); 
 
     /// Address of traverseInfo 
     /// only interested in address, what it points to will be invalid
     TraverseInfo *prev_travinfoadr;
-
-
-    // width, height and depth is used to set the size
-    // of the buffer data. It should be just one value, as shader storage
-    // buffer is used in shader, to separate it into three dimension
-    // will make it more intuitive
 
 
     /// The H3DNodeDatabase for this node
