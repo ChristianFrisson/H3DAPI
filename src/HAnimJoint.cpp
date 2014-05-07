@@ -134,8 +134,8 @@ void HAnimJoint::traverseSG( TraverseInfo &ti ) {
     accumulatedJointMatrix->setValue( acc_joint_matrix, id );
   }
      
-  ti.pushMatrices( matrix->getValue(),
-                   matrix->getValue().inverse() );
+  ti.pushMatrices( joint_matrix,
+                   joint_matrix.inverse() );
 
   // set accumulated forward and inverse matrices
   accumulatedForward->setValue( ti.getAccForwardMatrix(), id );
