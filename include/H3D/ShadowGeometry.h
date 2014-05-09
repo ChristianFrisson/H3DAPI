@@ -105,7 +105,8 @@ namespace H3D {
                                              X3DLightNode *light, 
                                              bool render_caps,
                                              const Matrix4f &local_to_global,
-                                             const Matrix4f &global_to_local );
+                                             const Matrix4f &global_to_local,
+                                             bool rebuild_triangle_info );
    
     /// Render the shadow volume for this shadow object without geometry
     /// shader. This is the fallback option if graphics card does not
@@ -114,7 +115,8 @@ namespace H3D {
                                        X3DLightNode *light, 
                                        bool render_caps,
                                        const Matrix4f &local_to_global,
-                                       const Matrix4f &global_to_local );
+                                       const Matrix4f &global_to_local,
+                                       bool rebuild_triangle_info );
 
     /// Render a quad using the given points and its projections at 
     /// infinity assuming a DirectionalLight with direction dir.
@@ -205,6 +207,8 @@ namespace H3D {
     /// the light source or not.
     vector< bool > triangle_facing_light;
 
+    /// True if geometry shader was used last time this ShadowGeometry was rendered.
+    bool use_geometry_shader_last_loop;
   };
 }
 

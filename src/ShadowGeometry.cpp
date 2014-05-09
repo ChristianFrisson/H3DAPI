@@ -52,7 +52,8 @@ ShadowGeometry::ShadowGeometry( Inst< SFNode>  _metadata,
   triangles_changed( new Field ),
   modelMatrix( new SFMatrix4f ),
   lightParam( new SFVec3f ),
-  drawCaps( new SFBool ) {
+  drawCaps( new SFBool ),
+  use_geometry_shader_last_loop( false ) {
 
   type_name = "ShadowGeometry";
   database.initFields( this );
@@ -114,26 +115,39 @@ void ShadowGeometry::renderShadow( X3DLightNode *light,
     default_settings->getOptionNode( graphics_options );
   }
   
+  bool use_geometry_shader = 
+      GLEW_EXT_geometry_shader4 && 
+      ( !graphics_options || 
+        (graphics_options && 
+         graphics_options->defaultShadowGeometryAlgorithm->getValue() == "GEOMETRY_SHADER" ) );
+
+
+  bool rebuild_triangle_info = !triangles_changed->isUpToDate() || 
+       use_geometry_shader_last_loop != use_geometry_shader;
+
+  triangles_changed->upToDate();
+
   if( GLEW_EXT_geometry_shader4 && 
       ( !graphics_options || 
         (graphics_options && 
          graphics_options->defaultShadowGeometryAlgorithm->getValue() == "GEOMETRY_SHADER" ) ) ) {
-    renderShadowGeometryShader( g, light, draw_caps, m, m_inv );
+    renderShadowGeometryShader( g, light, draw_caps, m, m_inv, rebuild_triangle_info );
   } else {
-    renderShadowFallback( g, light, draw_caps, m, m_inv );
+    renderShadowFallback( g, light, draw_caps, m, m_inv, rebuild_triangle_info );
   }
 
+  use_geometry_shader_last_loop = use_geometry_shader;
 }
 
 void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
                                            X3DLightNode *light, 
                                            bool draw_caps,
                                            const Matrix4f &m,
-                                           const Matrix4f &m_inv ) {
+                                           const Matrix4f &m_inv,
+                                           bool rebuild_triangle_info ) {
 
 
-  if(!triangles_changed->isUpToDate() ) {
-    triangles_changed->upToDate();
+  if( rebuild_triangle_info ) {
     triangles.clear();
     g->boundTree->getValue()->getAllTriangles( triangles );
     updateNeighbours( triangles );
@@ -404,7 +418,8 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
                                                  X3DLightNode *light, 
                                                  bool draw_caps,
                                                  const Matrix4f &m,
-                                                 const Matrix4f &m_inv ) {
+                                                 const Matrix4f &m_inv,
+                                                 bool rebuild_triangle_info) {
 
   PointLight *point_light = dynamic_cast< PointLight * >( light );
   DirectionalLight *dir_light = dynamic_cast< DirectionalLight * >( light );
@@ -490,8 +505,7 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
   }
 
   // update the vertex array and indices for the geometry
-  if(!triangles_changed->isUpToDate() ) {
-    triangles_changed->upToDate();
+  if( rebuild_triangle_info) {
     triangles.clear();
     g->boundTree->getValue()->getAllTriangles( triangles );
     updateAdjacenctVertexArray( triangles, triangle_points, adjacency_index );
