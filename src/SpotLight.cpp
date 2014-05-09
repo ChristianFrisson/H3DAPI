@@ -75,8 +75,8 @@ SpotLight::SpotLight(
   database.initFields( this );
 
   attenuation->setValue( Vec3f( 1, 0, 0 ) );
-  beamWidth->setValue((H3DFloat)(Constants::pi/2));
-  cutOffAngle->setValue((H3DFloat)(Constants::pi/4));
+  beamWidth->setValue((H3DFloat)(Constants::pi/4));
+  cutOffAngle->setValue((H3DFloat)(Constants::pi/2));
   direction->setValue( Vec3f( 0, 0, -1 ) );
   location->setValue( Vec3f( 0, 0, 0 ) );
   radius->setValue( 100 );
