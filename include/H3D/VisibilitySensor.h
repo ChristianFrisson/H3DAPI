@@ -103,6 +103,10 @@ namespace H3D {
       Inst< SFBool >  _isActive   = 0,
       Inst< SFBool >  _viewFrustumMode = 0 );
     
+    ~VisibilitySensor(){
+      if ( glIsQuery( queryId ) )
+        glDeleteQueriesARB(1, &queryId );
+    }
     /// The SetTime class is specialize to set the value of either
     /// the inputTrue or inputFalse field in the BooleanFilter node
     /// it resides in, depending on the value that is is given.
@@ -171,8 +175,12 @@ namespace H3D {
     Vec3f prev_vp_pos;
     Vec3f can_prev_vp_pos;
 
-   /// The H3DNodeDatabase for this node.
+    /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+  
+  protected:
+    GLuint queryId;
+  
   };
 }
 

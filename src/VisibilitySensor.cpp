@@ -65,8 +65,9 @@ VisibilitySensor::VisibilitySensor( Inst< SFNode > _metadata ,
                                                                 _enterTime,
                                                                 _exitTime,
                                                                 _isActive ),
-                  viewFrustumMode(_viewFrustumMode),
-                                    set_time( new SetTime ) {
+									viewFrustumMode(_viewFrustumMode),
+                                    set_time( new SetTime ),
+                                    queryId(0){
 
   type_name = "VisibilitySensor";
   database.initFields( this );
@@ -143,18 +144,19 @@ void VisibilitySensor::traverseSG( TraverseInfo &ti ) {
       
     }
 
-    glGenQueriesARB(1, queries);
+    if ( !glIsQuery( queryId ) )
+      glGenQueriesARB(1, &queryId );
       
     // before this point, render major occluders
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
     glDepthMask(GL_FALSE);
 
-  bool depthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
-  if( viewFrustumMode->getValue() )
-    glDisable(GL_DEPTH_TEST);
-  
-  // also disable texturing and any fancy shaders
-    glBeginQueryARB(GL_SAMPLES_PASSED_ARB, queries[0]);
+	bool depthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
+	if( viewFrustumMode->getValue() )
+	  glDisable(GL_DEPTH_TEST);
+	
+	// also disable texturing and any fancy shaders
+    glBeginQueryARB(GL_SAMPLES_PASSED_ARB, queryId );
     // render bounding box for object i
     glBegin( GL_QUADS );
   
@@ -215,7 +217,7 @@ void VisibilitySensor::traverseSG( TraverseInfo &ti ) {
     glFlush();
 
     do {
-      glGetQueryObjectivARB(queries[0],
+      glGetQueryObjectivARB(queryId,
                 GL_QUERY_RESULT_AVAILABLE_ARB,
                 &available);
     } while (!available);
@@ -223,10 +225,10 @@ void VisibilitySensor::traverseSG( TraverseInfo &ti ) {
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     glDepthMask(GL_TRUE);
 
-  if( viewFrustumMode->getValue() && depthTestEnabled )
-    glEnable(GL_DEPTH_TEST);
+	if( viewFrustumMode->getValue() && depthTestEnabled )
+	  glEnable(GL_DEPTH_TEST);
       
-    glGetQueryObjectuivARB(queries[0], GL_QUERY_RESULT_ARB,
+    glGetQueryObjectuivARB(queryId, GL_QUERY_RESULT_ARB,
                 &sampleCount);
 
   
