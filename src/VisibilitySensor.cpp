@@ -65,7 +65,7 @@ VisibilitySensor::VisibilitySensor( Inst< SFNode > _metadata ,
                                                                 _enterTime,
                                                                 _exitTime,
                                                                 _isActive ),
-									viewFrustumMode(_viewFrustumMode),
+                  viewFrustumMode(_viewFrustumMode),
                                     set_time( new SetTime ),
                                     queryId(0){
 
@@ -130,8 +130,7 @@ void VisibilitySensor::traverseSG( TraverseInfo &ti ) {
     Vec3f g5 = vs_frw_m * loc5;
     Vec3f g6 = vs_frw_m * loc6;
     Vec3f g7 = vs_frw_m * loc7;
-    
-    GLuint queries[1];
+
     GLuint sampleCount;
     GLint available;
     GLint bitsSupported;
@@ -151,11 +150,11 @@ void VisibilitySensor::traverseSG( TraverseInfo &ti ) {
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
     glDepthMask(GL_FALSE);
 
-	bool depthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
-	if( viewFrustumMode->getValue() )
-	  glDisable(GL_DEPTH_TEST);
-	
-	// also disable texturing and any fancy shaders
+  bool depthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
+  if( viewFrustumMode->getValue() )
+    glDisable(GL_DEPTH_TEST);
+  
+  // also disable texturing and any fancy shaders
     glBeginQueryARB(GL_SAMPLES_PASSED_ARB, queryId );
     // render bounding box for object i
     glBegin( GL_QUADS );
@@ -225,8 +224,8 @@ void VisibilitySensor::traverseSG( TraverseInfo &ti ) {
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     glDepthMask(GL_TRUE);
 
-	if( viewFrustumMode->getValue() && depthTestEnabled )
-	  glEnable(GL_DEPTH_TEST);
+  if( viewFrustumMode->getValue() && depthTestEnabled )
+    glEnable(GL_DEPTH_TEST);
       
     glGetQueryObjectuivARB(queryId, GL_QUERY_RESULT_ARB,
                 &sampleCount);

@@ -31,7 +31,7 @@
 
 #include <H3D/X3DEnvironmentalSensorNode.h>
 #include <H3D/SFVec3f.h>
-
+#include <GL/glew.h>
 
 namespace H3D {
 
