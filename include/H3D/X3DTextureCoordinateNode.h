@@ -283,6 +283,10 @@ namespace H3D {
     virtual string defaultXMLContainerField() {
       return "texCoord";
     }
+
+    protected:
+      /// the current texture index
+      unsigned int texture_index;
   };
 }
 

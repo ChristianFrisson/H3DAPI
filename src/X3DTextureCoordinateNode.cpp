@@ -37,6 +37,7 @@ using namespace H3D;
 X3DTextureCoordinateNode::X3DTextureCoordinateNode( 
                                                    Inst< SFNode>  _metadata ) :
   X3DGeometricPropertyNode( _metadata ),
+    texture_index(0),
   GLVertexAttributeObject(VERTEXATTRIBUTE::TEXCOORD){
   type_name = "X3DTextureCoordinateNode";
 }
@@ -253,6 +254,7 @@ void X3DTextureCoordinateNode::renderVertexBufferObjectForTextureUnit(
   GLint saved_texture;
   glGetIntegerv( GL_CLIENT_ACTIVE_TEXTURE_ARB, &saved_texture );
   glClientActiveTexture( GL_TEXTURE0_ARB + texture_unit );
+  texture_index = texture_unit;
   renderVertexBufferObject();
   glClientActiveTexture( saved_texture );
 }

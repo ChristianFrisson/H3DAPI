@@ -101,9 +101,7 @@ void TextureCoordinate::renderVBO ( ){
     glTexCoordFormatNV ( 2, GL_FLOAT, 0 );
     glEnableClientState ( GL_VERTEX_ATTRIB_ARRAY_UNIFIED_NV );
     // vbo is dedicated for this vertex attribute, so there is no offset
-    GLint active_texutre_unit;
-    glGetIntegerv(GL_CLIENT_ACTIVE_TEXTURE_ARB, &active_texutre_unit );
-    glBufferAddressRangeNV ( GL_TEXTURE_COORD_ARRAY_ADDRESS_NV, active_texutre_unit-GL_TEXTURE0_ARB, vbo_GPUaddr, attrib_size );
+    glBufferAddressRangeNV ( GL_TEXTURE_COORD_ARRAY_ADDRESS_NV, texture_index, vbo_GPUaddr, attrib_size );
   } else{
     glTexCoordPointer ( 2, GL_FLOAT, 0, NULL );
   }
