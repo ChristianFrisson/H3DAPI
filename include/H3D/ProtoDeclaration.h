@@ -138,12 +138,12 @@ namespace H3D {
           string error_message = "";
           if( field_declaration->type != type )
             error_message =
-              "WARNING: Value for \"type\" attribute of \"field\" element with name"
+              "Warning: Value for \"type\" attribute of \"field\" element with name"
               + name + " does not match the value in found ExternProto. Attribute is ignored.";
           if( error_message == "" &&
               field_declaration->access_type != access_type )
             error_message =
-              "WARNING: Value for \"access_type\" attribute of \"field\" element with name"
+              "Warning: Value for \"access_type\" attribute of \"field\" element with name"
               + name + " does not match the value in found ExternProto. Attribute is ignored.";
           if( value != "" )
             field_declaration->value = "";

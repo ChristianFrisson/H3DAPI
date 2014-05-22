@@ -208,7 +208,7 @@ std::string ShaderPart::shaderStringFromURL ( const std::string& shader_url ) {
 std::string ShaderPart::preProcess ( const std::string& input, const std::string& url, int depth ) {
   // Catch infinite recursion
   if ( depth > pre_processor_max_recurse_depth ) {
-    Console(4) << "WARNING: ShaderPart: " << getName() << ": Maximum recursion depth reached in pre-processing. Could be recursive include." << endl;
+    Console(4) << "Warning: ShaderPart: " << getName() << ": Maximum recursion depth reached in pre-processing. Could be recursive include." << endl;
     return input;
   }
 
@@ -245,7 +245,7 @@ std::string ShaderPart::preProcess ( const std::string& input, const std::string
         include_source= preProcess ( include_source, path, depth+1 );
         output+= include_source + "\n";
       } else {
-        Console(4) << "WARNING: ShaderPart: " << getName() << ": Could not include shader file: " << path << " in " << getURLBase() << "." << endl;
+        Console(4) << "Warning: ShaderPart: " << getName() << ": Could not include shader file: " << path << " in " << getURLBase() << "." << endl;
       }
 
       setURLBase ( old_base );
