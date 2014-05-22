@@ -152,7 +152,7 @@ namespace H3D {
   /// "DEFAULT_COPY"  - copy the corresponding color buffer from default color buffer
   /// "FBO_COPY_x"    - copy the corresponding color buffer from x-th color buffer 
   /// of external specified FBO
-  /// "FBO_SHARE_x"   - copy the corresponding color buffer from x-th color buffer
+  /// "FBO_SHARE_x"   - share the corresponding color buffer with the x-th color buffer
   /// of external specified FBO
   /// 
   /// The externalFBOColorBuffers contains all the external FBOs which will be

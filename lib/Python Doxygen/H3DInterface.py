@@ -1,4 +1,4 @@
-
+## \file H3DInterface.py Documentation file for the H3DInterface module.
 from H3D import *
 
 #import sys
@@ -923,6 +923,16 @@ def resolveURLAsFolder( url ):
 ## to exit the program and clean up.
 def throwQuitAPIException():
   pass
+
+## Add the given field to program settings so that for example H3DViewer can show
+## it in a separate dialog.
+##
+## \param field        The field to add.
+## \param setting_name Optional argument used to name the setting. If empty the
+##                     name of the field will be used.
+## \param section_name Optional argument which can be used to group settings. 
+##                     If empty field is added to "Main settings" section.
+def addProgramSetting ( field, setting_name = "", section_name = "" ):
 
 ## Find nodes matching the specified criteria.
 ## Recursively searches for child nodes that match the given criteria, starting from the 

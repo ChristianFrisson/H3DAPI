@@ -104,7 +104,7 @@ namespace H3D {
       Inst< SFBool >  _viewFrustumMode = 0 );
     
     ~VisibilitySensor(){
-      if ( glIsQuery( queryId ) )
+      if ( prev_travinfoadr && glIsQuery( queryId ) )
         glDeleteQueriesARB(1, &queryId );
     }
     /// The SetTime class is specialize to set the value of either

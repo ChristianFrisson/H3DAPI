@@ -3,13 +3,13 @@ H3DAPI examples map
 
 NODE                              EXAMPLE FILE (.x3d)
 ------------------------------------------------------
-Anchor                            Anchor
+Anchor                            Anchor, AnchorHelp
 AnyDevice                         AnyDevice
 Appearance                        FillProperties, LineProperties, Material, 
                                   TwoSidedMaterial, RenderProperties, 
-                                  /demos CubeMap.x3d, 
-                                  /demos glsl_earthshader.x3d
-                                  /demos cg_earthshader.x3d
+                                  /demos CubeMap, 
+                                  /demos glsl_earthshader,
+                                  /demos cg_earthshader
                                   ImageTexture
 Arc2D                             Arc2D
 ArcClose2D                        ArcClose2D
@@ -29,13 +29,15 @@ CollisionOptions                  CollisionOptions
 Color                             IndexedFaceSet 
 ColorInterpolator                 ColorInterpolator
 ColorRGBA                         ColorRGBA
-Composed3DTexture                 ComposedTexture3D.x3d
-ComposedCubeMapTexture            /demos CubeMap.x3d
+Composed3DTexture                 ComposedTexture3D
+ComposedCubeMapTexture            /demos CubeMap
+ComposedGeneratedShader           ComposedGeneratedShader
 ComposedShader                    ComposedShader 
 Cone                              Cone
 ConeEmitter                       ConeEmitter
 Contour2D                         NurbsTrimmedSurface
 ContourPolyline2D                 NurbsTrimmedSurface
+ConvolutionFilterShader           ConvolutionFilterShader, ConvolutionFilterShader_postprocess
 Coordinate                        IndexedFaceSet, IndexedTriangleSet
 CoordinateDeformer                DeformableShape
 CoordinateDouble                  TriangleSet
@@ -53,11 +55,15 @@ DicomImageLoader                  ImageLoaders
 DirectionalLight                  DirectionalLight
 Disk2D                            Disk2D
 DynamicTransform                  DynamicTransform
+EaseInEaseOut                     EaseInEaseOut
 ElevationGrid                     ElevationGrid, ElevationGrid1
+EntactDevice                      EntactDevice
+EnvironmentMapShader              EnvironmentMapShader
 ExplosionEmitter                  ExplosionEmitter
 Extrusion                         Extrusion
 FakeHapticsDevice                 FakeHapticsDevice
 FalconDevice                      FalconDevice
+FBODebugger                       FBODebugger
 FillProperties                    FillProperties
 FitToBoxTransform                 FitToBoxTransform
 FloatVertexAttribute              VertexAttributes
@@ -66,15 +72,27 @@ FogCoordinate                     FogCoordinate
 FontStyle                         FontStyle
 ForceDimensionDevice              ForceDimensionDevice
 ForceField                        ForceField
+FrameBufferTextureGenerator       FrameBufferTextureGenerator,
+                                  FrameBufferTextureGenerator_external_fbo,
+                                  FrameBufferTextureGenerator_fullscreen,
+                                  FrameBufferTextureGenerator_rectangle,
+                                  FrameBufferTextureGenerator_shader,
+                                  FrameBufferTextureGenerator_texturearray
+FullscreenRectangle               FullscreenRectangle
 FreeImageLoader                   ImageLoaders
 FrictionalSurface                 Sphere, Surfaces
 FunctionPlotTexture               FunctionPlotTexture
+GeneralDirectionalLight           GeneralDirectionalLight
+GeneralPointLight                 GeneralPointLight
+GeneralSpotLight                  GeneralSpotLight
 GaussianFunction                  DeformableShape
 GeneralFunction                   TimeFunctionEffect, PositionFunctionEffect
 GeneratedCubeMapTexture           GeneratedCubeMapTexture
 GeometryBoundTreeOptions          GeometryBoundTreeOptions
+GeometryGroup                     GeometryGroup
 GlobalSettings                    GlobalSettings
-GraphicsCachingOptions            GraphicsCachingOptions
+GraphicsHardwareInfo              GraphicsHardwareInfo
+GraphicsOptions                   GraphicsOptions
 GravityPhysicsModel               GravityPhysicsModel
 Group                             Group
 HAnimDisplacer                    BoxMan
@@ -87,9 +105,10 @@ HapticMasterDevice                HapticMasterDevice
 HapticsOptions                    HapticsOptions
 HapticTexturesSurface             Surfaces
 HaptikDevice                      HaptikDevice
+HumanHand                         HumanHand
 Image3DTexture                    ImageTexture3D
 ImageObjectInfo                   ImageObjectInfo
-ImageObjectTexture                ImageObjectTexture
+ImageObjectTexture                ImageObjectTexture, ImageObjectTexture1
 ImageTexture                      ImageTexture
 ImportLibrary                     ImportLibrary
 IndexedFaceSet                    IndexedFaceSet
@@ -116,15 +135,21 @@ MetadataDouble                    Metadata
 MetadataFloat                     Metadata
 MetadataInteger                   Metadata
 MetadataSet                       MetadataSet
+MLHIDevice                        MLHIDevice
 MetadataString                    Metadata
 MouseSensor                       MouseSensor
 MovieTexture
+MultiDeviceSurface                MultiDeviceSurface
+MultiRenderTargetShader           MultiRenderTargetShader
 MultiTexture                      MultiTexture
 MultiTextureCoordinate            MultiTextureCoordinate
 MultiTextureTransform             MultiTextureTransform
 NavigationInfo                    NavigationInfo
+NoiseTexture                      NoiseTexture
+NoiseTexture3D                    NoiseTexture3D
 Normal                            Normal
 NormalInterpolator                NormalInterpolator
+NormalShader                      NormalShader
 NrrdImageLoader                   ImageLoaders
 NurbsCurve                        NurbsCurve
 NurbsCurve2D                      NurbsTrimmedSurface
@@ -138,10 +163,15 @@ OrthoViewpoint                    OrthoViewpoint
 PackagedShader                    PackagedShader
 ParticleSystem                    ParticleSystem
 PhantomDevice                     PhantomDevice
+PhongShader                       PhongShader,
+                                  PhongShader_tangentSpaceNormalMap,
+                                  PhongShader_textures,
+                                  PhongShader_twosided
 Pixel3DTexture                    PixelTexture3D
 PixelTexture                      PixelTexture
 PlanarReflector                   PlanarReflector
 PlaneSensor                       PlaneSensor
+PlaybackDevice                    PlaybackDevice
 PointEmitter                      PointEmitter
 PointLight                        PointLight, PointLight1
 PointNormalClipPlane              PointNormalClipPlane
@@ -151,24 +181,30 @@ Polypoint2D                       Polypoint2D
 PositionFunctionEffect            PositionFunctionEffect
 PositionInterpolator              PositionInterpolator
 PositionInterpolator2D            PositionInterpolator2D
-ProgramShader                     /demos cg_earthshader.x3d
+ProgramShader                     /demos cg_earthshader
 ProtoDeclaration                  Prototype, Surfaces
 PrototypeInstance                 Prototype
 ProximitySensor                   ProximitySensor
 PythonScript                      PythonScript, ImageObjectInfo, DeformableShape
 QuanserDevice                     QuanserDevice
 RawImageLoader                    ImageLoaders
+RazerHydraSensor                  RazerHydraSensor, RazerHydraGeometryProto
 Rectangle2D                       Rectangle2D
 RenderProperties                  RenderProperties, RenderProperties1, RenderProperties2
+RenderTargetSelectGroup           RenderTargetSelectGroup
+RenderTargetTexture               RenderTargetTexture
+RotationalSpringEffect            RotationalSpringEffect
 ScalarInterpolator                ScalarInterpolator
-ShaderPart                        /demos glsl_earthshader.x3d
-ShaderProgram                     /demos cg_earthshader.x3d
+ShaderCombiner                    ShaderCombiner, ShaderCombiner_functions
+ShaderPart                        /demos glsl_earthshader
+ShaderProgram                     /demos cg_earthshader
 ShadowCaster                      ShadowCaster
 ShadowGeometry                    ShadowCaster
 ShadowSphere                      ShadowCaster
 ShadowTransform                   ShadowCaster
 Shape                             Box, Cone, Sphere
 SimballDevice                     SimballDevice
+SimpleAudioClip                   SimpleAudioClip
 SimpleMovieTexture                SimpleMovieTexture
 SmoothSurface                     Surfaces
 Sound                             Sound
@@ -211,9 +247,10 @@ TriangleSet                       TriangleSet
 TriangleSet2D                     TriangleSet2D
 TriangleStripSet                  TriangleStripSet
 TwoSidedMaterial                  TwoSidedMaterial
-Viewpoint                         Viewpoint
+Viewpoint                         Viewpoint, Viewpoint1
 ViewpointGroup                    ViewpointGroup
 ViscosityEffect                   ViscosityEffect
 VisibilitySensor                  VisibilitySensor
+VirtuoseDevice                    VirtuoseDevice
 WindPhysicsModel                  WindPhysicsModel
 WorldInfo                         WorldInfo

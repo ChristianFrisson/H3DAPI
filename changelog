@@ -68,6 +68,8 @@ Compatability issues:
 - Changed default depth buffer type of FrameBufferTextureGenerator.
 - Not binary compatible due to changes to database and inheritance for some nodes.
 - ShadowTransform::shadowVolume is now of MFNode type, was SFNode.
+- Fields beamWidth and cutOffAngle in SpotLight node now have default values which
+  makes sense as per update of X3D specification 3.3.
 
 Changes for version 2.2.0:
 - Added functionality for more convenient Import/Export use of Inlined files.

@@ -21,8 +21,8 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file GLVertexBufferObject.h
-/// \brief Contains the GLVertexBufferObject class.
+/// \file GLVertexAttributeObject.h
+/// \brief Contains the GLVertexAttributeObject class.
 //
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __GLVERTEXATTRIBUTE_H__
@@ -44,11 +44,21 @@ namespace H3D {
       GENERIC
     };
   }
-  
+
+  /// \ingroup AbstractInterface
+  /// \class GLVertexAttributeObject
+  /// \brief This abstract interface is inherited by all nodes that 
+  /// could be used as vertex attributes in a glsl shader.
+  ///
+  /// Example of such nodes are Color, Coordinate and Normal nodes.
   class H3DAPI_API GLVertexAttributeObject{
 
   public:
+    /// Constructor
     GLVertexAttributeObject ( VERTEXATTRIBUTE::VERTEXATTRIBUTETYPE type );
+
+    /// Destructor
+    virtual ~GLVertexAttributeObject();
 
     /// pure virtual function has to be implemented by inherited class
     /// to specify necessay data and format for this vertex attrib
@@ -87,8 +97,6 @@ namespace H3D {
     // The index for the vertex buffer object
     GLuint *vbo_id;
 
-    
-
     GLsizei attrib_size;
 
     GLvoid* attrib_data;
@@ -96,13 +104,12 @@ namespace H3D {
     // the type of vertex attribute
     VERTEXATTRIBUTE::VERTEXATTRIBUTETYPE attrib_type;
 
-
     // address of the vertex buffer object, will be used for binless
     // vertex attribute
     GLuint64 vbo_GPUaddr;
 
     bool use_bindless;
-    
+
   };
 }
 

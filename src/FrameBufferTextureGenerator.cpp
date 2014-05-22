@@ -641,7 +641,7 @@ void FrameBufferTextureGenerator::render()     {
 
       // blit multi sample buffers to textures.
       if( generateDepthTexture->getValue() ) {
-        glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+        glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
       }
 
       for( unsigned int i = 0; i < color_ids.size(); ++i ) {
@@ -708,7 +708,7 @@ void FrameBufferTextureGenerator::render()     {
 
         // blit multi sample buffers to textures.
         if( generateDepthTexture->getValue() ) {
-          glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+          glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
         }
 
         for( unsigned int i = 0; i < color_ids.size(); ++i ) {
@@ -906,7 +906,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
       if( !external_FBO_depth ) { // however no external fbo is set
         if( !depthWarningPrinted->getValue() ) {
           Console(4)<< "Warning: There is no external fbo set to be used for sharing "
-            << "please add one, if it is being forget!";
+            << "please add one!" << endl;
           depthWarningPrinted->setValue(true);
         }
         clearBuffers(target_fbo,0,0,w,h, GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);

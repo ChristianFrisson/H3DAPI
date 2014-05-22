@@ -48,7 +48,6 @@ namespace H3D {
   /// interpretable data is encountered. X3D browsers only have to interpret
   /// a single string. If no interpretable locations are found, the node
   /// type defines the resultant default behaviour. 
-  /// 
   class H3DAPI_API X3DUrlObject {
   public:
 

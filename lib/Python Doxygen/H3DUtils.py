@@ -1,3 +1,6 @@
+## \file H3DUtils.py Documentation file for H3DUtils python module.
+## This module contains various functions which returns useful
+## field template classes.
 from H3DInterface import *
 
 def PrintFieldValue( base_class ):

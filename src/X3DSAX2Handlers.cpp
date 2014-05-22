@@ -1102,7 +1102,7 @@ void X3DSAX2Handlers::handleFieldValueElement( const Attributes &attrs,
 
   if( name && value ) {
     name_value_missing = false;
-    Field *field = pi->database.getField( parent, toString( name ) );
+    Field *field = pi->getField( toString( name ) );
     if( !field ) {
       Console(3) << "Warning: Field named \"" << name 
            << "\" does not exist in ProtoInstance node (" 
@@ -1145,7 +1145,7 @@ void X3DSAX2Handlers::handleFieldValueElement( const Attributes &attrs,
       } 
     }
   } else if( name && !value ) {
-    Field *field = pi->database.getField( parent, toString( name ) );
+    Field *field = pi->getField( toString( name ) );
     if( !field ) {
       Console(3) << "Warning: Field named \"" << name 
            << "\" does not exist in ProtoInstance node (" 

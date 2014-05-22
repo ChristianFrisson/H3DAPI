@@ -173,6 +173,7 @@ int main(int argc, char* argv[]) {
   field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "MetadataSet", pair< string, string >( "name", "nameF" ) ) );
   field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "MetadataString", pair< string, string >( "name", "nameF" ) ) );
   field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "Contact", pair< string, string >( "minbounceSpeed", "minBounceSpeed" ) ) );
+  field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "SizeJustifiedText", pair< string, string >( "string", "stringF" ) ) );
 
   vector< string > all_node_names;
   for( unsigned int i = 0; i <= extra_output.size(); i++ ) {

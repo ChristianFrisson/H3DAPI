@@ -125,11 +125,6 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-  protected:
-    // Internal field used to know if vertex buffer object can be created.
-    auto_ptr< Field > vboFieldsUpToDate;
-    // The index for the vertex buffer object
-    GLuint *vbo_id;
   };
 }
 

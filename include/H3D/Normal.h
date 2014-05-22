@@ -57,13 +57,14 @@ namespace H3D {
   class H3DAPI_API Normal : public X3DNormalNode {
   public:
 
+    /// Constructor.
     Normal( Inst< SFNode >  _metadata = 0,
             Inst< MFVec3f>  _vector   = 0 );
 
     /// Destructor
     virtual ~Normal();
 
-    // Gets the normal of a given index.
+    /// Gets the normal of a given index.
     virtual Vec3f getNormal( int index ) {
       return vector->getValueByIndex( index );
     }
@@ -108,11 +109,6 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
-  protected:
-    // Internal field used to know if vertex buffer object can be created.
-    auto_ptr< Field > vboFieldsUpToDate;
-    // The index for the vertex buffer object
-    GLuint *vbo_id;
 
   };
 }

@@ -49,9 +49,7 @@ Normal::Normal(
                Inst< SFNode >  _metadata,
                Inst< MFVec3f>  _vector ) :
   X3DNormalNode( _metadata ),
-  vector  ( _vector ),
-  vboFieldsUpToDate( new Field ),
-  vbo_id( NULL ) {
+  vector  ( _vector ) {
 
   type_name = "Normal";
   database.initFields( this );
@@ -62,12 +60,6 @@ Normal::Normal(
 }
 
 Normal::~Normal() {
-  // Delete buffer if it was allocated.
-  if( vbo_id ) {
-    glDeleteBuffersARB( 1, vbo_id );
-    delete vbo_id;
-    vbo_id = NULL;
-  }
 }
 
 // Perform the OpenGL commands to render all vertices as a vertex

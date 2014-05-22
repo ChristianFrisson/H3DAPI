@@ -47,9 +47,7 @@ ColorRGBA::ColorRGBA(
                      Inst< MFColorRGBA>  _color,
                      Inst< SFNode     >  _metadata ) :
   X3DColorNode( _metadata ),
-  color   ( _color    ),
-  vboFieldsUpToDate( new Field ),
-  vbo_id( NULL ) {
+  color   ( _color    ) {
 
   type_name = "ColorRGBA";
   database.initFields( this );
@@ -60,12 +58,6 @@ ColorRGBA::ColorRGBA(
 }
 
 ColorRGBA::~ColorRGBA() {
-  // Delete buffer if it was allocated.
-  if( vbo_id ) {
-    glDeleteBuffersARB( 1, vbo_id );
-    delete vbo_id;
-    vbo_id = NULL;
-  }
 }
 
 // Perform the OpenGL commands to render all vertices as a vertex

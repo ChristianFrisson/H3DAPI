@@ -34,6 +34,9 @@
 #include <H3D/H3DDynamicFieldsObject.h>
 
 #ifdef HAVE_PYTHON
+// DEV WARNING, never use PyBool_Check without also using PyInt_Check, the reason
+// is that pythonfieldGetValue returns an integer for the SFBool type. Until that is
+// changed this PyInt_Check also have to be used.
 
 #if defined(_MSC_VER)
 // undefine _DEBUG since we want to always link to the release version of
@@ -293,14 +296,14 @@ self, name, field_type, access_type )" );
     Node *n = PyNode_AsNode( self );
 
     bool deepCopy= true;
-    if( arg && !PyBool_Check( arg ) ) {
+    if( arg && !( PyBool_Check( arg ) || PyInt_Check( arg ) ) ) {
       PyErr_SetString( PyExc_ValueError, 
                        "Invalid argument(s) to function PyNode.clone( \
 self, deepCopy )" );
       return NULL;
     }
     if ( arg ) {
-      deepCopy= PyObject_IsTrue ( arg );
+      deepCopy= PyObject_IsTrue ( arg ) == 1;
     }
 
     return PyNode_FromNode ( n->clone ( deepCopy ) );

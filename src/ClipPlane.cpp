@@ -78,6 +78,7 @@ ClipPlane::ClipPlane( Inst< SFNode  >  _metadata,
 
   clipGraphics->route( displayList );
   plane->route( displayList );
+  enabled->route( displayList );
 }
 
 void ClipPlane::enableHapticsState( TraverseInfo &ti ) {
@@ -145,6 +146,11 @@ void ClipPlane::disableGraphicsState() {
 
 bool ClipPlane::truncateLine( const Vec3f &from, const Vec3f &to,
                               Vec3f &result_from, Vec3f &result_to ) {
+  if( !enabled->getValue() ) {
+    result_from = from;
+    result_to = to;
+    return true;
+  }
   Vec4d plane_eq = plane->getValue();
   Vec3f plane_normal = Vec3f( (H3DFloat)plane_eq.x,
                               (H3DFloat)plane_eq.y,

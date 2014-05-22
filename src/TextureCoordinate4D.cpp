@@ -58,12 +58,6 @@ TextureCoordinate4D::TextureCoordinate4D(
 }
 
 TextureCoordinate4D::~TextureCoordinate4D() {
-  // Delete buffer if it was allocated.
-  if( vbo_id ) {
-    glDeleteBuffersARB( 1, vbo_id );
-    delete vbo_id;
-    vbo_id = NULL;
-  }
 }
 
 void TextureCoordinate4D::render( int index ) {

@@ -114,6 +114,7 @@ namespace H3D {
     /// filter kernel.
     ///
     /// <b>Access type:</b> inputOutput
+    /// \dotfile ConvolutionFilterShader_texture.dot
     auto_ptr< SFTexture2DNode > texture;
 
     /// Some kernels(e.g. Gaussian) are separable meaning that they can 
@@ -132,6 +133,7 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> "FULL"
     /// <b>Valid values: "HORIZONTAL", "VERTICAL", "FULL" </b> 
+    /// \dotfile ConvolutionFilterShader_type.dot
     auto_ptr< SFString > type;
 
     /// The weight field specifies the values in the convolution kernel.
@@ -140,6 +142,7 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> [1.0]
+    /// \dotfile ConvolutionFilterShader_weights.dot
     auto_ptr< MFFloat  > weights;
 
     /// The kernelSize field specifies the size convolution kernel.
@@ -148,6 +151,7 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> 1
+    /// \dotfile ConvolutionFilterShader_kernelSize.dot
     auto_ptr< SFInt32  > kernelSize;
 
     /// The pixelStepOffset is used to add customized offset to the pixel step
@@ -157,6 +161,7 @@ namespace H3D {
     /// slight artifact while no extra texture read
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> 0.0
+    /// \dotfile ConvolutionFilterShader_pixelStepOffset.dot
     auto_ptr< SFFloat > pixelStepOffset;
 
     /// Traverse the scene graph.

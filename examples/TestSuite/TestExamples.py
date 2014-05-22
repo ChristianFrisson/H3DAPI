@@ -408,12 +408,9 @@ class TestExamples ( object ):
     self.testable_callback= testable_callback
     self.fps_data_file = '%s/fps.txt' % (os.getcwd())
     self.early_shutdown_file = '%s/test_complete' % (os.getcwd())
+    self.screenshot_tmp_file = '%s/tmp_screenshot.png' % (os.getcwd())
     self.startup_time_multiplier = 10
     self.load_flags = ["-f"]
-    if platform.system() == 'Windows' and fake_fullscreen_due_to_PIL_bug:
-      import ctypes
-      user32 = ctypes.windll.user32
-      self.load_flags = ["-F", "--screen=%ix%i" % (user32.GetSystemMetrics(0)-50, user32.GetSystemMetrics(1)-50)]
     self.fps_insertion_string = """<PythonScript >
           <![CDATA[python:from H3DInterface import *
 
@@ -426,10 +423,11 @@ class StoreFPS( AutoUpdate( SFFloat ) ):
     self.traverse_sg_counter = 0
 
   def update( self, event ):
-    if self.traverse_sg_counter > 9:
+    if self.traverse_sg_counter > 9 and self.traverse_sg_counter < 101:
       self.fps_file.write( str(event.getValue()) + " " )
       self.fps_file.flush()
       if self.traverse_sg_counter == 100:
+        takeScreenshot( '%s' )
         shutdown_file = open( self.early_shutdown_file, 'w' )
         shutdown_file.write( "OK" )
         shutdown_file.close()
@@ -443,7 +441,7 @@ scene = getCurrentScenes()[0]
 scene.frameRate.routeNoEvent( storeFPS )
 scene = None
 ]]>
-          </PythonScript>""" % (self.fps_data_file, self.early_shutdown_file)
+          </PythonScript>""" % (self.fps_data_file, self.early_shutdown_file, self.screenshot_tmp_file)
 
   def launchExample ( self, url, cwd ):
     process = self.getProcess()
@@ -508,6 +506,8 @@ scene = None
     
     if os.path.isfile( self.early_shutdown_file ):
       os.remove( self.early_shutdown_file )
+    if os.path.isfile( self.screenshot_tmp_file ):
+      os.remove( self.screenshot_tmp_file )
     process= self.launchExample ( filename, cwd )
     startup_time_multiplier = 1 if variation.global_insertion_string_failed else self.startup_time_multiplier
     for i in range( 0, startup_time_multiplier ):
@@ -522,12 +522,17 @@ scene = None
       return test_results
     
     if test_results.started_ok:
-      im = self.getScreenShot()
-      test_results.screenshot= os.path.join(self.filepath,createFilename(orig_url, var_name)+".jpg")
-      im.save(test_results.screenshot, "JPEG")
-      im.thumbnail((256,256), Image.ANTIALIAS)
-      test_results.screenshot_thumb= os.path.join(self.filepath,createFilename(orig_url, var_name)+"_thumb.jpg")
-      im.save(test_results.screenshot_thumb, "JPEG")
+      im = None
+      if os.path.isfile( self.screenshot_tmp_file ):
+        im = Image.open( self.screenshot_tmp_file )
+      else:
+        im = self.getScreenShot()
+      if im:
+        test_results.screenshot= os.path.join(self.filepath,createFilename(orig_url, var_name)+".jpg")
+        im.save(test_results.screenshot, "JPEG")
+        im.thumbnail((256,256), Image.ANTIALIAS)
+        test_results.screenshot_thumb= os.path.join(self.filepath,createFilename(orig_url, var_name)+"_thumb.jpg")
+        im.save(test_results.screenshot_thumb, "JPEG")
     
       process.sendKey ( "{ESC}" )
       time.sleep(self.shutdown_time)

@@ -19,7 +19,7 @@
 
 namespace H3D {
   /// \ingroup H3DNodes
-  /// \class ConvolutionFilterShader
+  /// \class GaussianFilterShader
   /// \brief The GaussianFilterShader is a ConvolutionFilterShader node where 
   /// the weights are automatically calculated from a gaussian function.
   ///
@@ -45,7 +45,7 @@ namespace H3D {
   ///     ( <a href="examples/GaussionFilterShader_postprocess.x3d.html">Source</a> )
   ///
   /// \par Internal routes:
-  /// \dotfile GaussionFilterShader.dot
+  /// \dotfile GaussianFilterShader.dot
   class H3DAPI_API GaussianFilterShader : 
     public ConvolutionFilterShader {
       /// Specialized field that reCalculate the kernel when it updates
@@ -80,6 +80,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> 1
+    /// \dotfile GaussianFilterShader_sigma.dot
     auto_ptr< SFFloat > sigma;
 
 

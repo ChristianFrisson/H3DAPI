@@ -78,7 +78,7 @@ namespace H3D {
 
     /// Contains the devices in this DeviceInfo instance.
     ///
-    /// <b>Access type: </b> inputOutput \n
+    /// <b>Access type: </b> initializeOnly \n
     auto_ptr< MFDevice >  device;
 
     typedef list< DeviceInfo * > DeviceInfoList;

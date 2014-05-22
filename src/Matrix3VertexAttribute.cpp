@@ -59,12 +59,6 @@ Matrix3VertexAttribute::Matrix3VertexAttribute( Inst< SFNode     > _metadata,
 }
 
 Matrix3VertexAttribute::~Matrix3VertexAttribute() {
-  // Delete buffer if it was allocated.
-  if( vbo_id ) {
-    glDeleteBuffersARB( 1, vbo_id );
-    delete vbo_id;
-    vbo_id = NULL;
-  }
 }
 
 // Perform the OpenGL commands to set the vertex attribute

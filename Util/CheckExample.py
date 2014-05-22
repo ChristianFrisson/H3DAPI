@@ -23,7 +23,7 @@ ignoreList = ['Bound', 'MFBool', 'MFColor', 'MFColorRGBA', 'MFDouble', 'MFFloat'
 'ProfileSAX2Handlers','SpiderMonkeySAI','SpiderMonkeyTypes','TypedField','TypedFieldCheck','TypedFieldTypesTmpl',
 'TypedFieldAnyTmpl','ResourceResolver','PrototypeVector','SAIFunctions', 'Shape', 'Node', 'Scene', 'Script','MovieTexture','PeriodicUpdate',
 'GeneratedTexture','OpenHapticsSurface','CoordBoundField','VirtualHandGloveSensor','FlexLexer','DEFNodes','DirectShowDecoder',
-'GeneratedTexture3D','PyTypeWrapper','FFmpegDecoder', 'GLUTWindow', 'HapticsRenderers', 'GraphicsCachingOptions', 'SimplexNoise']
+'GeneratedTexture3D','PyTypeWrapper','FFmpegDecoder', 'GLUTWindow', 'HapticsRenderers', 'GraphicsCachingOptions', 'SimplexNoise', 'GLVertexAttributeObject']
 pendingList = ['AudioFileReader','OggFileReader']
 if os.path.isdir( examples_dir ):
   print "Handling examples directory " + examples_dir
@@ -82,3 +82,16 @@ if os.path.isdir( headers_dir ):
           # name count should not exceed 1
           print "name_count is above 1, there should not be two files with the same name in the H3DAPI/examples/All directory"
 print "This is the total number of files: ", count
+
+ignoreList = ["Clone", "coordaxes"]
+# Parsing H3DAPI/examples/All/h3d_examples_list to see if it is missing some nodes or x3d files.
+h3d_examples_list = open( current_dir + "/../examples/All/h3d_examples_list" )
+if h3d_examples_list:
+  content = h3d_examples_list.read()
+  for example in examples:
+    if example not in ignoreList:
+      example_regex = re.compile( '\s' + example + '[ \t\n\r\f\v,]' )
+      example_match_object = example_regex.search( content )
+      if not example_match_object:
+        print "h3d_examples_list does not list this file: ", example + ".x3d"
+h3d_examples_list.close()

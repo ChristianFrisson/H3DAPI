@@ -275,6 +275,9 @@ namespace H3D {
     /// \param field The field to add to the shader.
     /// \param array_size If != -1 it assumes that the uniform is an
     /// array with this size, if not it just a normal variable.
+    /// \param delete_unadded_field If true and the function failed to add
+    /// the field to the fragment shader ( if for example a field of the same
+    /// name is already added ) then the field is deleted.
     /// \return A glsl string defining the uniform variable just added to the
     /// shader.
     static string addUniformToFragmentShader( ComposedShader *shader,
@@ -282,7 +285,8 @@ namespace H3D {
                                               const string &glsl_type,
                                               const Field::AccessType &access,
                                               Field *field,
-                                              int array_size = -1 );
+                                              int array_size = -1,
+                                              bool delete_unadded_field = true );
 
     // Duplicates the input field and routes it to the output.
     // Use this to add the render shader's auto_ptr<field> to the shader.

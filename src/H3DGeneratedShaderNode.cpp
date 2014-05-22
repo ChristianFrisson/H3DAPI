@@ -218,7 +218,8 @@ addUniformToFragmentShader( ComposedShader *shader,
                             const string &glsl_type,
                             const Field::AccessType &access,
                             Field *field,
-                            int array_size ) {
+                            int array_size,
+                            bool delete_unadded_field ) {
     
   // if field successfully added, we add corresponding code 
   // to the fragment shader
@@ -231,6 +232,8 @@ addUniformToFragmentShader( ComposedShader *shader,
     
     return "uniform " + glsl_type + " " + name + array_string + ";\n";
   } else {
+    if( delete_unadded_field )
+      delete field;
     return "";
   }
 }
