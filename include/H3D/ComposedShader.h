@@ -303,6 +303,11 @@ namespace H3D {
 
     /// A field used to update any uniforms from their corresponding fields
     auto_ptr<UpdateUniforms> updateUniforms;
+    
+    bool printShaderLog();
+    DebugOptions *debug_options_previous;
+  public:
+    virtual void initialize();
   };
 }
 

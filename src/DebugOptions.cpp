@@ -42,17 +42,20 @@ namespace DebugOptionsInternals {
   FIELDDB_ELEMENT( DebugOptions, drawBound, INPUT_OUTPUT );
   FIELDDB_ELEMENT( DebugOptions, drawBoundTree, INPUT_OUTPUT );
   FIELDDB_ELEMENT( DebugOptions, drawHapticTriangles, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DebugOptions, printShaderWarnings, INPUT_OUTPUT );
 }
 
 DebugOptions::DebugOptions( 
-                           Inst< SFNode>  _metadata,
+                           Inst< SFNode  > _metadata,
                            Inst< SFBool  > _drawBound,
-                           Inst< SFInt32  > _drawBoundTree,
-                           Inst< SFBool  > _drawHapticTriangles ) :
+                           Inst< SFInt32 > _drawBoundTree,
+                           Inst< SFBool  > _drawHapticTriangles,
+                           Inst< SFBool  > _printShaderWarnings ) :
   H3DOptionNode( _metadata ),
   drawBound( _drawBound ),
   drawBoundTree( _drawBoundTree ),
-  drawHapticTriangles( _drawHapticTriangles ) {
+  drawHapticTriangles( _drawHapticTriangles ),
+  printShaderWarnings( _printShaderWarnings ) {
   type_name = "DebugOptions";
 
   database.initFields( this );
@@ -60,10 +63,12 @@ DebugOptions::DebugOptions(
   drawBound->route( updateOption );
   drawBoundTree->route( updateOption );
   drawHapticTriangles->route( updateOption );
+  printShaderWarnings->route( updateOption );
 
   drawBound->setValue( false );
   drawBoundTree->setValue( -1 );
   drawHapticTriangles->setValue( false );
+  printShaderWarnings->setValue( false );
 }
 
 

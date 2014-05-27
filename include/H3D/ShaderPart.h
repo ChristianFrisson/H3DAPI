@@ -35,6 +35,7 @@
 #include <H3D/SFString.h>
 #include <H3D/SFInt32.h>
 #include <H3D/SFBool.h>
+#include <H3D/DebugOptions.h>
 
 namespace H3D {
 
@@ -162,6 +163,11 @@ namespace H3D {
     /// \return The preprocessed shader source, with all preprocessor commands applied.
     ///
     std::string preProcess ( const std::string& input, const std::string& url, int depth= 0 );
+
+    bool printShaderLog();
+    DebugOptions *debug_options_previous;
+  public:
+    virtual void initialize();
   };
 }
 

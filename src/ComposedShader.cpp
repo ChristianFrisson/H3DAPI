@@ -32,6 +32,7 @@
 #include <H3D/X3DTexture2DNode.h>
 #include <H3D/X3DTexture3DNode.h>
 #include <H3D/ShaderAtomicCounter.h>
+#include <H3D/GlobalSettings.h>
 
 #include<fstream>
 #include<sstream>
@@ -98,7 +99,8 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
 #endif
   program_handle( 0 ),
   setupDynamicRoutes( new SetupDynamicRoutes ),
-  updateUniforms ( new UpdateUniforms ) {
+  updateUniforms ( new UpdateUniforms ),
+  debug_options_previous( NULL ) {
   type_name = "ComposedShader";
   database.initFields( this );
 
@@ -446,20 +448,28 @@ GLhandleARB ComposedShader::createHandle(ComposedShader* shader) {
   GLint link_success;
   glGetObjectParameterivARB( program_handle, GL_OBJECT_LINK_STATUS_ARB,
                              &link_success );
-  if( link_success == GL_FALSE ) {
+  int print_error = 0;
+  if( link_success == GL_FALSE ) print_error = 1;
+  else if( shader->printShaderLog() ) print_error = 2;
+  if( print_error != 0 ) {
     // linking failed, print error message
     GLint nr_characters;
     glGetObjectParameterivARB( program_handle, GL_OBJECT_INFO_LOG_LENGTH_ARB,
                                &nr_characters );
-    GLcharARB *log = new GLcharARB[nr_characters];
-    glGetInfoLogARB( program_handle, nr_characters, NULL, log );
-    Console(3) << "Warning: Error while linking shader parts in \""
-               << const_cast<ComposedShader&>(*shader).getName() << "\" node. "
-               << endl << log << endl;
-    glDeleteObjectARB( program_handle );
-    delete [] log;
-
-    return 0;
+    if( nr_characters > 1 ) {
+      GLcharARB *log = new GLcharARB[nr_characters];
+      glGetInfoLogARB( program_handle, nr_characters, NULL, log );
+      if( print_error == 1 ) Console(3) << "Warning: Error w";
+      else Console(3) << "Warning: W";
+      Console(3) << "hile linking shader parts in \""
+                 << const_cast<ComposedShader&>(*shader).getName() << "\" node. "
+                 << endl << log << endl;
+      if( print_error == 1 ) {
+        glDeleteObjectARB( program_handle );
+        program_handle = 0;
+      }
+      delete [] log;
+    }
   }
 
   //std::cout<< const_cast<ComposedShader&>(*shader).getName()
@@ -732,3 +742,37 @@ void ComposedShader::UpdateSaveShadersToUrl::onNewValue( const std::string &v ){
   outFile.close();
 }
 #endif
+
+bool ComposedShader::printShaderLog() {
+  DebugOptions *debug_options = NULL;
+  GlobalSettings *default_settings = GlobalSettings::getActive();
+  if( default_settings&&default_settings->optionNodesUpdated() ) {
+    default_settings->getOptionNode( debug_options );
+    if( debug_options ) {// update debug options
+      debug_options_previous = debug_options;
+      return debug_options->printShaderWarnings->getValue();
+    }else{
+      // global setting change in last frame, but no debug options in it now
+      debug_options_previous = NULL;
+      return false;
+    }
+  }
+  else if( default_settings ) { 
+    // global setting option node exist but not updated
+    if( debug_options_previous!=NULL ) {
+      return debug_options_previous->printShaderWarnings->getValue();
+    }else{
+      return false;
+    }
+  }else{
+    // no global settings at all now
+    debug_options_previous = NULL;
+    return false;
+  }
+}
+
+void ComposedShader::initialize() {
+  X3DShaderNode::initialize();
+  GlobalSettings *default_settings = GlobalSettings::getActive();
+  if( default_settings ) default_settings->getOptionNode( debug_options_previous );
+}

@@ -73,7 +73,7 @@ namespace H3D {
   class PeriodicUpdate: public BaseFieldType,
                         public PeriodicUpdateField {
   public:
-    /// Type definong how the period should be interpreted.
+    /// Type defining how the period should be interpreted.
     typedef enum {
       TIME, /// The period is specified in seconds
       COUNT /// The period is specified in number of scenegraph loops.

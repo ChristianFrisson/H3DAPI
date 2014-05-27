@@ -894,7 +894,7 @@ def testH3DPhysics (global_variations):
 
   if h3dphysics_header_string == "" or h3dphysics_header_string.find( "define HAVE_PHYSX3" ) != -1:
     physx3_variation= Variation ( "PhysX3" )
-    physx3_variation.options.append ( Option ( ["RigidBodyCollection","PhysicsBodyCollection"], "physicsEngine", "PhysX3" ) )
+    physx3_variation.options.append ( Option ( ["RigidBodyCollection"], "physicsEngine", "PhysX3" ) )
     variations.append( physx3_variation )
 
   if h3dphysics_header_string == "" or h3dphysics_header_string.find( "define HAVE_SOFA" ) != -1:
@@ -980,6 +980,11 @@ for c, combo in enumerate( variation_combinations ):
     variation.options.append ( Option ( [fields_to_edit[i][0]], fields_to_edit[i][1], fields_to_edit[i][j], "GlobalSettings", True ) )
   global_settings_variations.append( variation )
 
+print_shader_warnings_variation = Variation( "Variation shader warning" )
+print_shader_warnings_variation.options.append ( Option ( ["GlobalSettings"], "", "", "Scene", True ) )
+print_shader_warnings_variation.options.append ( Option ( ["DebugOptions"], "printShaderWarnings", "true", "GlobalSettings", True ) )
+global_settings_variations.append( print_shader_warnings_variation )
+
 exitCode= 0
 c= testH3DAPI (global_settings_variations)
 if c != 0:
@@ -988,7 +993,7 @@ if c != 0:
 c= testH3DPhysics (global_settings_variations)
 if c != 0:
   exitCode= c
-  
+
 c= testMedX3D (global_settings_variations)
 if c != 0:
   exitCode= c

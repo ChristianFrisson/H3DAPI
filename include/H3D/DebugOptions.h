@@ -49,8 +49,9 @@ namespace H3D {
     /// Constructor.
     DebugOptions( Inst< SFNode  > _metadata  = 0,
                   Inst< SFBool  > _drawBound = 0,
-                  Inst< SFInt32  > _drawBoundTree = 0,
-                  Inst< SFBool  > _drawHapticTriangles = 0 );
+                  Inst< SFInt32 > _drawBoundTree = 0,
+                  Inst< SFBool  > _drawHapticTriangles = 0,
+                  Inst< SFBool  > _printShaderWarnings = 0 );
     
     /// If true the outline of the bounding box in the bound field of
     /// X3DGeometryNodes will be rendered.
@@ -72,6 +73,13 @@ namespace H3D {
     /// <b>Default value: </b> false \n
     /// <b>Access type: </b> inputOutput \n
     auto_ptr< SFBool  > drawHapticTriangles;
+
+    /// If true then shaders will print its log to Console even if there are no
+    /// errors.
+    ///
+    /// <b>Default value: </b> false \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr< SFBool  > printShaderWarnings;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

@@ -29,8 +29,9 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/ShaderPart.h>
-#include "H3D/ResourceResolver.h"
+#include <H3D/ResourceResolver.h>
 #include <fstream>
+#include <H3D/GlobalSettings.h>
 
 
 using namespace H3D;
@@ -63,7 +64,8 @@ ShaderPart::ShaderPart( Inst< SFNode         > _metadata,
   type( _type ),
   shaderString( _shader_string ),
   forceReload( _forceReload ),
-  shader_handle( 0 ) {
+  shader_handle( 0 ),
+  debug_options_previous( NULL ) {
   type_name = "ShaderPart";
   database.initFields( this );
 
@@ -142,23 +144,32 @@ GLhandleARB ShaderPart::compileShaderPart(){
     glGetObjectParameterivARB( shader_handle,
       GL_OBJECT_COMPILE_STATUS_ARB,
       &compile_success );
-    if( compile_success == GL_FALSE ) {
+    int print_error = 0;
+    if( compile_success == GL_FALSE ) print_error = 1;
+    else if( printShaderLog() ) print_error = 2;
+    if( print_error != 0 ) {
       GLint nr_characters;
       glGetObjectParameterivARB( shader_handle,
         GL_OBJECT_INFO_LOG_LENGTH_ARB,
         &nr_characters );
-      GLcharARB *log = new GLcharARB[nr_characters];
-      glGetInfoLogARB( shader_handle,
-        nr_characters,
-        NULL,
-        log );
-      Console(3) << "Warning: Error when compiling shader source of \"" 
-        << getName() << "\" node (" << url_used 
-        << ")." << endl << log << endl;
+      if( nr_characters > 1 ) {
+        GLcharARB *log = new GLcharARB[nr_characters];
+        glGetInfoLogARB( shader_handle,
+          nr_characters,
+          NULL,
+          log );
+        if( print_error == 1 ) Console(3) << "Warning: Error w";
+        else Console(3) << "Warning: W";
+        Console(3) << "hen compiling shader source of \"" 
+          << getName() << "\" node (" << url_used 
+          << ")." << endl << log << endl;
 
-      glDeleteObjectARB( shader_handle );
-      delete [] log;
-      shader_handle = 0;
+        if( print_error == 1 ) {
+          glDeleteObjectARB( shader_handle );
+          shader_handle = 0;
+        }
+        delete [] log;
+      }
     }
     //PROFILE_END();
     return shader_handle;
@@ -286,4 +297,38 @@ void ShaderPart::SFShaderString::update() {
 X3DUrlObject::LoadStatus ShaderPart::loadStatus() {
   if( url_used != "" ) return X3DUrlObject::LOADED;
   else return X3DUrlObject::FAILED;
+}
+
+bool ShaderPart::printShaderLog() {
+  DebugOptions *debug_options = NULL;
+  GlobalSettings *default_settings = GlobalSettings::getActive();
+  if( default_settings&&default_settings->optionNodesUpdated() ) {
+    default_settings->getOptionNode( debug_options );
+    if( debug_options ) {// update debug options
+      debug_options_previous = debug_options;
+      return debug_options->printShaderWarnings->getValue();
+    }else{
+      // global setting change in last frame, but no debug options in it now
+      debug_options_previous = NULL;
+      return false;
+    }
+  }
+  else if( default_settings ) { 
+    // global setting option node exist but not updated
+    if( debug_options_previous!=NULL ) {
+      return debug_options_previous->printShaderWarnings->getValue();
+    }else{
+      return false;
+    }
+  }else{
+    // no global settings at all now
+    debug_options_previous = NULL;
+    return false;
+  }
+}
+
+void ShaderPart::initialize() {
+  X3DNode::initialize();
+  GlobalSettings *default_settings = GlobalSettings::getActive();
+  if( default_settings ) default_settings->getOptionNode( debug_options_previous );
 }
