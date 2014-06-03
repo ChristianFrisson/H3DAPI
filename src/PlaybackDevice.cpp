@@ -117,8 +117,6 @@ PlaybackDevice::PlaybackDevice(
   default_values_changed->setName ( "default_values_changed" );
   default_values_changed->setOwner ( this );
 
-  hapi_device.reset( new HAPI::PlaybackHapticsDevice );
-
   url->route ( playback_url_changed );
   playbackData->route ( playback_url_changed );
 
@@ -148,6 +146,8 @@ PlaybackDevice::~PlaybackDevice () {
 void PlaybackDevice::initialize () {
   H3DHapticsDevice::initialize ();
 
+  hapi_device.reset( new HAPI::PlaybackHapticsDevice );
+
   // Ensure that playback is always started if play is set to
   // true from load, even if url parameter is set at load after the
   // play parameter.
@@ -166,6 +166,20 @@ void PlaybackDevice::updateDeviceValues () {
     if ( is_playing ) {
       playbackTime->setValue ( d->getPlaybackTime(), id );
     }
+  }
+}
+
+void PlaybackDevice::updateDefaultValues () {
+  HAPI::PlaybackHapticsDevice* d= static_cast<HAPI::PlaybackHapticsDevice*>(getHAPIDevice());
+  if ( d ) {
+    HAPI::HAPIHapticsDevice::DeviceValues dv;
+    dv.position= defaultDevicePosition->getValue();
+    dv.orientation= defaultDeviceOrientation->getValue();
+    dv.velocity= defaultDeviceVelocity->getValue();
+
+    dv.button_status= defaultButtons->getValue();
+
+    d->setDefaultDeviceValues ( dv );
   }
 }
 
@@ -211,6 +225,7 @@ void PlaybackDevice::OnPlay::onNewValue( const bool& new_value ) {
             break;
           }
         }
+        node->updateDefaultValues ();
         node->playback_url_changed->upToDate();
       }
     }
@@ -242,15 +257,5 @@ void PlaybackDevice::OnPlaybackSpeed::onNewValue( const H3DFloat& new_value ) {
 
 void PlaybackDevice::OnDefaultValuesChanged::update () {
   PlaybackDevice* node= static_cast<PlaybackDevice*>(getOwner());
-  HAPI::PlaybackHapticsDevice* d= static_cast<HAPI::PlaybackHapticsDevice*>(node->getHAPIDevice());
-  if ( d ) {
-    HAPI::HAPIHapticsDevice::DeviceValues dv;
-    dv.position= node->defaultDevicePosition->getValue();
-    dv.orientation= node->defaultDeviceOrientation->getValue();
-    dv.velocity= node->defaultDeviceVelocity->getValue();
-
-    dv.button_status= node->defaultButtons->getValue();
-
-    d->setDefaultDeviceValues ( dv );
-  }
+  node->updateDefaultValues ();
 }

@@ -64,22 +64,22 @@ namespace H3D {
   public:
 
     /// A field used to start and stop playback
-    class OnPlay : public OnNewValueSField < AutoUpdate < SFBool > > {
+    class H3DAPI_API OnPlay : public OnNewValueSField < AutoUpdate < SFBool > > {
       virtual void onNewValue( const bool& new_value );
     };
 
     /// A field used to move playback to a specified time
-    class OnSeekToTime : public OnNewValueSField < AutoUpdate < SFTime > > {
+    class H3DAPI_API OnSeekToTime : public OnNewValueSField < AutoUpdate < SFTime > > {
       virtual void onNewValue( const H3DTime& new_value );
     };
 
     /// A field used to adjust the playback speed
-    class OnPlaybackSpeed : public OnNewValueSField < AutoUpdate < SFFloat > > {
+    class H3DAPI_API OnPlaybackSpeed : public OnNewValueSField < AutoUpdate < SFFloat > > {
       virtual void onNewValue( const H3DFloat& new_value );
     };
 
-    /// A field used to adjust the playback speed
-    class OnDefaultValuesChanged : public PeriodicUpdate < Field > {
+    /// A field used to update default playback values
+    class H3DAPI_API OnDefaultValuesChanged : public PeriodicUpdate < Field > {
       virtual void update ();
     };
 
@@ -244,6 +244,10 @@ namespace H3D {
     static H3DNodeDatabase database;
 
   protected:
+
+    /// Function to update the default device values in the HAPI device
+    virtual void updateDefaultValues ();
+
     /// A field used to detect if the url field has changed
     /// since last playback started
     auto_ptr < Field > playback_url_changed;

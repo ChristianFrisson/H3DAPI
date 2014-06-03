@@ -72,6 +72,10 @@ DeviceLog::DeviceLog( Inst< SFNode> _metadata,
   logData->route( updateLogForceEffect );
 }
 
+DeviceLog::~DeviceLog () {
+  HapticThread::synchronousHapticCB ( closeCallback, this );
+}
+
 void DeviceLog::traverseSG( TraverseInfo &ti ) {
   const vector< H3DInt32 > &device_index = deviceIndex->getValue();
   if( !updateLogForceEffect->isUpToDate() ) {
@@ -126,52 +130,74 @@ void DeviceLog::createLogForceEffect( int index ) {
                << endl;
   } else {
     string url_used = urls[index];
-    // Go through the entries in the logData field and put it in a
-    // LogTypeVector which will be used in the constructor of HAPI::DeviceLog.
-    HAPI::DeviceLog::LogTypeVector log_types;
-    const vector< string > &log_data = logData->getValue();
-    for( vector< string >::const_iterator i = log_data.begin();
-      i != log_data.end(); ++i ) {
-      if( (*i) == "ALL" ) {
-        log_types.clear();
-        log_types.push_back( HAPI::DeviceLog::TIME );
-        log_types.push_back( HAPI::DeviceLog::POSITION );
-        log_types.push_back( HAPI::DeviceLog::ORIENTATION );
-        log_types.push_back( HAPI::DeviceLog::VELOCITY );
-        log_types.push_back( HAPI::DeviceLog::BUTTONS );
-        log_types.push_back( HAPI::DeviceLog::FORCE );
-        log_types.push_back( HAPI::DeviceLog::TORQUE );
-        log_types.push_back( HAPI::DeviceLog::RAW_POSITION );
-        log_types.push_back( HAPI::DeviceLog::RAW_ORIENTATION );
-        log_types.push_back( HAPI::DeviceLog::RAW_VELOCITY );
-        break;
-      } else if( (*i) == "TIME" ) {
-        log_types.push_back( HAPI::DeviceLog::TIME );
-      } else if( (*i) == "TRACKER_POSITION" ) {
-        log_types.push_back( HAPI::DeviceLog::POSITION );
-      } else if( (*i) == "TRACKER_ORIENTATION" ) {
-        log_types.push_back( HAPI::DeviceLog::ORIENTATION );
-      } else if( (*i) == "TRACKER_VELOCITY" ) {
-        log_types.push_back( HAPI::DeviceLog::VELOCITY );
-      } else if( (*i) == "BUTTONS" ) {
-        log_types.push_back( HAPI::DeviceLog::BUTTONS );
-      } else if( (*i) == "FORCE" ) {
-        log_types.push_back( HAPI::DeviceLog::FORCE );
-      } else if( (*i) == "TORQUE" ) {
-        log_types.push_back( HAPI::DeviceLog::TORQUE );
-      } else if( (*i) == "DEVICE_POSITION" ) {
-        log_types.push_back( HAPI::DeviceLog::RAW_POSITION );
-      } else if( (*i) == "DEVICE_ORIENTATION" ) {
-        log_types.push_back( HAPI::DeviceLog::RAW_ORIENTATION );
-      } else if( (*i) == "DEVICE_VELOCITY" ) {
-        log_types.push_back( HAPI::DeviceLog::RAW_VELOCITY );
-      }
-    }
+    
     // Create an instance of the HAPI::DeviceLog class.
-    log_force_effect.set( index, new HAPI::DeviceLog( url_used,
-                                                      log_types,
-                                                      frequency->getValue(),
-                                                      logBinary->getValue() ));
+    log_force_effect.set( index, createHAPIDeviceLog( url_used ));
   }
 }
 
+HAPI::DeviceLog* DeviceLog::createHAPIDeviceLog ( const std::string& _url ) {
+  return new HAPI::DeviceLog ( 
+    _url, 
+    getLogTypes (), 
+    frequency->getValue(), 
+    logBinary->getValue() );
+}
+
+HAPI::DeviceLog::LogTypeVector DeviceLog::getLogTypes () {
+  // Go through the entries in the logData field and put it in a
+  // LogTypeVector which will be used in the constructor of HAPI::DeviceLog.
+  HAPI::DeviceLog::LogTypeVector log_types;
+  const vector< string > &log_data = logData->getValue();
+  for( vector< string >::const_iterator i = log_data.begin();
+    i != log_data.end(); ++i ) {
+    if( (*i) == "ALL" ) {
+      log_types.clear();
+      log_types.push_back( HAPI::DeviceLog::TIME );
+      log_types.push_back( HAPI::DeviceLog::POSITION );
+      log_types.push_back( HAPI::DeviceLog::ORIENTATION );
+      log_types.push_back( HAPI::DeviceLog::VELOCITY );
+      log_types.push_back( HAPI::DeviceLog::BUTTONS );
+      log_types.push_back( HAPI::DeviceLog::FORCE );
+      log_types.push_back( HAPI::DeviceLog::TORQUE );
+      log_types.push_back( HAPI::DeviceLog::RAW_POSITION );
+      log_types.push_back( HAPI::DeviceLog::RAW_ORIENTATION );
+      log_types.push_back( HAPI::DeviceLog::RAW_VELOCITY );
+      break;
+    } else if( (*i) == "TIME" ) {
+      log_types.push_back( HAPI::DeviceLog::TIME );
+    } else if( (*i) == "TRACKER_POSITION" ) {
+      log_types.push_back( HAPI::DeviceLog::POSITION );
+    } else if( (*i) == "TRACKER_ORIENTATION" ) {
+      log_types.push_back( HAPI::DeviceLog::ORIENTATION );
+    } else if( (*i) == "TRACKER_VELOCITY" ) {
+      log_types.push_back( HAPI::DeviceLog::VELOCITY );
+    } else if( (*i) == "BUTTONS" ) {
+      log_types.push_back( HAPI::DeviceLog::BUTTONS );
+    } else if( (*i) == "FORCE" ) {
+      log_types.push_back( HAPI::DeviceLog::FORCE );
+    } else if( (*i) == "TORQUE" ) {
+      log_types.push_back( HAPI::DeviceLog::TORQUE );
+    } else if( (*i) == "DEVICE_POSITION" ) {
+      log_types.push_back( HAPI::DeviceLog::RAW_POSITION );
+    } else if( (*i) == "DEVICE_ORIENTATION" ) {
+      log_types.push_back( HAPI::DeviceLog::RAW_ORIENTATION );
+    } else if( (*i) == "DEVICE_VELOCITY" ) {
+      log_types.push_back( HAPI::DeviceLog::RAW_VELOCITY );
+    }
+  }
+
+  return log_types;
+}
+
+PeriodicThread::CallbackCode DeviceLog::closeCallback ( void* data ) {
+  DeviceLog* o= static_cast < DeviceLog* > ( data );
+
+  for ( 
+    AutoRefVector< HAPI::DeviceLog >::const_iterator i= o->log_force_effect.begin(); 
+    i != o->log_force_effect.end(); ++i ) {
+    (*i)->close();
+  }
+
+  return PeriodicThread::CALLBACK_DONE;
+}

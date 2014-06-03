@@ -66,6 +66,12 @@ namespace H3D {
                Inst< SFBool   > _logBinary   = 0,
                Inst< MFString > _logData     = 0 );
 
+    /// Destructor
+    ///
+    /// Note: It is guaranteed that the logging file will be flushed and closed
+    /// once the DeviceLog node is destroyed.
+    virtual ~DeviceLog ();
+
     /// Adds the effect to be rendered in the haptics loop.
     /// \param ti The TraverseInfo object containing information about the
     /// traversal.
@@ -147,6 +153,16 @@ namespace H3D {
     /// Internal function used to create a log force effect for the
     /// haptics device of the given index.
     void createLogForceEffect( int index );
+
+    /// Create a new instance of the HAPI DeviceLog class used to implement the recording
+    virtual HAPI::DeviceLog* createHAPIDeviceLog ( const std::string& _url );
+
+    /// Returns a list of parameters to be logged by the HAPI DeviceLog class
+    HAPI::DeviceLog::LogTypeVector getLogTypes ();
+
+    /// A callback executed in the haptic thread when the node is destroyed
+    /// in order to force the HAPI loggers to flush and close their logging files
+    static PeriodicThread::CallbackCode closeCallback ( void* data );
 
     auto_ptr< Field > updateLogForceEffect;
   };
