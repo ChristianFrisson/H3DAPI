@@ -56,6 +56,7 @@ namespace TexturePropertiesInternals {
   FIELDDB_ELEMENT( TextureProperties, textureCompareMode, INPUT_OUTPUT );
   FIELDDB_ELEMENT( TextureProperties, textureCompareFailValue, INPUT_OUTPUT );
   FIELDDB_ELEMENT( TextureProperties, textureType, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( TextureProperties, textureFormat, INPUT_OUTPUT );
 }
 
 TextureProperties::TextureProperties( 
@@ -75,7 +76,8 @@ TextureProperties::TextureProperties(
                        Inst< SFVec4f > _textureTransferBias,
                        Inst< SFString > _textureCompareMode,
                        Inst< SFFloat  > _textureCompareFailValue,
-                       Inst< SFString > _textureType ):
+                       Inst< SFString > _textureType,
+                       Inst< SFString > _textureFormat ):
   X3DNode( _metadata ),
   anisotropicDegree ( _anisotropicDegree  ),
   borderColor ( _borderColor  ),
@@ -93,6 +95,7 @@ TextureProperties::TextureProperties(
   textureCompareMode( _textureCompareMode ),
   textureCompareFailValue( _textureCompareFailValue ),
   textureType( _textureType ),
+  textureFormat( _textureFormat ),
   propertyChanged( new Field ) {
 
   type_name = "TextureProperties";
@@ -152,6 +155,10 @@ TextureProperties::TextureProperties(
   textureType->addValidValue( "2D_RECTANGLE" );
   textureType->addValidValue( "2D_ARRAY" );
   textureType->setValue( "NORMAL" );
+  textureFormat->addValidValue( "NORMAL" );
+  textureFormat->addValidValue( "INTEGER" );
+  textureFormat->addValidValue( "FLOAT" );
+  textureFormat->setValue( "NORMAL" );
 
   propertyChanged->setName( "propertyChanged" );
   anisotropicDegree->route( propertyChanged );
@@ -170,6 +177,7 @@ TextureProperties::TextureProperties(
   textureCompareMode->route( propertyChanged );
   textureCompareFailValue->route( propertyChanged );
   textureType->route( propertyChanged );
+  textureFormat->route( propertyChanged );
 }
 
 void TextureProperties::renderTextureProperties( GLenum texture_target ) {
@@ -407,4 +415,207 @@ void TextureProperties::renderTextureProperties( GLenum texture_target ) {
   }
 
 }
+
+bool TextureProperties::glInternalFormat( Image *image, GLint &internal_format ) {
+  if( GLEW_ARB_texture_compression && textureCompression->getValue() != "DEFAULT" ) {
+    switch( image->pixelType() ) {
+      case Image::LUMINANCE:
+        internal_format = GL_COMPRESSED_LUMINANCE_ARB; return true;
+      case Image::LUMINANCE_ALPHA:
+        internal_format = GL_COMPRESSED_LUMINANCE_ALPHA_ARB; return true;
+      case Image::RGB:
+      case Image::BGR: internal_format = GL_COMPRESSED_RGB_ARB; return true;
+      case Image::RGBA:
+      case Image::BGRA: internal_format = GL_COMPRESSED_RGBA_ARB; return true;
+      default: { internal_format = GL_RGBA; return true; }
+    }
+  } else {
+    string texture_format = textureFormat->getValue();
+    if( texture_format != "NORMAL" ) {
+      if( GLEW_EXT_texture_integer && texture_format == "INTEGER" ) {
+        switch( image->pixelType() ) {
+          // Do we need to check for RATIONAL pixelComponentType here or can that be
+          // mixed without problem
+          // as long as pixel format is correctly set. Have to test later.
+          case Image::LUMINANCE:
+            switch( image->pixelComponentType() ) {
+              case Image::UNSIGNED:
+                switch( image->bitsPerPixel() ) {
+                  case 8:  internal_format = GL_LUMINANCE8UI_EXT; return true;
+                  case 16: internal_format = GL_LUMINANCE16UI_EXT; return true;
+                  case 32: internal_format = GL_LUMINANCE32UI_EXT; return true;
+                  default: return false;
+                }
+              case Image::SIGNED:
+                switch( image->bitsPerPixel() ) {
+                  case 8:  internal_format = GL_LUMINANCE8I_EXT; return true;
+                  case 16: internal_format = GL_LUMINANCE16I_EXT; return true;
+                  case 32: internal_format = GL_LUMINANCE32I_EXT; return true;
+                  default: return false;
+                }
+              default: return false;
+            }
+          case Image::LUMINANCE_ALPHA:
+            switch( image->pixelComponentType() ) {
+              case Image::UNSIGNED:
+                switch( image->bitsPerPixel() ) {
+                  case 8:
+                    internal_format = GL_LUMINANCE_ALPHA8UI_EXT; return true;
+                  case 16:
+                    internal_format = GL_LUMINANCE_ALPHA16UI_EXT; return true;
+                  case 32:
+                    internal_format = GL_LUMINANCE_ALPHA32UI_EXT; return true;
+                  default: return false;
+                }
+              case Image::SIGNED:
+                switch( image->bitsPerPixel() ) {
+                  case 8:
+                    internal_format = GL_LUMINANCE_ALPHA8I_EXT; return true;
+                  case 16:
+                    internal_format = GL_LUMINANCE_ALPHA16I_EXT; return true;
+                  case 32:
+                    internal_format = GL_LUMINANCE_ALPHA32I_EXT; return true;
+                  default: return false;
+                }
+              default: return false;
+            }
+          case Image::RGB:
+          case Image::BGR:
+            switch( image->pixelComponentType() ) {
+              case Image::UNSIGNED:
+                switch( image->bitsPerPixel() ) {
+                  case 8:  internal_format = GL_RGB8UI_EXT; return true;
+                  case 16: internal_format = GL_RGB16UI_EXT; return true;
+                  case 32: internal_format = GL_RGB32UI_EXT; return true;
+                  default: return false;
+                }
+              case Image::SIGNED:
+                switch( image->bitsPerPixel() ) {
+                  case 8:  internal_format = GL_RGB8I_EXT; return true;
+                  case 16: internal_format = GL_RGB16I_EXT; return true;
+                  case 32: internal_format = GL_RGB32I_EXT; return true;
+                  default: return false;
+                }
+              default: return false;
+            }
+          case Image::RGBA:
+          case Image::BGRA:
+            switch( image->pixelComponentType() ) {
+              case Image::UNSIGNED:
+                switch( image->bitsPerPixel() ) {
+                  case 8:  internal_format = GL_RGBA8UI_EXT; return true;
+                  case 16: internal_format = GL_RGBA16UI_EXT; return true;
+                  case 32: internal_format = GL_RGBA32UI_EXT; return true;
+                  default: return false;
+                }
+              case Image::SIGNED:
+                switch( image->bitsPerPixel() ) {
+                  case 8:  internal_format = GL_RGBA8I_EXT; break;
+                  case 16: internal_format = GL_RGBA16I_EXT; break;
+                  case 32: internal_format = GL_RGBA32I_EXT; break;
+                  default: return false;
+                }
+              default: return false;
+            }
+          default: return false;
+        }
+      } else if( GLEW_ARB_texture_float && texture_format == "FLOAT" ) {
+        switch( image->pixelType() ) {
+          // Do we need to check for RATIONAL pixelComponentType here or can that be
+          // mixed without problem
+          // as long as pixel format is correctly set. Have to test later.
+          case Image::LUMINANCE:
+            switch( image->pixelComponentType() ) {
+              case Image::RATIONAL:
+                switch( image->bitsPerPixel() ) {
+                  case 16: internal_format = GL_LUMINANCE16F_ARB; return true;
+                  case 32: internal_format = GL_LUMINANCE32F_ARB; return true;
+                  default: return false;
+                }
+              default: return false;
+            }
+          case Image::LUMINANCE_ALPHA:
+            switch( image->pixelComponentType() ) {
+              case Image::RATIONAL:
+                switch( image->bitsPerPixel() ) {
+                  case 16: internal_format = GL_LUMINANCE_ALPHA16F_ARB; break;
+                  case 32: internal_format = GL_LUMINANCE_ALPHA32F_ARB; break;
+                  default: return false;
+                }
+              default: return false;
+            }
+          case Image::RGB:
+          case Image::BGR:
+            switch( image->pixelComponentType() ) {
+              case Image::RATIONAL:
+                switch( image->bitsPerPixel() ) {
+                  case 16: internal_format = GL_RGB16F_ARB; break;
+                  case 32: internal_format = GL_RGB32F_ARB; break;
+                  default: return false;
+                }
+              default: return false;
+            }
+          case Image::RGBA:
+          case Image::BGRA:
+            switch( image->pixelComponentType() ) {
+              case Image::RATIONAL:
+                switch( image->bitsPerPixel() ) {
+                  case 16: internal_format = GL_RGBA16F_ARB; break;
+                  case 32: internal_format = GL_RGBA32F_ARB; break;
+                  default: return false;
+                }
+              default: return false;
+            }
+          default: return false;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+bool TextureProperties::glPixelFormat( Image *image, GLenum &pixel_format ) {
+  if( GLEW_EXT_texture_integer && textureFormat->getValue() == "INTEGER" ) {
+    switch( image->pixelType() ) {
+      case Image::LUMINANCE:
+        pixel_format = GL_LUMINANCE_INTEGER_EXT;
+        switch( image->bitsPerPixel() ) {
+          case 8:
+          case 16:
+          case 32: return true;
+          default: return false;
+        }
+      case Image::LUMINANCE_ALPHA:
+        pixel_format = GL_LUMINANCE_ALPHA_INTEGER_EXT;
+        switch( image->bitsPerPixel() ) {
+          case 8:
+          case 16:
+          case 32: return true;
+          default: return false;
+        }
+      case Image::RGB:
+      case Image::BGR:
+        pixel_format = GL_RGB_INTEGER_EXT;
+        switch( image->bitsPerPixel() ) {
+          case 8:
+          case 16:
+          case 32: return true;
+          default: return false;
+        }
+      case Image::RGBA:
+      case Image::BGRA:
+        pixel_format = GL_RGBA_INTEGER_EXT;
+        switch( image->bitsPerPixel() ) {
+          case 8:
+          case 16:
+          case 32: return true;
+          default: return false;
+        }
+      default: return false;
+    }
+  }
+  return false;
+}
+
+
 

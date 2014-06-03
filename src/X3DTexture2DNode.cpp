@@ -123,23 +123,9 @@ string X3DTexture2DNode::SFImage::getValueAsString( const string& separator) {
 
 GLint X3DTexture2DNode::glInternalFormat( Image *i ) {
   TextureProperties *texture_properties = textureProperties->getValue();
-  if( GLEW_ARB_texture_compression && 
-      texture_properties &&
-      texture_properties->textureCompression->getValue() != "DEFAULT" ) {
-    switch( i->pixelType() ) {
-    case Image::LUMINANCE: 
-      return GL_COMPRESSED_LUMINANCE_ARB;
-    case Image::LUMINANCE_ALPHA: 
-      return GL_COMPRESSED_LUMINANCE_ALPHA_ARB;
-    case Image::RGB:
-    case Image::BGR:
-      return GL_COMPRESSED_RGB_ARB;
-    case Image::RGBA:
-    case Image::BGRA:
-      return GL_COMPRESSED_RGBA_ARB;
-    default:
-      return GL_RGBA;
-    }
+  GLint tex_prop_format;
+  if( texture_properties && texture_properties->glInternalFormat( i, tex_prop_format ) ) {
+    return tex_prop_format;
   } else {
     return X3DTextureNode::glInternalFormat( i );
   }
@@ -429,5 +415,15 @@ std::pair<H3DInt32,H3DInt32> X3DTexture2DNode::getDefaultSaveDimensions () {
     return std::pair<H3DInt32,H3DInt32> ( im->width(), im->height() );
   } else {
     return X3DTextureNode::getDefaultSaveDimensions();
+  }
+}
+
+GLenum X3DTexture2DNode::glPixelFormat( Image *i ) {
+  TextureProperties *texture_properties = textureProperties->getValue();
+  GLenum tex_prop_format;
+  if( texture_properties && texture_properties->glPixelFormat( i, tex_prop_format ) ) {
+    return tex_prop_format;
+  } else {
+    return X3DTextureNode::glPixelFormat( i );
   }
 }

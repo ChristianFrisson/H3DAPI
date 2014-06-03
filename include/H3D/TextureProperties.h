@@ -212,7 +212,8 @@ namespace H3D {
                        Inst< SFVec4f > _textureTransferBias  = 0,
                        Inst< SFString > _textureCompareMode = 0,
                        Inst< SFFloat  > _textureCompareFailValue = 0,
-                       Inst< SFString > _textureType        = 0 );
+                       Inst< SFString > _textureType        = 0,
+                       Inst< SFString > _textureFormat      = 0 );
 
     /// Returns the default xml containerField attribute value.
     /// For this node it is "textureProperties".
@@ -425,11 +426,44 @@ namespace H3D {
     /// <b>Valid values:</b> "NORMAL", "2D_RECTANGLE"(if 2d texture), "2D_ARRAY"(if 3d texture) \n
     /// <b>Default value:</b> "NORMAL" \n
     ///
-    /// \dotfile TextureProperties_textureType.dot     
+    /// \dotfile TextureProperties_textureType.dot
     auto_ptr< SFString > textureType;
-    
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
+    /// The textureType specifies the format of the texture. Can be used to set a
+    /// specific sized internal format and pixel format used by glTexImageXX calls,
+    /// This field is ignored if the textureCompression is not DEFAULT.
+    /// 
+    /// The valid values are:
+    /// <table>
+    /// <tr><td>"NORMAL"</td><td> Format is decided by the internal Image data read from file
+    /// or by default settings for a texture type.</td></tr>
+    /// <tr><td>"INTEGER"</td><td>internal format and pixel format are as defined in the
+    /// OpenGL extension EXT_texture_integer. The image (if there is one) decides number
+    /// of bytes, number of channels and whether the data is unsigned or signed.</td> </tr>
+    /// <tr><td>"FLOAT"</td><td>internal format and pixel format are as defined in the
+    /// OpenGL extension ARB_texture_float. The internal Image class (if there is one) decides number
+    /// of bytes and number of channels.</td> </tr>
+    /// </table>
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Valid values:</b> "NORMAL", "INTEGER", "FLOAT" \n
+    /// <b>Default value:</b> "NORMAL" \n
+    /// \todo Perhaps add "NORMALIZED" value to force that type of behaviour. Also test this
+    /// feature when mixing RATIONAL image with INTEGER set textureFormat. Does that even work?
+    /// Finally, set up tests for all cases. I assume future me will hate past me because
+    /// he did not have time for full proper tests when adding this feature.
+    ///
+    /// \dotfile TextureProperties_textureFormat.dot
+    auto_ptr< SFString > textureFormat;
+
+    /// Function that returns true if internal_format input is set.
+    virtual bool glInternalFormat( Image *image, GLint &internal_format );
+
+    /// Function that returns true if pixel_format input is set.
+    virtual bool glPixelFormat( Image *image, GLenum &pixel_format );
   };
 }
 

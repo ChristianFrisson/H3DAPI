@@ -182,6 +182,9 @@ namespace H3D {
 
     /// Field to indicate image will change
     auto_ptr< Field > imageNeedsUpdate;
+  public:
+    /// Returns the OpenGL pixel format to use given an Image, e.g. 
+    virtual GLenum glPixelFormat( Image *image );
   };
 }
 
