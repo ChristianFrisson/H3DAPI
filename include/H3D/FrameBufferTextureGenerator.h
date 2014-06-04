@@ -91,6 +91,7 @@ namespace H3D {
   /// textures. Valid values: 
   /// 
   /// "2D"       - normal 2D texture(glsl type sampler2D)
+  /// "2D_MULTISAMPLE" - 2D multiple texure(glsl type sampler2DMS)
   /// "2D_RECTANGLE" - 2D rectangle texture(glsl type sampler2DRect)
   /// "3D"       - normal 3D texture. 3D depth textures not supported. (glsl type sampler3D)
   /// "2D_ARRAY" - 2D texture array. Similar to a 3D texture but without interpolation

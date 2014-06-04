@@ -60,7 +60,10 @@ void GeneratedTexture::render() {
   ensureInitialized();
   glBindTexture(  texture_target, texture_id );
   renderTextureProperties();
-  enableTexturing();
+  if (this->texture_target!=GL_TEXTURE_2D_MULTISAMPLE){
+    // GL_TEXTURE_2D_MULTISAMPLE do not need to be enabled
+    enableTexturing();
+  }
 }
 
 void GeneratedTexture::renderTextureProperties(){
@@ -74,7 +77,11 @@ void GeneratedTexture::renderTextureProperties(){
     glTexParameteri( texture_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri( texture_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
    
-  }else{
+  }else if (this->texture_target==GL_TEXTURE_2D_MULTISAMPLE){
+    // do nothing for GL_TEXTURE_2D_MULTISAMPLE type, as it is not allowed
+    // to set up texture parameter for it
+  }
+  else{
     X3DTexture2DNode::renderTextureProperties();
   }
 }
