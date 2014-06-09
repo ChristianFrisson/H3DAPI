@@ -207,7 +207,9 @@ void FullscreenRectangle::render() {
       glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, fullscreenRectangle_index_data.size()*sizeof(GLuint), &(*fullscreenRectangle_index_data.begin()), GL_DYNAMIC_DRAW_ARB );
     }else{
       glBindBufferARB( GL_ARRAY_BUFFER_ARB, vbo_id[0] );
+      glBufferDataARB( GL_ARRAY_BUFFER_ARB, fullscreenRectangle_data.size()*sizeof(GLfloat), &(*fullscreenRectangle_data.begin()), GL_DYNAMIC_DRAW_ARB );
       glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, vbo_id[1] );
+      glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, fullscreenRectangle_index_data.size()*sizeof(GLuint), &(*fullscreenRectangle_index_data.begin()), GL_DYNAMIC_DRAW_ARB );
     }
     vertex_pointer = (GLvoid*)(0*sizeof(GLfloat));
     normal_pointer = (GLvoid*)(3*sizeof(GLfloat));
