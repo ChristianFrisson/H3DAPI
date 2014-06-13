@@ -5,35 +5,35 @@
     <meta name='description' content='X3D Text and FontStyle node examples.'/>
     <meta name='author' content='SenseGraphics AB, 2006-2014'/>
   </head>
-  
+
   <Scene>
     <Viewpoint position='0 0 0.6' />
     <Transform translation='0.1 0 0'>
-    <Transform translation='0.1 0 0' rotation='1 1 0 0.5' scale=''>
-      <Shape>
-        <Appearance>
-          <Material diffuseColor='0 1 1' />
-        </Appearance>
-        <Text DEF='TX' string='"H3DAPI rocks!"":)"' length='' maxExtent='' solid='true'>
-          <FontStyle family='SERIF' horizontal='true' 
-                     justify='MIDDLE' language='en' 
-                     leftToRight='true' size='0.1' spacing='1.0' 
-                     style='ITALIC' topToBottom='true' renderType='TEXTURE' />
-        </Text>
-      </Shape>
-      
-      <Transform DEF='T'>
+      <Transform translation='0.1 0 0' rotation='1 1 0 0.5' scale=''>
         <Shape>
           <Appearance>
-            <Material diffuseColor='1 0 0' />
+            <Material diffuseColor='0 1 1' />
           </Appearance>
-          <Sphere radius='0.005' />
+          <Text DEF='TX' string='"H3DAPI rocks!"":)"' length='' maxExtent='' solid='true'>
+            <FontStyle family='SERIF' horizontal='true'
+                       justify='MIDDLE' language='en'
+                       leftToRight='true' size='0.1' spacing='1.0'
+                       style='ITALIC' topToBottom='true' renderType='TEXTURE' />
+          </Text>
         </Shape>
+
+        <Transform DEF='T'>
+          <Shape>
+            <Appearance>
+              <Material diffuseColor='1 0 0' />
+            </Appearance>
+            <Sphere radius='0.005' />
+          </Shape>
+        </Transform>
+
       </Transform>
-    
     </Transform>
-    </Transform>
-    
+
     <ROUTE fromNode='TX' fromField='origin' toNode='T' toField='translation' />
 
   </Scene>

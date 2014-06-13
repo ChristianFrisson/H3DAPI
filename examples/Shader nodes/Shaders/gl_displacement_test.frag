@@ -2,7 +2,6 @@
 // Decipher at your own risk.
 #version 150 compatibility
 #extension GL_ARB_separate_shader_objects : enable
-#extension GL_ARB_tessellation_shader : enable
 
 /* These are needed for high quality bump mapping */
 #define BUMP_BICUBIC_
@@ -2164,11 +2163,7 @@ layout(location=1) in vec3 oNormal;
 layout(location=2) in vec2 oTexCoord;
 layout(location=3) in vec4 oTangent;
 
-//varying vec3 varposition;
-//varying vec2 var0;
 uniform sampler2D samp0;
-//varying vec3 varnormal;
-//varying vec4 var1;
 uniform sampler2D samp1;
 const vec3 cons26 = vec3(0.800000, 0.800000, 0.800000);
 const float cons29 = float(1.000000);

@@ -177,9 +177,10 @@ void H3DGeneratedShaderNode::buildShader() {
 
   // fragment shader
   stringstream sf;
+  sf << getFragmentShaderHeader() << endl;
 
   for( unsigned int i = 0; i < varying.size(); ++i ) {
-    sf << "varying " << varying[i].type << " " << varying[i].name << ";" << endl; 
+    sf << "varying " << varying[i].type << " " << varying[i].name << ";" << endl;
   }
 
   sf << uniform_string << endl;

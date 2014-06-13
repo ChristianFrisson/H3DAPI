@@ -1,3 +1,4 @@
+#version 120
 attribute mat3 attrib;
 varying vec3 color;
 

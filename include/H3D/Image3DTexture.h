@@ -95,7 +95,7 @@ namespace H3D {
       /// of the Image3DTexture
       virtual void update();
 
-      /// Tries to create an image. All urls are tested agains all
+      /// Tries to create an image. All urls are tested against all
       /// image loaders until one that works is found. Returns NULL
       /// if it could not load the image, and the new image on success.
       Image * loadImage( Image3DTexture *texture,

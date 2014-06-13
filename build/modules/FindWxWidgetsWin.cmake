@@ -34,7 +34,6 @@ IF( MSVC11 )
   SET( wxWidgets_LIBRARY_SEARCH_PATHS $ENV{H3D_EXTERNAL_ROOT}/vc11/${LIB}
                                       $ENV{H3D_ROOT}/../External/vc11/${LIB}
                                       ../../External/vc11/${LIB}
-                                      ${HMSAll_SOURCE_DIR}/../simulator/External/lib32/vc11
                                       ${module_file_path}/../../../External/vc11/${LIB} )              
 ENDIF( MSVC11 )
 
@@ -93,12 +92,14 @@ ENDFOREACH( WXLIB )
 FIND_LIBRARY(wxWidgets_base_LIBRARY NAMES wxbase30u wxbase29u wxbase28 
                                       PATHS ${wxWidgets_LIBRARY_SEARCH_PATHS}
                                       DOC "Path to wx base library." )
+MARK_AS_ADVANCED(wxWidgets_base_LIBRARY)
 
 IF( wxWidgets_Win_DEBUG_LIBS )
   # The _DBG variable is not used for 2.8 since the libraries in External works for both debug and release.
   FIND_LIBRARY(wxWidgets_base${_DBG}_LIBRARY NAMES wxbase30u${_DBG} wxbase29u${_DBG} wxbase28
                       PATHS ${wxWidgets_LIBRARY_SEARCH_PATHS}
                       DOC "Path to wx base library." )
+  MARK_AS_ADVANCED(wxWidgets_base${_DBG}_LIBRARY)
 ENDIF( wxWidgets_Win_DEBUG_LIBS )
 
 IF( wxWidgets_base_LIBRARY )

@@ -668,6 +668,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     // clear the buffers
     glClearColor( 0, 0, 0, 0 );
     if( stereo_mode != RenderMode::QUAD_BUFFERED_STEREO ) {
+      glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
       glDrawBuffer( GL_BACK );
       glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     } else {

@@ -450,7 +450,8 @@ void FontStyle::buildFonts() {
   if( render_type != "POLYGON" && render_type != "TEXTURE" &&
       render_type != "OUTLINE" && render_type != "EXTRUDED" ) {
     stringstream s;
-    s << " in " << renderType->getFullName() 
+    s << "Invalid renderType: \"" << render_type
+      << "\" in " << renderType->getFullName()
       << ". Valid values are \"POLYGON\", \"TEXTURE\", \"EXTRUDED\" and \"OUTLINE\"";
     throw InvalidFontStyleRenderType( render_type, 
                                       s.str(), 

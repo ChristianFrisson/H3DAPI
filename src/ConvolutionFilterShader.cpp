@@ -167,8 +167,12 @@ string ConvolutionFilterShader::getFragmentShaderString() {
     s << "  const int texture_width =  " << textureWidth->getValueAsString() <<"; "<<endl;
     s << "  const int texture_height = " << textureHeight->getValueAsString() << "; "<<endl;
     s << "  // the step in texture coordinates between each pixel " << endl;
-    s << "  const vec2 pixel_step = vec2( (1.0+" << pixelStepOffset->getValueAsString ( ) 
-      << ") / float( texture_width ), (1.0+" << pixelStepOffset->getValueAsString ( ) << ") / float( texture_height ) ); " << endl;
+    string pixel_step_offset = pixelStepOffset->getValueAsString();
+    if( pixel_step_offset.find(".")==std::string::npos ) {
+      pixel_step_offset+= ".0";
+    }
+    s << "  const vec2 pixel_step = vec2( (1.0+" << pixel_step_offset 
+      << ") / float( texture_width ), (1.0+" << pixel_step_offset << ") / float( texture_height ) ); " << endl;
     string weightsInString = "";
     for( unsigned int i = 0; i< weights->size(); ++i ) {
       stringstream ss;
@@ -204,7 +208,7 @@ string ConvolutionFilterShader::getFragmentShaderString() {
       s << "  const int max_index_v = " <<  (kernel_size - 1)/2<< ";" << endl;
     } 
 
-    s << "  uint index = 0; " << endl;
+    s << "  uint index = uint(0); " << endl;
     s << "  vec4 color = vec4( 0.0, 0.0, 0.0, 0.0 ); " << endl;
     s << "  for( int v = min_index_v; v <= max_index_v; v++ ) { " << endl;
     s << "    for( int h = min_index_h; h <= max_index_h; h++ ) { " << endl;

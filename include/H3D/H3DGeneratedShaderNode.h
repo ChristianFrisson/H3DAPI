@@ -305,6 +305,11 @@ namespace H3D {
 
     string shader_id;
 
+    /// Return a string that is placed at the beginning of a fragment shader
+    /// to specify minimum required version of the shader as well as enabled
+    /// extensions.
+    virtual string getFragmentShaderHeader() { return ""; }
+
  };
 }
 

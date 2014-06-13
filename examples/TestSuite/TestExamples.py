@@ -54,7 +54,7 @@ if platform.system() == 'Windows':
 # Find this directory.
 test_suite_directory = "."
 if os.getenv("H3D_ROOT") != None:
-  test_suite_directory = os.environ["H3D_ROOT"] + "\examples\TestSuite"
+  test_suite_directory = os.environ["H3D_ROOT"] + "/examples/TestSuite"
 
 geometries_directory = test_suite_directory + "/geometries"
 sys.path.append( geometries_directory )
@@ -872,8 +872,13 @@ def testH3DPhysics (global_variations):
   
   variations = list(global_variations)
   h3dphysics_header_string = ""
-  if os.path.isfile( "../../../H3DPhysics/include/H3D/H3DPhysics/H3DPhysics.h" ):
-    h3dphysics_header_file = open( "../../../H3DPhysics/include/H3D/H3DPhysics/H3DPhysics.h", 'r' )
+  header_file_name = "../../../H3DPhysics/include/H3D/H3DPhysics/H3DPhysics.h"
+  if not os.path.isfile( header_file_name ):
+    header_file_name = "/usr/local/include/H3D/H3DPhysics/H3DPhysics.h"
+  if not os.path.isfile( header_file_name ):
+    header_file_name = "/usr/include/H3D/H3DPhysics/H3DPhysics.h"
+  if os.path.isfile( header_file_name ):
+    h3dphysics_header_file = open( header_file_name, 'r' )
     h3dphysics_header_string = h3dphysics_header_file.read()
     h3dphysics_header_file.close()
   

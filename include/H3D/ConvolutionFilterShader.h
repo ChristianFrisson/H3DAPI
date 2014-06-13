@@ -194,6 +194,11 @@ namespace H3D {
     /// Returns the shader code for the fragment shader.
     virtual string getFragmentShaderString();
 
+    /// Return a string that is placed at the beginning of a fragment shader
+    /// to specify minimum required version of the shader as well as enabled
+    /// extensions.
+    virtual string getFragmentShaderHeader() { return "#version 150 compatibility"; } // using 150 to be able to use the compatability keyword. 130 should be enough otherwise.
+
   };
 }
 

@@ -350,6 +350,7 @@ IF( GENERATE_CPACK_PROJECT )
           SET( MS_REDIST_INSTALL_COMMAND_2 " Wait a bit for system to unlock file.\\n  Sleep 1000\\n"
                                            " Delete file\\n  Delete \\\"$INSTDIR\\\\vc${redist_version_with_arch}\\\\${VC${redist_version_with_arch}_FILE_NAME}\\\"\\n"
                                            " Reset output Path\\n  SetOutPath \\\"$INSTDIR\\\"\\n"
+                                           " Wait a bit for system to unlock directory.\\n  Sleep 1000\\n"
                                            " Remove folder\\n  RMDir /r \\\"$INSTDIR\\\\vc${redist_version_with_arch}\\\"\\n\\n" )
           SET( CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
                                                  ${MS_REDIST_INSTALL_COMMAND_2} )
@@ -660,6 +661,11 @@ IF( GENERATE_CPACK_PROJECT )
            COMPONENT H3DAPI_cpack_sources
            REGEX "(/.svn)|(/CVS)" EXCLUDE )
 
+  IF( TARGET H3DViewer )
+    INSTALL( FILES ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI/H3DViewer/include/H3DViewerConfig.h
+             DESTINATION H3DAPI/H3DViewer/src
+             COMPONENT H3DAPI_cpack_sources )
+  ENDIF( TARGET H3DViewer )
   INSTALL( DIRECTORY ${H3DAPI_SOURCE_DIR}/../H3DViewer
            DESTINATION H3DAPI
            COMPONENT H3DAPI_cpack_sources

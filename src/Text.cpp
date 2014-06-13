@@ -342,62 +342,69 @@ void Text::render() {
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
 
-  font->buildFonts();
+  try {
+    font->buildFonts();
+  } catch( const Exception::H3DException &e ) {
+    Console(3) << "Warning: Text node " << getName() << " will not be rendered. "
+               << "FontStyle::buildFonts message is: " << e.message << endl;
+  }
 
-  // get the field values
-  X3DFontStyleNode::Alignment alignment = font->getAlignment();
-  //X3DFontStyleNode::Justification major = font->getMajorJustification();
-  const vector< string >& text = stringF->getValue(); 
-  //bool top_to_bottom = font->isTopToBottom();
-  //bool left_to_right = font->isLeftToRight();
-  //H3DFloat max_extent = maxExtent->getValue();
-  const vector< H3DFloat > &line_length = length->getValue();
+  if( font->fontsBuilt() ) {
+    // get the field values
+    X3DFontStyleNode::Alignment alignment = font->getAlignment();
+    //X3DFontStyleNode::Justification major = font->getMajorJustification();
+    const vector< string >& text = stringF->getValue(); 
+    //bool top_to_bottom = font->isTopToBottom();
+    //bool left_to_right = font->isLeftToRight();
+    //H3DFloat max_extent = maxExtent->getValue();
+    const vector< H3DFloat > &line_length = length->getValue();
 
-  // scale to make the text fit within max extent value.
-  scaleToMaxExtent( text, font );
+    // scale to make the text fit within max extent value.
+    scaleToMaxExtent( text, font );
 
-  // justify the text in the minor alignment.
-  justifyMinor( text, font );
+    // justify the text in the minor alignment.
+    justifyMinor( text, font );
 
-  vector< H3DFloat >::const_iterator l = line_length.begin();
-  for( vector< string >::const_iterator line = text.begin();
-       line != text.end();
-       ++line ) {
+    vector< H3DFloat >::const_iterator l = line_length.begin();
+    for( vector< string >::const_iterator line = text.begin();
+         line != text.end();
+         ++line ) {
       
-    // translate to the next line. What the next line is depends on the 
-    // values in the font node.
-    if ( !( alignment == X3DFontStyleNode::VERTICAL && font->isLeftToRight() ) )
-      if( line != text.begin() )
-        moveToNewLine( *line, font );
+      // translate to the next line. What the next line is depends on the 
+      // values in the font node.
+      if ( !( alignment == X3DFontStyleNode::VERTICAL && font->isLeftToRight() ) )
+        if( line != text.begin() )
+          moveToNewLine( *line, font );
       
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();   
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix();   
       
-    // if we have values in the length field we scale in order to have
-    // the text line be the same size as the length.
-    if( l != line_length.end() ) {
-      if( alignment == X3DFontStyleNode::HORIZONTAL ) 
-        glScalef( (*l)/ font->stringDimensions( *line, alignment ).x, 
-                  1, 1 );
-      else 
-        glScalef( 1,
-                  (*l)/ font->stringDimensions( *line, alignment ).y, 
-                  1 );
-      ++l;
-    }
+      // if we have values in the length field we scale in order to have
+      // the text line be the same size as the length.
+      if( l != line_length.end() ) {
+        if( alignment == X3DFontStyleNode::HORIZONTAL ) 
+          glScalef( (*l)/ font->stringDimensions( *line, alignment ).x, 
+                    1, 1 );
+        else 
+          glScalef( 1,
+                    (*l)/ font->stringDimensions( *line, alignment ).y, 
+                    1 );
+        ++l;
+      }
 
-    // justify the line in the major alignment depending on the justify
-    // values in font.
-    justifyLine( *line, font ); 
-    // render the line of text in the style of the font.
-    renderTextLine( *line, font );
+      // justify the line in the major alignment depending on the justify
+      // values in font.
+      justifyLine( *line, font ); 
+      // render the line of text in the style of the font.
+      renderTextLine( *line, font );
     
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-    // translate to the next line. What the next line is depends on the 
-    // values in the font node.
-    if( alignment == X3DFontStyleNode::VERTICAL && font->isLeftToRight() ) 
-      moveToNewLine( *line, font );
+      glMatrixMode(GL_MODELVIEW);
+      glPopMatrix();
+      // translate to the next line. What the next line is depends on the 
+      // values in the font node.
+      if( alignment == X3DFontStyleNode::VERTICAL && font->isLeftToRight() ) 
+        moveToNewLine( *line, font );
+    }
   }
   glMatrixMode(GL_MODELVIEW);
   glPopMatrix();
@@ -408,7 +415,10 @@ void Text::DisplayList::callList( bool build_list ) {
   X3DFontStyleNode *font = 
     static_cast< X3DFontStyleNode * >(text_node->fontStyle->getValue());
   if( font && !font->fontsBuilt() ) {
-    font->buildFonts();
+    try {
+      font->buildFonts();
+    } catch( const Exception::H3DException &e ) {
+    }
   }
   X3DGeometryNode::DisplayList::callList( build_list );
 }
@@ -430,61 +440,69 @@ void Text::SFBound::update() {
 
   if( !font_style ) font_style = default_font_style.get();
   
-  font_style->buildFonts();
-  X3DFontStyleNode::Alignment alignment = font_style->getAlignment();
-  X3DFontStyleNode::Justification minor = font_style->getMinorJustification();
-  X3DFontStyleNode::Justification major = font_style->getMajorJustification();
-    
-  Vec3f box_center( 0, 0, 0 );
-  Vec3f text_dims = font_style->stringDimensions( text,
-                                                  alignment,
-                                                  length );
-  if( alignment == X3DFontStyleNode::HORIZONTAL ) {
-    if( max_extent > 0 && text_dims.x > max_extent ) text_dims.x = max_extent;
-    if( major == X3DFontStyleNode::BEGIN || 
-        major == X3DFontStyleNode::FIRST ) 
-      box_center.x = text_dims.x / 2;
-    else if( major == X3DFontStyleNode::END )
-      box_center.x = -text_dims.x / 2;
-    if( minor == X3DFontStyleNode::BEGIN ) 
-      box_center.y = -text_dims.y / 2;
-    else if( minor == X3DFontStyleNode::END )
-      box_center.y = text_dims.y / 2;
-    else if( minor == X3DFontStyleNode::MIDDLE )
-      box_center.y = -font_style->descender();
-    else if( minor == X3DFontStyleNode::FIRST ) {
-      box_center.y = -text_dims.y / 2;
-      if( font_style->isTopToBottom() && text.size() > 0 ) { 
-        Vec3f line_dims = font_style->stringDimensions( text[0],
-                                                        alignment );
-        box_center.y += line_dims.y;
-      }
-    }
-  } else {
-    if( max_extent > 0 && text_dims.y > max_extent ) text_dims.y = max_extent;
-    if( major == X3DFontStyleNode::BEGIN || 
-        major == X3DFontStyleNode::FIRST  ) 
-      box_center.y = -text_dims.y / 2;
-    else if( major == X3DFontStyleNode::END )
-      box_center.y = text_dims.y / 2;
-    else if( major == X3DFontStyleNode::MIDDLE )
-      box_center.y = font_style->descender();
-    if( minor == X3DFontStyleNode::BEGIN || 
-        minor == X3DFontStyleNode::FIRST ) 
-      box_center.x = text_dims.x / 2;
-    else if( minor == X3DFontStyleNode::END )
-      box_center.x = -text_dims.x / 2;
+
+  try {
+    font_style->buildFonts();
+  } catch( const Exception::H3DException &e ) {
+    // Not doing anything here.
   }
+
+  if( font_style->fontsBuilt() ) {
+    X3DFontStyleNode::Alignment alignment = font_style->getAlignment();
+    X3DFontStyleNode::Justification minor = font_style->getMinorJustification();
+    X3DFontStyleNode::Justification major = font_style->getMajorJustification();
+    
+    Vec3f box_center( 0, 0, 0 );
+    Vec3f text_dims = font_style->stringDimensions( text,
+                                                    alignment,
+                                                    length );
+    if( alignment == X3DFontStyleNode::HORIZONTAL ) {
+      if( max_extent > 0 && text_dims.x > max_extent ) text_dims.x = max_extent;
+      if( major == X3DFontStyleNode::BEGIN || 
+          major == X3DFontStyleNode::FIRST ) 
+        box_center.x = text_dims.x / 2;
+      else if( major == X3DFontStyleNode::END )
+        box_center.x = -text_dims.x / 2;
+      if( minor == X3DFontStyleNode::BEGIN ) 
+        box_center.y = -text_dims.y / 2;
+      else if( minor == X3DFontStyleNode::END )
+        box_center.y = text_dims.y / 2;
+      else if( minor == X3DFontStyleNode::MIDDLE )
+        box_center.y = -font_style->descender();
+      else if( minor == X3DFontStyleNode::FIRST ) {
+        box_center.y = -text_dims.y / 2;
+        if( font_style->isTopToBottom() && text.size() > 0 ) { 
+          Vec3f line_dims = font_style->stringDimensions( text[0],
+                                                          alignment );
+          box_center.y += line_dims.y;
+        }
+      }
+    } else {
+      if( max_extent > 0 && text_dims.y > max_extent ) text_dims.y = max_extent;
+      if( major == X3DFontStyleNode::BEGIN || 
+          major == X3DFontStyleNode::FIRST  ) 
+        box_center.y = -text_dims.y / 2;
+      else if( major == X3DFontStyleNode::END )
+        box_center.y = text_dims.y / 2;
+      else if( major == X3DFontStyleNode::MIDDLE )
+        box_center.y = font_style->descender();
+      if( minor == X3DFontStyleNode::BEGIN || 
+          minor == X3DFontStyleNode::FIRST ) 
+        box_center.x = text_dims.x / 2;
+      else if( minor == X3DFontStyleNode::END )
+        box_center.x = -text_dims.x / 2;
+    }
   
-  if( !font_style->isLeftToRight() ) box_center.x = -box_center.x;
-  if( !font_style->isTopToBottom() ) box_center.y = -box_center.y;
+    if( !font_style->isLeftToRight() ) box_center.x = -box_center.x;
+    if( !font_style->isTopToBottom() ) box_center.y = -box_center.y;
   
-  box_center.y += font_style->descender();
-  
-  BoxBound *bb= new BoxBound;
-  bb->size->setValue( text_dims );
-  bb->center->setValue( box_center );
-  value = bb;
+    BoxBound *bb= new BoxBound;
+    box_center.y += font_style->descender();
+    bb->size->setValue( text_dims );
+    bb->center->setValue( box_center );
+    value = bb;
+  } else
+    value = NULL;
 }
 
 bool Text::lineIntersect(

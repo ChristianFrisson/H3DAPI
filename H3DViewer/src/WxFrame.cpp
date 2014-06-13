@@ -1686,8 +1686,8 @@ void WxFrame::OnCloseFile(wxCommandEvent & event) {
   menuBar->EnableTop(2, false);
   menuBar->EnableTop(3, false);
 
-  a_file_is_loaded = false;
-  this->glwindow->renderMode->touch();
+  //a_file_is_loaded = false;
+  //this->glwindow->renderMode->touch();
   //Disable items in rendererMenu again
   rendererMenu->Enable(FRAME_CHOOSERENDERER, false);
   rendererMenu->Enable(FRAME_RENDERMODE, false);
