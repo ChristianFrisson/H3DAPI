@@ -721,7 +721,7 @@ string PhongShader::getFragmentShaderString() {
     }
 
     if( use_specular_color_ramp ) {
-      s << "      float ramp_coord = " << uniqueShaderName( "getSpecularMultiplier " ) << "( light, light_dir, N, vertex, shininess ); " << endl; 
+      s << "      float ramp_coord = " << uniqueShaderName( "getSpecularMultiplier" ) << "( light, light_dir, N, vertex, shininess ); " << endl; 
       s << "      vec4 specular_color_ramp = texture2D( " << uniqueShaderName( "specular_color_ramp" ) << ", vec2( ramp_coord, 0.5 ) );" << endl;
       s << "      vec4 specular_color_i = specular_color * specular_color_ramp;" << endl;
     } else {
