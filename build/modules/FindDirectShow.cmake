@@ -43,13 +43,23 @@ MARK_AS_ADVANCED(DIRECTSHOW_INCLUDE_DIR_STREAMS_H)
 FIND_PATH( DIRECTSHOW_INCLUDE_DIR_DDRAW_H NAMES ddraw.h
            PATHS $ENV{DXSDK_DIR}/include
                  ${DIRECTSHOW_EXTRA_DIR}
+		 "C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A/Include"
+		 "C:/Program Files/Microsoft SDKs/Windows/v7.0A/Include"
+		 "C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0/Include"
+		 "C:/Program Files/Microsoft SDKs/Windows/v7.0/Include"
+
            DOC "Path in which the file ddraw.h is located." )
 MARK_AS_ADVANCED(DIRECTSHOW_INCLUDE_DIR_DDRAW_H)
 
 FIND_PATH( DIRECTSHOW_INCLUDE_DIR_INTSAFE_H NAMES intsafe.h
            PATHS $ENV{DXSDK_DIR}/include
                  ${DIRECTSHOW_EXTRA_DIR}
-           DOC "Path in which the file intsafe.h is located." )
+		 "C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0A/Include"
+		 "C:/Program Files/Microsoft SDKs/Windows/v7.0A/Include"
+		 "C:/Program Files (x86)/Microsoft SDKs/Windows/v7.0/Include"
+		 "C:/Program Files/Microsoft SDKs/Windows/v7.0/Include"
+ 
+            DOC "Path in which the file intsafe.h is located." )
 MARK_AS_ADVANCED(DIRECTSHOW_INCLUDE_DIR_INTSAFE_H)
 
 FIND_LIBRARY( DIRECTSHOW_LIBRARY NAMES strmbase
