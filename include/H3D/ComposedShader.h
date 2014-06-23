@@ -74,11 +74,11 @@ namespace H3D {
     public X3DShaderNode, 
     public X3DProgrammableShaderObject {
   public:
-  
-    
+    typedef std::map< string , H3D::Shaders::UniformInfo > UniformFieldMap;    
 
     // a map to maintain the uniform values and their related properties 
-    std::map< string , H3D::Shaders::UniformInfo > uniformFields; 
+    UniformFieldMap uniformFields;
+
     /// The MFShaderPart is dependent on the url field of the
     /// containing ShaderPart node.
     typedef DependentMFNode< ShaderPart,
@@ -125,6 +125,10 @@ namespace H3D {
                            const Field::AccessType &access,
                            Field *field );
     
+    /// The addField method is specialized to remove the route from the field
+    /// to the displayList field.
+    virtual bool removeField ( const string& _name );
+
     /// Traverse the node
     ///
     /// Determines if GL_PATCHES should be rendered by geometry, if
@@ -293,6 +297,8 @@ namespace H3D {
     class SetupDynamicRoutes : public AutoUpdate< Field > {
     protected:
       virtual void update();
+
+    public:
       // Map from Fields to nodes in the fields, needed in
       // order to remove nodes properly.
       map< Field *, NodeVector > fields_to_nodes;

@@ -200,6 +200,48 @@ bool ComposedShader::addField( const string &name,
   return success;
 }
 
+bool ComposedShader::removeField ( const string& _name ) {
+  Field* f= getField ( _name );
+  if ( !f ) return false;
+
+  // Remove from uniformFields map
+  for( UniformFieldMap::iterator i = uniformFields.begin(); i != uniformFields.end(); ++i  ) {
+    const string &name = i->first;
+    if ( name == _name ) {
+      uniformFields.erase ( i );
+      break;
+    }
+  }
+
+  // Fields containing nodes require special handling
+  SFNode* sf_node_field = dynamic_cast< SFNode* >( f );
+  MFNode* mf_node_field = dynamic_cast< MFNode* >( f );
+  if( sf_node_field || mf_node_field ) {
+    f->unroute( setupDynamicRoutes );
+
+    // Unroute the displayList of all nodes contained from our displayList
+    map< Field*, NodeVector >::iterator in_map =
+      setupDynamicRoutes->fields_to_nodes.find( f );
+
+    if ( in_map != setupDynamicRoutes->fields_to_nodes.end() ) {
+      const NodeVector& node_vector= (*in_map).second;
+      for( unsigned int i = 0; i < node_vector.size(); ++i ) {
+        H3DDisplayListObject* hdln =
+          dynamic_cast< H3DDisplayListObject * >( node_vector[i] );
+        if( hdln )
+          hdln->displayList->unroute( displayList );
+      }
+      setupDynamicRoutes->fields_to_nodes.erase( in_map );
+    }
+
+  } else {
+    f->unroute( displayList );
+  }
+  f->unroute( updateUniforms );
+
+  return X3DProgrammableShaderObject::removeField ( _name );
+}
+
 GLbitfield ComposedShader::getAffectedGLAttribs() {
   GLbitfield res = X3DShaderNode::getAffectedGLAttribs();
   if( GLEW_ARB_shader_objects ) {
@@ -609,7 +651,7 @@ void ComposedShader::UpdateUniforms::update() {
   if( update_all ) { // program re-linked, need to update all uniform
     // update the uniform location information in unifromFields
     //Console(4)<<"program relinked!!!"<<endl;
-    std::map< string, H3D::Shaders::UniformInfo >::iterator it;
+    UniformFieldMap::iterator it;
     for( it = node->uniformFields.begin(); it!= node->uniformFields.end(); ++it  ) {
       const string &name = it->first;
       GLint location = glGetUniformLocationARB( node->program_handle,
@@ -628,7 +670,7 @@ void ComposedShader::UpdateUniforms::update() {
   }
   
   // no need to update all, check field one by one to update the one needs to be updated
-  std::map< string, H3D::Shaders::UniformInfo >::iterator it;
+  UniformFieldMap::iterator it;
   for( it = node->uniformFields.begin(); it!= node->uniformFields.end(); ++it ) {
     Field* current_field = it->second.field;
     if( hasCausedEvent( current_field ) ) {// current_field update since last time

@@ -363,6 +363,13 @@ namespace H3D {
     /// there is not already a field with that name in the database.
     void addField( FieldDBElement *f );
     
+    /// Remove a field from the node database entry
+    ///
+    /// \param _name The name of the field to remove
+    /// \param _node The node instance to remove from, 
+    ///              if NULL then it is removed for all
+    bool removeField ( const string& _name, Node* _node= NULL );
+
     /// getField() will search the node's field database for a field matching
     /// the given name and returning a pointer to the field if found.
     Field *getField( const Node * n, const string& f ) const;

@@ -209,6 +209,22 @@ void H3DNodeDatabase::addField( FieldDBElement *f ) {
   }
 }
 
+bool H3DNodeDatabase::removeField ( const string& _name, Node* _node ) {
+
+  for( FieldDBType::iterator i = fields.begin(); i != fields.end();  ) {
+    FieldDBElement *fdb = (*i).second;
+    FieldDBType::iterator to_erase = i;
+    ++i;
+    if( fdb && ( _node == NULL || fdb->getField ( _node ) ) && fdb->getName() == _name ) {
+      fields.erase( to_erase );
+      delete fdb;
+      return true;
+    }
+  }
+
+  return false;
+}
+
 H3DNodeDatabase *H3DNodeDatabase::lookupTypeId( const type_info &t ) {
   H3DNodeDatabaseType::iterator pos = database->find( t );
   if( pos == database->end() )

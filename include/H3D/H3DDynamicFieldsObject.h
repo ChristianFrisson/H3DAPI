@@ -85,6 +85,25 @@ namespace H3D {
       return false;
     }
     
+    /// Remove a field from the Node.
+    /// \param name The name of the field to remove.
+    /// \returns true on success false otherwise.
+    inline virtual bool removeField ( const string& _name ) {
+      if ( database.get() ) {
+        Field* f= inherited_node->getField ( _name );
+        AutoPtrVector< Field >::iterator i= find ( dynamic_fields.begin(), dynamic_fields.end(), f );
+        
+        if ( f && i != dynamic_fields.end() ) {
+          if ( database->removeField ( _name, inherited_node ) ) {
+            dynamic_fields.erase ( i );
+            return true;
+          }
+        }
+      }
+
+      return false;
+    }
+
     typedef AutoPtrVector< Field >::const_iterator field_iterator;
 
     /// Get an iterator to the first of the dynamic fields.
@@ -103,11 +122,6 @@ namespace H3D {
         database->clearDynamicFields(inherited_node);
       dynamic_fields.clear();
     }
-
-    /// Remove a field from the Node.
-    /// \param name The name of the field to remove.
-    /// \returns true on success false otherwise.
-    //    bool removeField( const string &name );
 
   protected:
     auto_ptr< H3DNodeDatabase > database;
