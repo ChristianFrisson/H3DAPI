@@ -134,6 +134,10 @@ TextureProperties::TextureProperties(
   minificationFilter->addValidValue( "AVG_PIXEL" );
   minificationFilter->addValidValue( "DEFAULT" );
   minificationFilter->addValidValue( "NICEST" );
+  minificationFilter->addValidValue( "AVG_PIXEL_AVG_MIPMAP" );
+  minificationFilter->addValidValue( "AVG_PIXEL_NEAREST_MIPMAP" );
+  minificationFilter->addValidValue( "NEAREST_PIXEL_AVG_MIPMAP" );
+  minificationFilter->addValidValue( "NEAREST_PIXEL_NEAREST_MIPMAP" );
   minificationFilter->setValue( "FASTEST" );
   textureCompression->addValidValue( "DEFAULT" );
   textureCompression->addValidValue( "FASTEST" );
