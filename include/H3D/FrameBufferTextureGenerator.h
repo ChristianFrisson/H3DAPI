@@ -39,6 +39,7 @@
 #include <H3D/ShadowCaster.h>
 #include <H3D/TypedField.h>
 #include <H3D/FieldTemplates.h>
+#include <H3D/SFColorRGBA.h>
 
 namespace H3D {
 
@@ -224,7 +225,9 @@ namespace H3D {
                                  Inst< SFFrameBufferTextureGeneratorNode > _externalFBODepthBuffer = 0,
                                  Inst< MFString         > _colorBufferStorages = 0,
                                  Inst< MFFrameBufferTextureGeneratorNode > _externalFBOColorBuffers = 0,
-                                 Inst< SFBool           > _useNavigation = 0 );
+                                 Inst< SFBool           > _useNavigation = 0,
+                                 Inst< SFBool           > _useSpecifiedClearColor = 0,
+                                 Inst< SFColorRGBA      > _clearColor = 0 );
         
     /// Destructor.
     virtual ~FrameBufferTextureGenerator();
@@ -478,15 +481,25 @@ namespace H3D {
     auto_ptr< SFBool > useStereo;
 
     /// An option to enable the use of user navigation which is used by the current
-    /// window. If this is enabled, the local viewpoint set by the user will be ignored
-    /// as to use a separate viewpoint for navigation will cause the navigation trigger
-    /// transition. When no local viewpoint is specified, useNavigation will always have
-    /// effect as global active viewpoint will be used then. So basically only specify
-    /// useNavigation when you want to use local viewpoint 
+    /// window.  If this is true, the local viewpoint will be ignored and use the 
+    /// current active viewpoint instead so the internal scene can use the user navigation
+    /// driven viewpoint
     /// 
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> false
     auto_ptr< SFBool > useNavigation;
+
+
+    /// An option to bypass the background no matter it is local or current active.
+    /// The main reason to bypass the background is because rendering background
+    /// is not efficient especially if there are many FBTG node in the scene.
+    /// And for FBTG actually in many cases, to extract clear color from background
+    /// and render background is not really needed. Directly set clear color is more efficient
+    auto_ptr< SFBool > useSpecifiedClearColor;
+
+    /// Specified clearColor used when useSpecifiedClearColor is true
+    auto_ptr< SFColorRGBA > clearColor;
+
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

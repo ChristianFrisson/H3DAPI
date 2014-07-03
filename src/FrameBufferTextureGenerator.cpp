@@ -75,6 +75,8 @@ namespace FrameBufferTextureGeneratorInternals {
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, colorBufferStorages, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, externalFBOColorBuffers, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, useNavigation, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, useSpecifiedClearColor, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, clearColor, INPUT_OUTPUT );
 }
 
 FrameBufferTextureGenerator::~FrameBufferTextureGenerator() {
@@ -127,7 +129,9 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   Inst< SFFrameBufferTextureGeneratorNode > _externalFBODepthBuffer,
   Inst< MFString        > _colorBufferStorages,
   Inst< MFFrameBufferTextureGeneratorNode > _externalFBOColorBuffers,
-  Inst< SFBool          > _useNavigation ):
+  Inst< SFBool          > _useNavigation,
+  Inst< SFBool          > _useSpecifiedClearColor,
+  Inst< SFColorRGBA     > _clearColor ):
 X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound, 
   _bboxCenter, _bboxSize ),
   generateColorTextures( _generateColorTextures ),
@@ -155,6 +159,8 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   heightInUse( _heightInUse ),
   useStereo( _useStereo ),
   useNavigation( _useNavigation ),
+  useSpecifiedClearColor( _useSpecifiedClearColor ),
+  clearColor(_clearColor),
   fbo_initialized( false ),
   buffers_width(-1),
   buffers_height(-1),
@@ -188,6 +194,8 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
     heightInUse->setValue( -1, id );
     useStereo->setValue( false );
     useNavigation->setValue( false );
+    useSpecifiedClearColor->setValue( false );
+    clearColor->setValue(RGBA(0,0,0,0));
 
     depthBufferType->addValidValue( "DEPTH" );
     depthBufferType->addValidValue( "DEPTH16" );
@@ -516,26 +524,33 @@ void FrameBufferTextureGenerator::render()     {
   // been set up (current active viewpoint)
 
   X3DViewpointNode* vp = static_cast<X3DViewpointNode*>(viewpoint->getValue());
+  NavigationInfo* nav_info = navigationInfo->getValue();
+  bool use_local_projection = false;
+
+  if( useNavigation->getValue() ) {
+    // no matter if there is local viewpoint, skip it , directly use current
+    // active vp
+    vp = NULL;
+    use_local_projection = false;
+  }
+  if( vp&&!useNavigation->getValue() ) {
+    // have local vp and it is not override by useNavigation
+    use_local_projection = true;
+  }
+  if( useNavigation->getValue() ) {
+  }
+  if( nav_info ) {
+    // have local navigation info
+    use_local_projection = true;
+  }
   
-  bool use_local_viewpoint = true;
-  if( useNavigation->getValue()||!vp ) { 
-    // when useNavigation or no local viewpoint exist, use current active viewpoint
-    vp = X3DViewpointNode::getActive();
-    use_local_viewpoint = false;
-  }
-  NavigationInfo *nav_info = navigationInfo->getValue();
-  bool use_local_navi = true;
-  if( !nav_info ) {
-    nav_info = NavigationInfo::getActive();
-    use_local_navi = false; 
-  }
-  X3DBackgroundNode* bg = background->getValue();
-  if( use_local_viewpoint||use_local_navi ) {
-    // have to setup separate rendering view matrix and projection matrix when 
-    // either local viewpoint or local navigationInfo is specified.
+  if( use_local_projection )
+  { 
+    //switch projection
     H3DFloat clip_near = (H3DFloat)0.01;
     H3DFloat clip_far = -1;
-
+    nav_info = nav_info? nav_info:NavigationInfo::getActive();
+    vp = vp? vp: X3DViewpointNode::getActive();
     if( nav_info ) {
       if( nav_info->visibilityLimit->getValue() > 0 ) {
         clip_far = nav_info->visibilityLimit->getValue();
@@ -556,7 +571,7 @@ void FrameBufferTextureGenerator::render()     {
     Scene *scene = Scene::scenes.size ( ) > 0 ? *Scene::scenes.begin ( ) : NULL;
     H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue ( )[0]);
     if( useStereo->getValue()&&window->getEyeMode()!=eye_mode ) {
-      // when current active eyemode is not MONO and FBO need to use stereo, need to specify 
+      // when current active eye mode is not MONO and FBO need to use stereo, need to specify 
       // stereo_info
       eye_mode = window->getEyeMode ( );
       stereo_info = StereoInfo::getActive();
@@ -582,35 +597,44 @@ void FrameBufferTextureGenerator::render()     {
        preProcessFBO(default_x, default_y, current_width,current_height,current_depth);
       render_func( this, -1, render_func_data );
     } else {
-      // Get background and set clear color
-      X3DBackgroundNode* bg = background->getValue();
-      X3DViewpointNode* bgVP= vp ? vp : X3DViewpointNode::getActive();
-      if ( bg && bgVP ) {
-        RGBA clear_color = bg->glClearColor();
+      if( !useSpecifiedClearColor->getValue() ) {
+        // Get background and set clear color
+        X3DBackgroundNode* bg = background->getValue();
+        X3DViewpointNode* bgVP= vp ? vp : X3DViewpointNode::getActive();
+        if ( bg && bgVP ) {
+          RGBA clear_color = bg->glClearColor();
+          glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
+        }
+        // Prepare the fbo for rendering, it will clear or copy or share what frame buffer is being specified
+        preProcessFBO(default_x, default_y, current_width,current_height,current_depth);
+        // Render background
+        if ( bg && bgVP ) {
+          const Vec3f &vp_position = bgVP->totalPosition->getValue();
+          const Rotation &vp_orientation = bgVP->totalOrientation->getValue();
+          const Matrix4f &vp_inv_m = bgVP->accInverseMatrix->getValue();
+          Rotation vp_inv_rot = Rotation(vp_inv_m.getRotationPart());
+        
+          glMatrixMode(GL_MODELVIEW);
+          glPushMatrix();
+          glLoadIdentity();
+          glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
+            vp_orientation.axis.x, 
+            vp_orientation.axis.y,
+            vp_orientation.axis.z );
+          glRotatef( (H3DFloat) (180/Constants::pi)*vp_inv_rot.angle, 
+            vp_inv_rot.axis.x, vp_inv_rot.axis.y, vp_inv_rot.axis.z );
+          glDepthMask( GL_FALSE );
+          bg->renderBackground();
+          glDepthMask( GL_TRUE );
+          glPopMatrix();
+        }
+      }else{
+        // need to extract the clear color and set it, then preProcessFBO
+        // which will rely on the clear color being set
+        RGBA clear_color = clearColor->getValue();
         glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
-      }
-      // Prepare the fbo for rendering, it will clear or copy or share what frame buffer is being specified
-      preProcessFBO(default_x, default_y, current_width,current_height,current_depth);
-      // Render background
-      if ( bg && bgVP ) {
-        const Vec3f &vp_position = bgVP->totalPosition->getValue();
-        const Rotation &vp_orientation = bgVP->totalOrientation->getValue();
-        const Matrix4f &vp_inv_m = bgVP->accInverseMatrix->getValue();
-        Rotation vp_inv_rot = Rotation(vp_inv_m.getRotationPart());
-
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glLoadIdentity();
-        glRotatef( (H3DFloat) -(180/Constants::pi)*vp_orientation.angle, 
-          vp_orientation.axis.x, 
-          vp_orientation.axis.y,
-          vp_orientation.axis.z );
-        glRotatef( (H3DFloat) (180/Constants::pi)*vp_inv_rot.angle, 
-          vp_inv_rot.axis.x, vp_inv_rot.axis.y, vp_inv_rot.axis.z );
-        glDepthMask( GL_FALSE );
-        bg->renderBackground();
-        glDepthMask( GL_TRUE );
-        glPopMatrix();
+        // Prepare the fbo for rendering, it will clear or copy or share what frame buffer is being specified
+        preProcessFBO(default_x, default_y, current_width,current_height,current_depth);
       }
       widthInUse->setValue(current_width, id);
       heightInUse->setValue(current_height, id);
@@ -619,10 +643,8 @@ void FrameBufferTextureGenerator::render()     {
       if( children_multi_pass_transparency ) {
         X3DShapeNode::geometry_render_mode = X3DShapeNode::SOLID;
         X3DGroupingNode::render();
-
         X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_BACK; 
         X3DGroupingNode::render();
-
         X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_FRONT; 
         X3DGroupingNode::render();
         X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
@@ -630,11 +652,9 @@ void FrameBufferTextureGenerator::render()     {
         X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
         X3DGroupingNode::render();
       }
-
       X3DShapeNode::geometry_render_mode= m;
       if( current_shadow_caster && !current_shadow_caster->object->empty() ) current_shadow_caster->render();
     }
-
     // blit multi sample render buffer to output textures if using multi sampling.
     if( nr_samples > 0&&output_texture_type!="2D_MULTISAMPLE" ) {
       glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, multi_samples_fbo_id );
@@ -721,7 +741,7 @@ void FrameBufferTextureGenerator::render()     {
     }
   }
 
-  if( use_local_navi||use_local_viewpoint ) {
+  if( use_local_projection ) {
     glMatrixMode( GL_PROJECTION );
     glPopMatrix();
     glMatrixMode( GL_MODELVIEW );
@@ -733,7 +753,6 @@ void FrameBufferTextureGenerator::render()     {
 
   // reset previous state.
   glPopAttrib();
-
 };
 
 void FrameBufferTextureGenerator::initializeFBO() {
@@ -1249,6 +1268,14 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
     } else {
       nr_samples = s;
     }
+  }
+
+  if( output_texture_type=="2D_MULTISAMPLE"&&nr_samples==0  ) {
+    nr_samples = 1;
+    samples->setValue(1);
+    Console(4)<<"Warning: when 2D_MULTISAMPLE as output, the number of samples"
+      <<"specified should not be zero, will set the number of sample to be one"<<endl;
+      
   }
 
   GLenum depth_internal_format = stringToInternalDepthFormat( depthBufferType->getValue() );
