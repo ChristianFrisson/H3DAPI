@@ -36,7 +36,7 @@
 #include <H3D/X3DPointingDeviceSensorNode.h>
 
 namespace H3D {
-
+  class H3DRenderStateObject;
   /// \ingroup AbstractNodes
   /// \class X3DGroupingNode
   /// This abstract node type indicates that concrete node types derived
@@ -244,6 +244,9 @@ namespace H3D {
       /// traversing into children without transparent objects when
       /// multi-pass rendered transparent objects are to be rendered.
       bool children_multi_pass_transparency;
+      
+      /// A vector of all the H3DRenderStatesObject within this X3DGroupingNode
+      vector< H3DRenderStateObject* > render_states;
   };
 }
 

@@ -88,13 +88,12 @@ void X3DGroupingNode::render()     {
 
   X3DChildNode::render();
   
-  for( MFNode::const_iterator i = children->begin();
-       i != children->end(); ++i ) {
-    H3DRenderStateObject *l = dynamic_cast< H3DRenderStateObject* >( *i );
-    if ( l ) {
-      l->enableGraphicsState();
-    }
+  
+  std::vector<H3DRenderStateObject*>::iterator it ;
+  for( it = render_states.begin(); it!=render_states.end(); ++it ) {
+    (*it)->enableGraphicsState();
   }
+  
 
   // not using iterators since they can become invalid if the 
   // traversal changes the children field while iterating.
@@ -109,13 +108,11 @@ void X3DGroupingNode::render()     {
     }
   }
 
-  for( MFNode::const_iterator i = children->begin();
-       i != children->end(); ++i ) {
-    H3DRenderStateObject *l = dynamic_cast< H3DRenderStateObject* >( *i );
-    if ( l ) {
-      l->disableGraphicsState();
-    }
+
+  for( it=render_states.begin(); it!=render_states.end(); ++it ) {
+    (*it)->disableGraphicsState();
   }
+  
 
 };
 
@@ -126,13 +123,12 @@ void X3DGroupingNode::traverseSG( TraverseInfo &ti ) {
   bool previous_multi_pass  = ti.getMultiPassTransparency();
   ti.setMultiPassTransparency( false );
 
-  for( MFNode::const_iterator i = children->begin();
-       i != children->end(); ++i ) {
-    H3DRenderStateObject *l = dynamic_cast< H3DRenderStateObject* >( *i );
-    if ( l ) {
-      l->enableHapticsState( ti );
-    }
+  std::vector<H3DRenderStateObject*>::const_iterator it;
+
+  for( it = render_states.begin(); it != render_states.end(); ++it) {
+    (*it)->enableHapticsState( ti );
   }
+  
 
   // not using iterators since they can become invalid if the 
   // traversal changes the children field while iterating.
@@ -142,13 +138,10 @@ void X3DGroupingNode::traverseSG( TraverseInfo &ti ) {
       c[i]->traverseSG( ti );
   }
 
-  for( MFNode::const_reverse_iterator i = children->rbegin();
-       i != children->rend(); ++i ) {
-    H3DRenderStateObject *l = dynamic_cast< H3DRenderStateObject* >( *i );
-    if ( l ) {
-      l->disableHapticsState( ti );
-    }
+  for( it = render_states.begin(); it != render_states.end(); ++it ) {
+    (*it)->disableHapticsState( ti );
   }
+  
 
   children_multi_pass_transparency = ti.getMultiPassTransparency();
   ti.setMultiPassTransparency( previous_multi_pass || children_multi_pass_transparency ); 
@@ -253,6 +246,11 @@ void X3DGroupingNode::MFChild::onAdd( Node *n ) {
       o->pt_dev_sens_index[ pdsn ] = -1;
     }
   }
+  // check if the node being added is H3DRenderStateObject
+  H3DRenderStateObject* rs = dynamic_cast< H3DRenderStateObject* >(n);
+  if( rs ) {
+    o->render_states.push_back(rs);
+  }
 }
 
 void X3DGroupingNode::MFChild::onRemove( Node *n ) {
@@ -294,6 +292,23 @@ void X3DGroupingNode::MFChild::onRemove( Node *n ) {
         }
       }
     }
+    // if the node is H3DRenderStateObject, remove it from the vector
+    if( !o->render_states.empty() ) {
+      H3DRenderStateObject* rs = dynamic_cast< H3DRenderStateObject* >( n );
+      if( rs ) {
+        vector<H3DRenderStateObject*>::iterator it = o->render_states.begin();
+        for( ; it!=o->render_states.end(); ++it ) {
+          if( *it == rs ) {
+            break;
+          }
+        }
+        if( it!=o->render_states.end() ) {
+          o->render_states.erase( it );
+        }
+      }
+      
+    }
+    
   }
   MFChildBase::onRemove( n );
 }
