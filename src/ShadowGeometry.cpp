@@ -314,7 +314,7 @@ struct lt {
 };
 
 void ShadowGeometry::updateNeighbours( const vector< HAPI::Collision::Triangle > &triangles ) {
-
+  neighbours.clear();
   neighbours.resize( triangles.size()*3, -1 );
 
   // map from triangle edge(as pair of vertex) to pair of 
