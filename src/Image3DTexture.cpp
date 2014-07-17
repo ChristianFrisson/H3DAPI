@@ -44,6 +44,7 @@ H3DNodeDatabase Image3DTexture::database( "Image3DTexture",
 namespace Image3DTextureInternals {
   FIELDDB_ELEMENT( Image3DTexture, url, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Image3DTexture, imageLoader, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( Image3DTexture, loadInThread, INPUT_OUTPUT );
 }
 
 
@@ -57,14 +58,21 @@ Image3DTexture::Image3DTexture(
                            Inst< SFBool        > _scaleToP2,
                            Inst< SFImage       > _image,
                            Inst< MFImageLoader > _imageLoader,
+                           Inst< SFString      > _loadInThread,
                            Inst< SFTextureProperties > _textureProperties  ) :
   X3DTexture3DNode( _displayList, _metadata, _repeatS, _repeatT, _repeatR,
                     _scaleToP2, _image, _textureProperties ),
   X3DUrlObject( _url ),
-  imageLoader( _imageLoader ) {
+  imageLoader( _imageLoader ),
+  loadInThread ( _loadInThread ) {
 
   type_name = "Image3DTexture";
   database.initFields( this );
+
+  loadInThread->addValidValue ( "DEFAULT" );
+  loadInThread->addValidValue ( "MAIN" );
+  loadInThread->addValidValue ( "SEPARATE" );
+  loadInThread->setValue ( "DEFAULT" );
 
   url->route( image );
   imageLoader->route( image );
@@ -178,8 +186,14 @@ void Image3DTexture::SFImage::update() {
   MFString *urls = static_cast< MFString * >( routes_in[0] );
 
   bool load_in_thread = X3DTextureNode::load_images_in_separate_thread;
-  GlobalSettings *gs = GlobalSettings::getActive();
-  if( gs ) load_in_thread = gs->loadTexturesInThread->getValue();
+
+  const string& load_in_thread_local= texture->loadInThread->getValue();
+  if ( load_in_thread_local == "DEFAULT" ) {
+    GlobalSettings *gs = GlobalSettings::getActive();
+    if( gs ) load_in_thread = gs->loadTexturesInThread->getValue();
+  } else {
+    load_in_thread= load_in_thread_local == "SEPARATE";
+  }
 
   if( load_in_thread ) {
     value = NULL;

@@ -140,6 +140,7 @@ namespace H3D {
                   Inst< SFBool   >  _scaleToP2       = 0,
                   Inst< SFImage  > _image            = 0,
                   Inst< MFImageLoader > _imageLoader = 0,
+                  Inst< SFString > _loadInThread     = 0,
                   Inst< SFTextureProperties > _textureProperties = 0 );
 
     /// render() is overridden to include the url in error messages.
@@ -152,6 +153,19 @@ namespace H3D {
     /// 
     /// \dotfile ImageTexture_imageLoader.dot
     auto_ptr< MFImageLoader > imageLoader;
+
+    /// Specifies the thread to use to load the image texture.
+    ///
+    /// If "DEFAULT" then the setting in GlobalSettings will be used.
+    /// If "MAIN" then the main thread is used to load the texture.
+    /// If "SEPARATE" then a new thread is created and used to load the texture.
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> "DEFAULT" \n
+    /// <b>Valid values:</b> "DEFAULT", "MAIN", "SEPARATE"
+    /// 
+    /// \dotfile ImageTexture_loadInThread.dot
+    auto_ptr< SFString > loadInThread;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
