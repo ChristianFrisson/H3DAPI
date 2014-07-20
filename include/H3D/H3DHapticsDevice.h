@@ -504,7 +504,7 @@ namespace H3D {
     ///
     /// <b>Access type:</b> outputOnly \n
     /// 
-    /// \dotfile H3DHapticsDevice_mainButton.dot
+    /// \dotfile H3DHapticsDevice_secondaryButton.dot
     auto_ptr< SFBool >   secondaryButton;
 
     /// The state of all buttons. Bit 0 is button 0, bit 1 is button 1,..
@@ -670,6 +670,17 @@ namespace H3D {
     /// 
     /// \dotfile H3DHapticsDevice_forceLimit.dot    
     auto_ptr< SFFloat > forceLimit;
+
+    /// This is an alternative operational safety mode. When enabled the mainButton
+    /// assumes the function of a dead man's switch. Force are only rendered, if the
+    /// button is pressed/hold down, otherwise the forceLimit and torqueLimit are
+    /// automatically set to 0.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> false \n
+    /// 
+    /// \dotfile H3DHapticsDevice_deadmansSwitch.dot    
+    auto_ptr< SFBool > deadmansSwitch;
 
     /// The maximum torque(in Nm) we want the device to render. Any torques larger
     /// than the specified value will be clamped the the torqueLimit

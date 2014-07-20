@@ -76,6 +76,7 @@ namespace H3DHapticsDeviceInternals {
   FIELDDB_ELEMENT( H3DHapticsDevice, deviceVelocity, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DHapticsDevice, trackerVelocity, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DHapticsDevice, hapticsLoopTime, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( H3DHapticsDevice, deadmansSwitch, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DHapticsDevice, forceLimit, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DHapticsDevice, torqueLimit, INPUT_OUTPUT );
 }
@@ -145,6 +146,7 @@ H3DHapticsDevice::H3DHapticsDevice(
   followViewpoint( _followViewpoint ),
   deviceVelocity( _deviceVelocity ),
   trackerVelocity( _trackerVelocity ),
+  deadmansSwitch( new SFBool ),
   forceLimit( new SFFloat ),
   torqueLimit( new SFFloat ),
   error_msg_printed( false ) {
@@ -165,6 +167,7 @@ H3DHapticsDevice::H3DHapticsDevice(
   hapticsLoopTime->setValue( -1, id );
   inputDOF->setValue( 3, id );
   outputDOF->setValue( 3, id );
+  deadmansSwitch->setValue( false, id );
   forceLimit->setValue( -1, id );
   torqueLimit->setValue( -1, id );
 
@@ -296,8 +299,16 @@ void H3DHapticsDevice::updateDeviceValues() {
     positionCalibration->upToDate();
     orientationCalibration->upToDate();
 
-    hapi_device->setForceLimit( forceLimit->getValue() );
-    hapi_device->setTorqueLimit( torqueLimit->getValue() );
+    if (deadmansSwitch->getValue() && !mainButton->getValue())
+    {
+        hapi_device->setForceLimit(0.0);
+        hapi_device->setTorqueLimit(0.0);
+    }
+    else
+    {
+        hapi_device->setForceLimit( forceLimit->getValue() );
+        hapi_device->setTorqueLimit( torqueLimit->getValue() );
+    }
 
     X3DViewpointNode *vp = X3DViewpointNode::getActive();
     vp = H3DNavigation::viewpointToUse( vp, 0 );
