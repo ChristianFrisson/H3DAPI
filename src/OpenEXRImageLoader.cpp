@@ -21,50 +21,37 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file FreeImageLoader.cpp
-/// \brief CPP file for FreeImageLoader, a image loader using the FreeImage
+/// \file OpenEXRImageLoader.cpp
+/// \brief CPP file for OpenEXRImageLoader, a image loader using the FreeImage
 /// library to read images.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <H3D/FreeImageLoader.h>
 #include <H3D/OpenEXRImageLoader.h>
 
-#ifdef HAVE_FREEIMAGE
-#include <H3DUtil/FreeImageImage.h>
-#include <FreeImage.h>
+#ifdef HAVE_OPENEXR
+#include <OpenEXR/ImfTestFile.h>
+#include <OpenEXR/ImfNamespace.h>
+namespace IMF = OPENEXR_IMF_NAMESPACE;
+using namespace IMF;
 
 using namespace H3D;
 
 // Add this node to the H3DNodeDatabase system.
-H3DNodeDatabase FreeImageLoader::database( "FreeImageLoader", 
-                                           &(newInstance<FreeImageLoader>), 
-                                           typeid( FreeImageLoader ) );
+H3DNodeDatabase OpenEXRImageLoader::database( "OpenEXRImageLoader", 
+                                           &(newInstance<OpenEXRImageLoader>), 
+                                           typeid( OpenEXRImageLoader ) );
 
 H3DImageLoaderNode::FileReaderRegistration 
-FreeImageLoader::reader_registration(
-                            "FreeImageLoader",
-                            &(newImageLoaderNode< FreeImageLoader >),
-                            &FreeImageLoader::supportsFileType,
-                            &FreeImageLoader::supportsStreamType
+OpenEXRImageLoader::reader_registration(
+                            "OpenEXRImageLoader",
+                            &(newImageLoaderNode< OpenEXRImageLoader >),
+                            &OpenEXRImageLoader::supportsFileType
                             );
 
-bool FreeImageLoader::supportsFileType( const string &url ) {
-
-#ifdef HAVE_OPENEXR
-  // FreeImage trys to load some EXR images but then crashes, so if
-  // OpenEXR supports it, do not allow FreeImage to try and load it.
-  if ( OpenEXRImageLoader::supportsFileType ( url ) ) return false;
-#endif
-
-  FREE_IMAGE_FORMAT format = FreeImage_GetFileType( url.c_str() );
-  return format != FIF_UNKNOWN;
-}
-
-bool FreeImageLoader::supportsStreamType( istream &is ) {
-  FREE_IMAGE_FORMAT format = FreeImage_GetFileTypeFromHandle ( FreeImageImage::getIStreamIO(), static_cast<fi_handle>(&is) );
-  return format != FIF_UNKNOWN;
+bool OpenEXRImageLoader::supportsFileType( const string &url ) {
+  return isOpenExrFile ( url.c_str() );
 }
 
 #endif // HAVE_FREEIMAGE

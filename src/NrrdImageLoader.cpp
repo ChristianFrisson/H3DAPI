@@ -29,6 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/NrrdImageLoader.h>
+#include <H3D/OpenEXRImageLoader.h>
 
 #include <algorithm>
 
@@ -53,6 +54,13 @@ NrrdImageLoader::reader_registration(
                             );
 
 bool NrrdImageLoader::supportsFileType( const string &url ) {
+  
+#ifdef HAVE_OPENEXR
+  // NrrdImageLoader trys to load some EXR images but then hangs, so if
+  // OpenEXR supports it, do not allow FreeImage to try and load it.
+  if ( OpenEXRImageLoader::supportsFileType ( url ) ) return false;
+#endif
+
 #if TEEM_VERSION < 11100
   // only allow it to read files with the extension .nrrd since
   // otherwise nrrd can crash or hand when it gets a .gif or .jpg 

@@ -150,6 +150,9 @@
 /// Undef if you do not have Glut or FreeGlut.
 #cmakedefine HAVE_GLUT
 
+/// Undef if you do not have OpenEXR
+#cmakedefine HAVE_OPENEXR
+
 #define XML_USE_WIN32_TRANSCODER
 #define XML_USE_INMEM_MESSAGELOADER
 #define XML_USE_NETACCESSOR_WINSOCK

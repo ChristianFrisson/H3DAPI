@@ -398,29 +398,47 @@ IF(NOT WIN32)
   ENDIF(NOT APPLE)
 ENDIF(NOT WIN32)
 
-FIND_PACKAGE(DCMTK)
-IF(DCMTK_FOUND)
-  INCLUDE_DIRECTORIES( ${DCMTK_INCLUDE_DIR} ) 
-  SET(requiredLibs ${requiredLibs} ${DCMTK_LIBRARIES} )
-  IF(NOT WIN32 AND NOT APPLE)
-    # Linux specific libraries. The debian package for dcmtk
-    # seems to not link to libtiff which it is dependent on. In 
-    # order to compile out of the box we include that dependency here 
-    # instead.
-    FIND_PACKAGE(TIFF)
-    IF(TIFF_FOUND)
-      SET(requiredLibs ${requiredLibs} ${TIFF_LIBRARIES} )
-    ELSE(TIFF_FOUND)
-      MESSAGE( STATUS "If you are using dcmtk debian package libtiff might be required since dcmtk depends on it and the packaged version does not itself link with it properly." )
-    ENDIF(TIFF_FOUND)
-  ENDIF(NOT WIN32 AND NOT APPLE)
-ENDIF(DCMTK_FOUND)
+IF( NOT DEFINED USE_OPENEXR )
+  SET( USE_OPENEXR "NO" CACHE BOOL "Enable or disable OpenExr. If it is enabled the DCMTK is automatically disabled due to a linking error." )
+  MARK_AS_ADVANCED(USE_OPENEXR)
+ENDIF()
+
+# Note: OpenEXR and DCMTK are mutually exclusive due to a linkage error on Windows/VS10
+IF ( NOT USE_OPENEXR OR NOT WIN32 )
+  FIND_PACKAGE(DCMTK)
+  IF(DCMTK_FOUND)
+    INCLUDE_DIRECTORIES( ${DCMTK_INCLUDE_DIR} ) 
+    SET(requiredLibs ${requiredLibs} ${DCMTK_LIBRARIES} )
+    IF(NOT WIN32 AND NOT APPLE)
+      # Linux specific libraries. The debian package for dcmtk
+      # seems to not link to libtiff which it is dependent on. In 
+      # order to compile out of the box we include that dependency here 
+      # instead.
+      FIND_PACKAGE(TIFF)
+      IF(TIFF_FOUND)
+        SET(requiredLibs ${requiredLibs} ${TIFF_LIBRARIES} )
+      ELSE(TIFF_FOUND)
+        MESSAGE( STATUS "If you are using dcmtk debian package libtiff might be required since dcmtk depends on it and the packaged version does not itself link with it properly." )
+      ENDIF(TIFF_FOUND)
+    ENDIF(NOT WIN32 AND NOT APPLE)
+  ENDIF(DCMTK_FOUND)
+ENDIF()
 
 FIND_PACKAGE(H3DTeem)
 IF(Teem_FOUND)
   INCLUDE_DIRECTORIES( ${Teem_INCLUDE_DIR} ) 
   SET(requiredLibs ${requiredLibs} ${Teem_LIBRARIES} )
 ENDIF(Teem_FOUND)
+
+# Optional extra library. Used to handle OpenEXR HDR image formats.
+IF ( USE_OPENEXR )
+  FIND_PACKAGE(OpenEXR)
+  IF(OPENEXR_FOUND)
+    SET(HAVE_OPENEXR 1)
+    INCLUDE_DIRECTORIES( ${OPENEXR_INCLUDE_DIR} )
+    SET(optionalLibs ${optionalLibs} ${OPENEXR_LIBRARIES} )
+  ENDIF(OPENEXR_FOUND)
+ENDIF()
 
 # We do not use V8 anymore, only SpiderMonkey
 #FIND_PACKAGE(V8)

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='OpenEXRImageLoader.x3d'/>
+    <meta name='description' content='H3DAPI image loaders example.
+      Test OpenEXRImageLoader node.
+      This example uses H3DAPI node(s) and runs on H3DAPI-supported 
+      browsers only. Visit http://www.h3d.org for more information and 
+      to download an H3DAPI-compatible browser.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
+  </head>
+  
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+
+    <Transform rotation='0 0 1 3.142' translation='-0.2 0 0'>
+      <Shape>
+        <Appearance>
+          <ComposedShader DEF="SHADER" language="GLSL" >
+            <field name="texture" type="SFNode" accessType="inputOutput">
+              <ImageTexture DEF='TEXTURE' url='images/Tree.exr' />
+            </field>
+            <field name="range" type="SFVec2f" accessType="inputOutput" value='0 0.05' />
+            <ShaderPart type="VERTEX" url="shaders/passthrough.vert" />
+            <ShaderPart type="FRAGMENT" url="shaders/hdr_render.frag" />
+          </ComposedShader>
+        </Appearance>
+        <Rectangle2D size='0.3 0.3' />
+      </Shape>
+    </Transform>
+
+    <Transform rotation='0 0 1 3.142' translation='0.2 0 0'>
+      <Shape>
+        <Appearance>
+          <ComposedShader DEF="SHADER" language="GLSL" >
+            <field name="texture" type="SFNode" accessType="inputOutput">
+              <ImageTexture USE='TEXTURE' />
+            </field>
+            <field name="range" type="SFVec2f" accessType="inputOutput" value='0.05 1' />
+            <ShaderPart type="VERTEX" url="shaders/passthrough.vert" />
+            <ShaderPart type="FRAGMENT" url="shaders/hdr_render.frag" />
+          </ComposedShader>
+        </Appearance>
+        <Rectangle2D size='0.3 0.3' />
+      </Shape>
+    </Transform>
+
+  </Scene>
+</X3D>
