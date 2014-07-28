@@ -31,6 +31,7 @@
 #include "H3DViewerPopupMenus.h"
 #include <fstream>
 #include <wx/wx.h>
+#include <H3D/MetadataString.h>
 #include <H3D/Scene.h>
 #include <H3D/Viewpoint.h>
 #include <H3D/IndexedTriangleSet.h>
@@ -156,6 +157,22 @@ void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id,
     }
   }
 
+  // Check if node has a metadata object named "TreeView_expandMode". If it does the value of it overrides
+  // any other settings for expand mode for this node.
+  X3DNode *x3d_node = dynamic_cast< X3DNode * >( n );
+  if( x3d_node ) {
+    MetadataString *expand_mode_meta = dynamic_cast< MetadataString * >( x3d_node->getMetadataByName( "TreeView_expandMode" ) );
+    if( expand_mode_meta ) {
+      const vector<string> &values = expand_mode_meta->value->getValue();
+      if( !values.empty() ) {
+        const string &mode = values[0];
+        if( mode == "EXPAND_NONE" ) expand = H3DViewerTreeViewDialog::EXPAND_NONE;
+        else if( mode == "EXPAND_ALL" ) expand = H3DViewerTreeViewDialog::EXPAND_ALL;
+        else if( mode == "EXPAND_GROUP" ) expand = H3DViewerTreeViewDialog::EXPAND_GROUP;
+      }
+    }
+  }
+  
   if( container_field != n->defaultXMLContainerField() ) {
     tree_string = tree_string + " (cf: " + container_field + ")";
   }
