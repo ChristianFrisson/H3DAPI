@@ -38,3 +38,7 @@ X3DMetadataObject::X3DMetadataObject( Inst< SFString > _name,
   reference( _reference ) {
 }
 
+ X3DMetadataObject *X3DMetadataObject::getMetadataByName( const string &_name ) {
+   if( _name == nameF->getValue() ) return this; 
+   return NULL;
+ }

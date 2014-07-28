@@ -75,6 +75,12 @@ namespace H3D {
     
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
+    /// Given a name, the first X3DMetadataObject that matches that name is returned.
+    /// If no such X3DMetadataObject exists, NULL is returned.
+    /// \param name The name of the X3DMetadataObject to get.
+    /// \returns The first X3DMetadataObject in the metadata field that matches that name if it exists, NULL otherwise
+    virtual X3DMetadataObject *getMetadataByName( const string &name );
   };
 }
 

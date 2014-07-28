@@ -32,6 +32,7 @@
 #include <H3D/SFNode.h>
 #include <H3D/Node.h>
 #include <H3D/FieldTemplates.h>
+#include <H3D/X3DMetadataObject.h>
 
 namespace H3D {
 
@@ -75,6 +76,11 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
+    /// Given a name, the first X3DMetadataObject in the metadata field that matches that name is returned.
+    /// If no such X3DMetadataObject exists, NULL is returned.
+    /// \param name The name of the X3DMetadataObject to get.
+    /// \returns The first X3DMetadataObject in the metadata field that matches that name if it exists, NULL otherwise
+    X3DMetadataObject *getMetadataByName( const string &name );
   };
 }
 

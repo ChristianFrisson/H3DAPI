@@ -58,3 +58,12 @@ MetadataSet::MetadataSet( Inst< SFString       > _name,
   database.initFields( this );
 }
 
+X3DMetadataObject *MetadataSet::getMetadataByName( const string &_name ) {
+  if( _name == nameF->getValue() ) return this; 
+  for( MFMetadataNode::const_iterator i = value->begin(); i != value->end(); ++i ) {
+    X3DMetadataObject *metadata = (dynamic_cast< X3DMetadataObject * >(*i))->getMetadataByName( name );
+    if( metadata ) return metadata;
+  }
+  return NULL;
+}
+
