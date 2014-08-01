@@ -58,13 +58,18 @@ namespace H3D {
                               public X3DUrlObject {
   public:
 
+    class H3DAPI_API OnClose : public OnNewValueSField < AutoUpdate < SFBool > > {
+      virtual void onNewValue( const bool &v );
+    };
+
     /// Constructor
     DeviceLog( Inst< SFNode   >  _metadata   = 0,
                Inst< MFString > _url         = 0,
                Inst< SFInt32  > _frequency   = 0,
                Inst< MFInt32  > _deviceIndex = 0,
                Inst< SFBool   > _logBinary   = 0,
-               Inst< MFString > _logData     = 0 );
+               Inst< MFString > _logData     = 0,
+               Inst< OnClose  > _close       = 0 );
 
     /// Destructor
     ///
@@ -142,6 +147,8 @@ namespace H3D {
     ///                        "DEVICE_VELOCITY", "BUTTONS"
     ///                        "FORCE", "TORQUE"
     auto_ptr< MFString > logData;
+
+    auto_ptr< OnClose > close;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

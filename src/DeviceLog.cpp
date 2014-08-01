@@ -42,6 +42,7 @@ namespace DeviceLogInternal {
   FIELDDB_ELEMENT( DeviceLog, frequency, INPUT_OUTPUT );
   FIELDDB_ELEMENT( DeviceLog, logBinary, INPUT_OUTPUT );
   FIELDDB_ELEMENT( DeviceLog, logData, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( DeviceLog, close, INPUT_OUTPUT );
 }
 
 DeviceLog::DeviceLog( Inst< SFNode> _metadata,
@@ -49,12 +50,14 @@ DeviceLog::DeviceLog( Inst< SFNode> _metadata,
                       Inst< SFInt32     > _frequency,
                       Inst< MFInt32  > _deviceIndex,
                       Inst< SFBool   > _logBinary,
-                      Inst< MFString > _logData ):
+                      Inst< MFString > _logData,
+                      Inst< OnClose  > _close ):
   H3DForceEffect( _metadata, _deviceIndex ),
   X3DUrlObject(_url),
   frequency(_frequency),
   logBinary( _logBinary ),
   logData( _logData ),
+  close ( _close ),
   updateLogForceEffect( new Field ) {
   type_name = "DeviceLog";
 
@@ -200,4 +203,10 @@ PeriodicThread::CallbackCode DeviceLog::closeCallback ( void* data ) {
   }
 
   return PeriodicThread::CALLBACK_DONE;
+}
+
+void DeviceLog::OnClose::onNewValue( const bool &v ) {
+  if ( v ) {
+    HapticThread::synchronousHapticCB ( closeCallback, getOwner() );
+  }
 }
