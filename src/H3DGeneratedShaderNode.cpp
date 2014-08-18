@@ -71,11 +71,7 @@ H3DGeneratedShaderNode::H3DGeneratedShaderNode(
 
   // shader_id is used to have unique variable names in the shaders
   // it is simply the memory address in hex
-#ifdef H3D_WIN64
-  H3DUInt64 sid = (H3DUInt64)(this);
-#else
-  unsigned long sid = (unsigned long) (this);
-#endif
+  H3DPtrUint sid = (H3DPtrUint)(this);
   ostringstream ostr;
   ostr << hex << sid;
   shader_id = ostr.str();
