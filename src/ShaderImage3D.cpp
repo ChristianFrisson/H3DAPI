@@ -110,7 +110,11 @@ void ShaderImage3D::render ( ){
   GLenum format_t = stringImageFormat_map[format_s];
   glActiveTexture ( texture_unit );
   // set up barrier before actually access the image from shaders
-  glMemoryBarrier ( GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT );
+  glMemoryBarrier ( GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT
+#ifdef GL_ARB_shader_storage_buffer_object
+                   | GL_SHADER_STORAGE_BARRIER_BIT
+#endif
+      );
   glBindImageTextureEXT ( image_unit, texture_id, 0, true, 0, GL_READ_WRITE, format_t );
   err = glGetError ( );
   if ( err!=GL_NO_ERROR )

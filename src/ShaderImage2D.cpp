@@ -92,7 +92,11 @@ void ShaderImage2D::render ( ){
     prepareShaderImage ( );
   }
   glActiveTexture ( texture_unit );
-  glMemoryBarrier ( GL_SHADER_IMAGE_ACCESS_BARRIER_BIT|GL_ATOMIC_COUNTER_BARRIER_BIT|GL_SHADER_STORAGE_BARRIER_BIT );
+  glMemoryBarrier ( GL_SHADER_IMAGE_ACCESS_BARRIER_BIT|GL_ATOMIC_COUNTER_BARRIER_BIT
+#ifdef GL_ARB_shader_storage_buffer_object
+      |GL_SHADER_STORAGE_BARRIER_BIT
+#endif
+      );
   glBindImageTextureEXT ( image_unit, texture_id, 0, false, 0, GL_READ_WRITE, stringImageFormat_map[imageFormat->getValue ( )] );
 #endif
 }
