@@ -74,7 +74,7 @@ H3DGeneratedShaderNode::H3DGeneratedShaderNode(
 #ifdef H3D_WIN64
   H3DUInt64 sid = (H3DUInt64)(this);
 #else
-  H3DUInt32 sid = (H3DUInt32)(this);
+  unsigned long sid = (unsigned long) (this);
 #endif
   ostringstream ostr;
   ostr << hex << sid;
