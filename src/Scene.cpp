@@ -83,6 +83,7 @@ namespace SceneInternals {
   FIELDDB_ELEMENT( Scene, sceneRoot, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Scene, window, INPUT_OUTPUT );
   FIELDDB_ELEMENT( Scene, frameRate, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( Scene, maxFrameRate, INPUT_OUTPUT );
 #ifdef HAVE_PROFILER
   FIELDDB_ELEMENT( Scene, profiledResult, INPUT_OUTPUT );
 #endif
@@ -169,6 +170,19 @@ void Scene::idle() {
 
 #endif // HAVE_PROFILER
   
+  H3DFloat max_fr= maxFrameRate->getValue();
+  if ( max_fr > 0 ) {
+    H3DFloat min_frame_time= 1.0f / max_fr;
+
+    TimeStamp t0;
+    TimeStamp dt0= t0 - last_time;
+
+    H3DTime sleep_time= min_frame_time-dt0;
+    if ( sleep_time > 0 ) {
+      Sleep ( sleep_time*1000.0 );
+    }
+  }
+
   TimeStamp t;
   TimeStamp dt = t - last_time;
   frameRate->setValue( 1.0f / (H3DFloat)(dt), id );
@@ -512,7 +526,8 @@ void Scene::idle() {
 
 Scene::Scene( Inst< SFChildNode >  _sceneRoot,
               Inst< MFWindow    >  _window,
-              Inst< SFFloat     >  _frameRate
+              Inst< SFFloat     >  _frameRate,
+              Inst< SFFloat     >  _maxFrameRate
 #ifdef HAVE_PROFILER
               ,
               Inst< MFString    >  _profiledResult 
@@ -521,6 +536,7 @@ Scene::Scene( Inst< SFChildNode >  _sceneRoot,
   sceneRoot( _sceneRoot ),
   window   ( _window    ),
   frameRate( _frameRate ),
+  maxFrameRate ( _maxFrameRate ),
 #ifdef HAVE_PROFILER
   profiledResult( _profiledResult ),
 #endif
@@ -543,6 +559,7 @@ Scene::Scene( Inst< SFChildNode >  _sceneRoot,
   Scene::time->setName( "Scene::time" );
   time->setAccessType( Field::OUTPUT_ONLY );
   frameRate->setValue( 0, id );
+  maxFrameRate->setValue ( -1 );
   ThreadBase::setThreadName( ThreadBase::getMainThreadId(), 
                              "H3D API Main Thread" );
   Scene::time->route( eventSink );

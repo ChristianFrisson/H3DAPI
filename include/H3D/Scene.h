@@ -131,7 +131,8 @@ namespace H3D {
     /// Constructor.
     Scene( Inst< SFChildNode > _sceneRoot   = 0,
            Inst< MFWindow    > _window      = 0,
-           Inst< SFFloat     > _frameRate   = 0
+           Inst< SFFloat     > _frameRate   = 0,
+           Inst< SFFloat     > _maxFrameRate= 0
 #ifdef HAVE_PROFILER
            ,
            Inst< MFString     > _profiledResult   = 0 
@@ -199,6 +200,8 @@ namespace H3D {
     ///
     /// <b>Access type: </b> outputOnly
     auto_ptr< SFFloat >  frameRate;
+
+    auto_ptr< SFFloat >  maxFrameRate;
 #ifdef HAVE_PROFILER
     auto_ptr< MFString > profiledResult;
     
