@@ -201,6 +201,14 @@ namespace H3D {
     /// <b>Access type: </b> outputOnly
     auto_ptr< SFFloat >  frameRate;
 
+    /// A desired maximum frame rate (Hz).
+    ///
+    /// If there is time left over the simulation loop will go to sleep in order
+    /// to keep the frame rate below this maximum.
+    ///
+    /// If <= 0 then the simulation loop will always run as fast as possible.
+    ///
+    /// <b>Access type: </b> outputOnly
     auto_ptr< SFFloat >  maxFrameRate;
 #ifdef HAVE_PROFILER
     auto_ptr< MFString > profiledResult;
@@ -215,6 +223,7 @@ namespace H3D {
     /// Current time within the simulation, updated during each graphic loop.
     ///
     /// <b>Access type: </b> outputOnly
+    /// <b>Default value: </b> -1
     static auto_ptr< SFTime > time;
     //static SFTime *time;
   
