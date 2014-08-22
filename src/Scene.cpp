@@ -61,6 +61,10 @@
 #include <H3D/Shape.h>
 #include <H3D/Inline.h>
 
+#ifndef H3D_WINDOWS
+#include <unistd.h>
+#endif
+
 using namespace H3D;
 
 
