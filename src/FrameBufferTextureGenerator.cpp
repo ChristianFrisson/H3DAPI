@@ -522,35 +522,33 @@ void FrameBufferTextureGenerator::render()     {
 
   // if a viewpoint has been specified use that instead of what has already 
   // been set up (current active viewpoint)
-
+  bool have_local_vp = false;
+  bool have_local_navi = false;
   X3DViewpointNode* vp = static_cast<X3DViewpointNode*>(viewpoint->getValue());
+  if( vp!=NULL ) {
+    have_local_vp = true;
+  }else{
+    vp = X3DViewpointNode::getActive();
+  }
   NavigationInfo* nav_info = navigationInfo->getValue();
-  bool use_local_projection = false;
-
-  if( useNavigation->getValue() ) {
-    // no matter if there is local viewpoint, skip it , directly use current
-    // active vp
-    vp = NULL;
-    use_local_projection = false;
-  }
-  if( vp&&!useNavigation->getValue() ) {
-    // have local vp and it is not override by useNavigation
-    use_local_projection = true;
+  if( nav_info!=NULL ) {
+    have_local_navi = true;
+  }else{
+    nav_info = NavigationInfo::getActive();
   }
   if( useNavigation->getValue() ) {
-  }
-  if( nav_info ) {
-    // have local navigation info
-    use_local_projection = true;
+    // useNavigation will force the use of main scene viewpoint to have user navigation
+    have_local_vp = false;
+    vp = X3DViewpointNode::getActive();
   }
   
-  if( use_local_projection )
+  
+  if( have_local_vp||have_local_navi )
   { 
     //switch projection
     H3DFloat clip_near = (H3DFloat)0.01;
     H3DFloat clip_far = -1;
-    nav_info = nav_info? nav_info:NavigationInfo::getActive();
-    vp = vp? vp: X3DViewpointNode::getActive();
+
     if( nav_info ) {
       if( nav_info->visibilityLimit->getValue() > 0 ) {
         clip_far = nav_info->visibilityLimit->getValue();
@@ -662,7 +660,11 @@ void FrameBufferTextureGenerator::render()     {
 
       // blit multi sample buffers to textures.
       if( generateDepthTexture->getValue() ) {
-        glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+        if( using_stencil_buffer ) {
+          glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+        }else{
+          glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_DEPTH_BUFFER_BIT , GL_NEAREST);
+        }
       }
 
       for( unsigned int i = 0; i < color_ids.size(); ++i ) {
@@ -741,7 +743,7 @@ void FrameBufferTextureGenerator::render()     {
     }
   }
 
-  if( use_local_projection ) {
+  if( have_local_navi||have_local_vp ) {
     glMatrixMode( GL_PROJECTION );
     glPopMatrix();
     glMatrixMode( GL_MODELVIEW );
