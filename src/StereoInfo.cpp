@@ -43,6 +43,8 @@ namespace StereoInfoInternals {
   FIELDDB_ELEMENT( StereoInfo, interocularDistance, INPUT_OUTPUT );
   FIELDDB_ELEMENT( StereoInfo, focalDistance, INPUT_OUTPUT );
   FIELDDB_ELEMENT( StereoInfo, headTilt, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( StereoInfo, matrixViewShift, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( StereoInfo, matrixProjShift, INPUT_OUTPUT );
 }
 
 StereoInfo::StereoInfo( Inst< SFSetBind  > _set_bind,
@@ -51,11 +53,15 @@ StereoInfo::StereoInfo( Inst< SFSetBind  > _set_bind,
                         Inst< SFBool     > _isBound,
                         Inst< SFFloat    > _interocularDistance,
                         Inst< SFFloat    > _focalDistance,
-                        Inst< SFRotation > _headTilt ):
+                        Inst< SFRotation > _headTilt,
+                        Inst< SFFloat > _matrixViewShift,
+                        Inst< SFFloat > _matrixProjShift ):
   X3DBindableNode( "StereoInfo", _set_bind, _metadata, _bindTime, _isBound ),
   interocularDistance( _interocularDistance ),
   focalDistance( _focalDistance  ),
-  headTilt( _headTilt ) {
+  headTilt( _headTilt ),
+  matrixViewShift( _matrixViewShift ),
+  matrixProjShift( _matrixProjShift ) {
   
   type_name = "StereoInfo";
   database.initFields( this );
@@ -63,6 +69,8 @@ StereoInfo::StereoInfo( Inst< SFSetBind  > _set_bind,
   interocularDistance->setValue( (H3DFloat) 0.06 );
   focalDistance->setValue( (H3DFloat)0.6 );
   headTilt->setValue( Rotation(1,0,0,0 ) );
+  matrixViewShift->setValue( (H3DFloat)0.0 );
+  matrixProjShift->setValue( (H3DFloat)0.0 );
 }
 
 

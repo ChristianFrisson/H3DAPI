@@ -358,6 +358,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   stereoRenderMode->AppendRadioItem(FRAME_NVIDIA_3DVISION, wxT("3DVision from NVidia"),
                                     wxT("3DVision from NVidia. Requires executable name change."));
 #endif  
+  stereoRenderMode->AppendRadioItem(FRAME_VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS, wxT("Vertical Split Keep Aspect render in one pass"),
+                                    wxT("Vertical Split Keep Aspect render in one pass"));
   //Renderer Menu
   rendererMenu = new wxMenu;
   rendererMenu->AppendCheckItem(FRAME_FULLSCREEN, wxT("Fullscreen Mode\tF11"),
@@ -586,6 +588,7 @@ void WxFrame::UpdateStereoModeMenu::update() {
 #ifdef HAVE_DX9
       frame->stereoRenderMode->Enable( FRAME_NVIDIA_3DVISION, false );
 #endif
+      frame->stereoRenderMode->Enable( FRAME_VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS, false );
     }
   } else if( stereo_mode == "HORIZONTAL_SPLIT" )
     frame->stereoRenderMode->Check( FRAME_HORZSPLIT, true );
@@ -617,6 +620,8 @@ void WxFrame::UpdateStereoModeMenu::update() {
   else if( stereo_mode == "NVIDIA_3DVISION" )
     frame->stereoRenderMode->Check( FRAME_NVIDIA_3DVISION, true );
 #endif
+  else if( stereo_mode == "VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS" )
+    frame->stereoRenderMode->Check( FRAME_VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS, true );
 }
 
 /*******************Event Table*********************/
@@ -632,7 +637,7 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_SETTINGS, WxFrame::OnSettings)
   EVT_MENU (FRAME_TOGGLE_FULLSCREEN, WxFrame::ToggleFullscreen)
   EVT_MENU (FRAME_MIRROR, WxFrame::MirrorScene)
-  EVT_MENU_RANGE (FRAME_MONO, FRAME_HDMI1080P, WxFrame::StereoRenderMode)
+  EVT_MENU_RANGE (FRAME_MONO, FRAME_VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS, WxFrame::StereoRenderMode)
   EVT_MENU_RANGE (FRAME_RENDERMODE_DEFAULT, 
                   FRAME_RENDERMODE_POINTS, WxFrame::RenderMode )
   EVT_MENU (FRAME_CONSOLE, WxFrame::ShowConsole)
@@ -1827,6 +1832,9 @@ void WxFrame::StereoRenderMode(wxCommandEvent & event)
       break;
     case FRAME_NVIDIA_3DVISION:
       renderMode = "NVIDIA_3DVISION";
+      break;
+    case FRAME_VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS:
+      renderMode = "VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS";
       break;
   }
   glwindow->renderMode->setValue( renderMode.c_str() );
@@ -3108,7 +3116,8 @@ void FrameRateDialog::updateFrameRates() {
 
     stringstream hts;
     hts << (int)(hd->hapticsLoopTime->getValue() * 1e5 );
-    haptics_time->SetLabel( wxString(hts.str().c_str(),wxConvUTF8) );
+    string hststr = hts.str();
+    haptics_time->SetLabel( wxString(hststr.c_str(),wxConvUTF8) );
   }
 }
 

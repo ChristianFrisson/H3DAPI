@@ -92,6 +92,10 @@ namespace H3DWindowNodeInternals {
   FIELDDB_ELEMENT( H3DWindowNode, cursorType, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DWindowNode, navigationInfo, INPUT_OUTPUT );
   FIELDDB_ELEMENT( H3DWindowNode, clipDistances, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( H3DWindowNode, viewportWidth, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( H3DWindowNode, viewportHeight, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( H3DWindowNode, projectionWidth, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( H3DWindowNode, projectionHeight, OUTPUT_ONLY );
 }
 
 bool H3DWindowNode::GLEW_init = false;
@@ -111,7 +115,7 @@ H3DWindowNode::H3DWindowNode(
                    Inst< SFString    > _cursorType,
                    Inst< SFNavigationInfo > _navigationInfo,
                    Inst< SFBool > _useFullscreenAntiAliasing,
-                   Inst< SFVec2f > _clipDistances ) :
+                   Inst< SFVec2f > _clipDistances) :
 #ifdef WIN32
   rendering_context( NULL ),
 #endif
@@ -128,6 +132,10 @@ H3DWindowNode::H3DWindowNode(
   navigationInfo( _navigationInfo ),
   useFullscreenAntiAliasing( _useFullscreenAntiAliasing ),
   clipDistances( _clipDistances ),
+  viewportWidth( new SFInt32 ),
+  viewportHeight( new SFInt32 ),
+  projectionWidth( new SFInt32 ),
+  projectionHeight( new SFInt32 ),
   last_render_child( NULL ),
   window_id( 0 ),
   rebuild_stencil_mask( false ),
@@ -162,6 +170,11 @@ H3DWindowNode::H3DWindowNode(
   mirrored->setValue( false );
   clipDistances->setValue( Vec2f( 0.01f, 10 ), id );
 
+  for( int i = 0; i<12; ++i ) {
+    viewports_size[i]  = -1;
+  }
+  
+
   renderMode->addValidValue( "MONO" );
   renderMode->addValidValue( "QUAD_BUFFERED_STEREO" );
   renderMode->addValidValue( "VERTICAL_SPLIT" );
@@ -178,6 +191,7 @@ H3DWindowNode::H3DWindowNode(
   renderMode->addValidValue( "HDMI_FRAME_PACKED_720P" );
   renderMode->addValidValue( "HDMI_FRAME_PACKED_1080P" );
   renderMode->addValidValue( "NVIDIA_3DVISION" );
+  renderMode->addValidValue( "VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS" );
   renderMode->setValue( "MONO" );  
 
   cursorType->addValidValue( "DEFAULT" );
@@ -570,23 +584,37 @@ bool H3DWindowNode::calculateFarAndNearPlane( H3DFloat &clip_far,
 }
 
 void H3DWindowNode::checkIfStereoObtained() {
+
   if( window_is_made_active && renderMode->getRenderMode() == RenderMode::QUAD_BUFFERED_STEREO ) {
-    /*// make sure that we got the required pixel format for stereo.
-    HDC hdc = wglGetCurrentDC();
-    int pixel_format = GetPixelFormat( hdc );
-    PIXELFORMATDESCRIPTOR  pfd; 
-    DescribePixelFormat(hdc, pixel_format,  
-                      sizeof(PIXELFORMATDESCRIPTOR), &pfd); 
-                      GLboolean quad_stereo_supported; 
-                      if( !(pfd.dwFlags & PFD_STEREO) || !quad_stereo_supported ) { */
-    GLboolean quad_stereo_supported;
-    glGetBooleanv( GL_STEREO, &quad_stereo_supported);
-    if( !quad_stereo_supported ) {
-      Console(4) << "Warning: Stereo pixel format not supported by your "
-                 << "graphics card(or it is not enabled). Quad buffered "
-                 << "stereo cannot be used. "
-                 << "Using \"MONO\" instead. " <<endl;
-      renderMode->setValue( "MONO", id );
+    switch (renderMode->getRenderMode())
+    {
+    case RenderMode::QUAD_BUFFERED_STEREO :
+      {
+        GLboolean quad_stereo_supported;
+        glGetBooleanv( GL_STEREO, &quad_stereo_supported);
+        if( !quad_stereo_supported ) {
+          Console(4) << "Warning: Stereo pixel format not supported by your "
+            << "graphics card(or it is not enabled). Quad buffered "
+            << "stereo cannot be used. "
+            << "Using \"MONO\" instead. " <<endl;
+          renderMode->setValue( "MONO", id );
+        }
+        break;
+      }
+
+    case RenderMode::VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS:
+      {
+        if( !GLEW_ARB_viewport_array ) {
+          Console(4) << "Warning: GL_ARB_viewport_array not supported by your "
+            << "graphics card. VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS "
+            << "stereo cannot be used. "
+            << "Using \"MONO\" instead. " <<endl;
+          renderMode->setValue( "MONO", id );
+        }
+        break;
+      }
+    default:
+      break;
     }
     check_if_stereo_obtained = false;
   }
@@ -595,11 +623,136 @@ void H3DWindowNode::checkIfStereoObtained() {
 void H3DWindowNode::initWindowWithContext() {
   window_is_made_active = false;
   RenderMode::Mode stereo_mode = renderMode->getRenderMode();
-  if( stereo_mode == RenderMode::QUAD_BUFFERED_STEREO )
+  if( stereo_mode != RenderMode::MONO )
     check_if_stereo_obtained = true;
   initWindow();
   if( check_if_stereo_obtained )
     checkIfStereoObtained();
+}
+
+void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode, 
+  H3DInt32& viewport_width, H3DInt32& viewport_height, H3DFloat* viewports_size )
+{
+    H3DInt32 window_width = width->getValue();
+    H3DInt32 window_height = height->getValue();
+    // by default set viewport width height to be the same as window width, height
+    viewport_width = window_width;
+    viewport_height = window_height;
+
+    projectionHeight->setValue(viewport_height,id);
+    projectionWidth->setValue(viewport_width,id);
+
+    fbo_default_width = viewport_width;
+    fbo_default_height= viewport_height;
+    int n; // total number of view port
+    //fill in two viewport origin value if they exist
+    H3DInt32 vx[2] = {0, 0};   // viewport origin point x component
+    H3DInt32 vy[2] = {0, 0};   // viewport origin point y component
+    switch (stereo_mode)
+    {
+    case RenderMode::MONO:
+    case RenderMode::QUAD_BUFFERED_STEREO:
+    case RenderMode::HORIZONTAL_INTERLACED:
+    case RenderMode::VERTICAL_INTERLACED:
+    case RenderMode::CHECKER_INTERLACED:
+    case RenderMode::VERTICAL_INTERLACED_GREEN_SHIFT:
+    case RenderMode::RED_BLUE_STEREO:
+    case RenderMode::RED_GREEN_STEREO:
+    case RenderMode::RED_CYAN_STEREO:
+      {// only need one viewport
+        n = 1;
+        break;
+      }
+    case RenderMode::HORIZONTAL_SPLIT:
+      {
+        n = 2;
+        viewport_height = (H3DFloat)(int)(window_height/2.0);
+        fbo_default_height = viewport_height;
+        vy[0] = viewport_height;
+        break;
+      }
+    case RenderMode::VERTICAL_SPLIT:
+      {
+        n = 2;
+        viewport_width = (H3DFloat)(int)(window_width/2.0);
+        fbo_default_width = viewport_width;
+        vx[1] = viewport_width;
+        break;
+      }
+    case RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO:
+      {
+        n = 2;
+        viewport_height = (H3DFloat)(int)(window_height/2.0);
+        fbo_default_height = viewport_height;
+        projectionHeight->setValue(viewport_height);
+        //projection_height = viewport_height;
+        vy[0] = viewport_height;
+        break;
+      }
+    case RenderMode::VERTICAL_SPLIT_KEEP_RATIO:
+      {
+        n = 2;
+        viewport_width = (H3DFloat)(int)(window_width/2.0);
+        fbo_default_width = viewport_width;
+        projectionWidth->setValue(viewport_width,id);
+        vx[1] = viewport_width;
+        break;
+      }
+    case RenderMode::HDMI_FRAME_PACKED_720P:
+      {
+        n = 2;
+        viewport_width = 1280;
+        fbo_default_width = viewport_width;
+        projectionWidth->setValue(1280);
+        viewport_height = 720;
+        fbo_default_height = viewport_height;
+        projectionHeight->setValue(720);
+        vy[0] = 750;
+        break;
+      }
+    case RenderMode::HDMI_FRAME_PACKED_1080P:
+      {
+        n = 2;
+        viewport_width = 1920;
+        fbo_default_width = viewport_width;
+        projectionWidth->setValue(1920);
+        viewport_height = 1080;
+        fbo_default_height = viewport_height;
+        projectionHeight->setValue(1080);
+        vy[0] = 1125;
+        break;
+      }
+    case RenderMode::NVIDIA_3DVISION:
+      {
+        n = 2;
+        vx[1] = viewport_width;
+        break;
+      }
+    case RenderMode::VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS:
+      {
+        n = 2;
+        viewport_width = (H3DFloat)(int)(window_width/2);
+        projectionWidth->setValue(viewport_width,id);
+        vx[1] = viewport_width;
+        fbo_default_width = window_width;
+        fbo_default_height = window_height;
+        break;
+      }
+    }
+    if( viewports_size ) {
+      // set the windows dimension as the first four value
+      viewports_size[0] = 0;
+      viewports_size[1] = 0;
+      viewports_size[2] = window_width;
+      viewports_size[3] = window_height;
+      for( int i = 0; i < n; ++i ) {
+        viewports_size[4*(i+1)+0] = (H3DFloat)vx[i];
+        viewports_size[4*(i+1)+1] = (H3DFloat)vy[i];
+        viewports_size[4*(i+1)+2] = (H3DFloat)viewport_width;
+        viewports_size[4*(i+1)+3] = (H3DFloat)viewport_height;
+      }
+    }
+    nr_viewports = n;
 }
 
 struct CallbackData {
@@ -624,7 +777,7 @@ void H3DWindowNode::fboCallback( FrameBufferTextureGenerator *g, int i, void *ar
 void H3DWindowNode::renderChild( X3DChildNode *child_to_render ) {
   RenderMode::Mode stereo_mode = renderMode->getRenderMode();
   if( stereo_mode == RenderMode::NVIDIA_3DVISION ) {
-    // NVIDIA_3DVISION rendermode will render the data to an fbo.
+    // NVIDIA_3DVISION render mode will render the data to an fbo.
     // It is then up to the sub-class to read this data and display
     // it properly for stereo.
     CallbackData data;
@@ -872,8 +1025,10 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   bool any_pointing_device_sensors =
     X3DPointingDeviceSensorNode::instancesExists();
   //    Console(4) << clip_near << " " << clip_far << endl;
-  if( renderMode->isStereoMode() ) {
-    // make sure the focal plane is between the near and far 
+  bool isStereoMode = renderMode->isStereoMode();
+  bool isSinglePass = renderMode->isSinglePass();
+  if( isStereoMode ) {
+    // in stereo mode, need to make sure the focal plan is between the near and far
     // clipping planes.
     if( focal_distance <= clip_near ) {
       clip_near = focal_distance - 0.01f;
@@ -881,9 +1036,19 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     if( focal_distance >= clip_far && clip_far != -1 ) {
       clip_far = focal_distance + 0.01f;
     }
+  }
+  
+  // initialize the viewport values
+  H3DInt32 viewport_width = 0, viewport_height =0;
+  configureViewPortsSize( stereo_mode, viewport_width, viewport_height, viewports_size);
+  viewportWidth->setValue(viewport_width);
+  viewportHeight->setValue(viewport_height);
+  clipDistances->setValue( Vec2f(clip_near, clip_far), id );
+  
 
-    clipDistances->setValue( Vec2f(clip_near, clip_far), id );
 
+  if( !isSinglePass ) { // need to render twice for stereo
+    
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
@@ -893,39 +1058,16 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     } else {
       glFrontFace( GL_CCW );
     }
-
-    H3DFloat projection_width;
-
-    if( stereo_mode == RenderMode::VERTICAL_SPLIT_KEEP_RATIO ) {
-      projection_width = (H3DFloat) width->getValue()/2.0f;
-    } else if( stereo_mode == RenderMode::HDMI_FRAME_PACKED_720P ) {
-      projection_width = 1280;
-    } else if( stereo_mode == RenderMode::HDMI_FRAME_PACKED_1080P ) {
-      projection_width = 1920;
-    } else {
-      projection_width = (H3DFloat) width->getValue();
-    }
-
-    H3DFloat projection_height;
-    if( stereo_mode == RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ) {
-      projection_height = (H3DFloat) height->getValue()/2.0f;
-    } else if( stereo_mode == RenderMode::HDMI_FRAME_PACKED_720P ) {
-      projection_height = 720;
-    } else if( stereo_mode == RenderMode::HDMI_FRAME_PACKED_1080P ) {
-      projection_height = 1080;
-    } else {
-      projection_height = (H3DFloat) height->getValue();
-    }
     // LEFT EYE
     // The stereo rendering is made using the parallel axis asymmetric frustum 
     // perspective projection method, which means that the viewpoint for each 
-    // eye remain parallell and an the asymmetric view frustum is set up using 
+    // eye remain parallel and an the asymmetric view frustum is set up using 
     // glFrustum. This is done by calling the setupProjection function of
     // X3DViewpointNode.
     eye_mode = X3DViewpointNode::LEFT_EYE;
     vp->setupProjection( eye_mode,
-                         projection_width,
-                         projection_height,
+                         (H3DFloat)projectionWidth->getValue(),
+                         (H3DFloat)projectionHeight->getValue(),
                          clip_near, clip_far,
                          stereo_info );
     
@@ -961,18 +1103,13 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glEnable(GL_STENCIL_TEST);
       glStencilFunc(GL_EQUAL,1,1);
       glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
-    } else if( stereo_mode == RenderMode::HORIZONTAL_SPLIT ||
-               stereo_mode == RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ) {
-      glViewport( 0, height->getValue() / 2, 
-                  width->getValue(), height->getValue() / 2 );
-    } else if( stereo_mode == RenderMode::HDMI_FRAME_PACKED_720P ) {
-      glViewport( 0, 750, 1280, 720 );
-    } else  if( stereo_mode == RenderMode::HDMI_FRAME_PACKED_1080P ) {
-      glViewport( 0, 1125, 1920, 1080 );
-    } else if( stereo_mode == RenderMode::VERTICAL_SPLIT || 
-               stereo_mode == RenderMode::VERTICAL_SPLIT_KEEP_RATIO ) {
-      glViewport( 0, 0, width->getValue() / 2, height->getValue() );
-    } 
+    }else{ // set viewport for left eye, when the viewport not covering the whole window
+      if( viewports_size[4] != 0 || viewports_size[5] != 0 ||
+        viewports_size[6] != width->getValue() || viewports_size[7] != height->getValue() ) {
+          glViewport( (int)viewports_size[4], (int)viewports_size[5], 
+            (int)viewports_size[6], (int)viewports_size[7] );
+      }
+    }
 
     // clear the buffers before rendering
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -1038,8 +1175,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     }
     eye_mode = X3DViewpointNode::RIGHT_EYE;
     vp->setupProjection( eye_mode,
-                         projection_width,
-                         projection_height,
+                         (H3DFloat)projectionWidth->getValue(),
+                         (H3DFloat)projectionHeight->getValue(),
                          clip_near, clip_far,
                          stereo_info );
 
@@ -1065,7 +1202,15 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glEnable(GL_STENCIL_TEST);
       glStencilFunc(GL_NOTEQUAL,1,1);
       glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
-    } if( stereo_mode == RenderMode::HORIZONTAL_SPLIT ||
+    }else{// set viewport for right eye when it is not covering the full window
+      if( viewports_size[8] != 0 || viewports_size[9] != 0 ||
+        viewports_size[10] != width->getValue() || viewports_size[11] != height->getValue() ) {
+          glViewport( (int)viewports_size[8], (int)viewports_size[9], 
+            (int)viewports_size[10], (int)viewports_size[11] );
+      }
+    }
+    
+    /*if( stereo_mode == RenderMode::HORIZONTAL_SPLIT ||
       stereo_mode == RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO ) {
       glViewport( 0, 0, 
                   width->getValue(), height->getValue() / 2 );
@@ -1080,7 +1225,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     } else if( stereo_mode == RenderMode::NVIDIA_3DVISION  ) {
       glViewport( width->getValue(), 0, 
                   width->getValue(), height->getValue() );
-    }
+    }*/
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -1235,8 +1380,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glPopMatrix();
     }
   } else {
-    // MONO
-    clipDistances->setValue( Vec2f(clip_near, clip_far), id );
+    // isSinglePass means either MONO or single pass stereo
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -1248,9 +1392,30 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glFrontFace( GL_CCW );
     }
 
-    vp->setupProjection( X3DViewpointNode::MONO,
-                         (H3DFloat)width->getValue(),
-                         (H3DFloat)height->getValue(),
+    eye_mode = (isStereoMode ? X3DViewpointNode::BOTH_EYE : X3DViewpointNode::MONO);
+
+    if( nr_viewports == 1 ) { 
+      //MONO, for single viewport, only specify viewport when the desired dimension
+      // not matching the full window dimension
+      if( viewports_size[4] != 0 || viewports_size[5] != 0 ||
+        viewports_size[6] != width->getValue() || viewports_size[7] != height->getValue() ) {
+          glViewport( (int)viewports_size[4], (int)viewports_size[5], 
+            (int)viewports_size[6], (int)viewports_size[7] );
+      }
+    }else{
+      // single pass stereo
+      if( GLEW_ARB_viewport_array ) {
+        glViewportArrayv(0, nr_viewports + 1, viewports_size);
+        glDisable(GL_SCISSOR_TEST);
+      }else{
+        Console(4) << "Warning: GL_ARB_viewport_array is not supported by the graphic card. "
+          <<"single pass stereo can not be used."<<endl;
+      }
+    }
+
+    vp->setupProjection( eye_mode,
+                         (H3DFloat)projectionWidth->getValue(),
+                         (H3DFloat)projectionHeight->getValue(),
                          clip_near, clip_far );
 
     glMatrixMode(GL_MODELVIEW);
@@ -1279,7 +1444,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glEnable( GL_NORMALIZE );
 
     // add viewmatrix to model view matrix.
-    vp->setupViewMatrix( X3DViewpointNode::MONO );
+    vp->setupViewMatrix( eye_mode );
 
     if( any_pointing_device_sensors ) {
       // Get matrices used to calculate arguments for
@@ -1497,6 +1662,8 @@ H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
     return HDMI_FRAME_PACKED_1080P;
   else if( value == "NVIDIA_3DVISION" )
     return NVIDIA_3DVISION;
+  else if( value == "VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS" )
+    return VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS;
   else {
     stringstream s;
     s << "Must be one of "
@@ -1513,6 +1680,7 @@ H3DWindowNode::RenderMode::Mode H3DWindowNode::RenderMode::getRenderMode() {
       << "NVIDIA_3DVISION, "
       << "HDMI_FRAME_PACKED_720P, "
       << "HDMI_FRAME_PACKED_1080P, "
+      << "VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS"
       << "RED_CYAN_STEREO, RED_GREEN_STEREO or RED_BLUE_STEREO. ";
     throw InvalidRenderMode( value, 
                              s.str(),

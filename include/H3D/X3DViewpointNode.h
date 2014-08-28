@@ -247,7 +247,9 @@ namespace H3D {
       /// For the left eye.
       LEFT_EYE = 1,
       /// For the right eye.
-      RIGHT_EYE = 2
+      RIGHT_EYE = 2,
+      /// Both eyes in a single pass.
+      BOTH_EYE = 3
     };
 
     /// This field is used for the position field in order to reset the

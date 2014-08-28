@@ -57,7 +57,9 @@ namespace H3D {
                 Inst< SFBool     > _isBound             = 0,
                 Inst< SFFloat    > _interocularDistance = 0,
                 Inst< SFFloat    > _focalDistance       = 0,
-                Inst< SFRotation > _headTilt            = 0 );
+                Inst< SFRotation > _headTilt            = 0,
+                Inst< SFFloat > _matrixViewShift        = 0,
+                Inst< SFFloat > _matrixProjShift        = 0 );
     
     /// Convenience function to get the top of the StereoInfo stack.
     static inline StereoInfo *getActive() {
@@ -86,6 +88,18 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> Rotation(1,0,0,0) \n
     auto_ptr< SFRotation > headTilt;
+
+    /// The matrixViewShift field specifies the view matrix stereo shirt.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0.0 \n
+    auto_ptr< SFFloat > matrixViewShift;
+
+    /// The matrixViewShift field specifies the projection matrix stereo shift.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0.0 \n
+    auto_ptr< SFFloat > matrixProjShift;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

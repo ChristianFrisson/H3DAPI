@@ -126,7 +126,15 @@ namespace H3D {
         /// copy OpenGL buffer and display with DirectX. Executable must be
         /// named to one of the NVidia sanctioned 3D programs in order to work,
         /// e.g. googleearth.exe.
-        NVIDIA_3DVISION
+        NVIDIA_3DVISION,
+
+        /// It is almost the same as the VERTICAL_SPLIT_KEEP_RATIO model, left half
+        /// of the screen for left eye and right half of the screen will go for right
+        /// eye. However this mode will only render once in one frame, and send in 
+        /// multiple viewport for both left and right eye. This render mode will requires
+        /// that all object need to be rendered in the scene to shift its original geometry
+        /// to both left and right to provide geometry for both eyes.
+        VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS
 
       } Mode;
 
@@ -158,6 +166,13 @@ namespace H3D {
       inline bool isStereoMode() { 
         upToDate();
         return value != "MONO";
+      }
+
+      /// Returns true if stereo rendering only need one pass
+      inline bool isSinglePass() {
+        upToDate();
+        return value == "MONO"||
+               value == "VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS";
       }
 
       /// Get the current RenderMode string as an Mode enum. 
@@ -375,6 +390,27 @@ namespace H3D {
     /// <b>Default value:</b> true \n
     auto_ptr< SFBool > useFullscreenAntiAliasing;
 
+    /// The width of the viewport being used for this window
+    /// <b>Access type:</b> outputOnly \n
+    auto_ptr< SFInt32 > viewportWidth;
+
+    /// The width of the projection width, mostly of the time it is the same as
+    /// the viewport width. This value is used to define the projection frustum
+    /// width
+    auto_ptr< SFInt32 > projectionWidth;
+    //int projection_width;
+
+    /// The height of the viewport being used for this window
+    /// <b>Access type:</b> outputOnly \n
+    auto_ptr< SFInt32 > viewportHeight;
+
+    /// The height of the projection height, mostly of the time it is the same as
+    /// the viewport height. This value is used to define the projection frustum
+    /// height
+    /// <b>Access type:</b> outputOnly \n
+    auto_ptr< SFInt32 > projectionHeight;
+    //int projection_height;
+
     static set< H3DWindowNode* > windows;
 
     inline static bool getMultiPassTransparency() {
@@ -413,6 +449,22 @@ namespace H3D {
     bool default_collision;
     vector< string > default_transition_type;
     H3DTime default_transition_time;
+    // fbo default size normally will match the viewport width and height for 
+    // the FBTG node. However when it is in single pass render stereo mode, 
+    // they are no longer the same. These value will be used for FBTG node
+    // to creat framebuffer object.
+    H3DInt32 fbo_default_width ;
+    H3DInt32 fbo_default_height;
+
+    // viewport_sizes contains a sequence of (x,y,w,h) size values 
+    // the first four values are the default viewport which cover the whole
+    // window. The second and third four value tuple represent the viewport
+    // for stereo mode which requires two viewports
+    H3DFloat viewports_size[12];
+
+    // number of viewport in this window
+    // this value is used together with viewports_size to get viewport dimensions
+    H3DInt32 nr_viewports;
 
   protected:
     /// internal help function to initialise the window and
@@ -513,7 +565,18 @@ namespace H3D {
     H3DNavigation * h3d_navigation;
 
     bool window_is_made_active, check_if_stereo_obtained;
+
+    
+
+    
+
     void checkIfStereoObtained();
+    // function to calculate the number of viewport for window node which is the 
+    // return value. viewports_size will contains a sequence of the viewport size infos
+    // for all the viewports. The function will take windows width and height and 
+    // give back viewport width and height based on the stereo mode
+    void configureViewPortsSize( RenderMode::Mode stereo_mode,
+    H3DInt32& viewport_width, H3DInt32& viewport_height, H3DFloat* viewports_size );
   public:
     /// Saves the currently rendered buffer to file. That is, a screenshot
     /// of the openGL window.
