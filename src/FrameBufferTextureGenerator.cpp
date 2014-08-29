@@ -450,20 +450,25 @@ void FrameBufferTextureGenerator::render()     {
   /// Make sure all textures and buffers are initialized.
   if( !fbo_initialized ) initializeFBO();
 
-  // get the width and height of the buffer in pixels.
-  int current_width  = width->getValue();
-  int current_height = height->getValue();
-  // get the viewport used for default frame buffer.
-  int default_x = 0;
-  int default_y = 0;
-  GLint viewport[4];
-  glGetIntegerv( GL_VIEWPORT, viewport );
-  default_x = viewport[0];
-  default_y = viewport[1];
+  StereoInfo* stereo_info = NULL;
+  Scene *scene = Scene::scenes.size ( ) > 0 ? *Scene::scenes.begin ( ) : NULL;
+  H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue ( )[0]);
+  // get the desired width and height of the buffer in pixels.
+  int desired_fbo_width  = width->getValue();
+  int desired_fbo_heigth = height->getValue();
+  int projection_width = desired_fbo_width;
+  int projection_height = desired_fbo_heigth;
+  // the fbo copying source staring point  when FBTG is not creating a new fbo
+  int buffer_src_x = window->fbo_current_x;
+  int buffer_src_y = window->fbo_current_y;
 
-  if( current_height == -1 || current_width == -1 ) {
-    if( current_width == -1 )  current_width  = viewport[2];
-    if( current_height == -1 ) current_height = viewport[3];
+  
+  // if not specified width, height exist, use the dimension used by the current window
+  if( desired_fbo_width == -1 || desired_fbo_heigth == -1 ) {
+    desired_fbo_width = window->fbo_current_width;
+    desired_fbo_heigth = window->fbo_current_height;
+    projection_width = window->projectionWidth->getValue();
+    projection_height = window->projectionHeight->getValue();
   } 
 
   // current_width and current_height should be set to default viewport width, height
@@ -473,25 +478,47 @@ void FrameBufferTextureGenerator::render()     {
     std::find(colorbuffer_storage.begin(), colorbuffer_storage.end(), "DEFAULT_COPY")
     !=colorbuffer_storage.end();
   if( colorbuffer_default_copy||depthBufferStorage->getValue()=="DEFAULT_COPY" ) {
-    current_width = viewport[2];
-    current_height = viewport[3];
+    desired_fbo_width = window->fbo_current_width;
+    desired_fbo_heigth = window->fbo_current_height;
+    projection_width = window->projectionWidth->getValue();
+    projection_height = window->projectionHeight->getValue();
   }
 
 
 
   bool using_stencil_buffer = haveStencilBuffer();
-
-  if( !always_use_existing_viewport) {
+  if( useStereo->getValue()&&window->renderMode->isSinglePass()&&window->renderMode->isStereoMode() ) {
+    // main scene is single pass stereo mode and FBTG intend to use stereo , then
+    // need to send in multiple viewport to GPU
+    H3DFloat viewports_size[12];
+    for( int i = 0; i<12; ++i ) {
+      viewports_size[i] = window->viewports_size[i];
+    }
+    buffer_src_x = 0;
+    buffer_src_y = 0;
+#ifdef GLEW_ARB_viewport_array
+    if( GLEW_ARB_viewport_array ) {
+      glViewportArrayv(0,3, viewports_size);
+      glDisable(GL_SCISSOR_TEST);
+    }else{
+#endif
+      Console(4) << "Warning: GL_ARB_viewport_array is not supported by the graphic card. "
+        <<"single pass stereo can not be used."<<endl;
+#ifdef GLEW_ARB_viewport_array
+    }
+#endif
+  }
+  else if( !always_use_existing_viewport) {
     // Set viewport to span entire frame buffer  to be used as target
-    glViewport( 0 , 0, current_width, current_height );
+    glViewport( 0 , 0, desired_fbo_width, desired_fbo_heigth );
   }
 
   unsigned int current_depth  = output_texture_type == "2D" || output_texture_type == "2D_RECTANGLE" ? 1: std::max( (int)children->size(), 1 );
 
 
-  if( samples->getValue() != last_samples || buffers_width != current_width || buffers_height != current_height || buffers_depth != current_depth ) {
+  if( samples->getValue() != last_samples || buffers_width != desired_fbo_width || buffers_height != desired_fbo_heigth || buffers_depth != current_depth ) {
     last_samples = samples->getValue();
-    last_resize_success = resizeBuffers( current_width, current_height, current_depth );
+    last_resize_success = resizeBuffers( desired_fbo_width, desired_fbo_heigth, current_depth );
   }
 
   // Don't do anything if buffer resize had an error.
@@ -545,7 +572,8 @@ void FrameBufferTextureGenerator::render()     {
   
   if( have_local_vp||have_local_navi )
   { 
-    //switch projection
+    //switch projection, if not necessary, try to avoid this, as it is expensive
+    // to do so
     H3DFloat clip_near = (H3DFloat)0.01;
     H3DFloat clip_far = -1;
 
@@ -565,9 +593,7 @@ void FrameBufferTextureGenerator::render()     {
         clip_far = -1;
     }
     X3DViewpointNode::EyeMode eye_mode = X3DViewpointNode::MONO;
-    StereoInfo* stereo_info = NULL;
-    Scene *scene = Scene::scenes.size ( ) > 0 ? *Scene::scenes.begin ( ) : NULL;
-    H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue ( )[0]);
+    
     if( useStereo->getValue()&&window->getEyeMode()!=eye_mode ) {
       // when current active eye mode is not MONO and FBO need to use stereo, need to specify 
       // stereo_info
@@ -582,8 +608,8 @@ void FrameBufferTextureGenerator::render()     {
     glPushMatrix();
     glLoadIdentity();
     vp->setupProjection( eye_mode,
-      (H3DFloat) current_width,
-      (H3DFloat) current_height,
+      (H3DFloat) projection_width,
+      (H3DFloat) projection_height,
       clip_near, clip_far, stereo_info );
   } 
 
@@ -592,7 +618,7 @@ void FrameBufferTextureGenerator::render()     {
 
     // render scene.
     if( render_func ) {
-       preProcessFBO(default_x, default_y, current_width,current_height,current_depth);
+       preProcessFBO(buffer_src_x, buffer_src_y, desired_fbo_width,desired_fbo_heigth,current_depth);
       render_func( this, -1, render_func_data );
     } else {
       if( !useSpecifiedClearColor->getValue() ) {
@@ -604,7 +630,7 @@ void FrameBufferTextureGenerator::render()     {
           glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
         }
         // Prepare the fbo for rendering, it will clear or copy or share what frame buffer is being specified
-        preProcessFBO(default_x, default_y, current_width,current_height,current_depth);
+        preProcessFBO(buffer_src_x, buffer_src_y, desired_fbo_width,desired_fbo_heigth,current_depth);
         // Render background
         if ( bg && bgVP ) {
           const Vec3f &vp_position = bgVP->totalPosition->getValue();
@@ -632,10 +658,10 @@ void FrameBufferTextureGenerator::render()     {
         RGBA clear_color = clearColor->getValue();
         glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
         // Prepare the fbo for rendering, it will clear or copy or share what frame buffer is being specified
-        preProcessFBO(default_x, default_y, current_width,current_height,current_depth);
+        preProcessFBO(buffer_src_x, buffer_src_y, desired_fbo_width,desired_fbo_heigth,current_depth);
       }
-      widthInUse->setValue(current_width, id);
-      heightInUse->setValue(current_height, id);
+      widthInUse->setValue(desired_fbo_width, id);
+      heightInUse->setValue(desired_fbo_heigth, id);
       X3DShapeNode::GeometryRenderMode  m= X3DShapeNode::geometry_render_mode;
 
       if( children_multi_pass_transparency ) {
@@ -661,16 +687,16 @@ void FrameBufferTextureGenerator::render()     {
       // blit multi sample buffers to textures.
       if( generateDepthTexture->getValue() ) {
         if( using_stencil_buffer ) {
-          glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+          glBlitFramebufferEXT(0, 0, desired_fbo_width, desired_fbo_heigth, 0, 0, desired_fbo_width, desired_fbo_heigth, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
         }else{
-          glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_DEPTH_BUFFER_BIT , GL_NEAREST);
+          glBlitFramebufferEXT(0, 0, desired_fbo_width, desired_fbo_heigth, 0, 0, desired_fbo_width, desired_fbo_heigth, GL_DEPTH_BUFFER_BIT , GL_NEAREST);
         }
       }
 
       for( unsigned int i = 0; i < color_ids.size(); ++i ) {
         glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
         glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
-        glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        glBlitFramebufferEXT(0, 0, desired_fbo_width, desired_fbo_heigth, 0, 0, desired_fbo_width, desired_fbo_heigth, GL_COLOR_BUFFER_BIT, GL_NEAREST);
       }
     }
   } else {
@@ -731,13 +757,13 @@ void FrameBufferTextureGenerator::render()     {
 
         // blit multi sample buffers to textures.
         if( generateDepthTexture->getValue() ) {
-          glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+          glBlitFramebufferEXT(0, 0, desired_fbo_width, desired_fbo_heigth, 0, 0, desired_fbo_width, desired_fbo_heigth, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
         }
 
         for( unsigned int i = 0; i < color_ids.size(); ++i ) {
           glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
           glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
-          glBlitFramebufferEXT(0, 0, current_width, current_height, 0, 0, current_width, current_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+          glBlitFramebufferEXT(0, 0, desired_fbo_width, desired_fbo_heigth, 0, 0, desired_fbo_width, desired_fbo_heigth, GL_COLOR_BUFFER_BIT, GL_NEAREST);
         }
       }
     }
