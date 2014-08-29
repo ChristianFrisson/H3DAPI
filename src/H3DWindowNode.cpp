@@ -604,13 +604,17 @@ void H3DWindowNode::checkIfStereoObtained() {
 
     case RenderMode::VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS:
       {
+#ifdef GLEW_ARB_viewport_array
         if( !GLEW_ARB_viewport_array ) {
+#endif
           Console(4) << "Warning: GL_ARB_viewport_array not supported by your "
             << "graphics card. VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS "
             << "stereo cannot be used. "
             << "Using \"MONO\" instead. " <<endl;
           renderMode->setValue( "MONO", id );
+#ifdef GLEW_ARB_viewport_array
         }
+#endif
         break;
       }
     default:
@@ -1402,15 +1406,19 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
           glViewport( (int)viewports_size[4], (int)viewports_size[5], 
             (int)viewports_size[6], (int)viewports_size[7] );
       }
-    }else{
+    } else {
+#ifdef GLEW_ARB_viewport_array
       // single pass stereo
       if( GLEW_ARB_viewport_array ) {
         glViewportArrayv(0, nr_viewports + 1, viewports_size);
         glDisable(GL_SCISSOR_TEST);
-      }else{
+      } else {
+#endif
         Console(4) << "Warning: GL_ARB_viewport_array is not supported by the graphic card. "
           <<"single pass stereo can not be used."<<endl;
+#ifdef GLEW_ARB_viewport_array
       }
+#endif
     }
 
     vp->setupProjection( eye_mode,
