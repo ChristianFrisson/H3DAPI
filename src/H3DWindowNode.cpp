@@ -670,7 +670,7 @@ void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode,
     case RenderMode::HORIZONTAL_SPLIT:
       {
         n = 2;
-        viewport_height = (H3DFloat)(int)(window_height/2.0);
+        viewport_height = window_height/2;
         fbo_default_height = viewport_height;
         vy[0] = viewport_height;
         break;
@@ -678,7 +678,7 @@ void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode,
     case RenderMode::VERTICAL_SPLIT:
       {
         n = 2;
-        viewport_width = (H3DFloat)(int)(window_width/2.0);
+        viewport_width = window_width/2;
         fbo_default_width = viewport_width;
         vx[1] = viewport_width;
         break;
@@ -686,9 +686,9 @@ void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode,
     case RenderMode::HORIZONTAL_SPLIT_KEEP_RATIO:
       {
         n = 2;
-        viewport_height = (H3DFloat)(int)(window_height/2.0);
+        viewport_height = window_height/2;
         fbo_default_height = viewport_height;
-        projectionHeight->setValue(viewport_height);
+        projectionHeight->setValue(viewport_height,id);
         //projection_height = viewport_height;
         vy[0] = viewport_height;
         break;
@@ -696,7 +696,7 @@ void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode,
     case RenderMode::VERTICAL_SPLIT_KEEP_RATIO:
       {
         n = 2;
-        viewport_width = (H3DFloat)(int)(window_width/2.0);
+        viewport_width = window_width/2;
         fbo_default_width = viewport_width;
         projectionWidth->setValue(viewport_width,id);
         vx[1] = viewport_width;
@@ -707,10 +707,10 @@ void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode,
         n = 2;
         viewport_width = 1280;
         fbo_default_width = viewport_width;
-        projectionWidth->setValue(1280);
+        projectionWidth->setValue(1280,id);
         viewport_height = 720;
         fbo_default_height = viewport_height;
-        projectionHeight->setValue(720);
+        projectionHeight->setValue(720,id);
         vy[0] = 750;
         break;
       }
@@ -719,10 +719,10 @@ void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode,
         n = 2;
         viewport_width = 1920;
         fbo_default_width = viewport_width;
-        projectionWidth->setValue(1920);
+        projectionWidth->setValue(1920,id);
         viewport_height = 1080;
         fbo_default_height = viewport_height;
-        projectionHeight->setValue(1080);
+        projectionHeight->setValue(1080,id);
         vy[0] = 1125;
         break;
       }
@@ -735,7 +735,7 @@ void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode,
     case RenderMode::VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS:
       {
         n = 2;
-        viewport_width = (H3DFloat)(int)(window_width/2);
+        viewport_width = window_width/2;
         projectionWidth->setValue(viewport_width,id);
         vx[1] = viewport_width;
         fbo_default_width = window_width;
@@ -747,8 +747,8 @@ void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode,
       // set the windows dimension as the first four value
       viewports_size[0] = 0;
       viewports_size[1] = 0;
-      viewports_size[2] = window_width;
-      viewports_size[3] = window_height;
+      viewports_size[2] = (H3DFloat)window_width;
+      viewports_size[3] = (H3DFloat)window_height;
       for( int i = 0; i < n; ++i ) {
         viewports_size[4*(i+1)+0] = (H3DFloat)vx[i];
         viewports_size[4*(i+1)+1] = (H3DFloat)vy[i];
@@ -1045,8 +1045,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   // initialize the viewport values
   H3DInt32 viewport_width = 0, viewport_height =0;
   configureViewPortsSize( stereo_mode, viewport_width, viewport_height, viewports_size);
-  viewportWidth->setValue(viewport_width);
-  viewportHeight->setValue(viewport_height);
+  viewportWidth->setValue(viewport_width,id);
+  viewportHeight->setValue(viewport_height,id);
   clipDistances->setValue( Vec2f(clip_near, clip_far), id );
   
 
