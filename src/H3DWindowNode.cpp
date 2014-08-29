@@ -136,6 +136,8 @@ H3DWindowNode::H3DWindowNode(
   viewportHeight( new SFInt32 ),
   projectionWidth( new SFInt32 ),
   projectionHeight( new SFInt32 ),
+  fbo_current_x(0),
+  fbo_current_y(0),
   last_render_child( NULL ),
   window_id( 0 ),
   rebuild_stencil_mask( false ),
@@ -646,8 +648,8 @@ void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode,
     projectionHeight->setValue(viewport_height,id);
     projectionWidth->setValue(viewport_width,id);
 
-    fbo_default_width = viewport_width;
-    fbo_default_height= viewport_height;
+    fbo_current_width = viewport_width;
+    fbo_current_height= viewport_height;
     int n; // total number of view port
     //fill in two viewport origin value if they exist
     H3DInt32 vx[2] = {0, 0};   // viewport origin point x component
@@ -671,7 +673,7 @@ void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode,
       {
         n = 2;
         viewport_height = window_height/2;
-        fbo_default_height = viewport_height;
+        fbo_current_height = viewport_height;
         vy[0] = viewport_height;
         break;
       }
@@ -679,7 +681,7 @@ void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode,
       {
         n = 2;
         viewport_width = window_width/2;
-        fbo_default_width = viewport_width;
+        fbo_current_width = viewport_width;
         vx[1] = viewport_width;
         break;
       }
@@ -687,7 +689,7 @@ void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode,
       {
         n = 2;
         viewport_height = window_height/2;
-        fbo_default_height = viewport_height;
+        fbo_current_height = viewport_height;
         projectionHeight->setValue(viewport_height,id);
         //projection_height = viewport_height;
         vy[0] = viewport_height;
@@ -697,7 +699,7 @@ void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode,
       {
         n = 2;
         viewport_width = window_width/2;
-        fbo_default_width = viewport_width;
+        fbo_current_width = viewport_width;
         projectionWidth->setValue(viewport_width,id);
         vx[1] = viewport_width;
         break;
@@ -706,10 +708,10 @@ void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode,
       {
         n = 2;
         viewport_width = 1280;
-        fbo_default_width = viewport_width;
+        fbo_current_width = viewport_width;
         projectionWidth->setValue(1280,id);
         viewport_height = 720;
-        fbo_default_height = viewport_height;
+        fbo_current_height = viewport_height;
         projectionHeight->setValue(720,id);
         vy[0] = 750;
         break;
@@ -718,10 +720,10 @@ void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode,
       {
         n = 2;
         viewport_width = 1920;
-        fbo_default_width = viewport_width;
+        fbo_current_width = viewport_width;
         projectionWidth->setValue(1920,id);
         viewport_height = 1080;
-        fbo_default_height = viewport_height;
+        fbo_current_height = viewport_height;
         projectionHeight->setValue(1080,id);
         vy[0] = 1125;
         break;
@@ -738,8 +740,8 @@ void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode,
         viewport_width = window_width/2;
         projectionWidth->setValue(viewport_width,id);
         vx[1] = viewport_width;
-        fbo_default_width = window_width;
-        fbo_default_height = window_height;
+        fbo_current_width = window_width;
+        fbo_current_height = window_height;
         break;
       }
     }
@@ -1107,11 +1109,15 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       glEnable(GL_STENCIL_TEST);
       glStencilFunc(GL_EQUAL,1,1);
       glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
+      fbo_current_x = 0;
+      fbo_current_y = 0;
     }else{ // set viewport for left eye, when the viewport not covering the whole window
       if( viewports_size[4] != 0 || viewports_size[5] != 0 ||
         viewports_size[6] != width->getValue() || viewports_size[7] != height->getValue() ) {
           glViewport( (int)viewports_size[4], (int)viewports_size[5], 
             (int)viewports_size[6], (int)viewports_size[7] );
+          fbo_current_x = viewports_size[4];
+          fbo_current_y = viewports_size[5];
       }
     }
 
@@ -1211,6 +1217,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
         viewports_size[10] != width->getValue() || viewports_size[11] != height->getValue() ) {
           glViewport( (int)viewports_size[8], (int)viewports_size[9], 
             (int)viewports_size[10], (int)viewports_size[11] );
+          fbo_current_x = viewports_size[8];
+          fbo_current_y = viewports_size[9];
       }
     }
     
@@ -1397,7 +1405,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     }
 
     eye_mode = (isStereoMode ? X3DViewpointNode::BOTH_EYE : X3DViewpointNode::MONO);
-
+    fbo_current_x = 0;
+    fbo_current_y = 0;
     if( nr_viewports == 1 ) { 
       //MONO, for single viewport, only specify viewport when the desired dimension
       // not matching the full window dimension

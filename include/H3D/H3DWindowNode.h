@@ -449,12 +449,18 @@ namespace H3D {
     bool default_collision;
     vector< string > default_transition_type;
     H3DTime default_transition_time;
-    // fbo default size normally will match the viewport width and height for 
-    // the FBTG node. However when it is in single pass render stereo mode, 
-    // they are no longer the same. These value will be used for FBTG node
-    // to creat framebuffer object.
-    H3DInt32 fbo_default_width ;
-    H3DInt32 fbo_default_height;
+
+    // the size of the frame buffer portion in use normally will match the 
+    // viewport width and height for the FBTG node. However when it is 
+    // in single pass render stereo mode, they are no longer the same. 
+    // These value will be used for FBTG node to creat framebuffer object.
+    H3DInt32 fbo_current_width ;
+    H3DInt32 fbo_current_height;
+
+    // the starting point of the frame buffer being used. Mostly of the time
+    // it will match the viewport staring point. 
+    H3DInt32 fbo_current_x;
+    H3DInt32 fbo_current_y;
 
     // viewport_sizes contains a sequence of (x,y,w,h) size values 
     // the first four values are the default viewport which cover the whole
