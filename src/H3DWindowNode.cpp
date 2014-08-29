@@ -149,7 +149,8 @@ H3DWindowNode::H3DWindowNode(
   current_cursor( "DEFAULT" ),
   h3d_navigation( new H3DNavigation ),
   window_is_made_active( false ),
-  check_if_stereo_obtained( false ) {
+  check_if_stereo_obtained( false ),
+  singlePassStereo( new SFBool ){
 
   type_name = "H3DWindowNode";
   database.initFields( this );
@@ -175,7 +176,7 @@ H3DWindowNode::H3DWindowNode(
   for( int i = 0; i<12; ++i ) {
     viewports_size[i]  = -1;
   }
-  
+  singlePassStereo->setValue(false);
 
   renderMode->addValidValue( "MONO" );
   renderMode->addValidValue( "QUAD_BUFFERED_STEREO" );
@@ -1054,7 +1055,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
 
   if( !isSinglePass ) { // need to render twice for stereo
-    
+    singlePassStereo->setValue(false);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
@@ -1408,6 +1409,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     fbo_current_x = 0;
     fbo_current_y = 0;
     if( nr_viewports == 1 ) { 
+      singlePassStereo->setValue(false);
       //MONO, for single viewport, only specify viewport when the desired dimension
       // not matching the full window dimension
       if( viewports_size[4] != 0 || viewports_size[5] != 0 ||
@@ -1420,7 +1422,9 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       // single pass stereo
       if( GLEW_ARB_viewport_array ) {
         glViewportArrayv(0, nr_viewports + 1, viewports_size);
+        singlePassStereo->setValue(true);
         glDisable(GL_SCISSOR_TEST);
+        
       } else {
 #endif
         Console(4) << "Warning: GL_ARB_viewport_array is not supported by the graphic card. "

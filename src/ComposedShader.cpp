@@ -100,7 +100,9 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
   program_handle( 0 ),
   setupDynamicRoutes( new SetupDynamicRoutes ),
   updateUniforms ( new UpdateUniforms ),
-  debug_options_previous( NULL ) {
+  debug_options_previous( NULL ),
+  fbo_require_stereo ( NULL ),
+  modifyShaderForSPS(new ModifyShaderForSinglePassStereo){
   type_name = "ComposedShader";
   database.initFields( this );
 
@@ -136,10 +138,14 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
   parts->route( displayList, id );
   setupDynamicRoutes->route( displayList );
   transformFeedbackVaryings->route ( displayList, id );
-
+  Scene *scene = Scene::scenes.size ( ) > 0 ? *Scene::scenes.begin ( ) : NULL;
+  H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue ( )[0]);
+  window->singlePassStereo->route(modifyShaderForSPS);
   // need to update uniform values if shader is re-linked
   // displayList->route ( updateUniforms );
   activate->route( updateUniforms, id );
+  modifyShaderForSPS->setName("modifyShaderForSPS");
+  modifyShaderForSPS->setOwner(this);
 }
 
 bool ComposedShader::shader_support_checked = false;
@@ -309,6 +315,11 @@ void ComposedShader::traverseSG ( TraverseInfo& ti ) {
       tessellation_support_checked = true;
     }
   }
+  // retrieve fbo_requre_stereo data, if this value is true, it indicates that the shader
+  // is within a FBTG and it need stereo
+  
+  ti.getUserData("fbo_require_stereo", (void**)(&fbo_require_stereo));
+  
 }
 
 // The ComposedShader is modified to use 1 instance of different program_handlers
@@ -326,7 +337,8 @@ void ComposedShader::render() {
     if( isValid->getValue() ) isValid->setValue( false, id );
   } else {
     bool all_parts_valid = true;
-    
+    // modify shader if required by single pass stereo
+    modifyShaderForSPS->upToDate();
     // compile all shader parts
     bool re_link= false;
     for( MFShaderPart::const_iterator i = parts->begin();
@@ -817,4 +829,33 @@ void ComposedShader::initialize() {
   X3DShaderNode::initialize();
   GlobalSettings *default_settings = GlobalSettings::getActive();
   if( default_settings ) default_settings->getOptionNode( debug_options_previous );
+}
+
+void ComposedShader::ModifyShaderForSinglePassStereo::onValueChange(const bool& new_value){
+  ComposedShader* cs = static_cast<ComposedShader*>(getOwner());
+  if( new_value==true ) {
+    // window single pass stereo changed to true, check if we are in FBTG or not 
+    // and check if FBTG requires stereo to decide whether to modify the shaders
+    if( cs->fbo_require_stereo&&( cs->fbo_require_stereo->getValue() ) ) {
+      // this shader is within FBTG, and it requires stereo
+      cs->toggleSPSSupport(true);
+    }else{
+      // this shader is not in FBTG or it does not need stereo, no need to use single
+      // pass stereo for shader
+      cs->toggleSPSSupport(false);
+    }
+  }else if( new_value == false ) {
+    // window single pass stereo changed to false, need to turn off single pass stereo
+    // shading support if it is on
+    cs->toggleSPSSupport(false);
+  }
+}
+
+void ComposedShader::toggleSPSSupport(bool need_sps_support){
+  if (need_sps_support){
+    // turn on single pass stereo support
+    Console(4)<<"turning on single pass stereo support for shader "<< getName()<< ". WIP!"<<endl;
+  }else{
+    Console(4)<<"turning off single pass stereo support for shader "<< getName()<<". WIP!"<<endl;
+  }
 }

@@ -409,7 +409,8 @@ namespace H3D {
     /// height
     /// <b>Access type:</b> outputOnly \n
     auto_ptr< SFInt32 > projectionHeight;
-    //int projection_height;
+    
+    auto_ptr< SFBool > singlePassStereo;
 
     static set< H3DWindowNode* > windows;
 

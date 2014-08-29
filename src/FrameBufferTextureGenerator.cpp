@@ -323,7 +323,13 @@ void FrameBufferTextureGenerator::traverseSG( TraverseInfo &ti ) {
   bool previous_multi_pass  = ti.getMultiPassTransparency();
   ti.setMultiPassTransparency( false );
 
+  // specify fbo_require_stereo data , so its children can use this info to decide
+  // whether related shader need to be modified when single pass stereo is also needed
+  ti.setUserData("fbo_require_stereo", (void*)(useStereo.get()));
+
   X3DGroupingNode::traverseSG( ti );
+
+  ti.setUserData("fbo_require_stereo", NULL);
 
   // add the head light to shadow casting nodes if it is active.
   if( !shadow_caster->object->empty() ) {
