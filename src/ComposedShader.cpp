@@ -139,8 +139,10 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
   setupDynamicRoutes->route( displayList );
   transformFeedbackVaryings->route ( displayList, id );
   Scene *scene = Scene::scenes.size ( ) > 0 ? *Scene::scenes.begin ( ) : NULL;
-  H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue ( )[0]);
-  window->singlePassStereo->route(modifyShaderForSPS);
+  if( scene ) { // We have a couple of apps and test programs which does not require a scene.
+    H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue ( )[0]);
+    if( window ) window->singlePassStereo->route(modifyShaderForSPS);
+  }
   // need to update uniform values if shader is re-linked
   // displayList->route ( updateUniforms );
   activate->route( updateUniforms, id );
