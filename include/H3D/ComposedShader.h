@@ -37,7 +37,6 @@
 #include <H3D/SField.h>
 #include <string>
 #include <H3D/ShaderFunctions.h>
-#include <H3D/FieldTemplates.h>
 
 namespace H3D {
 
@@ -308,21 +307,11 @@ namespace H3D {
     /// C++ fields only. Contains instance of SetupDynamicRoutes.
     auto_ptr< SetupDynamicRoutes > setupDynamicRoutes;
 
-    class ModifyShaderForSinglePassStereo : public  OnValueChangeSField<SFBool>{
-    protected:
-      virtual void onValueChange(const bool& new_value);
-    };
-    /// field to modify shaders if single pass stereo rendering is need by main window
-    auto_ptr< ModifyShaderForSinglePassStereo > modifyShaderForSPS;
-
-
     /// A field used to update any uniforms from their corresponding fields
     auto_ptr<UpdateUniforms> updateUniforms;
     
     bool printShaderLog();
     DebugOptions *debug_options_previous;
-    SFBool* fbo_require_stereo;
-    void toggleSPSSupport(bool need_sps_support);
   public:
     virtual void initialize();
   };
