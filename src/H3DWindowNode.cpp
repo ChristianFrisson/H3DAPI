@@ -96,6 +96,7 @@ namespace H3DWindowNodeInternals {
   FIELDDB_ELEMENT( H3DWindowNode, viewportHeight, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DWindowNode, projectionWidth, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DWindowNode, projectionHeight, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( H3DWindowNode, singlePassStereo, OUTPUT_ONLY );
 }
 
 bool H3DWindowNode::GLEW_init = false;
@@ -115,7 +116,8 @@ H3DWindowNode::H3DWindowNode(
                    Inst< SFString    > _cursorType,
                    Inst< SFNavigationInfo > _navigationInfo,
                    Inst< SFBool > _useFullscreenAntiAliasing,
-                   Inst< SFVec2f > _clipDistances) :
+                   Inst< SFVec2f > _clipDistances,
+                   Inst< SFBool      > _singlePassStereo) :
 #ifdef WIN32
   rendering_context( NULL ),
 #endif
@@ -132,6 +134,7 @@ H3DWindowNode::H3DWindowNode(
   navigationInfo( _navigationInfo ),
   useFullscreenAntiAliasing( _useFullscreenAntiAliasing ),
   clipDistances( _clipDistances ),
+  singlePassStereo( _singlePassStereo ),
   viewportWidth( new SFInt32 ),
   viewportHeight( new SFInt32 ),
   projectionWidth( new SFInt32 ),
@@ -149,8 +152,7 @@ H3DWindowNode::H3DWindowNode(
   current_cursor( "DEFAULT" ),
   h3d_navigation( new H3DNavigation ),
   window_is_made_active( false ),
-  check_if_stereo_obtained( false ),
-  singlePassStereo( new SFBool ){
+  check_if_stereo_obtained( false ){
 
   type_name = "H3DWindowNode";
   database.initFields( this );
@@ -176,9 +178,7 @@ H3DWindowNode::H3DWindowNode(
   for( int i = 0; i<12; ++i ) {
     viewports_size[i]  = -1;
   }
-  if( singlePassStereo->getValue() != false ) {
-    singlePassStereo->setValue(false);
-  }
+  singlePassStereo->setValue(false,id);
 
   renderMode->addValidValue( "MONO" );
   renderMode->addValidValue( "QUAD_BUFFERED_STEREO" );
@@ -1058,7 +1058,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
 
   if( !isSinglePass ) { // need to render twice for stereo
     if( singlePassStereo->getValue()!=false ) {
-      singlePassStereo->setValue(false);
+      singlePassStereo->setValue(false,id);
     }
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -1414,7 +1414,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     fbo_current_y = 0;
     if( nr_viewports == 1 ) { 
       if( singlePassStereo->getValue()!=false ) {
-        singlePassStereo->setValue(false);
+        singlePassStereo->setValue(false,id);
       }
       //MONO, for single viewport, only specify viewport when the desired dimension
       // not matching the full window dimension
@@ -1429,7 +1429,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
       if( GLEW_ARB_viewport_array ) {
         glViewportArrayv(0, nr_viewports + 1, viewports_size);
         if( singlePassStereo->getValue()!=true ) {
-          singlePassStereo->setValue(true);
+          singlePassStereo->setValue(true,id);
         }
         
         

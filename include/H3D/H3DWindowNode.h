@@ -193,7 +193,8 @@ namespace H3D {
                    Inst< SFString    > _cursorType = 0,
                    Inst< SFNavigationInfo > _navigationInfo = 0,
                    Inst< SFBool      > _useFullscreenAntiAliasing = 0,
-                   Inst< SFVec2f     > _clipDistances = 0 );
+                   Inst< SFVec2f     > _clipDistances = 0,
+                   Inst< SFBool      > _singlePassStereo = 0);
 
     /// Destructor.
     ~H3DWindowNode();
