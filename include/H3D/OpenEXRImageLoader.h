@@ -37,6 +37,13 @@
 #include <H3DUtil/LoadImageFunctions.h>
 
 namespace H3D {
+
+  // Note for developers.
+  // This class will cause a minor "memory leak" because it never deinitializes
+  // some statically initialized classes. See
+  // See http://lists.nongnu.org/archive/html/openexr-devel/2013-11/msg00003.html
+  // for more information.
+
   /// \ingroup H3DNodes
   /// \class OpenEXRImageLoader
   /// OpenEXRImageLoader uses the OpenEXR library to load the images.
@@ -52,7 +59,7 @@ namespace H3D {
       type_name = "OpenEXRImageLoader";
     }
 
-    /// Load the image using the FreeImage library. A new FreeImageImage
+    /// Load the image using the OpenEXR library. A new PixelImage
     /// is returned. NULL if not successfully loaded.
     /// \param url URL to the file to load.
     virtual Image *loadImage( const string &url ) {

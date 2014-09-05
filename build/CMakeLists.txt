@@ -398,29 +398,17 @@ IF(NOT WIN32)
   ENDIF(NOT APPLE)
 ENDIF(NOT WIN32)
 
-IF( NOT DEFINED USE_OPENEXR )
-  SET( USE_OPENEXR "NO" CACHE BOOL "Enable or disable OpenExr. If it is enabled the DCMTK is automatically disabled due to a linking error." )
-  MARK_AS_ADVANCED(USE_OPENEXR)
+IF( NOT DEFINED USE_OpenEXR )
+  SET( USE_OpenEXR "NO" CACHE BOOL "Enable or disable OpenExr. If it is enabled the DCMTK is automatically disabled due to a linking error." )
+  MARK_AS_ADVANCED(USE_OpenEXR)
 ENDIF()
 
 # Note: OpenEXR and DCMTK are mutually exclusive due to a linkage error on Windows/VS10
-IF ( NOT USE_OPENEXR OR NOT WIN32 )
+IF ( NOT USE_OpenEXR OR NOT WIN32 )
   FIND_PACKAGE(DCMTK)
   IF(DCMTK_FOUND)
     INCLUDE_DIRECTORIES( ${DCMTK_INCLUDE_DIR} ) 
     SET(requiredLibs ${requiredLibs} ${DCMTK_LIBRARIES} )
-    IF(NOT WIN32 AND NOT APPLE)
-      # Linux specific libraries. The debian package for dcmtk
-      # seems to not link to libtiff which it is dependent on. In 
-      # order to compile out of the box we include that dependency here 
-      # instead.
-      FIND_PACKAGE(TIFF)
-      IF(TIFF_FOUND)
-        SET(requiredLibs ${requiredLibs} ${TIFF_LIBRARIES} )
-      ELSE(TIFF_FOUND)
-        MESSAGE( STATUS "If you are using dcmtk debian package libtiff might be required since dcmtk depends on it and the packaged version does not itself link with it properly." )
-      ENDIF(TIFF_FOUND)
-    ENDIF(NOT WIN32 AND NOT APPLE)
   ENDIF(DCMTK_FOUND)
 ENDIF()
 
@@ -431,13 +419,13 @@ IF(Teem_FOUND)
 ENDIF(Teem_FOUND)
 
 # Optional extra library. Used to handle OpenEXR HDR image formats.
-IF ( USE_OPENEXR )
+IF ( USE_OpenEXR )
   FIND_PACKAGE(OpenEXR)
-  IF(OPENEXR_FOUND)
+  IF(OpenEXR_FOUND)
     SET(HAVE_OPENEXR 1)
-    INCLUDE_DIRECTORIES( ${OPENEXR_INCLUDE_DIR} )
-    SET(optionalLibs ${optionalLibs} ${OPENEXR_LIBRARIES} )
-  ENDIF(OPENEXR_FOUND)
+    INCLUDE_DIRECTORIES( ${OpenEXR_INCLUDE_DIR} )
+    SET(optionalLibs ${optionalLibs} ${OpenEXR_LIBRARIES} )
+  ENDIF(OpenEXR_FOUND)
 ENDIF()
 
 # We do not use V8 anymore, only SpiderMonkey

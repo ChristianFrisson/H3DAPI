@@ -18,7 +18,9 @@
         <Appearance>
           <ComposedShader DEF="SHADER" language="GLSL" >
             <field name="texture" type="SFNode" accessType="inputOutput">
-              <ImageTexture DEF='TEXTURE' url='images/Tree.exr' />
+              <ImageTexture DEF='TEXTURE' url='images/Tree.exr' >
+                <OpenEXRImageLoader />
+              </ImageTexture>
             </field>
             <field name="range" type="SFVec2f" accessType="inputOutput" value='0 0.05' />
             <ShaderPart type="VERTEX" url="shaders/passthrough.vert" />

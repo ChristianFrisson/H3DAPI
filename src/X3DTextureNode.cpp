@@ -294,6 +294,7 @@ GLenum X3DTextureNode::glPixelComponentType( Image *i ) {
       }
     case Image::RATIONAL:
       switch( i->bitsPerPixel() ) {
+      case 64: return GL_HALF_FLOAT;
       case 128: return GL_FLOAT;
       default: 
         stringstream s;

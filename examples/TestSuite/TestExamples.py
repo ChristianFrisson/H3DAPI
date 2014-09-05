@@ -401,7 +401,7 @@ class TestResults ( object ):
     
 class TestExamples ( object ):
 
-  def __init__ ( self, filepath, startup_time= 10, shutdown_time= 5, testable_callback= None, fake_fullscreen_due_to_PIL_bug = True ):
+  def __init__ ( self, filepath, startup_time= 10, shutdown_time= 5, testable_callback= None, fake_fullscreen_due_to_PIL_bug = True, error_reporter = None ):
     self.filepath= filepath
     self.startup_time= startup_time
     self.shutdown_time= shutdown_time
@@ -442,6 +442,8 @@ scene.frameRate.routeNoEvent( storeFPS )
 scene = None
 ]]>
           </PythonScript>""" % (self.fps_data_file, self.early_shutdown_file, self.screenshot_tmp_file)
+    # Used to get intermediate failed results in order to be able to cancel test early and still get some results.
+    self.error_reporter = error_reporter
 
   def launchExample ( self, url, cwd ):
     process = self.getProcess()
@@ -595,6 +597,9 @@ scene = None
               results.append ( variation_results )
             else:
               results.append ( [( Variation(), self.testExample ( file, file_path ) )] )
+            
+            if self.error_reporter:
+              self.error_reporter.reportResults( results )
           else:
             # Test skipped
             result= TestResults()
@@ -843,7 +848,9 @@ def testH3DAPI (global_variations):
   def isTestable ( file_path ):
     return file_path.find ( 'TestAll' ) < 0 and file_path.find( 'SpaceTennis.x3d' ) < 0
 
-  tester= TestExamples( os.path.join(args.output, "H3DAPI"), startup_time= 10, shutdown_time= 10, testable_callback= isTestable )
+  html_reporter_errors= TestReportHTML( os.path.join(args.output, "H3DAPI"), only_failed= True )
+
+  tester= TestExamples( os.path.join(args.output, "H3DAPI"), startup_time= 10, shutdown_time= 10, testable_callback= isTestable, error_reporter=html_reporter_errors)
   results= tester.testAllExamples( global_variations, directory= "../../../H3DAPI/examples" )
 
   reporter= TestReport()
@@ -851,8 +858,7 @@ def testH3DAPI (global_variations):
 
   html_reporter= TestReportHTML( os.path.join(args.output, "H3DAPI") )
   html_reporter.reportResults ( results )
-
-  html_reporter_errors= TestReportHTML( os.path.join(args.output, "H3DAPI"), only_failed= True )
+  
   html_reporter_errors.reportResults ( results )
 
   return getExitCode ( results )

@@ -51,13 +51,6 @@ FreeImageLoader::reader_registration(
                             );
 
 bool FreeImageLoader::supportsFileType( const string &url ) {
-
-#ifdef HAVE_OPENEXR
-  // FreeImage trys to load some EXR images but then crashes, so if
-  // OpenEXR supports it, do not allow FreeImage to try and load it.
-  if ( OpenEXRImageLoader::supportsFileType ( url ) ) return false;
-#endif
-
   FREE_IMAGE_FORMAT format = FreeImage_GetFileType( url.c_str() );
   return format != FIF_UNKNOWN;
 }
