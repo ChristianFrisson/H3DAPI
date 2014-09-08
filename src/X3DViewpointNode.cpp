@@ -372,7 +372,8 @@ void X3DViewpointNode::getProjectionDimensions( EyeMode eye_mode,
   } 
   if ( eye_mode == BOTH_EYE ) {
     float new_matrix_proj_shift = 2*frustum_shift/(right-left);
-    if( stereo_info->matrixProjShift->getValue()!= new_matrix_proj_shift) {
+    float diff_threshold = 0.00001;
+    if(abs(stereo_info->matrixProjShift->getValue()- new_matrix_proj_shift)>diff_threshold) {
       stereo_info->matrixProjShift->setValue(new_matrix_proj_shift);
     }
   } else {
