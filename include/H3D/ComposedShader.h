@@ -309,6 +309,16 @@ namespace H3D {
 
     /// A field used to update any uniforms from their corresponding fields
     auto_ptr<UpdateUniforms> updateUniforms;
+
+    /// event collection field to update when global caching is update
+    class UpdateCache: public OnValueChangeSField< SFBool >
+    {
+    protected:
+      virtual void onValueChange( const bool &new_value );
+    };
+    // this field will be used to react to global caching changing, this will
+    // be used to control whether to route uniform field to displayList
+    auto_ptr<UpdateCache> updateCache;
     
     bool printShaderLog();
     DebugOptions *debug_options_previous;

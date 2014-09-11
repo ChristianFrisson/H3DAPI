@@ -100,7 +100,8 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
   program_handle( 0 ),
   setupDynamicRoutes( new SetupDynamicRoutes ),
   updateUniforms ( new UpdateUniforms ),
-  debug_options_previous( NULL ) {
+  debug_options_previous( NULL ),
+  updateCache( new UpdateCache ){
   type_name = "ComposedShader";
   database.initFields( this );
 
@@ -131,6 +132,9 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
 
   updateUniforms->setName ( "updateUniforms" );
   updateUniforms->setOwner ( this );
+
+  updateCache->setName( "updateCache" );
+  updateCache->setOwner( this );
 
   activate->route( displayList, id );
   parts->route( displayList, id );
@@ -186,9 +190,9 @@ bool ComposedShader::addField( const string &name,
     MFNode * mf_node_field = dynamic_cast< MFNode * >( field );
     if( sf_node_field || mf_node_field ) {
       field->route( setupDynamicRoutes, id );
-    } else {
-      field->route( displayList );
-    }
+    } 
+    // no need to route field to displayList all the time, the routing will only be
+    // handle when caching is on
     field->route( updateUniforms );
   }else{
     // can not add same field twice,even though it has different name.
@@ -309,6 +313,19 @@ void ComposedShader::traverseSG ( TraverseInfo& ti ) {
       tessellation_support_checked = true;
     }
   }
+
+  if( updateCache->getRoutesIn().size()==0 ) {
+    // if initially udpateCache is not routed in from useCaching, need to check
+    // if graphic options is dynamically added, if added route in its useCaching
+    GraphicsOptions *options = NULL;
+    GlobalSettings *default_settings = GlobalSettings::getActive();
+    if( default_settings&&default_settings->optionNodesUpdated() ) {
+      default_settings->getOptionNode( options );
+      size_t size = updateCache->getRoutesIn().size();
+      options->useCaching->route(updateCache);
+    }
+  }
+  updateCache->upToDate();
 }
 
 // The ComposedShader is modified to use 1 instance of different program_handlers
@@ -816,5 +833,43 @@ bool ComposedShader::printShaderLog() {
 void ComposedShader::initialize() {
   X3DShaderNode::initialize();
   GlobalSettings *default_settings = GlobalSettings::getActive();
-  if( default_settings ) default_settings->getOptionNode( debug_options_previous );
+  GraphicsOptions *graphic_options = NULL;
+  if( default_settings ) 
+  {
+      default_settings->getOptionNode( debug_options_previous );
+      default_settings->getOptionNode( graphic_options );
+  }
+  if( graphic_options!=NULL ) {
+    // if initially graphic option exist, route its useCaching to updateCache
+    graphic_options->useCaching->route( updateCache );
+  }
+}
+
+void ComposedShader::UpdateCache::onValueChange( const bool &new_value ){
+  ComposedShader* cs = static_cast<ComposedShader*>( getOwner() );
+  ComposedShader::UniformFieldMap::const_iterator it;
+  it = cs->uniformFields.begin();
+  if( new_value==true ) {
+    //caching on
+    for( ; it!=cs->uniformFields.end(); ++it ) {
+      Field* f = it->second.field;
+      SFNode * sf_node_field = dynamic_cast< SFNode * >( f );
+      MFNode * mf_node_field = dynamic_cast< MFNode * >( f );
+      if( sf_node_field==NULL&&mf_node_field==NULL ) {
+        f->route(cs->displayList);
+      }
+    }
+  }else{
+    for( ; it!=cs->uniformFields.end(); ++it ) {
+      Field* f = it->second.field;
+      SFNode * sf_node_field = dynamic_cast< SFNode * >( f );
+      MFNode * mf_node_field = dynamic_cast< MFNode * >( f );
+      if( sf_node_field==NULL&&mf_node_field==NULL ){
+        f->unroute(cs->displayList);
+      }
+      
+    }
+    
+  }
+  
 }
