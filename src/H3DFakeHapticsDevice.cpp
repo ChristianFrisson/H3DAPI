@@ -61,9 +61,9 @@ H3DFakeHapticsDevice::H3DFakeHapticsDevice(
           Inst< SFHapticsRendererNode > _hapticsRenderer  ,
           Inst< MFVec3f         > _proxyPositions         ,
           Inst< SFBool          > _followViewpoint        ,
-          Inst< ThreadSafeSField< SFVec3f > > _set_devicePosition,
-          Inst< ThreadSafeSField< SFRotation > > _set_deviceOrientation,
-          Inst< ThreadSafeSField< SFBool > > _set_mainButton          ):
+          Inst< SFVec3f         > _set_devicePosition,
+          Inst< SFRotation      > _set_deviceOrientation,
+          Inst< SFBool          > _set_mainButton          ):
   H3DHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
         _trackerOrientation, _positionCalibration, 
         _orientationCalibration, _proxyPosition,
@@ -103,14 +103,26 @@ H3DFakeHapticsDevice::H3DFakeHapticsDevice(
 void H3DFakeHapticsDevice::FakeHapticsDevice::updateDeviceValues( 
                 DeviceValues &dv, HAPI::HAPITime dt ) {
   HAPIHapticsDevice::updateDeviceValues( dv, dt );
-  dv.position = owner->set_devicePosition->getValue();
-  dv.orientation = owner->set_deviceOrientation->getValue();
+  Vec3f temp_pos = owner->set_devicePosition->getValue();
+  Rotation temp_rotation = owner->set_deviceOrientation->getValue();
+  bool temp_mainButton = owner->set_mainButton->getValue();
+  int temp_mainButtonInt = 0;
+  if( temp_mainButton ) {
+    temp_mainButtonInt = 1;
+  }
+  device_values_lock.lock();
+  dv.position = temp_pos;
+  dv.orientation = temp_rotation;
+  dv.button_status = temp_mainButtonInt;
+  //dv.position = owner->set_devicePosition->getValue();
+  //dv.orientation = owner->set_deviceOrientation->getValue();
   // Button status is an int, if we want to make sure that the mainButton
   // bit is set then the integer have to be 1 and nothing else.
-  if( owner->set_mainButton->getValue() )
+  /*if( owner->set_mainButton->getValue() )
     dv.button_status = 1;
   else
-    dv.button_status = 0;
+    dv.button_status = 0;*/
+  device_values_lock.unlock();
 }
 
 
