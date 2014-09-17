@@ -72,7 +72,11 @@ namespace H3D {
                           Inst< MFWeights      > _weights     = 0,
                           Inst< SFInt32      > _kernelSize  = 0,
                           Inst< SFFloat      > _sigma  = 0,
-                          Inst< SFFloat      > _pixelStepOffset = 0 );
+                          Inst< SFFloat      > _pixelStepOffset = 0,
+                          Inst< SFInt32> _width = 0,
+                          Inst< SFInt32> _windowHeight = 0,
+                          Inst< TextureMonitor> _widthInUse = 0,
+                          Inst< TextureMonitor> _heightInUse = 0);
 
     /// The sigma field is the sigma value in the gaussian function and decides how
     /// much blur the result will be. A higher value of sigma will give a higher 

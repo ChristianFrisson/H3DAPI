@@ -450,15 +450,15 @@ namespace H3D {
     /// <b>Default value:</b> NULL
     auto_ptr< SFBackgroundNode > background;
 
-    /// The width of the output textures in pixels. If set to -1 the
-    /// current default frame buffer width is used.
+    /// The width of the output textures in pixels. If set to minus value, the width 
+    /// actually used for fbo will be scaled down by the value being specified
     ///
-    /// <b>Access type:</b> initializeOnly
-    /// <b>Default value:</b> inputOutput
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> -1
     auto_ptr< SFInt32 > width;
 
-    /// The height of the output textures in pixels. If set to -1 the
-    /// current default frame buffer height is used.
+    /// The height of the output textures in pixels. If set to minus value, the height 
+    /// actually used for fbo will be scaled down by the value being specified
     ///
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> -1

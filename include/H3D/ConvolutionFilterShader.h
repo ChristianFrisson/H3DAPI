@@ -108,7 +108,11 @@ namespace H3D {
            Inst< SFString     > _type        = 0,
            Inst< MFFloat      > _weights     = 0,
            Inst< SFInt32      > _kernelSize  = 0,
-           Inst< SFFloat      > _pixelStepOffset = 0);
+           Inst< SFFloat      > _pixelStepOffset = 0,
+           Inst< SFInt32> _width = 0,
+           Inst< SFInt32> _height = 0,
+           Inst< TextureMonitor> _widthInUse = 0,
+           Inst< TextureMonitor> _heightInUse = 0 );
     
     /// The texture field contains the texture on which to apply the 
     /// filter kernel.
@@ -164,18 +168,28 @@ namespace H3D {
     /// \dotfile ConvolutionFilterShader_pixelStepOffset.dot
     auto_ptr< SFFloat > pixelStepOffset;
 
+    /// The height of the window size this shader is going to apply to.
+    /// by default the value is -1 which means it will be the same as the width of
+    /// the input texture width. Once this value changed, rebuild shader
+    auto_ptr< SFInt32 > width;
+    /// The width of the window size this shader is going to apply to.
+    /// by default the value is -1 which means it will be the same as the height of
+    /// the input texture height. Once this value changed rebuild shader
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> -1
+    auto_ptr< SFInt32 > height;
+
+    /// Actual width used in convolution filter shader
+    auto_ptr< TextureMonitor > widthInUse;
+    /// Actual height used in convolution filter shader
+    auto_ptr< TextureMonitor > heightInUse;
+
     /// Traverse the scene graph.
     virtual void traverseSG( TraverseInfo &ti );
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   protected:
-
-    /// Once texture width changes, rebuild the shader
-    auto_ptr<TextureMonitor> textureWidth;
-
-    /// Once texture height changes, rebuild the shader
-    auto_ptr<TextureMonitor> textureHeight;
 
 
     /// Returns true if all conditions to be able to use the values to build a

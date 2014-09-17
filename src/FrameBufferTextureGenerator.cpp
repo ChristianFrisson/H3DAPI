@@ -469,13 +469,15 @@ void FrameBufferTextureGenerator::render()     {
   int buffer_src_y = window->fbo_current_y;
 
   
-  // if not specified width, height exist, use the dimension used by the current window
-  if( desired_fbo_width == -1 || desired_fbo_heigth == -1 ) {
-    desired_fbo_width = window->fbo_current_width;
-    desired_fbo_heigth = window->fbo_current_height;
-    projection_width = window->projectionWidth->getValue();
-    projection_height = window->projectionHeight->getValue();
-  } 
+  // specially handle the width and height being used to provide
+  // easy fbo width scaling down 
+  if( desired_fbo_width <=-1 &&
+    desired_fbo_heigth<=-1 ) {
+      desired_fbo_width = window->fbo_current_width / -(desired_fbo_width);
+      desired_fbo_heigth = window->fbo_current_height / -(desired_fbo_heigth);
+      projection_width = window->projectionWidth->getValue();
+      projection_height = window->projectionHeight->getValue();
+  }
 
   // current_width and current_height should be set to default viewport width, height
   // when using DEFAULT_COPY option. it necessary for stereo rendering

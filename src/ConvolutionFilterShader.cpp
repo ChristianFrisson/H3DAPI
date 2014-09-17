@@ -32,6 +32,10 @@ namespace ConvolutionFilterShaderInternals {
   FIELDDB_ELEMENT( ConvolutionFilterShader, weights, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ConvolutionFilterShader, kernelSize, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ConvolutionFilterShader, pixelStepOffset, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ConvolutionFilterShader, width, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ConvolutionFilterShader, height, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ConvolutionFilterShader, widthInUse, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( ConvolutionFilterShader, heightInUse, OUTPUT_ONLY );
 }
 
 ConvolutionFilterShader::ConvolutionFilterShader( Inst< DisplayList  > _displayList,
@@ -48,7 +52,11 @@ ConvolutionFilterShader::ConvolutionFilterShader( Inst< DisplayList  > _displayL
                             Inst< SFString        > _type,
                             Inst< MFFloat         > _weights,
                             Inst< SFInt32         > _kernelSize,
-                            Inst< SFFloat         > _pixelStepOffset) :
+                            Inst< SFFloat         > _pixelStepOffset,
+                            Inst< SFInt32  > _width,
+                            Inst< SFInt32  > _height,
+                            Inst< TextureMonitor         > _widthInUse,
+                            Inst< TextureMonitor         > _heightInUse):
   H3DGeneratedFragmentShaderNode( _displayList, _metadata, _isSelected, 
                                   _isValid, _activate, _language, _parts, 
                                   _suppressUniformWarnings, _fragmentShaderString, 
@@ -58,14 +66,13 @@ ConvolutionFilterShader::ConvolutionFilterShader( Inst< DisplayList  > _displayL
   weights( _weights ),
   kernelSize( _kernelSize ),
   pixelStepOffset( _pixelStepOffset ),
-  textureWidth( new TextureMonitor ),
-  textureHeight( new TextureMonitor ) {
+  height(_height),
+  width(_width),
+  heightInUse(_heightInUse),
+  widthInUse(_widthInUse){
   
   type_name = "ConvolutionFilterShader";
   database.initFields( this );
-
-  textureHeight->setOwner(this);
-  textureWidth->setOwner(this),
 
   type->addValidValue( "HORIZONTAL" );
   type->addValidValue( "VERTICAL" );
@@ -74,9 +81,12 @@ ConvolutionFilterShader::ConvolutionFilterShader( Inst< DisplayList  > _displayL
 
   kernelSize->setValue( 1 );
   weights->push_back( 1 );
-  textureWidth->setValue( 0 );
-  textureHeight->setValue( 0 );
   pixelStepOffset->setValue( 0.0 );
+
+  width->setValue(-1);
+  height->setValue(-1);
+  widthInUse->setValue(0);
+  heightInUse->setValue(0);
 
   pixelStepOffset->route( rebuildShader );
   kernelSize->route( rebuildShader );
@@ -94,14 +104,19 @@ void ConvolutionFilterShader::traverseSG( TraverseInfo &ti ) {
   image = t->image->getValue();
 
   }
-
   if( image ) {
-    if( textureWidth->getValue() != image->width() ) {
-      textureWidth->setValue( image->width() );
+    if( width->getValue()==-1 ) {
+      // use image width
+      widthInUse->setValue(image->width());
+    }else{
+      // use specified width
+      widthInUse->setValue(width->getValue());
     }
-    
-    if( textureHeight->getValue() != image->height() ) {
-      textureHeight->setValue( image->height() );
+    if( height->getValue()==-1 ) {
+      // use image height
+      heightInUse->setValue(image->height());
+    }else{
+      heightInUse->setValue(height->getValue());
     }
   } else {
     GeneratedTexture *gen_tex = dynamic_cast< GeneratedTexture * >( t );
@@ -114,11 +129,19 @@ void ConvolutionFilterShader::traverseSG( TraverseInfo &ti ) {
       glGetTexLevelParameteriv(gen_tex->getTextureTarget(), 0, GL_TEXTURE_WIDTH, &w);
       glGetTexLevelParameteriv(gen_tex->getTextureTarget(), 0, GL_TEXTURE_HEIGHT, &h);
       glPopAttrib();
-      textureWidth->setValue( w );
-      textureHeight->setValue( h );
+      if( width->getValue()==-1 ) {
+        widthInUse->setValue(w);
+      }else{
+        widthInUse->setValue(width->getValue());
+      }
+      if( height->getValue()==-1 ) {
+        heightInUse->setValue(h);
+      }else{
+        heightInUse->setValue(height->getValue());
+      }
     } else {
-      textureWidth->setValue( 0 );
-      textureHeight->setValue( 0 );
+      widthInUse->setValue(0);
+      heightInUse->setValue(0);
     }
   }
   if( rtt ) {// if texture is a renderTargetTexture
@@ -129,8 +152,16 @@ void ConvolutionFilterShader::traverseSG( TraverseInfo &ti ) {
     glGetTexLevelParameteriv(rtt->getTextureTarget(), 0, GL_TEXTURE_WIDTH, &w);
     glGetTexLevelParameteriv(rtt->getTextureTarget(), 0, GL_TEXTURE_HEIGHT, &h);
     glPopAttrib();
-    textureWidth->setValue( w );
-    textureHeight->setValue( h );
+    if( width->getValue()==-1 ) {
+      widthInUse->setValue(w);
+    }else{
+      widthInUse->setValue(widthInUse->getValue());
+    }
+    if( heightInUse->getValue()==-1 ) {
+      heightInUse->setValue(h);
+    }else{
+      heightInUse->setValue(heightInUse->getValue());
+    }
   }
 }
 
@@ -164,8 +195,8 @@ string ConvolutionFilterShader::getFragmentShaderString() {
     stringstream s;
     int kernel_size = kernelSize->getValue();
     s << "  const int KERNEL_SIZE = " << kernel_size << "; " << endl;
-    s << "  const int texture_width =  " << textureWidth->getValueAsString() <<"; "<<endl;
-    s << "  const int texture_height = " << textureHeight->getValueAsString() << "; "<<endl;
+    s << "  const int texture_width =  " << widthInUse->getValueAsString() <<"; "<<endl;
+    s << "  const int texture_height = " << heightInUse->getValueAsString() << "; "<<endl;
     s << "  // the step in texture coordinates between each pixel " << endl;
     string pixel_step_offset = pixelStepOffset->getValueAsString();
     if( pixel_step_offset.find(".")==std::string::npos ) {

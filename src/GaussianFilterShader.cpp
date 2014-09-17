@@ -32,6 +32,10 @@ namespace GaussianFilterShaderInternals {
   FIELDDB_ELEMENT( GaussianFilterShader, kernelSize, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GaussianFilterShader, sigma, INPUT_OUTPUT);
   FIELDDB_ELEMENT( GaussianFilterShader, pixelStepOffset, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GaussianFilterShader, width, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GaussianFilterShader, height, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GaussianFilterShader, widthInUse, OUTPUT_ONLY);
+  FIELDDB_ELEMENT( GaussianFilterShader, heightInUse, OUTPUT_ONLY );
 }
 
 GaussianFilterShader::GaussianFilterShader( Inst< DisplayList  > _displayList,
@@ -49,12 +53,16 @@ GaussianFilterShader::GaussianFilterShader( Inst< DisplayList  > _displayList,
                                             Inst< MFWeights       > _weights,
                                             Inst< SFInt32         > _kernelSize,
                                             Inst< SFFloat         > _sigma,
-                                            Inst< SFFloat         > _pixelStepOffset ) :
+                                            Inst< SFFloat         > _pixelStepOffset,
+                                            Inst< SFInt32         > _width,
+                                            Inst< SFInt32         > _height,
+                                            Inst< TextureMonitor  > _widthInUse,
+                                            Inst< TextureMonitor  > _heightInUse) :
 ConvolutionFilterShader( _displayList, _metadata, _isSelected, 
                          _isValid, _activate, _language, _parts, 
                          _suppressUniformWarnings, _fragmentShaderString, 
                          _vertexShaderString, _texture, _type, _weights,_kernelSize, 
-                         _pixelStepOffset ),
+                         _pixelStepOffset, _width, _height, _widthInUse, _heightInUse ),
   sigma(_sigma) {
   
   type_name = "GaussianFilterShader";
