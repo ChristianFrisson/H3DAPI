@@ -85,8 +85,8 @@ ConvolutionFilterShader::ConvolutionFilterShader( Inst< DisplayList  > _displayL
 
   width->setValue(-1);
   height->setValue(-1);
-  widthInUse->setValue(0);
-  heightInUse->setValue(0);
+  widthInUse->setValue(0,id);
+  heightInUse->setValue(0,id);
 
   pixelStepOffset->route( rebuildShader );
   kernelSize->route( rebuildShader );
@@ -107,16 +107,16 @@ void ConvolutionFilterShader::traverseSG( TraverseInfo &ti ) {
   if( image ) {
     if( width->getValue()==-1 ) {
       // use image width
-      widthInUse->setValue(image->width());
+      widthInUse->setValue(image->width(),id);
     }else{
       // use specified width
-      widthInUse->setValue(width->getValue());
+      widthInUse->setValue(width->getValue(),id);
     }
     if( height->getValue()==-1 ) {
       // use image height
-      heightInUse->setValue(image->height());
+      heightInUse->setValue(image->height(),id);
     }else{
-      heightInUse->setValue(height->getValue());
+      heightInUse->setValue(height->getValue(),id);
     }
   } else {
     GeneratedTexture *gen_tex = dynamic_cast< GeneratedTexture * >( t );
@@ -130,18 +130,18 @@ void ConvolutionFilterShader::traverseSG( TraverseInfo &ti ) {
       glGetTexLevelParameteriv(gen_tex->getTextureTarget(), 0, GL_TEXTURE_HEIGHT, &h);
       glPopAttrib();
       if( width->getValue()==-1 ) {
-        widthInUse->setValue(w);
+        widthInUse->setValue(w,id);
       }else{
-        widthInUse->setValue(width->getValue());
+        widthInUse->setValue(width->getValue(),id);
       }
       if( height->getValue()==-1 ) {
-        heightInUse->setValue(h);
+        heightInUse->setValue(h,id);
       }else{
-        heightInUse->setValue(height->getValue());
+        heightInUse->setValue(height->getValue(),id);
       }
     } else {
-      widthInUse->setValue(0);
-      heightInUse->setValue(0);
+      widthInUse->setValue(0,id);
+      heightInUse->setValue(0,id);
     }
   }
   if( rtt ) {// if texture is a renderTargetTexture
@@ -153,14 +153,14 @@ void ConvolutionFilterShader::traverseSG( TraverseInfo &ti ) {
     glGetTexLevelParameteriv(rtt->getTextureTarget(), 0, GL_TEXTURE_HEIGHT, &h);
     glPopAttrib();
     if( width->getValue()==-1 ) {
-      widthInUse->setValue(w);
+      widthInUse->setValue(w,id);
     }else{
-      widthInUse->setValue(widthInUse->getValue());
+      widthInUse->setValue(widthInUse->getValue(),id);
     }
     if( heightInUse->getValue()==-1 ) {
-      heightInUse->setValue(h);
+      heightInUse->setValue(h,id);
     }else{
-      heightInUse->setValue(heightInUse->getValue());
+      heightInUse->setValue(heightInUse->getValue(),id);
     }
   }
 }
