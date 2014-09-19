@@ -41,8 +41,8 @@ H3DNodeDatabase H3DGeneratedShaderNode::database(
                                    &ComposedShader::database );
 
 namespace H3DGeneratedShaderNodeInternals {
-  FIELDDB_ELEMENT( H3DGeneratedShaderNode, vertexShaderString, OUTPUT_ONLY );
-  FIELDDB_ELEMENT( H3DGeneratedShaderNode, fragmentShaderString, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( H3DGeneratedShaderNode, vertexShaderString, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( H3DGeneratedShaderNode, fragmentShaderString, INPUT_OUTPUT );
 }
 
 H3DGeneratedShaderNode::H3DGeneratedShaderNode( 

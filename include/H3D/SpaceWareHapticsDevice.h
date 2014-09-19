@@ -52,7 +52,7 @@ namespace H3D {
     /// device is pressed.
     ///
     /// routes_in[0] is the buttons field of the SpaceWareSensor.
-    class SetMainButton: public TypedField< ThreadSafeSField< SFBool >,
+    class SetMainButton: public TypedField< GetValueSafeField< SFBool >,
                          Types< SFInt32 > > {
       virtual void update();
     };
@@ -81,8 +81,8 @@ namespace H3D {
         Inst< SFHapticsRendererNode > _hapticsRenderer  = 0,
         Inst< MFVec3f         > _proxyPositions         = 0,
         Inst< SFBool          > _followViewpoint        = 0,
-        Inst< ThreadSafeSField< SFVec3f > > _set_devicePosition     = 0,
-        Inst< ThreadSafeSField< SFRotation > > _set_deviceOrientation  = 0,
+        Inst< GetValueSafeField< SFVec3f > > _set_devicePosition     = 0,
+        Inst< GetValueSafeField< SFRotation > > _set_deviceOrientation  = 0,
          Inst< SetMainButton > _set_mainButton         = 0,
          Inst< SFFloat         > _posSensitivity         = 0,
          Inst< SFFloat         > _ornSensitivity         = 0);

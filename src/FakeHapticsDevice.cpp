@@ -68,9 +68,9 @@ FakeHapticsDevice::FakeHapticsDevice(
     Inst< SFHapticsRendererNode > _hapticsRenderer  ,
     Inst< MFVec3f         > _proxyPositions         ,
     Inst< SFBool          > _followViewpoint        ,
-    Inst< ThreadSafeSField< SFVec3f > > _set_devicePosition     ,
-    Inst< ThreadSafeSField< SFRotation > > _set_deviceOrientation  ,
-    Inst< ThreadSafeSField< SFBool > > _set_mainButton,
+    Inst< GetValueSafeField< SFVec3f > > _set_devicePosition     ,
+    Inst< GetValueSafeField< SFRotation > > _set_deviceOrientation  ,
+    Inst< GetValueSafeField< SFBool > > _set_mainButton,
     Inst< SFString        > _deviceName          ) :
   H3DFakeHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
       _trackerOrientation, _positionCalibration, 

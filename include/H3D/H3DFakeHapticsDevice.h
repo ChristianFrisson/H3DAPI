@@ -31,6 +31,7 @@
 
 #include "H3D/H3DHapticsDevice.h"
 #include "H3D/ThreadSafeFields.h"
+#include <H3DUtil/Threads.h>
 
 #include <HAPI/HAPIHapticsDevice.h>
 
@@ -66,6 +67,56 @@ namespace H3D {
     
   friend class H3DFakeHapticsDevice;
     };
+    /// A field which ensure that getValue and only getValue can be called within
+    /// haptic thread with thread safety.  
+    /// Note: All other function such as setValue, upToDate is not allowed to 
+    /// called within haptic thread. The actual value update happens in main 
+    /// thread either through explicitly calling getValue or upToDate or wait 
+    /// until the end of the main thread loop let PeriodicUpdate update itself.
+    /// Note2: getValue() can only be called within either in haptic thread 
+    /// or main thread. All other type of threads are not allowed
+    template< class BaseField >
+    class GetValueSafeField: public PeriodicUpdate< BaseField > {
+    public:
+      /// Get the value of the field.
+      inline virtual const typename BaseField::value_type &getValue( int id = 0 ) {
+        if( H3DUtil::HapticThread::inHapticThread() ) {
+          // if in haptic thread only get the rt_value and return
+          value_lock.readLock();
+          value_for_haptic = rt_value;
+          value_lock.unlock();
+          return value_for_haptic;
+        } else {
+          assert( H3DUtil::ThreadBase::inMainThread() );
+          return PeriodicUpdate< BaseField >::getValue( id );
+        }
+      }
+      /// update can not happens in non-main thread
+      inline virtual void update() {
+        assert( H3DUtil::ThreadBase::inMainThread() ); // terminate if update in non-main thread
+        PeriodicUpdate< BaseField >::update();
+        value_lock.writeLock();
+        rt_value = this->value;
+        value_lock.unlock();
+      }
+      /// Make sure that the field is up-to-date, but never in non-main thread
+      virtual void upToDate() {
+        assert( H3DUtil::ThreadBase::inMainThread() );
+        PeriodicUpdate< BaseField >::upToDate();
+      }
+      /// Set the value of the field, also only allowed in main thread
+      inline virtual void setValue( const typename BaseField::value_type &v,
+        int id = 0 ) {
+          assert( H3DUtil::ThreadBase::inMainThread() );
+          PeriodicUpdate< BaseField >::setValue( v, id );
+      }
+    protected:
+      // value used to exchange value between haptic and main thread 
+      typename BaseField::value_type rt_value;
+      /// value to be used for haptic thread
+      typename BaseField::value_type value_for_haptic;
+      H3DUtil::ReadWriteLock value_lock;
+    };
 
     /// Constructor.
     H3DFakeHapticsDevice( Inst< SFVec3f         > _devicePosition         = 0,
@@ -90,9 +141,9 @@ namespace H3D {
         Inst< SFHapticsRendererNode > _hapticsRenderer  = 0,
         Inst< MFVec3f         > _proxyPositions         = 0,
         Inst< SFBool          > _followViewpoint        = 0,
-        Inst< ThreadSafeSField< SFVec3f > > _set_devicePosition     = 0,
-        Inst< ThreadSafeSField< SFRotation > > _set_deviceOrientation  = 0,
-        Inst< ThreadSafeSField< SFBool > > _set_mainButton         = 0 );
+        Inst< GetValueSafeField< SFVec3f > > _set_devicePosition     = 0,
+        Inst< GetValueSafeField< SFRotation > > _set_deviceOrientation  = 0,
+        Inst< GetValueSafeField< SFBool > > _set_mainButton         = 0 );
 
     /// Destructor.
     ~H3DFakeHapticsDevice() {
@@ -107,19 +158,19 @@ namespace H3D {
     /// devicePosition field of the haptics device.
     ///
     /// <b>Access type:</b> inputOnly \n
-    auto_ptr< SFVec3f > set_devicePosition;
+    auto_ptr< GetValueSafeField<SFVec3f> > set_devicePosition;
 
     /// The set_deviceOrientation field can be used to set the 
     /// deviceOrientation field of the haptics device.
     ///
     /// <b>Access type:</b> inputOnly \n
-    auto_ptr< SFRotation > set_deviceOrientation;
+    auto_ptr< GetValueSafeField<SFRotation> > set_deviceOrientation;
 
     /// The set_mainButton field can be used to set the 
     /// mainButton field of the haptics device.
     ///
     /// <b>Access type:</b> inputOnly \n
-    auto_ptr< SFBool > set_mainButton;
+    auto_ptr< GetValueSafeField<SFBool> > set_mainButton;
   };
 }
 

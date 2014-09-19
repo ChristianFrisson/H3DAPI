@@ -71,9 +71,9 @@ namespace H3D {
            Inst< SFHapticsRendererNode > _hapticsRenderer  = 0,
            Inst< MFVec3f         > _proxyPositions         = 0,
            Inst< SFBool          > _followViewpoint        = 0,
-           Inst< ThreadSafeSField< SFVec3f > > _set_devicePosition     = 0,
-           Inst< ThreadSafeSField< SFRotation > > _set_deviceOrientation  = 0,
-           Inst< ThreadSafeSField< SFBool > > _set_mainButton         = 0,
+           Inst< GetValueSafeField< SFVec3f > > _set_devicePosition     = 0,
+           Inst< GetValueSafeField< SFRotation > > _set_deviceOrientation  = 0,
+           Inst< GetValueSafeField< SFBool > > _set_mainButton         = 0,
            Inst< SFString           > _deviceName             = 0 
            );
 

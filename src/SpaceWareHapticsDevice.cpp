@@ -66,8 +66,8 @@ SpaceWareHapticsDevice::SpaceWareHapticsDevice(
           Inst< SFHapticsRendererNode > _hapticsRenderer  ,
           Inst< MFVec3f         > _proxyPositions         ,
           Inst< SFBool          > _followViewpoint        ,
-          Inst< ThreadSafeSField< SFVec3f > > _set_devicePosition     ,
-          Inst< ThreadSafeSField< SFRotation > > _set_deviceOrientation  ,
+          Inst< GetValueSafeField< SFVec3f > > _set_devicePosition     ,
+          Inst< GetValueSafeField< SFRotation > > _set_deviceOrientation  ,
           Inst< SetMainButton > _set_mainButton,
           Inst< SFFloat         > _posSensitivity,
           Inst< SFFloat         > _ornSensitivity ) :
@@ -103,8 +103,6 @@ void SpaceWareHapticsDevice::SetMainButton::update() {
   assert( H3DUtil::ThreadBase::inMainThread() );
   H3DInt32 buttons = static_cast< SFInt32 * >( routes_in[0] )->getValue();
   value = (buttons != 0);
-  void * param[] = { &this->value, &rt_value };
-  H3DUtil::HapticThread::synchronousHapticCB( transferValue, param );
 }
 
 
