@@ -44,7 +44,6 @@
 
 #include <H3DUtil/LoadImageFunctions.h>
 
-/// Callback for collapse all menu choice.
 void H3DViewerPopupMenus::OnTreeViewCollapseAll( wxCommandEvent& event ) {
   wxTreeItemId id = treeview_dialog->TreeViewTree->GetSelection();
   if( id.IsOk() ) {
@@ -52,7 +51,6 @@ void H3DViewerPopupMenus::OnTreeViewCollapseAll( wxCommandEvent& event ) {
   }
 }
 
-/// Callback for expand all menu choice.
 void H3DViewerPopupMenus::OnTreeViewExpandAll( wxCommandEvent& event ) {
   wxTreeItemId id = treeview_dialog->TreeViewTree->GetSelection();
   if( id.IsOk() ) {
@@ -60,7 +58,7 @@ void H3DViewerPopupMenus::OnTreeViewExpandAll( wxCommandEvent& event ) {
   }
 }
 
-/// Callback for collapse children menu choice.
+//Callback for collapse children menu choice.
 void H3DViewerPopupMenus::OnTreeViewCollapseChildren( wxCommandEvent& event ) {
   wxTreeItemId id = treeview_dialog->TreeViewTree->GetSelection();
   wxTreeItemIdValue cookie;
@@ -71,7 +69,7 @@ void H3DViewerPopupMenus::OnTreeViewCollapseChildren( wxCommandEvent& event ) {
   }
 }
 
-/// Callback for node watch menu choice.
+//Callback for node watch menu choice.
 void H3DViewerPopupMenus::OnTreeViewNodeWatch( wxCommandEvent& event ) {
   wxTreeItemId id = treeview_dialog->TreeViewTree->GetSelection();
   
@@ -91,7 +89,7 @@ void H3DViewerPopupMenus::OnTreeViewNodeWatch( wxCommandEvent& event ) {
   }
 }
 
-/// Callback for node save x3d menu choice.
+//Callback for node save x3d menu choice.
 void H3DViewerPopupMenus::OnTreeViewSaveX3D( wxCommandEvent& event ) {
   wxTreeItemId id = treeview_dialog->TreeViewTree->GetSelection();
   
@@ -132,7 +130,72 @@ void H3DViewerPopupMenus::OnTreeViewSaveX3D( wxCommandEvent& event ) {
   }
 }
 
-/// Callback for node save VRML menu choice.
+void H3DViewerPopupMenus::onTreeViewLookAt( wxCommandEvent& event ) {
+  wxTreeItemId id = treeview_dialog->TreeViewTree->GetSelection();
+  H3DViewerTreeViewDialog::TreeIdMap::iterator ni = treeview_dialog->node_map.find( id.m_pItem );
+  if( ni == treeview_dialog->node_map.end() ) {
+    wxMessageBox( wxT("Selected tree item is not a node"),
+                  wxT("Error"),
+                  wxOK | wxICON_EXCLAMATION);
+    return;
+  }
+
+  Matrix4f local_to_global;
+  wxTreeItemId tmp_id = treeview_dialog->TreeViewTree->GetItemParent(id);
+  while( tmp_id.m_pItem != NULL ) {
+    H3DViewerTreeViewDialog::TreeIdMap::iterator ni_tmp = treeview_dialog->node_map.find( tmp_id.m_pItem );
+    if( ni_tmp == treeview_dialog->node_map.end() )
+      break;
+    if( MatrixTransform * mt = dynamic_cast< MatrixTransform * >(ni_tmp->second.get()) ) {
+      local_to_global = mt->matrix->getValue();
+    }
+    tmp_id = treeview_dialog->TreeViewTree->GetItemParent(tmp_id);
+  }
+
+  Vec3f object_size( 1, 1, 1 );
+  Vec3f object_center( 0, 0, 0 );
+  bool no_size = true;
+  if( H3DBoundedObject * bound_object = dynamic_cast< H3DBoundedObject * >(ni->second.get()) ) {
+    Bound * the_bound = bound_object->bound->getValue();
+    if( the_bound ) {
+      if( BoxBound *bb = dynamic_cast< BoxBound * >(the_bound) ) {
+        no_size = false;
+        object_center = bb->center->getValue();
+        object_size = bb->size->getValue();
+      }
+    }
+  }
+
+  if( no_size ) {
+    stringstream ss;
+    ss << "Can not estimate size of node of type " << ni->second->getTypeName() << "."
+       << " A default size of " << object_size << " will be used.";
+    wxMessageBox( wxString( ss.str().c_str(), wxConvUTF8 ),
+                  wxT("Error"),
+                  wxOK | wxICON_EXCLAMATION);
+  } 
+
+    X3DViewpointNode * vp = X3DViewpointNode::getActive();
+    Matrix4f vp_inv_m = vp->accInverseMatrix->getValue();
+    Vec3f desired_point = vp_inv_m * local_to_global * object_center;
+    Vec3f dir = vp->totalPosition->getValue() - desired_point;
+    H3DFloat dir_length = dir.length();
+    if( dir_length < Constants::f_epsilon )
+      dir = Vec3f( 0, 0, 1 );
+    else
+      dir /= dir_length;
+    Vec3f ltg_scaling = local_to_global.getScalePart();
+    Vec3f vp_scaling = vp_inv_m.getScalePart();
+    // 2 is simply the 
+    H3DFloat scaled_size = 2 * H3DMax( vp_scaling.x, H3DMax( vp_scaling.y, vp_scaling.z ) ) *
+                           H3DMax( ltg_scaling.x, H3DMax( ltg_scaling.y, ltg_scaling.z ) ) *
+                           object_size.length();
+    vp->moveTo( desired_point + dir * scaled_size );
+    vp->rotateAroundSelf( -vp->totalOrientation->getValue() * Rotation( Vec3f(0, 0, 1), dir ) );
+  
+}
+
+//Callback for node save VRML menu choice.
 void H3DViewerPopupMenus::OnTreeViewSaveVRML( wxCommandEvent& event ) {
   wxTreeItemId id = treeview_dialog->TreeViewTree->GetSelection();
   
@@ -174,7 +237,7 @@ void H3DViewerPopupMenus::OnTreeViewSaveVRML( wxCommandEvent& event ) {
 }
 
 
-/// Callback for node save x3d menu choice.
+//Callback for node save x3d menu choice.
 void H3DViewerPopupMenus::OnTreeViewSaveSTL( wxCommandEvent& event ) {
   wxTreeItemId id = treeview_dialog->TreeViewTree->GetSelection();
   
@@ -225,7 +288,7 @@ void H3DViewerPopupMenus::OnTreeViewSaveSTL( wxCommandEvent& event ) {
   }
 }
 
-/// Callback for node save x3d menu choice.
+//Callback for node save x3d menu choice.
 void H3DViewerPopupMenus::OnTreeViewSaveTrianglesX3D( wxCommandEvent& event ) {
   wxTreeItemId id = treeview_dialog->TreeViewTree->GetSelection();
   

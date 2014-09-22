@@ -187,6 +187,10 @@ MenuContainer::MenuContainer( wxWindow* parent, wxWindowID id, const wxString& t
 	TreeViewSaveTrianglesX3D = new wxMenuItem( RightClickMenu, wxID_ANY, wxString( wxT("Save all triangles as IndexedTriangleSet..") ) , wxEmptyString, wxITEM_NORMAL );
 	RightClickMenu->Append( TreeViewSaveTrianglesX3D );
 	
+	wxMenuItem* TreeViewLookAt;
+	TreeViewLookAt = new wxMenuItem( RightClickMenu, wxID_ANY, wxString( wxT("Look at") ) , wxEmptyString, wxITEM_NORMAL );
+	RightClickMenu->Append( TreeViewLookAt );
+	
 	m_menubar2->Append( RightClickMenu, wxT("Action") ); 
 	
 	RightClickMenuTexture = new wxMenu();
@@ -286,6 +290,7 @@ MenuContainer::MenuContainer( wxWindow* parent, wxWindowID id, const wxString& t
 	this->Connect( TreeViewSaveX3D->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveX3D ) );
 	this->Connect( TreeViewSaveVRML->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveVRML ) );
 	this->Connect( TreeViewSaveTrianglesX3D->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveTrianglesX3D ) );
+	this->Connect( TreeViewLookAt->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::onTreeViewLookAt ) );
 	this->Connect( TreeViewCollapseAll11->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseAll ) );
 	this->Connect( TreeViewExpandAll11->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewExpandAll ) );
 	this->Connect( TreeViewCollapseChildren11->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseChildren ) );
@@ -317,6 +322,7 @@ MenuContainer::~MenuContainer()
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveX3D ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveVRML ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveTrianglesX3D ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::onTreeViewLookAt ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseAll ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewExpandAll ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseChildren ) );

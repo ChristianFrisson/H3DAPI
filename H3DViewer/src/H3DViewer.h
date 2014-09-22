@@ -123,6 +123,7 @@ class MenuContainer : public wxFrame
 		virtual void OnTreeViewSaveX3D( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTreeViewSaveVRML( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTreeViewSaveTrianglesX3D( wxCommandEvent& event ) { event.Skip(); }
+		virtual void onTreeViewLookAt( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTreeViewSaveNrrd( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTreeViewSavePng( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTreeViewSaveSTL( wxCommandEvent& event ) { event.Skip(); }

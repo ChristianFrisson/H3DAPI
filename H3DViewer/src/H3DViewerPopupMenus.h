@@ -69,6 +69,9 @@ public:
   /// Callback for node save x3d menu choice.
   virtual void OnTreeViewSaveX3D( wxCommandEvent& event );
 
+  /// Callback for node lookat menu choice.
+  virtual void onTreeViewLookAt( wxCommandEvent& event );
+
   /// Callback for node save nrrd menu choice.
   virtual void OnTreeViewSaveNrrd( wxCommandEvent& event );
 
