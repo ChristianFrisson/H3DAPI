@@ -89,6 +89,9 @@ public:
   // It updates the node field view.
   virtual void OnNodeSelected( wxTreeEvent& event );
 
+  // Callback for when Enter is typed in text control.
+  virtual void onSearchTextCtrl( wxCommandEvent& event );
+
   /// Callback for when user right clicked on a tree node.
   virtual void OnTreeRightClick( wxTreeEvent& event );
         
@@ -164,5 +167,9 @@ public:
 #endif
   
   MenuContainer *menu_container;
+
+
+  // Help function to onSearchTextCtrl, recursive function to find the string in any wx label for any tree item.
+  bool onSearchTextCtrlHelp( const wxTreeItemId &item, const wxString &to_find, wxTreeItemId &found_item, const wxTreeItemId &check_parent = wxTreeItemId() );
 };
 #endif // __H3DViewerTreeViewDialog__

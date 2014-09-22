@@ -19,9 +19,10 @@
 #include <wx/sizer.h>
 #include <wx/panel.h>
 #include <wx/splitter.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
 #include <wx/button.h>
 #include <wx/frame.h>
-#include <wx/stattext.h>
 #include <wx/listbox.h>
 #include <wx/checkbox.h>
 #include <wx/richtext/richtextctrl.h>
@@ -45,6 +46,8 @@ class TreeViewDialog : public wxFrame
 		wxSplitterWindow* SplitterWindow;
 		wxPanel* TreeViewPanel;
 		wxPanel* FieldValueViewPanel;
+		wxStaticText* m_staticText2;
+		wxTextCtrl* search_text_ctrl;
 		wxButton* btnClose;
 		
 		// Virtual event handlers, overide them in your derived class
@@ -52,6 +55,7 @@ class TreeViewDialog : public wxFrame
 		virtual void OnIdle( wxIdleEvent& event ) { event.Skip(); }
 		virtual void OnTreeRightClick( wxTreeEvent& event ) { event.Skip(); }
 		virtual void OnNodeSelected( wxTreeEvent& event ) { event.Skip(); }
+		virtual void onSearchTextCtrl( wxCommandEvent& event ) { event.Skip(); }
 		virtual void btnCloseClick( wxCommandEvent& event ) { event.Skip(); }
 		
 	

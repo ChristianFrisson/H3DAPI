@@ -40,8 +40,23 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	SplitterWindow->SplitVertically( TreeViewPanel, FieldValueViewPanel, 283 );
 	bSizer14->Add( SplitterWindow, 1, wxEXPAND, 5 );
 	
+	wxBoxSizer* bSizer8;
+	bSizer8 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_staticText2 = new wxStaticText( this, wxID_ANY, wxT("Search:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText2->Wrap( -1 );
+	bSizer8->Add( m_staticText2, 0, wxALIGN_CENTER_VERTICAL|wxALIGN_LEFT|wxALL, 5 );
+	
+	search_text_ctrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER );
+	search_text_ctrl->SetToolTip( wxT("Write the DEF name of the node to search for.") );
+	
+	bSizer8->Add( search_text_ctrl, 1, wxALL, 5 );
+	
 	btnClose = new wxButton( this, wxID_CANCEL, wxT("Close"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer14->Add( btnClose, 0, wxALIGN_RIGHT|wxALL, 5 );
+	bSizer8->Add( btnClose, 0, wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL, 5 );
+	
+	
+	bSizer14->Add( bSizer8, 0, wxEXPAND, 5 );
 	
 	
 	bSizer1->Add( bSizer14, 1, wxEXPAND, 5 );
@@ -55,6 +70,7 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	this->Connect( wxEVT_IDLE, wxIdleEventHandler( TreeViewDialog::OnIdle ) );
 	TreeViewTree->Connect( wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK, wxTreeEventHandler( TreeViewDialog::OnTreeRightClick ), NULL, this );
 	TreeViewTree->Connect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( TreeViewDialog::OnNodeSelected ), NULL, this );
+	search_text_ctrl->Connect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( TreeViewDialog::onSearchTextCtrl ), NULL, this );
 	btnClose->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TreeViewDialog::btnCloseClick ), NULL, this );
 }
 
@@ -65,6 +81,7 @@ TreeViewDialog::~TreeViewDialog()
 	this->Disconnect( wxEVT_IDLE, wxIdleEventHandler( TreeViewDialog::OnIdle ) );
 	TreeViewTree->Disconnect( wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK, wxTreeEventHandler( TreeViewDialog::OnTreeRightClick ), NULL, this );
 	TreeViewTree->Disconnect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( TreeViewDialog::OnNodeSelected ), NULL, this );
+	search_text_ctrl->Disconnect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( TreeViewDialog::onSearchTextCtrl ), NULL, this );
 	btnClose->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TreeViewDialog::btnCloseClick ), NULL, this );
 	
 }

@@ -42,6 +42,23 @@
 #include <H3D/X3DGeometryNode.h>
 #include <H3D/X3D.h>
 
+inline string toStr( const wxString &s ) {
+# if(wxUSE_UNICODE)
+  char *b = new char[s.size()+1];
+  const wchar_t *wb = s.c_str();
+  for( unsigned int i = 0; i < s.size(); ++i ) {
+    b[i] = (char)(wb[i]);
+  }
+  
+  b[s.size()] = '\0';
+  string sb(b);
+  delete[] b;
+  return sb;
+#else
+  return string( s.c_str() );
+#endif
+}
+
 H3DViewerTreeViewDialog::H3DViewerTreeViewDialog( wxWindow* parent )
 :
   TreeViewDialog( parent ),
@@ -82,6 +99,73 @@ void H3DViewerTreeViewDialog::OnNodeSelected( wxTreeEvent& event ) {
   } else {
     selected_node.reset( (*ni).second.get() );
   }
+}
+
+bool H3DViewerTreeViewDialog::onSearchTextCtrlHelp( const wxTreeItemId &item, const wxString &to_find, wxTreeItemId &found_item, const wxTreeItemId &check_parent ) {
+  if( !check_parent.IsOk() || item != check_parent ) {
+    if( TreeViewTree->GetItemText( item ).Find( to_find ) != wxNOT_FOUND ) {
+      found_item = item;
+      return true;
+    }
+
+    wxTreeItemIdValue cookie;
+    wxTreeItemId first_child = TreeViewTree->GetFirstChild( item, cookie );
+    if( first_child.IsOk() ) {
+      if( onSearchTextCtrlHelp( first_child, to_find, found_item ) )
+        return true;
+    }
+  }
+
+  wxTreeItemId id = TreeViewTree->GetNextSibling( item );
+  while( id.IsOk() ) {
+    if( TreeViewTree->GetItemText( id ).Find( to_find ) != wxNOT_FOUND ) {
+      found_item = id;
+      return true;
+    }
+    wxTreeItemIdValue cookie;
+    wxTreeItemId first_child = TreeViewTree->GetFirstChild( id, cookie );
+    if( first_child.IsOk() ) {
+      if( onSearchTextCtrlHelp( first_child, to_find, found_item ) )
+        return true;
+    }
+    id = TreeViewTree->GetNextSibling( id );
+  }
+
+  if( check_parent ) {
+    id = TreeViewTree->GetItemParent( item );
+    if( id.IsOk() && onSearchTextCtrlHelp( id, to_find, found_item, id ) )
+      return true;
+  }
+
+  return false;
+}
+
+void H3DViewerTreeViewDialog::onSearchTextCtrl( wxCommandEvent& event ) {
+  string string_to_find = toStr( event.GetString() );
+  if( string_to_find.empty() )
+    return;
+  wxTreeItemId found_id;
+  wxTreeItemId id_to_search_from;
+  wxTreeItemId selected_id = TreeViewTree->GetSelection();
+  wxTreeItemId check_parent;
+  if( selected_id.IsOk() && TreeViewTree->GetItemText( selected_id ).Find( string_to_find ) != wxNOT_FOUND ) {
+    wxTreeItemIdValue cookie;
+    id_to_search_from = TreeViewTree->GetFirstChild( selected_id, cookie );
+    if( !id_to_search_from.IsOk() ) id_to_search_from = selected_id;
+    check_parent = selected_id;
+  } else id_to_search_from = TreeViewTree->GetRootItem();
+    
+  if( id_to_search_from.IsOk() )
+    if( onSearchTextCtrlHelp( id_to_search_from, event.GetString(), found_id, check_parent ) ) {
+      if( !TreeViewTree->IsSelected( found_id ) ) {
+        TreeViewTree->SelectItem( found_id );
+      }
+    } else if( check_parent && onSearchTextCtrlHelp( TreeViewTree->GetRootItem(), event.GetString(), found_id ) ) {
+      if( !TreeViewTree->IsSelected( found_id ) ) {
+        TreeViewTree->SelectItem( found_id );
+      }
+    }
+  TimeStamp end_time;
 }
 
 int H3DViewerTreeViewDialog::getNrTriangles( X3DGeometryNode *geom ) {
