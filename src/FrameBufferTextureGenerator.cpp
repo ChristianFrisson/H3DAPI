@@ -668,8 +668,12 @@ void FrameBufferTextureGenerator::render()     {
         // Prepare the fbo for rendering, it will clear or copy or share what frame buffer is being specified
         preProcessFBO(buffer_src_x, buffer_src_y, desired_fbo_width,desired_fbo_heigth,current_depth);
       }
-      widthInUse->setValue(desired_fbo_width, id);
-      heightInUse->setValue(desired_fbo_heigth, id);
+      if ( desired_fbo_width != widthInUse->getValue() ) {
+        widthInUse->setValue(desired_fbo_width, id);
+      }
+      if ( desired_fbo_heigth != heightInUse->getValue() ) {
+        heightInUse->setValue(desired_fbo_heigth, id);
+      }
       X3DShapeNode::GeometryRenderMode  m= X3DShapeNode::geometry_render_mode;
 
       if( children_multi_pass_transparency ) {
