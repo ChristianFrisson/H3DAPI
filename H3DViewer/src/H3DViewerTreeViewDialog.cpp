@@ -42,23 +42,6 @@
 #include <H3D/X3DGeometryNode.h>
 #include <H3D/X3D.h>
 
-inline string toStr( const wxString &s ) {
-# if(wxUSE_UNICODE)
-  char *b = new char[s.size()+1];
-  const wchar_t *wb = s.c_str();
-  for( unsigned int i = 0; i < s.size(); ++i ) {
-    b[i] = (char)(wb[i]);
-  }
-  
-  b[s.size()] = '\0';
-  string sb(b);
-  delete[] b;
-  return sb;
-#else
-  return string( s.c_str() );
-#endif
-}
-
 H3DViewerTreeViewDialog::H3DViewerTreeViewDialog( wxWindow* parent )
 :
   TreeViewDialog( parent ),
@@ -103,7 +86,7 @@ void H3DViewerTreeViewDialog::OnNodeSelected( wxTreeEvent& event ) {
 
 bool H3DViewerTreeViewDialog::onSearchTextCtrlHelp( const wxTreeItemId &item, const wxString &to_find, wxTreeItemId &found_item, const wxTreeItemId &check_parent ) {
   if( !check_parent.IsOk() || item != check_parent ) {
-    if( TreeViewTree->GetItemText( item ).Find( to_find ) != wxNOT_FOUND ) {
+    if( TreeViewTree->GetItemText( item ).find( to_find ) != string::npos ) {
       found_item = item;
       return true;
     }
@@ -118,7 +101,7 @@ bool H3DViewerTreeViewDialog::onSearchTextCtrlHelp( const wxTreeItemId &item, co
 
   wxTreeItemId id = TreeViewTree->GetNextSibling( item );
   while( id.IsOk() ) {
-    if( TreeViewTree->GetItemText( id ).Find( to_find ) != wxNOT_FOUND ) {
+    if( TreeViewTree->GetItemText( id ).find( to_find ) != string::npos ) {
       found_item = id;
       return true;
     }
@@ -141,14 +124,14 @@ bool H3DViewerTreeViewDialog::onSearchTextCtrlHelp( const wxTreeItemId &item, co
 }
 
 void H3DViewerTreeViewDialog::onSearchTextCtrl( wxCommandEvent& event ) {
-  string string_to_find = toStr( event.GetString() );
-  if( string_to_find.empty() )
+  wxString string_to_find = event.GetString();
+  if( string_to_find.IsEmpty() )
     return;
   wxTreeItemId found_id;
   wxTreeItemId id_to_search_from;
   wxTreeItemId selected_id = TreeViewTree->GetSelection();
   wxTreeItemId check_parent;
-  if( selected_id.IsOk() && TreeViewTree->GetItemText( selected_id ).Find( string_to_find ) != wxNOT_FOUND ) {
+  if( selected_id.IsOk() && TreeViewTree->GetItemText( selected_id ).find( string_to_find ) != string::npos ) {
     wxTreeItemIdValue cookie;
     id_to_search_from = TreeViewTree->GetFirstChild( selected_id, cookie );
     if( !id_to_search_from.IsOk() ) id_to_search_from = selected_id;
