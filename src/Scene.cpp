@@ -718,7 +718,7 @@ bool Scene::removeProgramSetting( Field *field ) {
   return removed;
 }
 
-H3D::Node* Scene::findChildNode(H3D::Group *group, const std::string &nodeType, const std::string &nodeName){
+H3D::Node* Scene::findChildNode(H3D::X3DGroupingNode *group, const std::string &nodeType, const std::string &nodeName){
   if(group)
   {
     const NodeVector &c = group->children->getValue();
@@ -736,7 +736,7 @@ H3D::Node* Scene::findChildNode(H3D::Group *group, const std::string &nodeType, 
     }
     for( unsigned int i = 0; i < c.size(); ++i ) {
       if( c[i]){
-        H3D::Group *childgroup = dynamic_cast<H3D::Group*>(c[i]);
+        H3D::X3DGroupingNode *childgroup = dynamic_cast<H3D::X3DGroupingNode*>(c[i]);
         if (childgroup){
           H3D::Node *node = findChildNode(childgroup, nodeType, nodeName);
           if (node)

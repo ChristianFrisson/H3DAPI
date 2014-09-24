@@ -57,8 +57,8 @@ ImageTexture::ImageTexture(
                            Inst< SFBool        > _scaleToP2,
                            Inst< SFImage       > _image,
                            Inst< MFImageLoader > _imageLoader,
-                           Inst< SFString      > _loadInThread,
-                           Inst< SFTextureProperties > _textureProperties ) :
+                           Inst< SFTextureProperties > _textureProperties,
+                           Inst< SFString      > _loadInThread ) :
   X3DTexture2DNode( _displayList, _metadata, _repeatS, _repeatT,
                     _scaleToP2, _image, _textureProperties ),
   X3DUrlObject( _url ),
