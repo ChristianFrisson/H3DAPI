@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='Full' version='3.2'>
+  <head>
+    <meta name='title' content='Rectangle2D.x3d'/>
+    <meta name='description' content='X3D Rectangle2D example.'/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
+  </head>
+  
+  <Scene>
+    <GlobalSettings>
+      <GraphicsOptions useCaching='false' bindlessTextures='true' />
+    </GlobalSettings>
+
+    <Viewpoint position='0 0 0.6' />
+
+    <Group DEF='GROUP'>
+      
+      <Transform DEF='TRANSFORM'>
+        <Shape>
+          <Rectangle2D size='0.05 0.05'/>
+          <Appearance>
+            <ComposedShader DEF="SHADER" language="GLSL" >
+              <field name="texture" type="MFNode" accessType="inputOutput">
+                <ImageTexture DEF="EARTH_DAY" url="images/stone_wall.bmp" />
+              </field>
+              
+              <ShaderPart type="FRAGMENT" url="shaders/passthrough.frag" />
+              <ShaderPart type="VERTEX" url="shaders/passthrough.vert" />
+            </ComposedShader>
+          </Appearance>
+        </Shape>
+      </Transform>
+
+    </Group>
+
+    <PythonScript url="bindless_textures.py" />
+  </Scene>
+</X3D>
