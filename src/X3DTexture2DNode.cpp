@@ -409,6 +409,17 @@ GLenum X3DTexture2DNode::getTextureTarget() {
   return GL_TEXTURE_2D;
 }
 
+
+GLuint64 X3DTexture2DNode::getTextureHandle() {
+  // When the image is used as a bindless texture in a shader
+  // then it is possible that the image is never rendered. So we take
+  // this opportunity to ensure that the image is upToDate since otherwise
+  // changes to the image will not be handled.
+  image->upToDate();
+  return H3DSingleTextureNode::getTextureHandle();
+}
+
+
 std::pair<H3DInt32,H3DInt32> X3DTexture2DNode::getDefaultSaveDimensions () {
   Image* im= image->getValue();
   if ( im ) {

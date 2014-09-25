@@ -115,3 +115,21 @@ GLenum RenderTargetTexture::getTextureTarget() {
   }
   return GL_TEXTURE_2D;
 }
+
+bool RenderTargetTexture::makeResident () {
+  FrameBufferTextureGenerator *gen = generator->getValue();
+  H3DInt32 target_index = index->getValue();
+  if( gen && target_index < (H3DInt32)gen->colorTextures->size() ) {
+    return gen->colorTextures->getValueByIndex( target_index )->makeResident ();
+  }
+  return false;
+}
+
+GLuint64 RenderTargetTexture::getTextureHandle() {
+  FrameBufferTextureGenerator *gen = generator->getValue();
+  H3DInt32 target_index = index->getValue();
+  if( gen && target_index < (H3DInt32)gen->colorTextures->size() ) {
+    return gen->colorTextures->getValueByIndex( target_index )->getTextureHandle();
+  }
+  return 0;
+}

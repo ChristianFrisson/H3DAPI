@@ -96,6 +96,9 @@ namespace H3D {
     /// Get the OpenGL texture target that is used for this texture.
     virtual GLenum getTextureTarget();
 
+    /// Get the bindless texture handle
+    virtual GLuint64 getTextureHandle();
+
     /// Virtual function for making all OpenGL calls that are needed to
     /// enable texturing for the texture.
     ///

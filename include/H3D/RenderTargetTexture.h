@@ -82,6 +82,15 @@ namespace H3D {
     /// texture from the generator.
     virtual GLenum getTextureTarget();
 
+    /// Make the texture resident as a bindless texture
+    virtual bool makeResident ();
+
+    /// Make the texture non-resident
+    virtual void makeNonResident () {}
+
+    /// Get the bindless texture handle, or 0 if not resident
+    virtual GLuint64 getTextureHandle();
+
     /// The generator field contains the FrameBufferTextureGenerator node from which to use a 
     /// render target (color texture ).
     ///

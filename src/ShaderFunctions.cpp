@@ -803,7 +803,14 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
       if( n == NULL ) return true;
       if( H3DSingleTextureNode *t = dynamic_cast< H3DSingleTextureNode *>( n ) ) 
       {
-        glUniform1iARB( location, t->getTextureUnit() - GL_TEXTURE0_ARB );
+        if ( X3DShaderNode::use_bindless_textures ) {
+          GLuint64 h= t->getTextureHandle();
+          if ( h != 0 ) {
+            glUniformHandleui64ARB ( location, h );
+          }
+        } else {
+          glUniform1iARB( location, t->getTextureUnit() - GL_TEXTURE0_ARB );
+        }
         break;
       }
       else if ( ShaderImageNode* si = dynamic_cast< ShaderImageNode* >( n ) )
@@ -824,27 +831,56 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
     {
       MFNode *f = static_cast< MFNode * >( field );
       unsigned int size = f->size();
-      GLint *v = new GLint[ size ];
+      GLint *v = NULL;
+      GLuint64 *b = NULL;
       for( unsigned int i = 0; i < size; ++i ) 
       {
         Node *n = f->getValueByIndex( i ); 
         if( n == NULL ) continue;
         if( H3DSingleTextureNode *t = dynamic_cast< H3DSingleTextureNode *>( n ) ) 
         {
-          v[i] = t->getTextureUnit() - GL_TEXTURE0_ARB;
+          if ( X3DShaderNode::use_bindless_textures ) {
+            GLuint64 h= t->getTextureHandle();
+            if ( h != 0 ) {
+              if ( !b ) b= new GLuint64 [ size ];
+              b[i] = h;
+            } else {
+              delete[] b;
+              b= NULL;
+              break; // come back when you have a handle
+            }
+          } else {
+            if ( !v ) v= new GLint [ size ];
+            v[i] = t->getTextureUnit() - GL_TEXTURE0_ARB;
+          }
+
+          
         } 
         else if ( ShaderImageNode* si = dynamic_cast< ShaderImageNode* >( n ) )
         {
+          if ( !v ) v= new GLint [ size ];
           v[i] = si->getImageUnit ( );
         }
         else 
         {
-          delete[] v;
+          delete [] v;
+          delete [] b;
           return false;
         }
       }
-      glUniform1ivARB( location, size, v );
-      delete[] v;
+
+      if ( v && b ) {
+        Console(4) << "ERROR: You cannot mix H3DSingleTextureNode and ShaderImageNode in the "
+          "same MFNode shader field when using bindless textures!" << endl;
+        return false;
+      } else if ( v ) {
+        glUniform1ivARB( location, size, v );
+        delete[] v;
+      } else if ( b ) {
+        glUniformHandleui64vARB ( location, size, b );
+        delete[] b;
+      }
+      
       break;
     }
   case X3DTypes::SFCOLOR:
@@ -1315,58 +1351,118 @@ GLbitfield H3D::Shaders::getAffectedGLAttribs( H3DDynamicFieldsObject *dfo ) {
 }
 
 void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
-  GLint nr_textures_supported;
-  glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
-  X3DTextureNode *active_texture = X3DTextureNode::getActiveTexture();
-  unsigned int nr_textures = 0; 
-  Node* n;
-  MFNode *mfnode;
-  GLenum current_texture_unit = GL_TEXTURE0_ARB;
-  for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();f != dfo->endField(); ++f ) 
-  {
-    // only SFNODE and MFNODE type of in the dynamic filed can be texture object
-    if((*f)->getX3DType()==X3DTypes::SFNODE)
+
+  if ( X3DShaderNode::use_bindless_textures ) {
+    // Bindless textures
+
+    Node* n;
+    MFNode *mfnode;
+    for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();f != dfo->endField(); ++f ) 
     {
-      n = static_cast<SFNode*>(*f)->getValue(); 
-      if( H3DSingleTextureNode *t = 
-        dynamic_cast< H3DSingleTextureNode *>( n ) ) {
-          glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
-          t->preRender();
-          ++nr_textures;
-      } 
-      if ( ShaderImageNode *si = dynamic_cast<ShaderImageNode*>(n) ){
-        current_texture_unit = GL_TEXTURE0_ARB + nr_textures;
-        glActiveTextureARB ( current_texture_unit );
-        si->preRender ( current_texture_unit );
-        ++nr_textures;
+      // only SFNODE and MFNODE type of in the dynamic filed can be texture object
+      if((*f)->getX3DType()==X3DTypes::SFNODE)
+      {
+        n = static_cast<SFNode*>(*f)->getValue(); 
+        if( H3DSingleTextureNode *t = 
+          dynamic_cast< H3DSingleTextureNode *>( n ) ) {
+            GLuint64 h= t->getTextureHandle();
+          if ( h == 0 ) {
+            t->displayList->callList();
+
+            if ( t->getTextureId() != 0 ) {
+
+              if ( t->makeResident () ) {
+                // Now the texture is resident we need to update the address in the shader uniform
+                (*f)->touch();
+              } else {
+                Console(4) << "ERROR: Cannot make texture resident " << (*f)->getFullName () << ": " << t->getName() << endl;
+              }
+
+            }
+          }
+        } 
+      }
+      else if((*f)->getX3DType()==X3DTypes::MFNODE)
+      {
+        mfnode = static_cast< MFNode * >( *f );
+        for( unsigned int i = 0; i < mfnode->size(); ++i ) {
+          Node *n = mfnode->getValueByIndex( i ); 
+          if( H3DSingleTextureNode *t = 
+            dynamic_cast< H3DSingleTextureNode *>( n ) ) {
+            GLuint64 h= t->getTextureHandle();
+            if ( h == 0 ) {
+              t->displayList->callList();
+
+              if ( t->getTextureId() != 0 ) {
+
+                if ( t->makeResident () ) {
+                  // Now the texture is resident we need to update the address in the shader uniform
+                  (*f)->touch();
+                } else {
+                  Console(4) << "ERROR: Cannot make texture resident " << (*f)->getFullName () << ": " << t->getName() << endl;
+                }
+
+              }
+            }
+          }
+        }
       }
     }
-    else if((*f)->getX3DType()==X3DTypes::MFNODE)
+  } else {
+    // Using texture binding
+    GLint nr_textures_supported;
+    glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
+    X3DTextureNode *active_texture = X3DTextureNode::getActiveTexture();
+    unsigned int nr_textures = 0; 
+    Node* n;
+    MFNode *mfnode;
+    GLenum current_texture_unit = GL_TEXTURE0_ARB;
+    for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();f != dfo->endField(); ++f ) 
     {
-      mfnode = static_cast< MFNode * >( *f );
-      for( unsigned int i = 0; i < mfnode->size(); ++i ) {
-        Node *n = mfnode->getValueByIndex( i ); 
+      // only SFNODE and MFNODE type of in the dynamic filed can be texture object
+      if((*f)->getX3DType()==X3DTypes::SFNODE)
+      {
+        n = static_cast<SFNode*>(*f)->getValue(); 
         if( H3DSingleTextureNode *t = 
           dynamic_cast< H3DSingleTextureNode *>( n ) ) {
             glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
             t->preRender();
             ++nr_textures;
-        }
-        else if ( ShaderImageNode* si = dynamic_cast<ShaderImageNode*>(n) ){
+        } 
+        if ( ShaderImageNode *si = dynamic_cast<ShaderImageNode*>(n) ){
           current_texture_unit = GL_TEXTURE0_ARB + nr_textures;
           glActiveTextureARB ( current_texture_unit );
           si->preRender ( current_texture_unit );
+          ++nr_textures;
         }
       }
+      else if((*f)->getX3DType()==X3DTypes::MFNODE)
+      {
+        mfnode = static_cast< MFNode * >( *f );
+        for( unsigned int i = 0; i < mfnode->size(); ++i ) {
+          Node *n = mfnode->getValueByIndex( i ); 
+          if( H3DSingleTextureNode *t = 
+            dynamic_cast< H3DSingleTextureNode *>( n ) ) {
+              glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
+              t->preRender();
+              ++nr_textures;
+          }
+          else if ( ShaderImageNode* si = dynamic_cast<ShaderImageNode*>(n) ){
+            current_texture_unit = GL_TEXTURE0_ARB + nr_textures;
+            glActiveTextureARB ( current_texture_unit );
+            si->preRender ( current_texture_unit );
+          }
+        }
+      }
+      if( nr_textures > (unsigned int)nr_textures_supported ) {
+        Console(4) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
+        break;
+      }
     }
-    if( nr_textures > (unsigned int)nr_textures_supported ) {
-      Console(4) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
-      break;
-    }
-  }
 
-  glActiveTextureARB(GL_TEXTURE0_ARB );
-  X3DTextureNode::setActiveTexture( active_texture );
+    glActiveTextureARB(GL_TEXTURE0_ARB );
+    X3DTextureNode::setActiveTexture( active_texture );
+  }
 }
 
 // preRender some resources to assign necessary context value of the shader
@@ -1424,6 +1520,8 @@ void H3D::Shaders::postRenderShaderResources( H3DDynamicFieldsObject* dfo, GLhan
 }
 
 void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
+  if ( X3DShaderNode::use_bindless_textures ) return;
+
   GLint nr_textures_supported;
   glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
 
@@ -1477,6 +1575,8 @@ void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
 
 
 void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
+  if ( X3DShaderNode::use_bindless_textures ) return;
+
   GLint nr_textures_supported;
   glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
   unsigned int nr_textures = 0; 

@@ -227,6 +227,12 @@ void ImageTexture::SFImage::update() {
   // reset the editing variables since we are doing a full load of a new
   // texture
   resetChanges();
+
+  if ( X3DShaderNode::use_bindless_textures ) {
+    // We must make the texture non-resident before the image is swapped
+    // so that a new texture handle can be created.
+    texture->makeNonResident ();
+  }
 }
 
 void ImageTexture::render() {
@@ -257,5 +263,4 @@ void ImageTexture::render() {
     disableTexturing();
   }
 }
-
 

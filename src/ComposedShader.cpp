@@ -355,7 +355,7 @@ void ComposedShader::render() {
       }
     }
 
-    if ( re_link ) {
+    if ( all_parts_valid && re_link ) {
       activate->setValue ( true );
     }
 
@@ -667,7 +667,6 @@ void ComposedShader::UpdateUniforms::update() {
   bool update_all= hasCausedEvent ( node->activate );
   if( update_all ) { // program re-linked, need to update all uniform
     // update the uniform location information in unifromFields
-    //Console(4)<<"program relinked!!!"<<endl;
     UniformFieldMap::iterator it;
     for( it = node->uniformFields.begin(); it!= node->uniformFields.end(); ++it  ) {
       const string &name = it->first;

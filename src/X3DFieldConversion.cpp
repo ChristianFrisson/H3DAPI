@@ -123,6 +123,11 @@ PixelImage *X3D::X3DStringTo2DImage( const string &x3d_string ) {
   if( s[0] == '\0' ) {
     throw ConversionError( "SFImage. Number components not specified." ); 
   }
+
+  if ( width <= 0 || height <= 0 ) {
+    return NULL;
+  }
+
   int nr_components = Convert::getValue<int>( s, t1 );
   s = Convert::skipWhitespaces( t1 );
     

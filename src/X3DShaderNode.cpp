@@ -47,6 +47,8 @@ namespace X3DShaderNodeInternals {
 }
 
 X3DShaderNode * X3DShaderNode::active_shader = NULL;
+bool X3DShaderNode::use_bindless_textures = false;
+bool X3DShaderNode::use_bindless_textures_set = false;
 
 X3DShaderNode::X3DShaderNode( Inst< DisplayList > _displayList,
                               Inst< SFNode      > _metadata,
@@ -67,4 +69,22 @@ X3DShaderNode::X3DShaderNode( Inst< DisplayList > _displayList,
   activate->setValue( false, id );
 }
 
+void X3DShaderNode::initialize () {
+  X3DAppearanceChildNode::initialize ();
 
+
+  bool wants_bindless_textures= false;
+  if( GlobalSettings* default_settings= GlobalSettings::getActive() ) {
+    GraphicsOptions* options;
+    default_settings->getOptionNode( options );
+    wants_bindless_textures= options->bindlessTextures->getValue();
+  }
+
+  bool bindless_textures= GL_ARB_bindless_texture && wants_bindless_textures;
+  if ( !use_bindless_textures_set ) {
+    use_bindless_textures= bindless_textures;
+    use_bindless_textures_set= true;
+  } else if ( bindless_textures != use_bindless_textures ) {
+    Console(4) << "WARNING: Cannot change bindlessTextures option after creating a shader node!" << endl;
+  }
+}

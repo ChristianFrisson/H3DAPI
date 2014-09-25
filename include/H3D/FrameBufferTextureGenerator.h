@@ -584,6 +584,9 @@ namespace H3D {
     /// Initialize all output textures and buffers needed for the node.
     void initializeFBO();
 
+    /// Create/recreate all output textures required
+    void createOutputTextures ();
+
     /// preProcess the FBO before rendering according to the depthBufferStorage
     /// and colorBufferStorages
     /// \param srcX The x component of low left corner of the area to be copied

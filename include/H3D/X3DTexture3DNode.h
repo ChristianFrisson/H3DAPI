@@ -113,6 +113,9 @@ namespace H3D {
     /// Get the OpenGL texture target that is used for this texture.
     virtual GLenum getTextureTarget();
 
+    /// Get the bindless texture handle
+    virtual GLuint64 getTextureHandle();
+
     /// Sometimes the texture represents a volume in space, e.g. when
     /// it contains volume data to be rendered. This function returns
     /// the size of the space the volume occupies in metres. 

@@ -135,6 +135,7 @@ SET( NON_UNITYBUILD_FILES
                  "H3DRenderModeGroupNode.cpp"
                  "H3DScriptNode.cpp"
                  "H3DShadowObjectNode.cpp"
+                 "H3DSingleTextureNode.cpp"
                  "H3DSoundFileNode.cpp"
                  "H3DStiffnessSurfaceNode.cpp"
                  "H3DVideoClipDecoderNode.cpp"

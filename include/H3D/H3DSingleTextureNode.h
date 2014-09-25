@@ -47,9 +47,10 @@ namespace H3D {
     
     /// Constructor.
     H3DSingleTextureNode( Inst< DisplayList > _displayList = 0,
-                          Inst< SFNode  > _metadata  = 0 ): 
-      X3DTextureNode( _displayList, _metadata ) {
-    }
+                          Inst< SFNode  > _metadata  = 0 );
+
+    /// Destructor
+    virtual ~H3DSingleTextureNode ();
 
     /// Get the OpenGL texture id that is used for this texture.
     virtual GLuint getTextureId() = 0;
@@ -59,6 +60,18 @@ namespace H3D {
 
     /// Get the OpenGL texture target that is used for this texture.
     virtual GLenum getTextureTarget() = 0;
+
+    /// Make the texture resident as a bindless texture
+    virtual bool makeResident ();
+
+    /// Make the texture non-resident
+    virtual void makeNonResident ();
+
+    /// Get the bindless texture handle, or 0 if not resident
+    virtual GLuint64 getTextureHandle() { return texture_handle; }
+
+  protected:
+    GLuint64 texture_handle;
   };
 }
 
