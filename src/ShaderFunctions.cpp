@@ -804,14 +804,18 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
       if( n == NULL ) return true;
       if( H3DSingleTextureNode *t = dynamic_cast< H3DSingleTextureNode *>( n ) ) 
       {
+#ifdef GL_ARB_bindless_texture
         if ( X3DShaderNode::use_bindless_textures ) {
           GLuint64 h= t->getTextureHandle();
           if ( h != 0 ) {
             glUniformHandleui64ARB ( location, h );
           }
         } else {
+#endif
           glUniform1iARB( location, t->getTextureUnit() - GL_TEXTURE0_ARB );
+#ifdef GL_ARB_bindless_texture
         }
+#endif
         break;
       }
       else if ( ShaderImageNode* si = dynamic_cast< ShaderImageNode* >( n ) )
@@ -878,7 +882,9 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
         glUniform1ivARB( location, size, v );
         delete[] v;
       } else if ( b ) {
+#ifdef GL_ARB_bindless_texture
         glUniformHandleui64vARB ( location, size, b );
+#endif
         delete[] b;
       }
       
