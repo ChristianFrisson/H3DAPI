@@ -34,6 +34,7 @@
 #include <H3D/DependentNodeFields.h>
 #include <H3D/H3DDisplayListObject.h>
 #include <H3D/X3DPointingDeviceSensorNode.h>
+#include <H3D/ClipPlane.h>
 
 namespace H3D {
   class H3DRenderStateObject;
@@ -247,6 +248,9 @@ namespace H3D {
       
       /// A vector of all the H3DRenderStatesObject within this X3DGroupingNode
       vector< H3DRenderStateObject* > render_states;
+
+      /// A vector of only ClipPlane children of this X3DGroupingNode.
+      vector< ClipPlane * > clip_planes;
   };
 }
 
