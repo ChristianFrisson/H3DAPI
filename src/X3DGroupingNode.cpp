@@ -33,7 +33,6 @@
 #include <H3D/MatrixTransform.h>
 #include <H3D/X3DPointingDeviceSensorNode.h>
 #include <H3D/X3DShapeNode.h>
-#include <H3D/ClipPlane.h>
 
 using namespace H3D;
 
@@ -175,14 +174,11 @@ bool X3DGroupingNode::lineIntersect(
     Vec3f local_from = from;
     bool below_one_plane = false;
     const NodeVector &children_nodes = children->getValue();
-    for( unsigned int i = 0; i < children_nodes.size(); ++i ) {
-      ClipPlane * cp = dynamic_cast< ClipPlane * >(children_nodes[i]);
-      if( cp ) {
-        if( !cp->truncateLine( local_from, local_to,
-                               local_from, local_to ) ) {
-          below_one_plane = true;
-          break;
-        }
+    for( unsigned int i = 0; i < clip_planes.size(); ++i ) {
+      if( !clip_planes[i]->truncateLine( local_from, local_to,
+                             local_from, local_to ) ) {
+        below_one_plane = true;
+        break;
       }
     }
 
@@ -245,6 +241,11 @@ void X3DGroupingNode::MFChild::onAdd( Node *n ) {
       o->pt_dev_sensors.push_back( pdsn );
       o->pt_dev_sens_index[ pdsn ] = -1;
     }
+
+    ClipPlane *cp = dynamic_cast< ClipPlane * >(n);
+    if( cp ) {
+      o->clip_planes.push_back( cp );
+    }
   }
   // check if the node being added is H3DRenderStateObject
   H3DRenderStateObject* rs = dynamic_cast< H3DRenderStateObject* >(n);
@@ -277,16 +278,9 @@ void X3DGroupingNode::MFChild::onRemove( Node *n ) {
       X3DPointingDeviceSensorNode * pdsn = 
         dynamic_cast< X3DPointingDeviceSensorNode * >( n );
       if( pdsn ) {
-        vector< X3DPointingDeviceSensorNode * >::iterator i;
-        bool found = false;
-        for( i = o->pt_dev_sensors.begin();
-          i < o->pt_dev_sensors.end(); ++i ) {
-            if( *i == n ) {
-              found = true;
-              break;
-            }
-        }
-        if( found ) {
+        vector< X3DPointingDeviceSensorNode * >::iterator i =
+          find( o->pt_dev_sensors.begin(), o->pt_dev_sensors.end(), n );
+        if( i != o->pt_dev_sensors.end() ) {
           o->pt_dev_sensors.erase( i );
           o->pt_dev_sens_index.erase( pdsn );
         }
@@ -296,19 +290,20 @@ void X3DGroupingNode::MFChild::onRemove( Node *n ) {
     if( !o->render_states.empty() ) {
       H3DRenderStateObject* rs = dynamic_cast< H3DRenderStateObject* >( n );
       if( rs ) {
-        vector<H3DRenderStateObject*>::iterator it = o->render_states.begin();
-        for( ; it!=o->render_states.end(); ++it ) {
-          if( *it == rs ) {
-            break;
-          }
-        }
-        if( it!=o->render_states.end() ) {
+        vector<H3DRenderStateObject*>::iterator it =
+          find( o->render_states.begin(), o->render_states.end(), rs );
+        if( it != o->render_states.end() ) {
           o->render_states.erase( it );
         }
       }
       
     }
-    
+    ClipPlane *cp = dynamic_cast< ClipPlane * >(n);
+    if( cp ) {
+      vector< ClipPlane * >::iterator to_remove =
+        find( o->clip_planes.begin(), o->clip_planes.end(), cp );
+      o->clip_planes.erase( to_remove );
+    }
   }
   MFChildBase::onRemove( n );
 }
