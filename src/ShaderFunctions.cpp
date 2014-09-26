@@ -77,6 +77,7 @@
 #include <H3D/MFMatrix4f.h>
 #include <H3D/SFMatrix4d.h>
 #include <H3D/MFMatrix4d.h>
+#include <H3D/X3DShaderNode.h>
 
 using namespace H3D;
 
