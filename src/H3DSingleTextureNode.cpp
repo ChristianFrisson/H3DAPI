@@ -47,6 +47,7 @@ H3DSingleTextureNode::~H3DSingleTextureNode () {
 
 bool H3DSingleTextureNode::makeResident () {
   if ( !texture_handle ) {
+#ifdef GL_ARB_bindless_texture
     texture_handle= glGetTextureHandleARB ( getTextureId() );
     if ( glGetError() == GL_NO_ERROR ) {
       glMakeTextureHandleResidentARB ( texture_handle );
@@ -54,6 +55,7 @@ bool H3DSingleTextureNode::makeResident () {
         return true;
       }
     }
+#endif
 
     texture_handle= 0;
   }
@@ -63,9 +65,11 @@ bool H3DSingleTextureNode::makeResident () {
 
 void H3DSingleTextureNode::makeNonResident () {
   if ( texture_handle ) {
+#ifdef GL_ARB_bindless_texture
     if ( glIsTextureHandleResidentARB ( texture_handle ) ) {
       glMakeTextureHandleNonResidentARB ( texture_handle );
     }
+#endif
 
     // Ignore errors making the texture non-resident
     // todo: Why are these errors detected here, e.g. when resizing fbtg?
