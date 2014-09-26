@@ -81,6 +81,7 @@ void X3DShaderNode::initialize () {
     wants_bindless_textures= options->bindlessTextures->getValue();
   }
 
+#ifdef GL_ARB_bindless_texture
   bool bindless_textures= GL_ARB_bindless_texture && wants_bindless_textures;
   if ( !use_bindless_textures_set ) {
     use_bindless_textures= bindless_textures;
@@ -88,4 +89,5 @@ void X3DShaderNode::initialize () {
   } else if ( bindless_textures != use_bindless_textures ) {
     Console(4) << "WARNING: Cannot change bindlessTextures option after creating a shader node!" << endl;
   }
+#endif
 }
