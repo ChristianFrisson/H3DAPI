@@ -82,10 +82,13 @@ void X3DShaderNode::initialize () {
   }
 
 #ifdef GL_ARB_bindless_texture
-  bool bindless_textures= GL_ARB_bindless_texture && wants_bindless_textures;
+  bool bindless_textures= GLEW_ARB_bindless_texture && wants_bindless_textures;
   if ( !use_bindless_textures_set ) {
     use_bindless_textures= bindless_textures;
     use_bindless_textures_set= true;
+	if ( wants_bindless_textures && !GLEW_ARB_bindless_texture ) {
+	  Console(4) << "WARNING: Bindless textures are not supported by your system! Using regular textures instead." << endl;
+	}
   } else if ( bindless_textures != use_bindless_textures ) {
     Console(4) << "WARNING: Cannot change bindlessTextures option after creating a shader node!" << endl;
   }
