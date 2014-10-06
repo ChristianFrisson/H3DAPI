@@ -227,7 +227,8 @@ namespace H3D {
                                  Inst< MFFrameBufferTextureGeneratorNode > _externalFBOColorBuffers = 0,
                                  Inst< SFBool           > _useNavigation = 0,
                                  Inst< SFBool           > _useSpecifiedClearColor = 0,
-                                 Inst< SFColorRGBA      > _clearColor = 0 );
+                                 Inst< SFColorRGBA      > _clearColor = 0,
+                                 Inst< SFBool           > _useDSA = 0);
         
     /// Destructor.
     virtual ~FrameBufferTextureGenerator();
@@ -500,6 +501,8 @@ namespace H3D {
     /// Specified clearColor used when useSpecifiedClearColor is true
     auto_ptr< SFColorRGBA > clearColor;
 
+    auto_ptr< SFBool > useDSA;
+
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
@@ -617,6 +620,18 @@ namespace H3D {
     void blitColorBuffer(GLenum src, GLenum dst, 
       int srcX, int srcY, int w, int h, int src_index, int dst_index);
 
+    /// Blit all color buffers and depth buffer from src fbo to dst fbo.
+    /// \param src  The source fbo used for copy
+    /// \param dst  The target fbo used for copy
+    /// \param srcX The x component of low left corner of the area to be copied
+    /// \param srcY The y component of low left corner of the area to be copied
+    /// \param w    The width of area to be copied
+    /// \param h    The height of area to be copied
+    /// \param src_index  The color buffer index to be copied
+    /// \param dst_index  The color buffer index to be used as target
+    void blitFBOBuffers(GLenum src, GLenum dst, 
+      int srcX, int srcY, int w, int h );
+
 
     /// Help function that is called when the main frame buffer size has changed.
     /// it will resize all output textures to match the size of the frame buffer.
@@ -636,7 +651,8 @@ namespace H3D {
     /// \param index The extracted index number of the color buffer attachment in the fbo
     bool parseColorBufferStorage( std::string color_buffer_storage, std::string& style, int& index );
 
-    /// Function which only clear the specified color buffer
+    /// Function which only clear the specified color buffer, will not bind fbo in the function, assume it is
+    /// already binded , or no binding needed with direct state access
     /// \param src  The source FBO of which the clear will do
     /// \param x  The x component of low left corner of the area to be cleared
     /// \param y  The y component of low left corner of the area to be cleared
@@ -647,7 +663,8 @@ namespace H3D {
     void clearColorBuffer(GLenum src, int x, int y, int width, int height, 
                            GLfloat* value, GLint index );
 
-    /// Clear buffers of src fbo
+    /// Clear buffers of src fbo, will not bind fbo in the function, assume it is
+    /// already binded , or no binding needed with direct state access
     /// \param src  The src fbo to be cleared
     /// \param x  The x component of low left corner of the area to be cleared
     /// \param y  The y component of low left corner of the area to be cleared
@@ -755,6 +772,13 @@ namespace H3D {
 
       /// flag control the warning printing of storage init
       auto_ptr<resetPrintedFlags> colorInitWarningPrinted;
+
+      bool support_dsa;
+
+      bool use_depth_stencil;
+
+      float* clear_color_value;
+      
       
   };
 }

@@ -135,6 +135,8 @@ namespace H3D {
       H3DInt32 max_vertex_uniform_components;
       H3DInt32 max_viewport_width;
       H3DInt32 max_viewport_height;
+      H3DInt32 max_color_attachments;
+      H3DInt32 max_samples;
       
     };
 

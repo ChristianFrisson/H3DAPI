@@ -38,6 +38,7 @@
 #include <H3D/H3DWindowNode.h>
 #include <H3D/H3DNavigation.h>
 #include <H3D/X3DShaderNode.h>
+#include <H3D/GraphicsHardwareInfo.h>
 
 using namespace H3D;
 
@@ -78,6 +79,7 @@ namespace FrameBufferTextureGeneratorInternals {
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, useNavigation, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, useSpecifiedClearColor, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, clearColor, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, useDSA, INITIALIZE_ONLY );
 }
 
 FrameBufferTextureGenerator::~FrameBufferTextureGenerator() {
@@ -96,6 +98,7 @@ FrameBufferTextureGenerator::~FrameBufferTextureGenerator() {
       glDeleteRenderbuffersEXT(1, &multi_samples_color_ids[i] );
     } 
   }
+  delete [] clear_color_value;
   fbo_nodes.erase( this );
 }
 
@@ -132,7 +135,8 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   Inst< MFFrameBufferTextureGeneratorNode > _externalFBOColorBuffers,
   Inst< SFBool          > _useNavigation,
   Inst< SFBool          > _useSpecifiedClearColor,
-  Inst< SFColorRGBA     > _clearColor ):
+  Inst< SFColorRGBA     > _clearColor,
+  Inst< SFBool          > _useDSA):
 X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound, 
   _bboxCenter, _bboxSize ),
   generateColorTextures( _generateColorTextures ),
@@ -162,6 +166,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   useNavigation( _useNavigation ),
   useSpecifiedClearColor( _useSpecifiedClearColor ),
   clearColor(_clearColor),
+  useDSA(_useDSA),
   fbo_initialized( false ),
   buffers_width(-1),
   buffers_height(-1),
@@ -241,12 +246,38 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
     displayList->setCacheMode( H3DDisplayListObject::DisplayList::OFF );
 
     fbo_nodes.insert( this );
+    support_dsa = false;
+    useDSA->setValue(false);
+
+    clear_color_value = new float[4];
+    clear_color_value[0] = 0;
+    clear_color_value[1] = 0;
+    clear_color_value[2] = 0;
+    clear_color_value[3] = 0;
 }
 
 void FrameBufferTextureGenerator::initialize()
 { // overwrite the initialize function of X3DGrouping node to stop the collecting
   // of bound from the child of FBTG, so local bound will not be routed to main
   // scene.
+#ifdef GLEW_ARB_direct_state_access
+  if( GLEW_ARB_direct_state_access ) {
+    if( !useDSA->getValue() ) {
+      support_dsa = false;
+      //Console(4)<<"not support dsa"<<endl;
+    }
+    else{
+      support_dsa = true;
+      //Console(4)<<"support dsa"<<endl;
+    }
+  }
+#endif
+  if( depthBufferType->getValue()=="DEPTH24_STENCIL8" 
+    || depthBufferType->getValue() == "DEPTH_STENCIL" ) {
+      use_depth_stencil = true;
+  }else{
+    use_depth_stencil = false;
+  }
   X3DViewpointNode* v = viewpoint->getValue();
   if( v ) {
     v->set_bind->setValue(false);
@@ -343,8 +374,9 @@ void FrameBufferTextureGenerator::traverseSG( TraverseInfo &ti ) {
 }
 
 bool FrameBufferTextureGenerator::haveStencilBuffer() {
-  const string &type = depthBufferType->getValue();
-  return type == "DEPTH24_STENCIL8" || type == "DEPTH_STENCIL";
+  return use_depth_stencil;
+  /*const string &type = depthBufferType->getValue();
+  return type == "DEPTH24_STENCIL8" || type == "DEPTH_STENCIL";*/
 }
 
 
@@ -449,10 +481,7 @@ void FrameBufferTextureGenerator::render()     {
   // Save current state.
   glPushAttrib( GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_VIEWPORT_BIT );
 
-  /// Check if we just need to generate depth texture.
-  if( generateColorTextures->size() == 0&&generateDepthTexture->getValue() ) {
-    glColorMask(false,false,false,false);
-  }
+  
 
   /// Make sure all textures and buffers are initialized.
   if( !fbo_initialized ) initializeFBO();
@@ -544,7 +573,7 @@ void FrameBufferTextureGenerator::render()     {
   } else {
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
   }
-
+  
 
 
   // set up to render to all color buffers
@@ -554,6 +583,11 @@ void FrameBufferTextureGenerator::render()     {
     Console(4) << "Warning: Your graphics card does not support multiple "
       << "render targets(ARB_draw_buffers). Only one color texture will"
       << " have update to their values";
+  }
+
+  /// Check if we just need to generate depth texture.
+  if( generateColorTextures->size() == 0&&generateDepthTexture->getValue() ) {
+    glColorMask(false,false,false,false);
   }
 
   // if a viewpoint has been specified use that instead of what has already 
@@ -637,6 +671,10 @@ void FrameBufferTextureGenerator::render()     {
         if ( bg && bgVP ) {
           RGBA clear_color = bg->glClearColor();
           glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
+          clear_color_value[0] = clear_color.r;
+          clear_color_value[1] = clear_color.g;
+          clear_color_value[2] = clear_color.b;
+          clear_color_value[3] = clear_color.a;
         }
         // Prepare the fbo for rendering, it will clear or copy or share what frame buffer is being specified
         preProcessFBO(buffer_src_x, buffer_src_y, desired_fbo_width,desired_fbo_heigth,current_depth);
@@ -666,6 +704,10 @@ void FrameBufferTextureGenerator::render()     {
         // which will rely on the clear color being set
         RGBA clear_color = clearColor->getValue();
         glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
+        clear_color_value[0] = clear_color.r;
+        clear_color_value[1] = clear_color.g;
+        clear_color_value[2] = clear_color.b;
+        clear_color_value[3] = clear_color.a;
         // Prepare the fbo for rendering, it will clear or copy or share what frame buffer is being specified
         preProcessFBO(buffer_src_x, buffer_src_y, desired_fbo_width,desired_fbo_heigth,current_depth);
       }
@@ -692,25 +734,24 @@ void FrameBufferTextureGenerator::render()     {
       X3DShapeNode::geometry_render_mode= m;
       if( current_shadow_caster && !current_shadow_caster->object->empty() ) current_shadow_caster->render();
     }
-    // blit multi sample render buffer to output textures if using multi sampling.
-    if( nr_samples > 0&&output_texture_type!="2D_MULTISAMPLE" ) {
-      glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, multi_samples_fbo_id );
-      glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, fbo_id );
+#ifdef GLEW_ARB_invalidate_subdata
+    if( GLEW_ARB_invalidate_subdata ) {
+      if( !(generateDepthTexture->getValue()) ) {
+        // if no depth texture is actually need to be used as texture
 
-      // blit multi sample buffers to textures.
-      if( generateDepthTexture->getValue() ) {
-        if( using_stencil_buffer ) {
-          glBlitFramebufferEXT(0, 0, desired_fbo_width, desired_fbo_heigth, 0, 0, desired_fbo_width, desired_fbo_heigth, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+        if( use_depth_stencil ) {
+          GLenum attachments[1] = {GL_DEPTH_STENCIL_ATTACHMENT};
+          glInvalidateFramebuffer(GL_FRAMEBUFFER, 1, attachments);
         }else{
-          glBlitFramebufferEXT(0, 0, desired_fbo_width, desired_fbo_heigth, 0, 0, desired_fbo_width, desired_fbo_heigth, GL_DEPTH_BUFFER_BIT , GL_NEAREST);
+          GLenum attachments[1] = {GL_DEPTH_ATTACHMENT};
+          glInvalidateFramebuffer(GL_FRAMEBUFFER, 1, attachments);
         }
       }
-
-      for( unsigned int i = 0; i < color_ids.size(); ++i ) {
-        glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
-        glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
-        glBlitFramebufferEXT(0, 0, desired_fbo_width, desired_fbo_heigth, 0, 0, desired_fbo_width, desired_fbo_heigth, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-      }
+    }
+#endif
+    // blit multi sample render buffer to output textures if using multi sampling.
+    if( nr_samples > 0&&output_texture_type!="2D_MULTISAMPLE" ) {
+      blitFBOBuffers(multi_samples_fbo_id, fbo_id, 0, 0, desired_fbo_width, desired_fbo_heigth);
     }
   } else {
     // 3D texture. Each child in the children fields is rendered into a different
@@ -765,19 +806,7 @@ void FrameBufferTextureGenerator::render()     {
 
       // blit multi sample render buffer to output textures if using multi sampling.
       if( nr_samples > 0 ) {
-        glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, multi_samples_fbo_id );
-        glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, fbo_id );
-
-        // blit multi sample buffers to textures.
-        if( generateDepthTexture->getValue() ) {
-          glBlitFramebufferEXT(0, 0, desired_fbo_width, desired_fbo_heigth, 0, 0, desired_fbo_width, desired_fbo_heigth, GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
-        }
-
-        for( unsigned int i = 0; i < color_ids.size(); ++i ) {
-          glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
-          glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
-          glBlitFramebufferEXT(0, 0, desired_fbo_width, desired_fbo_heigth, 0, 0, desired_fbo_width, desired_fbo_heigth, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-        }
+        blitFBOBuffers(multi_samples_fbo_id, fbo_id, 0, 0, desired_fbo_width, desired_fbo_heigth);
       }
     }
   }
@@ -962,7 +991,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
   colorInitWarningPrinted->upToDate();
   const string &output_texture_type = outputTextureType->getValue();
   // prepare the fbo_id, multi_sample_fbo_id as user specified
-  GLenum target_fbo;
+  GLuint target_fbo;
   if( nr_samples > 0&&output_texture_type!="2D_MULTISAMPLE" ) {
     // the multi_sample_fbo_id will be used as the starting point for rendering.
     // as multi_sample_fbo_id use render buffer as color buffer and depth buffer
@@ -973,8 +1002,8 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
     target_fbo = fbo_id;
   }
   // protect currently bounded fbo.
-  GLint previous_fbo_id;
-  glGetIntegerv( GL_DRAW_FRAMEBUFFER_BINDING, &previous_fbo_id );
+  //GLint previous_fbo_id;
+  //glGetIntegerv( GL_DRAW_FRAMEBUFFER_BINDING, &previous_fbo_id );
 
   const vector< string > &color_texture_types = generateColorTextures->getValue();
   bool using_stencil_buffer = (depthBufferType->getValue() == "DEPTH24_STENCIL8" ||
@@ -1040,7 +1069,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
           } else {
             depthTexture->setValue(external_FBO_depth_tex, id);
             depth_id = external_FBO_depth_tex->getTextureId();
-            glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, target_fbo);
+            //glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, target_fbo);
             glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, 
               texture_type, depth_id, 0 );
             if( using_stencil_buffer ) {
@@ -1080,8 +1109,8 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
   std::vector<std::string> color_buffer_storages = colorBufferStorages->getValue();
   const NodeVector &external_fbo_colors_vector = externalFBOColorBuffers->getValue();
 
-  GLfloat bkColor[4];
-  glGetFloatv(GL_COLOR_CLEAR_VALUE, bkColor);
+  //GLfloat bkColor[4];
+  //glGetFloatv(GL_COLOR_CLEAR_VALUE, bkColor);
   if( color_buffer_storages.empty() ) { 
     // no external fbo for color buffers will be used
     // use locally created color buffers, just clear the all color buffers for present
@@ -1100,7 +1129,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
       }
       end_index = color_buffer_storages.size();
       for( size_t i = end_index, ilen = color_ids.size(); i < ilen; ++i ) {
-        clearColorBuffer( target_fbo, 0, 0, w, h, bkColor, i);
+        clearColorBuffer( target_fbo, 0, 0, w, h, clear_color_value, i);
       }
     } else if( color_buffer_storages.size()>color_ids.size() ) {
       if( !colorMismatchWarningPrinted->getValue() ) {
@@ -1115,11 +1144,16 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
     }
     // get the maximum limit of attachment points.
     GLint max_color_attachments = 0;
+    if( GraphicsHardwareInfo::infoIsInitialized() ) {
+      max_color_attachments = GraphicsHardwareInfo::getInfo().max_color_attachments;
+    }else{
+      glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
+    }
     // need_external_fbo_num is the the num of currently needed external FBO
     // need_external_fbo_num -1 will be the index of currently specified 
     // external fbo in external_fbo_colors_vector
     size_t need_external_fbo_num = 0;
-    glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
+    
 
 
     for( int i = 0;i < end_index; ++i ) {
@@ -1127,7 +1161,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
       std::string color_buffer_storage = color_buffer_storages[i];
       if( color_buffer_storage.empty() || color_buffer_storage == "LOCAL" ) { 
         // clear the color buffer being processing which is i.
-        clearColorBuffer( target_fbo, 0, 0, w, h, bkColor, i );
+        clearColorBuffer( target_fbo, 0, 0, w, h, clear_color_value, i );
         continue;
       } else { 
         // colorBufferStorage is DEFAULT, FBO_COPY_x or FBO_SHARE_x
@@ -1149,7 +1183,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
                 <<"will not be used."<< std::endl;
               colorInitWarningPrinted->setValue(i,true);
             }
-            clearColorBuffer(target_fbo, 0, 0, w, h, bkColor, i);
+            clearColorBuffer(target_fbo, 0, 0, w, h, clear_color_value, i);
             continue;
           }
           if( style == "SHARE" ) { 
@@ -1163,7 +1197,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
                   << "please add one, if it is being forget!" <<std::endl;
                 colorInitWarningPrinted->setValue(i,true);
               }
-              clearColorBuffer(target_fbo, 0, 0, w, h, bkColor, i);
+              clearColorBuffer(target_fbo, 0, 0, w, h, clear_color_value, i);
               continue;
             } else {
               GeneratedTexture* external_FBO_color_tex = 
@@ -1184,7 +1218,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
                     <<"will use cleared color buffer instead"<<std::endl;
                   colorInitWarningPrinted->setValue(i,true);
                 } 
-                clearColorBuffer(target_fbo, 0, 0, w, h, bkColor, i );
+                clearColorBuffer(target_fbo, 0, 0, w, h, clear_color_value, i );
                 continue;
               }
               if( nr_samples>0 ) {
@@ -1204,12 +1238,12 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
                     <<std::endl;
                   colorInitWarningPrinted->setValue(i,true);
                 }
-                clearColorBuffer( target_fbo,0, 0, w, h, bkColor, i );
+                clearColorBuffer( target_fbo,0, 0, w, h, clear_color_value, i );
                 continue;
               }
               color_ids[i] = external_FBO_color_id;
               colorTextures->setValue(i, external_FBO_color_tex, id);
-              glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, target_fbo );
+              //glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, target_fbo );
               glBindTextureEXT(texture_type,external_FBO_color_id);
               switch (texture_type)
               {
@@ -1243,7 +1277,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
                   << "please add one, if it is being forget!" <<std::endl;
                 colorInitWarningPrinted->setValue(i,true);
               }
-              clearColorBuffer( target_fbo, 0, 0, w, h, bkColor, i );
+              clearColorBuffer( target_fbo, 0, 0, w, h, clear_color_value, i );
               continue;
             }
             if( (int)static_cast<FrameBufferTextureGenerator*>(
@@ -1255,7 +1289,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
                   <<"will use cleared color buffer instead"<<std::endl;
                 colorInitWarningPrinted->setValue(i,true);
               }
-              clearColorBuffer( target_fbo, 0, 0, w, h, bkColor, i );
+              clearColorBuffer( target_fbo, 0, 0, w, h, clear_color_value, i );
               continue;
             }
             GLuint external_FBO_id_color = 
@@ -1276,7 +1310,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
       << " have update to their values" << std::endl;
   }
   // depth buffer and color buffers are processed, prepare to be rendered.
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, previous_fbo_id);
+  //glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, previous_fbo_id);
 }
 
 bool FrameBufferTextureGenerator::parseColorBufferStorage(std::string color_buffer_storage, std::string& style, int& index){
@@ -1667,7 +1701,7 @@ GLenum FrameBufferTextureGenerator::stringToInternalDepthFormat( const string &s
 void FrameBufferTextureGenerator::clearBuffers(GLenum src, int x, int y, 
   int width, int height, GLbitfield mask){
     // clear buffer defined by mask of the area defined by x, y, width, height
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, src);
+    //glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, src);
     glScissor( x, y, width, height );
     glEnable( GL_SCISSOR_TEST );
     glPushAttrib( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
@@ -1679,7 +1713,7 @@ void FrameBufferTextureGenerator::clearBuffers(GLenum src, int x, int y,
 void FrameBufferTextureGenerator::clearColorBuffer( GLenum src, int x, int y, 
   int width, int height, GLfloat* value, GLint index ){
     // clear index th attached color buffer
-    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, src );
+    //glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, src );
     glScissor( x, y, width, height );
     glEnable( GL_SCISSOR_TEST );
     glPushAttrib( GL_COLOR_BUFFER_BIT );
@@ -1697,32 +1731,135 @@ void FrameBufferTextureGenerator::setRenderCallback( RenderCallbackFunc func,
 
 void FrameBufferTextureGenerator::blitDepthBuffer(GLenum src, GLenum dst, 
   int srcX, int srcY, int w, int h){
-    glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, src );
-    glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, dst );
-    glBlitFramebufferEXT( srcX, srcY, srcX+w, srcY+h, 0, 0, w, h,
-      GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+    if( support_dsa ) {
+      if( use_depth_stencil ) {
+        glBlitNamedFramebuffer(src, dst, srcX, srcY, srcX+w, srcY+h, 0, 0, w, h,
+          GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+      }else{
+        glBlitNamedFramebuffer(src, dst, srcX, srcY, srcX+w, srcY+h, 0, 0, w, h,
+          GL_DEPTH_BUFFER_BIT , GL_NEAREST);
+      }
+    }else{
+      glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, src );
+      glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, dst );
+      if( use_depth_stencil ) {
+        glBlitFramebufferEXT( srcX, srcY, srcX+w, srcY+h, 0, 0, w, h,
+          GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+      }else{
+        glBlitFramebufferEXT( srcX, srcY, srcX+w, srcY+h, 0, 0, w, h,
+          GL_DEPTH_BUFFER_BIT , GL_NEAREST);
+      }
+    }
 }
 
 void FrameBufferTextureGenerator::blitColorBuffer(GLenum src, GLenum dst, 
   int srcX, int srcY, int w, int h, int src_index, int dst_index){
-    glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, src);
-    glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, dst );
-    if( src_index == -1 ) {
-      Scene *scene = Scene::scenes.size() > 0 ? *Scene::scenes.begin(): NULL;
-      H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue()[0]);
-      glReadBuffer(GL_BACK_LEFT);
-      if( window->renderMode->getValue() == "QUAD_BUFFERED_STEREO" ) {
-        X3DViewpointNode::EyeMode eye_mode = window->getEyeMode();
-        if( eye_mode== X3DViewpointNode::RIGHT_EYE ) {
-          glReadBuffer(GL_BACK_RIGHT);
+    if( support_dsa ) {
+      if( src_index == -1 ) {
+        Scene *scene = Scene::scenes.size() > 0 ? *Scene::scenes.begin(): NULL;
+        H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue()[0]);
+        glNamedFramebufferReadBuffer(src, GL_BACK_LEFT);
+        if( window->renderMode->getValue() == "QUAD_BUFFERED_STEREO" ) {
+          X3DViewpointNode::EyeMode eye_mode = window->getEyeMode();
+          if( eye_mode== X3DViewpointNode::RIGHT_EYE ) {
+            glNamedFramebufferReadBuffer(src, GL_BACK_RIGHT);
+          }
         }
+      }else{
+        glNamedFramebufferReadBuffer(src, GL_COLOR_ATTACHMENT0+src_index);
       }
-    } else {
-      glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + src_index );
+      glNamedFramebufferDrawBuffer(dst, GL_COLOR_ATTACHMENT0 + dst_index);
+      glBlitNamedFramebuffer(src, dst, srcX, srcY, srcX+w, srcY+h, 
+        0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    }else{
+      glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, src);
+      glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, dst );
+      if( src_index == -1 ) {
+        Scene *scene = Scene::scenes.size() > 0 ? *Scene::scenes.begin(): NULL;
+        H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue()[0]);
+        glReadBuffer(GL_BACK_LEFT);
+        if( window->renderMode->getValue() == "QUAD_BUFFERED_STEREO" ) {
+          X3DViewpointNode::EyeMode eye_mode = window->getEyeMode();
+          if( eye_mode== X3DViewpointNode::RIGHT_EYE ) {
+            glReadBuffer(GL_BACK_RIGHT);
+          }
+        }
+      } else {
+        glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + src_index );
+      }
+      glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + dst_index );
+      glBlitFramebufferEXT( srcX, srcY, srcX+w, srcY+h, 
+        0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
     }
-    glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + dst_index );
-    glBlitFramebufferEXT( srcX, srcY, srcX+w, srcY+h, 
-      0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+}
+
+void FrameBufferTextureGenerator::blitFBOBuffers(GLenum src, GLenum dst, 
+  int srcX, int srcY, int w, int h){
+    if( support_dsa ) {
+      // blit depth 
+      if( use_depth_stencil ) {
+        glBlitNamedFramebuffer(src, dst, srcX, srcY, srcX+w, srcY+h, 0, 0, w, h,
+          GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+      }else{
+        glBlitNamedFramebuffer(src, dst, srcX, srcY, srcX+w, srcY+h, 0, 0, w, h,
+          GL_DEPTH_BUFFER_BIT , GL_NEAREST);
+      }
+      // blit color
+      for( unsigned int i = 0; i < color_ids.size(); ++i )  {
+        glNamedFramebufferReadBuffer(src, GL_COLOR_ATTACHMENT0 + i);
+        glNamedFramebufferDrawBuffer(dst, GL_COLOR_ATTACHMENT0 + i);
+        glBlitNamedFramebuffer(src, dst, srcX, srcY, srcX+w, srcY+h, 
+          0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+      }
+      // invalidate the src fbo after blit
+#ifdef GLEW_ARB_invalidate_subdata
+      vector<GLenum> attachments;
+      size_t nr_attachments = 0;
+      attachments.push_back(GL_DEPTH_ATTACHMENT);
+      nr_attachments += 1;
+      for( unsigned int i = 0; i < color_ids.size(); ++i ) {
+        attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
+        nr_attachments += 1;
+      }
+      if( GLEW_ARB_invalidate_subdata ) {
+        //GLenum attachments[2] = {GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0};
+        glInvalidateNamedFramebufferData(src, nr_attachments, &attachments[0]);
+      }
+#endif
+    }else{
+      glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, src );
+      glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, dst );
+      // blit depth
+      if( use_depth_stencil ) {
+        glBlitFramebufferEXT( srcX, srcY, srcX+w, srcY+h, 0, 0, w, h,
+          GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+      }else{
+        glBlitFramebufferEXT( srcX, srcY, srcX+w, srcY+h, 0, 0, w, h,
+          GL_DEPTH_BUFFER_BIT , GL_NEAREST);
+      }
+      // blit color
+      for( unsigned int i = 0; i < color_ids.size(); ++i ) {
+        glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
+        glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + i );
+        glBlitFramebufferEXT( srcX, srcY, srcX+w, srcY+h, 
+          0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+      }
+      // invalidate the src fbo after blit
+#ifdef GLEW_ARB_invalidate_subdata
+      vector<GLenum> attachments;
+      size_t nr_attachments = 0;
+      attachments.push_back(GL_DEPTH_ATTACHMENT);
+      nr_attachments += 1;
+      for( unsigned int i = 0; i < color_ids.size(); ++i ) {
+        attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
+        nr_attachments += 1;
+      }
+      if( GLEW_ARB_invalidate_subdata ) {
+        //GLenum attachments[2] = {GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0};
+        glInvalidateFramebuffer(GL_READ_FRAMEBUFFER,nr_attachments , &attachments[0]);
+      }
+#endif
+    }
 }
 
 void FrameBufferTextureGenerator::UpdateMode::onNewValue( const std::string& new_value ) {

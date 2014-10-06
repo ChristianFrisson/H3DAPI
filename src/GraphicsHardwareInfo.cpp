@@ -240,6 +240,12 @@ bool GraphicsHardwareInfo::initializeInfo() {
   info.max_vertex_texture_image_units = v;
   glGetIntegerv( GL_MAX_VERTEX_UNIFORM_COMPONENTS, &v );
   info.max_vertex_uniform_components = v;
+  if( GLEW_ARB_framebuffer_object ) {
+    glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &v);
+    info.max_color_attachments = v;
+    glGetIntegerv( GL_MAX_SAMPLES, &v );
+    info.max_samples = v;
+  }
 
   GLint vp[2];
   glGetIntegerv( GL_MAX_VIEWPORT_DIMS, vp );
