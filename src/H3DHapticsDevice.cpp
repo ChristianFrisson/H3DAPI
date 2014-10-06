@@ -88,8 +88,8 @@ H3DHapticsDevice::H3DHapticsDevice(
                Inst< SFRotation      > _deviceOrientation      ,
                Inst< TrackerPosition > _trackerPosition        ,
                Inst< TrackerOrientation > _trackerOrientation  ,
-               Inst< PosCalibration  > _positionCalibration    ,
-               Inst< OrnCalibration  > _orientationCalibration ,
+               Inst< SFMatrix4f  > _positionCalibration    ,
+               Inst< SFRotation  > _orientationCalibration ,
                Inst< SFVec3f         > _proxyPosition          ,
                Inst< WeightedProxy   > _weightedProxyPosition  ,     
                Inst< SFFloat         > _proxyWeighting         ,
@@ -121,9 +121,9 @@ H3DHapticsDevice::H3DHapticsDevice(
   trackerPosition( _trackerPosition ),
   trackerOrientation( _trackerOrientation ),
   positionCalibration( _positionCalibration ),
-  adjustedPositionCalibration( new PosCalibration ),
+  adjustedPositionCalibration( new SFMatrix4f ),
   orientationCalibration( _orientationCalibration ),
-  adjustedOrnCalibration( new OrnCalibration ),
+  adjustedOrnCalibration( new SFRotation ),
   proxyPosition( _proxyPosition ),
   weightedProxyPosition( _weightedProxyPosition ),
   proxyWeighting( _proxyWeighting ),
@@ -357,20 +357,20 @@ void H3DHapticsDevice::updateDeviceValues() {
         setValue( adjust_matrix * positionCalibration->getValue() );
 
       hapi_device->setPositionCalibration( 
-        adjustedPositionCalibration->rt_pos_calibration );
+        adjustedPositionCalibration->getValue() );
       
-      // Create adjusted OrnCalibration and send to HAPI
+      // Create adjustedOrnCalibration and send to HAPI
       adjustedOrnCalibration->setValue(
         Rotation( vp_full_orn_mtx ) *
         orientationCalibration->getValue() );
       hapi_device->
-        setOrientationCalibration(adjustedOrnCalibration->rt_orn_calibration );
+        setOrientationCalibration(adjustedOrnCalibration->getValue() );
     }
     else {
       hapi_device->
-        setPositionCalibration( positionCalibration->rt_pos_calibration );
+        setPositionCalibration( positionCalibration->getValue() );
       hapi_device->setOrientationCalibration(
-        orientationCalibration->rt_orn_calibration );
+        orientationCalibration->getValue() );
     }
 
     H3DInt32 hr = hapi_device->getHapticsRate();

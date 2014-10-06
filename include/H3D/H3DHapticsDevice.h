@@ -76,55 +76,10 @@ namespace H3D {
     typedef SFBool MainButton;
     typedef SFBool SecondaryButton;
 
-    /// Saves the value of the field in a variable that can be accessed
-    /// from the realtime loop.
-    class H3DAPI_API PosCalibration: 
-      public SFMatrix4f {
-    public:
-      /// Update the rt variables.
-      virtual void setValue( const Matrix4f &v, int id = 0 ) {
-        SFMatrix4f::setValue( v, id );
-        rt_pos_calibration = Matrix4d( value );
-        rt_inv_pos_rotation = rt_pos_calibration.getRotationPart().inverse();
-      }
-
-      /// Update the rt variables.
-      inline virtual void update() {
-        SFMatrix4f::update();
-        rt_pos_calibration = Matrix4d( value );
-        rt_inv_pos_rotation = rt_pos_calibration.getRotationPart().inverse();
-      }
-
-      /// The value of the PosCalibration field to be accessed from 
-      /// the realtime loop.
-      Matrix4d rt_pos_calibration;
-      
-      /// The inverse of the part of rt_pos_calibration that involves
-      /// rotation.
-      Matrix3d rt_inv_pos_rotation;
-    };
-
-    /// Saves the value of the field in a variable that can be accessed
-    /// from the realtime loop.
-    class H3DAPI_API OrnCalibration: 
-      public SFRotation {
-    public:
-      /// Update the rt variable.
-      inline virtual void setValue( const Rotation &v, int id = 0 ) {
-        SFRotation::setValue( v, id );
-        rt_orn_calibration = value;
-      }
-
-      /// Update the rt variable.
-      virtual void update() {
-        SFRotation::update();
-        rt_orn_calibration = value;
-      }
-
-      /// The value of the OrnCalibration field to be accessed from 
-      /// the realtime loop.
-      Rotation rt_orn_calibration;
-    };
+    /// \deprecated Deprecated and will be removed in the future.
+    typedef SFMatrix4f PosCalibration;
+    /// \deprecated Deprecated and will be removed in the future.
+    typedef SFRotation OrnCalibration;
 
     /// The TrackerPosition field updates itself from the devicePosition
     /// and positionCalibration fields. 
@@ -136,7 +91,7 @@ namespace H3D {
     class H3DAPI_API TrackerPosition: 
       public TypedField< SFVec3f, Types< SFMatrix4f, SFVec3f > > {
     protected:
-      
+
       /// value = positionCalibration * devicePosition.
       virtual void update() {
         H3DHapticsDevice *hd = static_cast< H3DHapticsDevice *>(owner);
@@ -280,8 +235,8 @@ namespace H3D {
                       Inst< SFRotation      > _deviceOrientation      = 0,
                       Inst< TrackerPosition > _trackerPosition        = 0,
                       Inst< TrackerOrientation > _trackerOrientation  = 0,
-                      Inst< PosCalibration  > _positionCalibration    = 0,
-                      Inst< OrnCalibration  > _orientationCalibration = 0,
+                      Inst< SFMatrix4f  > _positionCalibration    = 0,
+                      Inst< SFRotation  > _orientationCalibration = 0,
                       Inst< SFVec3f         > _proxyPosition          = 0,
                       Inst< WeightedProxy   > _weightedProxyPosition  = 0,
                       Inst< SFFloat         > _proxyWeighting         = 0,
@@ -437,14 +392,11 @@ namespace H3D {
     /// <b>Default value:</b> Unit matrix \n
     /// 
     /// \dotfile H3DHapticsDevice_positionCalibration.dot
-    auto_ptr< PosCalibration > positionCalibration;
+    auto_ptr< SFMatrix4f > positionCalibration;
     
     /// The calibration matrix between devicePosition and trackerPosition
     /// adjusted with the movement of the viewpoint.
-    ///
-    /// <b>Access type:</b> inputOutput \n
-    /// <b>Default value:</b> Unit matrix \n
-    auto_ptr< PosCalibration > adjustedPositionCalibration;
+    auto_ptr< SFMatrix4f > adjustedPositionCalibration;
 
     /// The calibration rotation between deviceOrientation and 
     /// trackerOrientation.
@@ -453,16 +405,11 @@ namespace H3D {
     /// <b>Default value:</b> Rotation( 1, 0, 0, 0 ) \n
     /// 
     /// \dotfile H3DHapticsDevice_orientationCalibration.dot
-    auto_ptr< OrnCalibration > orientationCalibration;
+    auto_ptr< SFRotation > orientationCalibration;
 
     /// The calibration rotation between deviceOrientation and 
     /// trackerOrientation adjusted with the movement of the viewpoint.
-    ///
-    /// <b>Access type:</b> inputOutput \n
-    /// <b>Default value:</b> Rotation( 1, 0, 0, 0 ) \n
-    /// 
-    /// \dotfile H3DHapticsDevice_orientationCalibration.dot
-    auto_ptr< OrnCalibration > adjustedOrnCalibration;
+    auto_ptr< SFRotation > adjustedOrnCalibration;
 
     /// The position of the proxy used in the haptic rendering(layer 0). 
     ///
