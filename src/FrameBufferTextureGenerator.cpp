@@ -1732,6 +1732,7 @@ void FrameBufferTextureGenerator::setRenderCallback( RenderCallbackFunc func,
 void FrameBufferTextureGenerator::blitDepthBuffer(GLenum src, GLenum dst, 
   int srcX, int srcY, int w, int h){
     if( support_dsa ) {
+#ifdef GL_ARB_direct_state_access
       if( use_depth_stencil ) {
         glBlitNamedFramebuffer(src, dst, srcX, srcY, srcX+w, srcY+h, 0, 0, w, h,
           GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
@@ -1739,6 +1740,9 @@ void FrameBufferTextureGenerator::blitDepthBuffer(GLenum src, GLenum dst,
         glBlitNamedFramebuffer(src, dst, srcX, srcY, srcX+w, srcY+h, 0, 0, w, h,
           GL_DEPTH_BUFFER_BIT , GL_NEAREST);
       }
+#else
+      Console(3) << "Warning: H3DAPI built without direct state access. Update to a newer glew version and rebuild." << endl;
+#endif
     }else{
       glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, src );
       glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, dst );
@@ -1755,6 +1759,7 @@ void FrameBufferTextureGenerator::blitDepthBuffer(GLenum src, GLenum dst,
 void FrameBufferTextureGenerator::blitColorBuffer(GLenum src, GLenum dst, 
   int srcX, int srcY, int w, int h, int src_index, int dst_index){
     if( support_dsa ) {
+#ifdef GL_ARB_direct_state_access
       if( src_index == -1 ) {
         Scene *scene = Scene::scenes.size() > 0 ? *Scene::scenes.begin(): NULL;
         H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue()[0]);
@@ -1771,6 +1776,9 @@ void FrameBufferTextureGenerator::blitColorBuffer(GLenum src, GLenum dst,
       glNamedFramebufferDrawBuffer(dst, GL_COLOR_ATTACHMENT0 + dst_index);
       glBlitNamedFramebuffer(src, dst, srcX, srcY, srcX+w, srcY+h, 
         0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+#else
+      Console(3) << "Warning: H3DAPI built without direct state access. Update to a newer glew version and rebuild." << endl;
+#endif
     }else{
       glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, src);
       glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, dst );
@@ -1796,6 +1804,7 @@ void FrameBufferTextureGenerator::blitColorBuffer(GLenum src, GLenum dst,
 void FrameBufferTextureGenerator::blitFBOBuffers(GLenum src, GLenum dst, 
   int srcX, int srcY, int w, int h){
     if( support_dsa ) {
+#ifdef GL_ARB_direct_state_access
       // blit depth 
       if( use_depth_stencil ) {
         glBlitNamedFramebuffer(src, dst, srcX, srcY, srcX+w, srcY+h, 0, 0, w, h,
@@ -1811,6 +1820,9 @@ void FrameBufferTextureGenerator::blitFBOBuffers(GLenum src, GLenum dst,
         glBlitNamedFramebuffer(src, dst, srcX, srcY, srcX+w, srcY+h, 
           0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
       }
+#else
+      Console(3) << "Warning: H3DAPI built without direct state access. Update to a newer glew version and rebuild." << endl;
+#endif
       // invalidate the src fbo after blit
 #ifdef GLEW_ARB_invalidate_subdata
       vector<GLenum> attachments;
