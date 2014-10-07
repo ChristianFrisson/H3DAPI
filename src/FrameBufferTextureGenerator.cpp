@@ -1824,7 +1824,7 @@ void FrameBufferTextureGenerator::blitFBOBuffers(GLenum src, GLenum dst,
       Console(3) << "Warning: H3DAPI built without direct state access. Update to a newer glew version and rebuild." << endl;
 #endif
       // invalidate the src fbo after blit
-#ifdef GLEW_ARB_invalidate_subdata
+#ifdef GLEW_ARB_direct_state_access
       vector<GLenum> attachments;
       size_t nr_attachments = 0;
       attachments.push_back(GL_DEPTH_ATTACHMENT);
@@ -1833,7 +1833,7 @@ void FrameBufferTextureGenerator::blitFBOBuffers(GLenum src, GLenum dst,
         attachments.push_back(GL_COLOR_ATTACHMENT0 + i);
         nr_attachments += 1;
       }
-      if( GLEW_ARB_invalidate_subdata ) {
+      if( GLEW_ARB_direct_state_access ) {
         //GLenum attachments[2] = {GL_DEPTH_ATTACHMENT, GL_COLOR_ATTACHMENT0};
         glInvalidateNamedFramebufferData(src, nr_attachments, &attachments[0]);
       }
