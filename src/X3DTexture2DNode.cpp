@@ -294,6 +294,10 @@ void X3DTexture2DNode::render()     {
 }
 
 void X3DTexture2DNode::renderTextureProperties() {
+  // If the texture is resident (see bindless textures), then we can no longer change the texture properties
+  // and attempting to do so will result in an error state
+  if ( getTextureHandle() != 0 ) return;
+
   TextureProperties *texture_properties = textureProperties->getValue();
   if( texture_properties ) {
     texture_properties->renderTextureProperties( texture_target );

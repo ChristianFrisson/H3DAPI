@@ -129,6 +129,10 @@ void GeneratedCubeMapTexture::initializeTextures() {
 }
 
 void GeneratedCubeMapTexture::renderTextureProperties(){
+  // If the texture is resident (see bindless textures), then we can no longer change the texture properties
+  // and attempting to do so will result in an error state
+  if ( getTextureHandle() != 0 ) return;
+
   // GL_TEXTURE_RECTANGLE_ARB target do not support GL_REPEAT
   TextureProperties *texture_properties = textureProperties->getValue();
   if( texture_properties ) {

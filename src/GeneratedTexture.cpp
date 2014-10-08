@@ -67,6 +67,10 @@ void GeneratedTexture::render() {
 }
 
 void GeneratedTexture::renderTextureProperties(){
+  // If the texture is resident (see bindless textures), then we can no longer change the texture properties
+  // and attempting to do so will result in an error state
+  if ( getTextureHandle() != 0 ) return;
+
   if( this->texture_target==GL_TEXTURE_RECTANGLE_ARB ) {
     // GL_TEXTURE_RECTANGLE_ARB target do not support GL_REPEAT
     TextureProperties *texture_properties = textureProperties->getValue();
