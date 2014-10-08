@@ -152,6 +152,9 @@ void PlaybackDevice::initialize () {
   // true from load, even if url parameter is set at load after the
   // play parameter.
   play->setValue ( play->getValue() );
+
+  // Provide initial default values before any device values are asked for
+  updateDefaultValues ();
 }
 
 void PlaybackDevice::updateDeviceValues () {
