@@ -78,6 +78,7 @@
 #include <H3D/SFMatrix4d.h>
 #include <H3D/MFMatrix4d.h>
 #include <H3D/X3DShaderNode.h>
+#include <H3D/X3DProgrammableShaderObject.h>
 
 using namespace H3D;
 

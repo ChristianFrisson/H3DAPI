@@ -28,6 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include <H3D/H3DSingleTextureNode.h> 
 #include <H3D/X3DShaderNode.h>
+#include <H3D/X3DProgrammableShaderObject.h>
 
 using namespace H3D;
 

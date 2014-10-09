@@ -32,6 +32,7 @@
 #include <H3D/ResourceResolver.h>
 #include <H3D/DicomImageLoader.h>
 #include <H3D/GlobalSettings.h>
+#include <H3D/X3DProgrammableShaderObject.h>
 
 using namespace H3D;
 

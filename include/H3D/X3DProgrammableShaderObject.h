@@ -31,6 +31,7 @@
 
 #include <H3D/H3DDynamicFieldsObject.h>
 #include <H3D/RefCountMField.h>
+#include <H3D/FieldTemplates.h>
 
 namespace H3D {
   /// \ingroup AbstractInterface
