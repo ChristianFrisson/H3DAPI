@@ -805,7 +805,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
       if( H3DSingleTextureNode *t = dynamic_cast< H3DSingleTextureNode *>( n ) ) 
       {
 #ifdef GL_ARB_bindless_texture
-        if ( X3DShaderNode::use_bindless_textures ) {
+        if ( X3DProgrammableShaderObject::use_bindless_textures ) {
           GLuint64 h= t->getTextureHandle();
           if ( h != 0 ) {
             glUniformHandleui64ARB ( location, h );
@@ -844,7 +844,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
         if( n == NULL ) continue;
         if( H3DSingleTextureNode *t = dynamic_cast< H3DSingleTextureNode *>( n ) ) 
         {
-          if ( X3DShaderNode::use_bindless_textures ) {
+          if ( X3DProgrammableShaderObject::use_bindless_textures ) {
             GLuint64 h= t->getTextureHandle();
             if ( h != 0 ) {
               if ( !b ) b= new GLuint64 [ size ];
@@ -1359,7 +1359,7 @@ GLbitfield H3D::Shaders::getAffectedGLAttribs( H3DDynamicFieldsObject *dfo ) {
 
 void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
 
-  if ( X3DShaderNode::use_bindless_textures ) {
+  if ( X3DProgrammableShaderObject::use_bindless_textures ) {
     // Bindless textures
 
     Node* n;
@@ -1378,10 +1378,7 @@ void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
 
             if ( t->getTextureId() != 0 ) {
 
-              if ( t->makeResident () ) {
-                // Now the texture is resident we need to update the address in the shader uniform
-                (*f)->touch();
-              } else {
+              if ( !t->makeResident () ) {
                 Console(4) << "ERROR: Cannot make texture resident " << (*f)->getFullName () << ": " << t->getName() << endl;
               }
 
@@ -1402,10 +1399,7 @@ void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
 
               if ( t->getTextureId() != 0 ) {
 
-                if ( t->makeResident () ) {
-                  // Now the texture is resident we need to update the address in the shader uniform
-                  (*f)->touch();
-                } else {
+                if ( !t->makeResident () ) {
                   Console(4) << "ERROR: Cannot make texture resident " << (*f)->getFullName () << ": " << t->getName() << endl;
                 }
 
@@ -1527,7 +1521,7 @@ void H3D::Shaders::postRenderShaderResources( H3DDynamicFieldsObject* dfo, GLhan
 }
 
 void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
-  if ( X3DShaderNode::use_bindless_textures ) return;
+  if ( X3DProgrammableShaderObject::use_bindless_textures ) return;
 
   GLint nr_textures_supported;
   glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
@@ -1582,7 +1576,7 @@ void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
 
 
 void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
-  if ( X3DShaderNode::use_bindless_textures ) return;
+  if ( X3DProgrammableShaderObject::use_bindless_textures ) return;
 
   GLint nr_textures_supported;
   glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );

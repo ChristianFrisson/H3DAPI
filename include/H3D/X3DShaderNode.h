@@ -68,9 +68,6 @@ namespace H3D {
                    Inst< SFBool      > _activate    = 0,
                    Inst< SFString    > _language    = 0);
     
-    /// Initialize the node
-    virtual void initialize ();
-
     /// Returns true if the shader node type is supported by the browser.
     /// By default it checks that the language is GLSL.
     virtual bool isSupported() {
@@ -128,12 +125,6 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> outputOnly \n
     auto_ptr< SFString > language;
-
-    /// True if we should use bindless textures
-    static bool use_bindless_textures;
-
-    /// True if use_bindless_textures has already be set once
-    static bool use_bindless_textures_set;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

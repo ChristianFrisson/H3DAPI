@@ -1345,7 +1345,7 @@ bool FrameBufferTextureGenerator::parseColorBufferStorage(std::string color_buff
 
 bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height, H3DInt32 depth ) {
 
-  if ( X3DShaderNode::use_bindless_textures ) {
+  if ( X3DProgrammableShaderObject::use_bindless_textures ) {
     createOutputTextures ();
   }
 

@@ -70,8 +70,25 @@ namespace H3D {
     /// Get the bindless texture handle, or 0 if not resident
     virtual GLuint64 getTextureHandle() { return texture_handle; }
 
+    /// Add a shader field which contains this texture node
+    ///
+    /// The field will be touched when the texture handle is made
+    /// resident, in order to allow the shader uniforms that reference
+    /// it to be updated.
+    ///
+    /// X3DProgrammableShader node takes care of calling these functions
+    /// and only does so if bindless textures are enabled.
+    void addShaderField ( Field& _field );
+
+    /// Remove a shader field which contains this texture node
+    ///
+    /// See addShaderField()
+    void removeShaderField ( Field& _field );
+
   protected:
     GLuint64 texture_handle;
+
+    Field::FieldVector shader_fields;
   };
 }
 

@@ -30,6 +30,7 @@
 #define __X3DPROGRAMMABLESHADEROBJECT_H__
 
 #include <H3D/H3DDynamicFieldsObject.h>
+#include <H3D/RefCountMField.h>
 
 namespace H3D {
   /// \ingroup AbstractInterface
@@ -62,10 +63,42 @@ namespace H3D {
     public H3DDynamicFieldsObject {
   public:
     /// Constructor. 
-    X3DProgrammableShaderObject( H3DNodeDatabase *_database ) {}
+    X3DProgrammableShaderObject( H3DNodeDatabase *_database );
+
+    /// Add a shader field uniform
+    virtual bool addField( const string &name,
+                           const Field::AccessType &access,
+                           Field *field );
+    
+    /// Remove a shader field uniform
+    virtual bool removeField ( const string& _name );
 
     /// Destructor.
     virtual ~X3DProgrammableShaderObject();
+
+    /// True if we should use bindless textures
+    static bool use_bindless_textures;
+
+  protected:
+
+    /// For bindless textures handle the updating of the
+    /// textures list of all shader fields that contain the texture
+    class UpdateTextures : public AutoUpdate< Field > {
+    public:
+      virtual ~UpdateTextures ();
+      void clearField ( Field& _field );
+
+    protected:
+      virtual void update();
+
+      typedef std::map < Field*, NodeVector > FieldToNodes;
+      FieldToNodes fields_to_textures;
+    };
+
+    auto_ptr < UpdateTextures > update_textures;
+
+    /// True if use_bindless_textures has already be set once
+    static bool use_bindless_textures_set;
   };
 }
 

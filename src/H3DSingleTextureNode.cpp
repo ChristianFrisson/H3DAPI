@@ -40,7 +40,7 @@ H3DSingleTextureNode::H3DSingleTextureNode(
 }
 
 H3DSingleTextureNode::~H3DSingleTextureNode () {
-  if ( X3DShaderNode::use_bindless_textures ) {
+  if ( X3DProgrammableShaderObject::use_bindless_textures ) {
     makeNonResident ();
   }
 }
@@ -52,6 +52,12 @@ bool H3DSingleTextureNode::makeResident () {
     if ( glGetError() == GL_NO_ERROR ) {
       glMakeTextureHandleResidentARB ( texture_handle );
       if ( glGetError() == GL_NO_ERROR ) {
+
+        Field::FieldVector fields= shader_fields;
+        for ( Field::FieldVector::iterator i= fields.begin(); i != fields.end(); ++i ) {
+          (*i)->touch ();
+        }
+
         return true;
       }
     }
@@ -76,5 +82,16 @@ void H3DSingleTextureNode::makeNonResident () {
     glGetError ();
 
     texture_handle= 0;
+  }
+}
+
+void H3DSingleTextureNode::addShaderField ( Field& _field ) { 
+  shader_fields.push_back ( &_field );
+}
+
+void H3DSingleTextureNode::removeShaderField ( Field& _field ) { 
+  Field::FieldVector::iterator i= find ( shader_fields.begin(), shader_fields.end(), &_field );
+  if ( i != shader_fields.end() ) {
+    shader_fields.erase ( i );
   }
 }

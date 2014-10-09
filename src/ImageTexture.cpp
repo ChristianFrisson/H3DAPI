@@ -228,7 +228,7 @@ void ImageTexture::SFImage::update() {
   // texture
   resetChanges();
 
-  if ( X3DShaderNode::use_bindless_textures ) {
+  if ( X3DProgrammableShaderObject::use_bindless_textures ) {
     // We must make the texture non-resident before the image is swapped
     // so that a new texture handle can be created.
     texture->makeNonResident ();
