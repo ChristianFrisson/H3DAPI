@@ -32,10 +32,15 @@
 #include <H3D/Scene.h>
 #include <H3DUtil/Exception.h>
 #include <H3D/Node.h>
-#include <H3D/ImportLibrary.h>
+#include <H3DUtil/DynamicLibrary.h>
+#include <H3D/ResourceResolver.h>
+#include <H3D/URNResolver.h>
+#include <H3D/X3DUrlObject.h>
 #include <set>
 #include <queue>
 #include <fstream>
+
+#cmakedefine OUTPUT_ABREVIATION_OR_NAME_CLASH 
 
 using namespace std;
 using namespace H3D;
@@ -121,45 +126,156 @@ inline void resetSceneTimeField() {
   Scene::time->setName( "Scene::time" );
 }
 
+DynamicLibrary::LIBHANDLE loadLibrary( string url) {
+  string urn_name = url;
+  URNResolver *urn_resolver = ResourceResolver::getURNResolver();
+  if( urn_resolver ) {
+    urn_name = urn_resolver->resolveURN( url );
+  }
+  DynamicLibrary::LIBHANDLE handle = NULL;
+#ifdef WIN32
+  bool ends_in_dll = urn_name.find( ".dll" ) != string::npos;
 
-string vc_post_fix = "_vc${H3D_MSVC_VERSION}";
-vector< string > extra_output;
-vector< string > base_path;
+#ifdef _DEBUG
+
+  // try absolute path.
+  handle = DynamicLibrary::load( urn_name + "_d" );
+  if( handle ) return handle;
+
+#endif // _DEBUG
+
+#endif // WIN32
+
+  auto_ptr< X3DUrlObject > url_object( new X3DUrlObject );
+  // test the given name directly.
+  string filename = url_object->resolveURLAsFile( urn_name );
+  if( filename == "" ) filename = urn_name;
+  handle =  DynamicLibrary::load( filename );
+
+  return handle;
+}
+
+string findOutputName( const string &library_path ) {
+  string output_name = library_path;
+  size_t last_slash = output_name.find_last_of( "/\\" );
+  if( last_slash )
+    output_name = output_name.substr( last_slash + 1, output_name.size() );
+  size_t last_dot = output_name.find_last_of( "." );
+  if( last_dot )
+    output_name = output_name.substr( 0, last_dot );
+  return output_name;
+}
+
+#ifdef OUTPUT_ABREVIATION_OR_NAME_CLASH
+vector< string > abreviateHelp( const unsigned int &j, const vector< int > &capital_list, const int &max_depth, const string &node_name ) {
+  vector< string > sub_abreviations;
+  if( j+1 < capital_list.size() )
+    sub_abreviations = abreviateHelp( j+1, capital_list, max_depth, node_name );
+  vector< string > abreviations;
+  for( int i = 1; i <= max_depth; ++i ) {
+    int string_size = 0;
+    if( j + 1 < capital_list.size() ) {
+      string_size = H3DMin( i, capital_list[j+1]-capital_list[j] );
+    } else if( capital_list[j] + i < node_name.size() )
+      string_size = H3DMin( i, (int)node_name.size()-capital_list[j] );
+    if( string_size > 0 ) {
+      string tmp_abreviation = node_name.substr( capital_list[j], string_size );
+      if( sub_abreviations.empty() ) {
+        if( j != 0 || tmp_abreviation.size() > 1 )
+          abreviations.push_back( tmp_abreviation );
+      } else {
+        for( unsigned int k = 0; k < sub_abreviations.size(); k++ ) {
+          string new_abreviation = tmp_abreviation + sub_abreviations[k];
+          if( j != 0 || new_abreviation.size() > 1 )
+            abreviations.push_back( new_abreviation );
+        }
+      }
+    }
+  }
+  for( vector<string>::iterator i = abreviations.begin(); i != abreviations.end(); ++i )
+    transform((*i).begin(), (*i).end(), (*i).begin(), ::toupper);
+  return abreviations;
+}
+
+bool my_sort_helper(string i,string j) {
+  if( i.size() == j.size() )
+    return (i<j);
+  return i.size() < j.size();
+}
+
+vector< string > abreviateNodeName( const string &node_name, int max_depth = 3, int max_nr_of_abreviations = 9 ) {
+  // Find capital letters.
+  vector< int > capital_list;
+  for( unsigned int i = 0; i < node_name.size(); ++i )
+    if( node_name[i] != tolower( node_name[i] ) || isdigit(node_name[i]) )
+      capital_list.push_back( i );
+  if( capital_list.size() < 2 )
+    max_depth = max_depth * 2;
+  vector<string> abreviations = abreviateHelp( 0, capital_list, max_depth, node_name ) ;
+  sort( abreviations.begin(), abreviations.end(), my_sort_helper );
+  if( abreviations.size() > max_nr_of_abreviations )
+    abreviations.erase( abreviations.begin() + max_nr_of_abreviations, abreviations.end() );
+  return abreviations;
+}
+#endif
 
 int main(int argc, char* argv[]) {
+  string vc_post_fix = "_vc${H3D_MSVC_VERSION}";
+  vector< string > extra_libraries;
+  vector< string > extra_library_names;
 #ifdef HAVE_UI
-  extra_output.push_back( "UI" );
-  base_path.push_back( "${UI_SEARCH_PATH}/" );
+  extra_libraries.push_back( "${UI_SEARCH_PATH}/UI" + vc_post_fix );
+  extra_library_names.push_back( findOutputName( extra_libraries.back() ) );
 #endif
 #ifdef HAVE_H3DPhysics
-  extra_output.push_back( "H3DPhysics" );
-  base_path.push_back( "${H3DPhysics_SEARCH_PATH}/" );
+  extra_libraries.push_back( "${H3DPhysics_SEARCH_PATH}/H3DPhysics" + vc_post_fix );
+  extra_library_names.push_back( findOutputName( extra_libraries.back() ) );
 #endif
 #ifdef HAVE_MedX3D
-  extra_output.push_back( "MedX3D" );
-  base_path.push_back( "${MedX3D_SEARCH_PATH}/" );
+  extra_libraries.push_back( "${MedX3D_SEARCH_PATH}/MedX3D" + vc_post_fix );
+  extra_library_names.push_back( findOutputName( extra_libraries.back() ) );
 #endif
+  int before_extra_libraries = extra_libraries.size();
+${CreateH3DNodesFieldsList_EXTRA_BINARIES_CODE}
 
-  if (argc < 2){
-    cerr << "Usage: " << argv[0] << " <Output file 1>";
-    for( unsigned int i = 0; i < extra_output.size(); i++ ) {
-      stringstream s;
-      s << (i+1);
-      cerr << " (Output file " << s.str() << ")";
-    }
-    cerr << endl;
-    if( extra_output.size() > 0 ) {
-      cerr << "The optional output files indicate that nodesfields lists for ";
-      for( unsigned int i = 0; i < extra_output.size(); i++ ) {
-        cerr << extra_output[i];
-        if( i+2 == extra_output.size() )
-          cerr << " and ";
-        else if( i+1 < extra_output.size() )
-          cerr << ", ";
+  vector< string > nodes_fields_output_file;
+  ${CreateH3DNodesFieldsList_OUTPUT_FILE_CODE}
+  for( unsigned int i = before_extra_libraries; i < extra_libraries.size(); ++i ) {
+    extra_library_names.push_back( findOutputName( extra_libraries[i] ) );
+  }
+  string extra_libraries_output_file_default( "${CreateH3DNodesFieldsList_EXTRA_BINARIES_nodesFieldsList_OUTPUT_DIR}" );
+  if( !extra_libraries_output_file_default.empty() ) {
+    for( unsigned int i = before_extra_libraries; i < extra_libraries.size(); ++i ) {
+      string file_name = extra_library_names[i];
+      if( file_name != "" ) {
+        file_name = extra_libraries_output_file_default + "/" + file_name + "_nodesFieldsList";
       }
-      cerr << " should be generated." << endl;
+      nodes_fields_output_file.push_back( file_name );
     }
-    return 1;
+  }
+
+  if( argc > 1 || nodes_fields_output_file.size() != extra_libraries.size() + 1 ) {
+    if (argc < 2){
+      cerr << "Usage: " << argv[0] << " <Output file 1>";
+      for( unsigned int i = 0; i < extra_libraries.size(); i++ ) {
+        stringstream s;
+        s << (i+1);
+        cerr << " (Output file " << s.str() << ")";
+      }
+      cerr << endl;
+      if( extra_libraries.size() > 0 ) {
+        cerr << "The optional output files indicate that nodesfields lists for ";
+        for( unsigned int i = 0; i < extra_libraries.size(); i++ ) {
+          cerr << extra_libraries[i];
+          if( i+2 == extra_libraries.size() )
+            cerr << " and ";
+          else if( i+1 < extra_libraries.size() )
+            cerr << ", ";
+        }
+        cerr << " should be generated." << endl;
+      }
+      return 1;
+    }
   }
 
   deprecated_names_list.push_back( pair< string, string >( "ImportLibrary", "library" ) );
@@ -175,34 +291,56 @@ int main(int argc, char* argv[]) {
   field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "Contact", pair< string, string >( "minbounceSpeed", "minBounceSpeed" ) ) );
   field_name_not_variable_name.push_back( pair< string, pair< string, string > >( "SizeJustifiedText", pair< string, string >( "string", "stringF" ) ) );
 
-  vector< string > all_node_names;
-  for( unsigned int i = 0; i <= extra_output.size(); i++ ) {
-    if( i + 1 >= argc )
-      return 0;
-    
-    string page_name = "";
-    if( i > 0 ) {
-      ImportLibrary * imp_lib = new ImportLibrary();
-      vector< string > url;
-      url.push_back( base_path[i-1] + extra_output[i-1] + vc_post_fix
-/*#ifdef _DEBUG
-                     + "_d"
+  vector< string > h3d_node_names;
+#ifdef OUTPUT_ABREVIATION_OR_NAME_CLASH
+  map< string, vector< string > > nodenames_per_library;
+  vector< string > unique_node_names;
+  map< string, vector< string > > name_clashes;
+  vector< string > library_endings_to_test;
+#ifdef WIN32
+  library_endings_to_test.push_back( ".dll" );
+#ifdef _DEBUG
+  library_endings_to_test.push_back( "_d.dll" );
 #endif
-#ifdef H3D_WINDOWS
-                     + ".dll"
-#endif*/
-                     );
-      imp_lib->url->setValue( url );
-      imp_lib->initialize();
-      delete imp_lib;
-      page_name = extra_output[i-1];
+#endif
+#endif
+  for( unsigned int i = 0; i <= extra_libraries.size(); i++ ) {
+    if( i + 1 >= argc ) {
+      if( i >= nodes_fields_output_file.size() )
+        return 0;
+    } else {
+      if( i >= nodes_fields_output_file.size() ) {
+        nodes_fields_output_file.resize( i+1, "" );
+      }
+      nodes_fields_output_file[i] = argv[i + 1];
     }
 
-    string out_file = argv[i + 1];
+    string page_name = "";
+    DynamicLibrary::LIBHANDLE library_handle = NULL;
+    vector< string > dependencies;
+    if( i > 0 ) {
+      library_handle = loadLibrary( extra_libraries[i-1] );
+      page_name = extra_library_names[i-1];
+#ifdef WIN32
+      // If already loaded just return the handle to the loaded library.
+      for( unsigned int j = 0; j < extra_library_names.size(); ++j ) {
+        if( page_name != extra_library_names[j] ) {
+          DynamicLibrary::LIBHANDLE handle = GetModuleHandle( (extra_library_names[j] + "_d.dll").c_str() );
+          if( handle )
+            dependencies.push_back( extra_library_names[j] );
+        }
+      }
+#endif
+    }
+
+    string out_file = nodes_fields_output_file[i];
 
     ofstream os( out_file.c_str() );
     if( !os.is_open() )
       return 1;
+#ifdef OUTPUT_ABREVIATION_OR_NAME_CLASH
+    vector< string > nodes_in_this_library;
+#endif
 
     os << "/// \\file " << out_file << endl
        << "/// \\brief Extra page listing all nodes and fields." << endl
@@ -210,26 +348,65 @@ int main(int argc, char* argv[]) {
 
     try {
       vector< string > ordered_node_names;
-      for( H3DNodeDatabase::NodeDatabaseConstIterator i = 
+      for( H3DNodeDatabase::NodeDatabaseConstIterator j = 
              H3DNodeDatabase::begin();
-           i != H3DNodeDatabase::end();
-           i++ ) {
-        ordered_node_names.push_back( (*i).second->getName() );
+           j != H3DNodeDatabase::end();
+           j++ ) {
+        ordered_node_names.push_back( (*j).second->getName() );
       }
 
       sort( ordered_node_names.begin(), ordered_node_names.end() );
 
-      for( vector< string >::iterator i = ordered_node_names.begin();
-           i != ordered_node_names.end(); i++ ) {
-        if( find( all_node_names.begin(), all_node_names.end(), (*i) ) == all_node_names.end() ) {
-          all_node_names.push_back( (*i) );
-          Node *n = H3DNodeDatabase::createNode( (*i) );
+      for( vector< string >::iterator j = ordered_node_names.begin();
+           j != ordered_node_names.end(); j++ ) {
+        if( find( h3d_node_names.begin(), h3d_node_names.end(), (*j) ) == h3d_node_names.end() ) {
+          if( i == 0 )
+            h3d_node_names.push_back( (*j) );
+          Node *n = H3DNodeDatabase::createNode( (*j) );
           if( !n ) {
-            cerr << (*i) << ": No such node exists in the node database"
+            cerr << (*j) << ": No such node exists in the node database"
                  << endl;
           } else {
             writeNode( os, n );
             resetSceneTimeField();
+#ifdef OUTPUT_ABREVIATION_OR_NAME_CLASH
+            if( find( unique_node_names.begin(), unique_node_names.end(), *j ) == unique_node_names.end() ) {
+              nodes_in_this_library.push_back( *j );
+              unique_node_names.push_back( *j );
+            } else {
+              bool clash_was_in_dependent_library = false;
+              for( vector< string >::iterator k = dependencies.begin(); k != dependencies.end(); ++k ) {
+                if( nodenames_per_library.find(*k) != nodenames_per_library.end() ) {
+                  if( find( nodenames_per_library[*k].begin(), nodenames_per_library[*k].end(), *j ) != nodenames_per_library[*k].end() ) {
+                    clash_was_in_dependent_library = true;
+                    break;
+                  }
+                }
+              }
+
+              if( !clash_was_in_dependent_library ) {
+                map< string, vector< string > >::iterator node_in_name_clashes = name_clashes.find( *j );
+                if( node_in_name_clashes == name_clashes.end() ) {
+                  // First time this node name clashes with other libraries. Simply find in which previous library
+                  // the node name exists.
+                  for( map< string, vector< string > >::iterator k = nodenames_per_library.begin(); k != nodenames_per_library.end(); ++k ) {
+                    vector< string >::iterator found_node_name = find( (*k).second.begin(), (*k).second.end(), *j );
+                    if( found_node_name != (*k).second.end() ) {
+                      string name_to_add = (*k).first;
+                      if( name_to_add == "" )
+                        name_to_add = "H3DAPI";
+                      name_clashes[*j].push_back( (*k).first ); // Found first instance of this node name that caused the clash.
+                      break;
+                    }
+                  }
+                }
+                string name_to_add = page_name;
+                if( name_to_add == "" )
+                  name_to_add = "H3DAPI";
+                name_clashes[*j].push_back( page_name );
+              }
+            }
+#endif
           }
         }
       }
@@ -239,7 +416,66 @@ int main(int argc, char* argv[]) {
         os.close();
         cerr << e << endl;
     }
+    nodenames_per_library[page_name].swap( nodes_in_this_library );
+    if( library_handle && DynamicLibrary::close( library_handle ) != 0 ) {
+      cerr << "Failed to close handle for library " << extra_libraries[i] << endl;
+    }
   }
+  
+#ifdef OUTPUT_ABREVIATION_OR_NAME_CLASH
+  string abreviation_file_name( "${CreateH3DNodesFieldsList_OUTPUT_ABREVIATION_FILE}" );
+  string name_clash_file_name( "${CreateH3DNodesFieldsList_OUTPUT_NAME_CLASH_FILE}" );
+  sort( unique_node_names.begin(), unique_node_names.end() );
+  ofstream os( abreviation_file_name.c_str() );
+  if( os.is_open() ) {
+    vector< string > abreviations;
+    vector< vector< string > > abr_per_node;
+    for( unsigned int i = 0; i < unique_node_names.size(); ++i ){
+      vector< string > new_abreviations = abreviateNodeName( unique_node_names[i] );
+      for( vector< string >::iterator j = new_abreviations.begin(); j != new_abreviations.end(); ++j ) {
+        vector< string >::iterator abrv_exists = find( abreviations.begin(), abreviations.end(), *j );
+        if( abrv_exists == abreviations.end() ) {
+          abreviations.push_back( *j );
+          abr_per_node.push_back( vector<string>() );
+          abr_per_node[i].push_back( *j );
+          new_abreviations.erase( j );
+          break;
+        }
+      }
+      if( i >= abr_per_node.size() ) {
+        abr_per_node.push_back( vector<string>() );
+        abr_per_node[i].push_back( "-" ); // Could not find an abreviation.
+      }
+      abr_per_node[i].insert( abr_per_node[i].end(), new_abreviations.begin(), new_abreviations.end() );
+    }
+    os << "Nr of unique node names are:," << unique_node_names.size() << endl;
+    os << "Node type,Abreviation,Alternative suggestion" << endl;
+    for( unsigned int i = 0; i < unique_node_names.size(); ++i ){
+      os << unique_node_names[i];
+      for( unsigned int j = 0; j < abr_per_node[i].size(); ++j ) {
+        if( j < 2 )
+          os << ",";
+        else
+          os << " ";
+        os << abr_per_node[i][j];
+      }
+      os << endl;
+    }
+    os.close();
+  }
+  ofstream os2( name_clash_file_name.c_str() );
+  if( os2.is_open() ) {
+    os2 << "There are this many node names that exist in several libraries:," << name_clashes.size() << endl;
+    os2 << "Node name, Library name 0, Library name 1, Library name 2, well you get the picture I got lazy" << endl;
+    for( map< string, vector< string > >::iterator i = name_clashes.begin(); i != name_clashes.end(); ++i ){
+      os2 << (*i).first;
+      for( vector< string >::iterator j = (*i).second.begin(); j != (*i).second.end(); ++j )
+        os2 << "," << *j;
+      os2 << endl;
+    }
+    os2.close();
+  }
+#endif
   return 0;
 }
 

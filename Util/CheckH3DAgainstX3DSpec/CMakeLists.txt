@@ -126,13 +126,6 @@ IF( INCLUDE_MedX3D )
   ENDIF( TARGET MedX3D )
 ENDIF( INCLUDE_MedX3D )
 
-# Optional extra library. Used for sound in H3D API.
-#FIND_PACKAGE(H3DOpenAL)
-#IF(OPENAL_FOUND)
-#  INCLUDE_DIRECTORIES( ${OPENAL_INCLUDE_DIR} )
-#  SET(optionalLibs ${optionalLibs} ${OPENAL_LIBRARIES} )
-#ENDIF(OPENAL_FOUND)
-
 CONFIGURE_FILE( ${CheckH3DAgainstX3DSpec_SOURCE_DIR}/CheckH3DAgainstX3DSpec.cmake ${CheckH3DAgainstX3DSpec_SOURCE_DIR}/CheckH3DAgainstX3DSpec.cpp )
 
 SET(CMAKE_MODULE_PATH "${CheckH3DAgainstX3DSpec_SOURCE_DIR}/../../build/modules/")
