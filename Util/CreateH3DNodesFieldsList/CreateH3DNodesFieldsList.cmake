@@ -181,12 +181,12 @@ vector< string > abreviateHelp( const unsigned int &j, const vector< int > &capi
     if( string_size > 0 ) {
       string tmp_abreviation = node_name.substr( capital_list[j], string_size );
       if( sub_abreviations.empty() ) {
-        if( j != 0 || tmp_abreviation.size() > 1 )
+        if( ( j != 0 || tmp_abreviation.size() > 1 ) && find( abreviations.begin(), abreviations.end(), tmp_abreviation ) == abreviations.end() )
           abreviations.push_back( tmp_abreviation );
       } else {
         for( unsigned int k = 0; k < sub_abreviations.size(); k++ ) {
           string new_abreviation = tmp_abreviation + sub_abreviations[k];
-          if( j != 0 || new_abreviation.size() > 1 )
+          if( ( j != 0 || new_abreviation.size() > 1 ) && find( abreviations.begin(), abreviations.end(), new_abreviation ) == abreviations.end() )
             abreviations.push_back( new_abreviation );
         }
       }
@@ -297,6 +297,8 @@ ${CreateH3DNodesFieldsList_EXTRA_BINARIES_CODE}
   vector< string > unique_node_names;
   map< string, vector< string > > name_clashes;
   vector< string > library_endings_to_test;
+  vector< string > abreviations;
+  map< string, vector< string > > abr_per_node;
 #ifdef WIN32
   library_endings_to_test.push_back( ".dll" );
 #ifdef _DEBUG
@@ -373,6 +375,20 @@ ${CreateH3DNodesFieldsList_EXTRA_BINARIES_CODE}
             if( find( unique_node_names.begin(), unique_node_names.end(), *j ) == unique_node_names.end() ) {
               nodes_in_this_library.push_back( *j );
               unique_node_names.push_back( *j );
+              vector< string > new_abreviations = abreviateNodeName( *j );
+              for( vector< string >::iterator k = new_abreviations.begin(); k != new_abreviations.end(); ++k ) {
+                vector< string >::iterator abrv_exists = find( abreviations.begin(), abreviations.end(), *k );
+                if( abrv_exists == abreviations.end() ) {
+                  abreviations.push_back( *k);
+                  abr_per_node[*j].push_back( *k );
+                  new_abreviations.erase( k );
+                  break;
+                }
+              }
+              if( i >= abr_per_node.size() ) {
+                abr_per_node[*j].push_back( "-" ); // Could not find an abreviation.
+              }
+              abr_per_node[*j].insert( abr_per_node[*j].end(), new_abreviations.begin(), new_abreviations.end() );
             } else {
               bool clash_was_in_dependent_library = false;
               for( vector< string >::iterator k = dependencies.begin(); k != dependencies.end(); ++k ) {
@@ -428,36 +444,16 @@ ${CreateH3DNodesFieldsList_EXTRA_BINARIES_CODE}
   sort( unique_node_names.begin(), unique_node_names.end() );
   ofstream os( abreviation_file_name.c_str() );
   if( os.is_open() ) {
-    vector< string > abreviations;
-    vector< vector< string > > abr_per_node;
-    for( unsigned int i = 0; i < unique_node_names.size(); ++i ){
-      vector< string > new_abreviations = abreviateNodeName( unique_node_names[i] );
-      for( vector< string >::iterator j = new_abreviations.begin(); j != new_abreviations.end(); ++j ) {
-        vector< string >::iterator abrv_exists = find( abreviations.begin(), abreviations.end(), *j );
-        if( abrv_exists == abreviations.end() ) {
-          abreviations.push_back( *j );
-          abr_per_node.push_back( vector<string>() );
-          abr_per_node[i].push_back( *j );
-          new_abreviations.erase( j );
-          break;
-        }
-      }
-      if( i >= abr_per_node.size() ) {
-        abr_per_node.push_back( vector<string>() );
-        abr_per_node[i].push_back( "-" ); // Could not find an abreviation.
-      }
-      abr_per_node[i].insert( abr_per_node[i].end(), new_abreviations.begin(), new_abreviations.end() );
-    }
     os << "Nr of unique node names are:," << unique_node_names.size() << endl;
     os << "Node type,Abreviation,Alternative suggestion" << endl;
     for( unsigned int i = 0; i < unique_node_names.size(); ++i ){
       os << unique_node_names[i];
-      for( unsigned int j = 0; j < abr_per_node[i].size(); ++j ) {
+      for( unsigned int j = 0; j < abr_per_node[unique_node_names[i]].size(); ++j ) {
         if( j < 2 )
           os << ",";
         else
           os << " ";
-        os << abr_per_node[i][j];
+        os << abr_per_node[unique_node_names[i]][j];
       }
       os << endl;
     }
