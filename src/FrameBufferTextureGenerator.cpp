@@ -81,6 +81,7 @@ namespace FrameBufferTextureGeneratorInternals {
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, useSpecifiedClearColor, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, clearColor, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, useDSA, INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, splitScene, INITIALIZE_ONLY );
 }
 
 FrameBufferTextureGenerator::~FrameBufferTextureGenerator() {
@@ -137,7 +138,8 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   Inst< SFBool          > _useNavigation,
   Inst< SFBool          > _useSpecifiedClearColor,
   Inst< SFColorRGBA     > _clearColor,
-  Inst< SFBool          > _useDSA):
+  Inst< SFBool          > _useDSA,
+  Inst< SFBool          > _splitScene):
 X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound, 
   _bboxCenter, _bboxSize ),
   generateColorTextures( _generateColorTextures ),
@@ -168,6 +170,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   useSpecifiedClearColor( _useSpecifiedClearColor ),
   clearColor(_clearColor),
   useDSA(_useDSA),
+  splitScene(_splitScene),
   fbo_initialized( false ),
   buffers_width(-1),
   buffers_height(-1),
@@ -249,6 +252,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
     fbo_nodes.insert( this );
     support_dsa = false;
     useDSA->setValue(false);
+    splitScene->setValue(false);
 
     clear_color_value = new float[4];
     clear_color_value[0] = 0;
@@ -718,21 +722,38 @@ void FrameBufferTextureGenerator::render()     {
       if ( desired_fbo_heigth != heightInUse->getValue() ) {
         heightInUse->setValue(desired_fbo_heigth, id);
       }
-      X3DShapeNode::GeometryRenderMode  m= X3DShapeNode::geometry_render_mode;
-
-      if( children_multi_pass_transparency ) {
-        X3DShapeNode::geometry_render_mode = X3DShapeNode::SOLID;
-        X3DGroupingNode::render();
-        X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_BACK; 
-        X3DGroupingNode::render();
-        X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_FRONT; 
-        X3DGroupingNode::render();
-        X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
-      } else {
-        X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
-        X3DGroupingNode::render();
+      
+      if( splitScene->getValue() ) {
+        const NodeVector &c = children->getValue();
+        for( unsigned int i = 0; i<c.size(); ++i ) {
+          GLenum target = GL_COLOR_ATTACHMENT0_EXT+i;
+          glDrawBuffer(target);
+          if( c[i] ) {
+            H3DDisplayListObject *tmp = dynamic_cast< H3DDisplayListObject* >( c[i]);
+            if( tmp )
+              tmp->displayList->callList();
+            else
+              c[i]->render();
+          }
+        }
+      }else{
+        X3DShapeNode::GeometryRenderMode  m= X3DShapeNode::geometry_render_mode;
+        if( children_multi_pass_transparency ) {
+          X3DShapeNode::geometry_render_mode = X3DShapeNode::SOLID;
+          X3DGroupingNode::render();
+          X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_BACK; 
+          X3DGroupingNode::render();
+          X3DShapeNode::geometry_render_mode = X3DShapeNode::TRANSPARENT_FRONT; 
+          X3DGroupingNode::render();
+          X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
+        } else {
+          X3DShapeNode::geometry_render_mode = X3DShapeNode::ALL; 
+          X3DGroupingNode::render();
+        }
+        X3DShapeNode::geometry_render_mode= m;
       }
-      X3DShapeNode::geometry_render_mode= m;
+      
+      
       if( current_shadow_caster && !current_shadow_caster->object->empty() ) current_shadow_caster->render();
     }
 #ifdef GLEW_ARB_invalidate_subdata
@@ -1617,7 +1638,14 @@ GLenum FrameBufferTextureGenerator::stringToInternalFormat( const string &s ) {
     } else {
       Console(4) << "Warning: Your graphics card does not support floating point textures (ARB_texture_float). Using RGB instead(in FrameBufferTextureGenerator node). " << endl;
     }
-  } else if( s == "RGB" ) { 
+  } else if( s == "R32F" ) {
+    if( GLEW_ARB_texture_rg ) {
+      internal_format = GL_R32F;
+    }else{
+      Console(4)<< "Warning: Your graphics card does not support floating point RED. "<<endl;
+    }
+  }
+  else if( s == "RGB" ) { 
     internal_format = GL_RGB;
   } else {
     if( s != "RGBA" ) {

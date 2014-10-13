@@ -65,6 +65,7 @@ namespace H3D {
   /// "RGB32F"  - floating point number texture with 32 bit float for each component.
   /// "RGBA16F" - floating point number texture with 16 bit float for each component.
   /// "RGB16F"  - floating point number texture with 16 bit float for each component.
+  /// "R32F"    - floating point number texture with 32 bit float for red component only.
   ///
   /// The output textures will be output into the colorTextures field.
   ///
@@ -228,7 +229,8 @@ namespace H3D {
                                  Inst< SFBool           > _useNavigation = 0,
                                  Inst< SFBool           > _useSpecifiedClearColor = 0,
                                  Inst< SFColorRGBA      > _clearColor = 0,
-                                 Inst< SFBool           > _useDSA = 0);
+                                 Inst< SFBool           > _useDSA = 0,
+                                 Inst< SFBool           > _splitScene = 0);
         
     /// Destructor.
     virtual ~FrameBufferTextureGenerator();
@@ -502,6 +504,16 @@ namespace H3D {
     auto_ptr< SFColorRGBA > clearColor;
 
     auto_ptr< SFBool > useDSA;
+
+    /// An option to tell FBTG to split the children scene and render each shape into 
+    /// separate render target. The order of the output generate color texture will match
+    /// the order of shape in the children scene.
+    /// This option can be used to avoid switching fbo. One simple example is to 
+    /// combine two pass gaussian blur into the same FBTG. 
+    /// Warning: depth test has to be disabled when render the object, as different
+    /// object rendering will share the same depth buffer, enable depth test will very
+    /// likely reject the rendering of later rendered object.
+    auto_ptr< SFBool > splitScene;
 
 
     /// The H3DNodeDatabase for this node.
