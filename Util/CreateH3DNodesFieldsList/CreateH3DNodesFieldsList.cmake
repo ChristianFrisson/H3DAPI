@@ -432,7 +432,9 @@ ${CreateH3DNodesFieldsList_EXTRA_BINARIES_CODE}
         os.close();
         cerr << e << endl;
     }
+#ifdef OUTPUT_ABREVIATION_OR_NAME_CLASH
     nodenames_per_library[page_name].swap( nodes_in_this_library );
+#endif
     if( library_handle && DynamicLibrary::close( library_handle ) != 0 ) {
       cerr << "Failed to close handle for library " << extra_libraries[i] << endl;
     }
