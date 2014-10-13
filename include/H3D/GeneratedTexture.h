@@ -70,6 +70,9 @@ namespace H3D {
       return texture_id_initialized;
     }
 
+    /// Create a new texture ID for the texture, destroying the old one
+    void reinitialize ();
+
     /// Render this texture.
     virtual void render();
 

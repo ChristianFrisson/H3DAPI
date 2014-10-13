@@ -86,10 +86,25 @@ namespace H3D {
     virtual bool makeResident ();
 
     /// Make the texture non-resident
-    virtual void makeNonResident () {}
+    virtual void makeNonResident ();
+
+    /// Returns true if the texture is resident in GPU memory or false otherwise
+    virtual bool isResident ();
 
     /// Get the bindless texture handle, or 0 if not resident
     virtual GLuint64 getTextureHandle();
+
+    /// This should be called if the texture object is to be replaced
+    ///
+    /// This will cause the texture to become non-resident and for the texture
+    /// handle to be regenerated the next time the texture is made resident
+    virtual void invalidateTextureHandle ();
+
+    /// Call to signify that this texture is currently in use
+    ///
+    /// Textures that are not in use are periodically detected and
+    /// made non-resident
+    virtual void inUse ();
 
     /// The generator field contains the FrameBufferTextureGenerator node from which to use a 
     /// render target (color texture ).

@@ -527,6 +527,9 @@ namespace H3D {
     // Reference to shadow caster used to cast shadows for shapes
     // in scene graph.
     AutoRef< ShadowCaster > shadow_caster;
+
+    /// Time that we last checked for unused resident textures
+    H3DTime last_unused_texture_check;
   };
 }
 

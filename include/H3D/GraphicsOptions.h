@@ -61,7 +61,8 @@ namespace H3D {
                      Inst< SFBool > _preferVertexBufferObject = 0,
                      Inst< SFString > _defaultShadowGeometryAlgorithm = 0,
                      Inst< SFShadowCaster > _defaultShadowCaster = 0,
-                     Inst< SFBool > _bindlessTextures = 0 );
+                     Inst< SFBool > _bindlessTextures = 0,
+                     Inst< SFTime > _bindlessTexturesUnusedTime = 0 );
     
     bool cacheNode( Node *n ) {
       if( !useCaching->getValue() ) return false;
@@ -182,6 +183,13 @@ namespace H3D {
     /// <b>Default value: </b> false \n
     /// <b>Access type: </b> inputOutput \n
     auto_ptr < SFBool > bindlessTextures;
+
+    /// Time which a resident texture must be unused for, before it is
+    /// automatically made non-resident. (seconds)
+    ///
+    /// <b>Default value: </b> 5 \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr < SFTime > bindlessTexturesUnusedTime;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

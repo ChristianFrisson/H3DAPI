@@ -30,14 +30,20 @@
 #include <H3D/X3DShaderNode.h>
 #include <H3D/X3DProgrammableShaderObject.h>
 
+//#define DEBUG_BINDLESS
+
 using namespace H3D;
+
+H3DSingleTextureNode::TextureVector H3DSingleTextureNode::resident_textures;
 
 /// Constructor
 H3DSingleTextureNode::H3DSingleTextureNode( 
   Inst< DisplayList > _displayList,
   Inst< SFNode  > _metadata ): 
   X3DTextureNode( _displayList, _metadata ),
-  texture_handle ( 0 ) {
+  texture_handle ( 0 ),
+  last_used ( 0 ),
+  is_resident ( false ) {
 }
 
 H3DSingleTextureNode::~H3DSingleTextureNode () {
@@ -47,43 +53,61 @@ H3DSingleTextureNode::~H3DSingleTextureNode () {
 }
 
 bool H3DSingleTextureNode::makeResident () {
-  if ( !texture_handle ) {
 #ifdef GL_ARB_bindless_texture
-    texture_handle= glGetTextureHandleARB ( getTextureId() );
-    if ( glGetError() == GL_NO_ERROR ) {
-      glMakeTextureHandleResidentARB ( texture_handle );
-      if ( glGetError() == GL_NO_ERROR ) {
-
-        Field::FieldVector fields= shader_fields;
-        for ( Field::FieldVector::iterator i= fields.begin(); i != fields.end(); ++i ) {
-          (*i)->touch ();
-        }
-
-        return true;
-      }
+  if ( !is_resident ) {
+    if ( !texture_handle ) {
+      texture_handle= glGetTextureHandleARB ( getTextureId() );
     }
+    glMakeTextureHandleResidentARB ( texture_handle );
+    if ( glGetError() == GL_NO_ERROR ) {
+      Field::FieldVector fields= shader_fields;
+      for ( Field::FieldVector::iterator i= fields.begin(); i != fields.end(); ++i ) {
+        (*i)->touch ();
+      }
+      resident_textures.push_back ( this );
+      is_resident= true;
+
+#ifdef DEBUG_BINDLESS
+      Console(4) << "Resident texture count: " << resident_textures.size() << endl;
 #endif
 
-    texture_handle= 0;
+      return true;
+    }
   }
+
+#endif
 
   return false;
 }
 
 void H3DSingleTextureNode::makeNonResident () {
-  if ( texture_handle ) {
 #ifdef GL_ARB_bindless_texture
+  if ( is_resident && texture_handle ) {
     if ( glIsTextureHandleResidentARB ( texture_handle ) ) {
       glMakeTextureHandleNonResidentARB ( texture_handle );
     }
-#endif
 
     // Ignore errors making the texture non-resident
-    // todo: Why are these errors detected here, e.g. when resizing fbtg?
-    glGetError ();
+    if ( glGetError () != GL_NO_ERROR ) {
+      Console(4) << "ERROR: Cannot make texture non-resident: " << getName() << endl;
+    }
 
-    texture_handle= 0;
+    is_resident= false;
+    TextureVector::iterator i= find ( resident_textures.begin(), resident_textures.end(), this );
+    if ( i != resident_textures.end() ) {
+      resident_textures.erase ( i );
+    }
+
+#ifdef DEBUG_BINDLESS
+        Console(4) << "Resident texture count: " << resident_textures.size() << endl;
+#endif
   }
+#endif
+}
+
+void H3DSingleTextureNode::invalidateTextureHandle () {
+  makeNonResident ();
+  texture_handle= 0;
 }
 
 void H3DSingleTextureNode::addShaderField ( Field& _field ) { 
@@ -94,5 +118,24 @@ void H3DSingleTextureNode::removeShaderField ( Field& _field ) {
   Field::FieldVector::iterator i= find ( shader_fields.begin(), shader_fields.end(), &_field );
   if ( i != shader_fields.end() ) {
     shader_fields.erase ( i );
+  }
+}
+
+void H3DSingleTextureNode::inUse () {
+  last_used= Scene::time->getValue();
+}
+
+void H3DSingleTextureNode::makeUnusedTexturesNonResident ( H3DTime _unusedTime ) {
+  TextureVector unused;
+  for ( TextureVector::iterator i= resident_textures.begin(); i != resident_textures.end(); ++i ) {
+    H3DSingleTextureNode* t= *i;
+    if ( TimeStamp() - t->last_used > _unusedTime ) {
+      unused.push_back ( t );
+    }
+  }
+
+  for ( TextureVector::iterator i= unused.begin(); i != unused.end(); ++i ) {
+    H3DSingleTextureNode* t= *i;
+    t->makeNonResident ();
   }
 }

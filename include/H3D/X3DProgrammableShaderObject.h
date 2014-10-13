@@ -74,6 +74,9 @@ namespace H3D {
     /// Remove a shader field uniform
     virtual bool removeField ( const string& _name );
 
+    /// Remove all dynamic fields that have been previously added.
+    virtual void clearFields();
+
     /// Destructor.
     virtual ~X3DProgrammableShaderObject();
 

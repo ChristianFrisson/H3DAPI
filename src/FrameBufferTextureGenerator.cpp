@@ -923,6 +923,8 @@ void FrameBufferTextureGenerator::createOutputTextures () {
   if( generateDepthTexture->getValue() ) {
     if( generate_2d ) {
       GeneratedTexture *tex = new GeneratedTexture;
+      // Set a name for the texture, useful for debugging
+      tex->setName ( getName() + "_depth" );
       // make sure the texture id is initialized.
       if( output_texture_type == "2D_RECTANGLE" ) {
         tex->ensureInitialized( GL_TEXTURE_RECTANGLE_ARB );
@@ -937,6 +939,8 @@ void FrameBufferTextureGenerator::createOutputTextures () {
     } else {
       if( output_texture_type == "2D_ARRAY" ) {
         GeneratedTexture3D *tex = new GeneratedTexture3D;
+        // Set a name for the texture, useful for debugging
+        tex->setName ( getName() + "_depth" );
         // make sure the texture id is initialized.
         tex->ensureInitialized( GL_TEXTURE_2D_ARRAY_EXT );
         depthTextureProperties->route( tex->textureProperties );
@@ -975,6 +979,10 @@ void FrameBufferTextureGenerator::createOutputTextures () {
 
     if( generate_2d ) {
       GeneratedTexture *tex = new GeneratedTexture;
+      // Set a name for the texture, useful for debugging
+      stringstream ss;
+      ss << getName() << "_color_" << i;
+      tex->setName ( ss.str().c_str() );
       // make sure the texture id is initialized.
       if( output_texture_type == "2D_RECTANGLE" ) {
         tex->ensureInitialized( GL_TEXTURE_RECTANGLE_ARB );
@@ -988,6 +996,10 @@ void FrameBufferTextureGenerator::createOutputTextures () {
       color_ids.push_back( tex->getTextureId() );
     } else {
       GeneratedTexture3D *tex = new GeneratedTexture3D;
+      // Set a name for the texture, useful for debugging
+      stringstream ss;
+      ss << getName() << "_color_" << i;
+      tex->setName ( ss.str().c_str() );
       // make sure the texture id is initialized.
       if( output_texture_type == "2D_ARRAY" ) {
         tex->ensureInitialized( GL_TEXTURE_2D_ARRAY_EXT );
@@ -1368,7 +1380,24 @@ bool FrameBufferTextureGenerator::parseColorBufferStorage(std::string color_buff
 bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height, H3DInt32 depth ) {
 
   if ( X3DProgrammableShaderObject::use_bindless_textures ) {
-    createOutputTextures ();
+    // Bindless textures are immutable once they are resident, so we need to make
+    // new texture ids in order to change size
+    for ( NodeVector::const_iterator i= colorTextures->begin(); i != colorTextures->end(); ++i ) {
+      if ( GeneratedTexture* t= dynamic_cast < GeneratedTexture* > ( *i ) ) {
+        t->invalidateTextureHandle ();
+        t->reinitialize();
+      } else if ( GeneratedTexture3D* t= dynamic_cast < GeneratedTexture3D* > ( *i ) ) {
+        t->invalidateTextureHandle ();
+        t->reinitialize();
+      }
+    }
+    if ( GeneratedTexture* t= dynamic_cast < GeneratedTexture* > ( depthTexture->getValue() ) ) {
+      t->invalidateTextureHandle ();
+      t->reinitialize();
+    } else if ( GeneratedTexture3D* t= dynamic_cast < GeneratedTexture3D* > ( depthTexture->getValue() ) ) {
+      t->invalidateTextureHandle ();
+      t->reinitialize();
+    }
   }
 
   string output_texture_type = outputTextureType->getValue();

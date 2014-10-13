@@ -76,4 +76,9 @@ bool GeneratedTexture3D::ensureInitialized( GLenum tex_target ) {
  return true;
 }
 
+void GeneratedTexture3D::reinitialize () {
+  glDeleteTextures ( 1, &texture_id );
+  texture_id_initialized= false;
+  ensureInitialized ( texture_target );
+}
 

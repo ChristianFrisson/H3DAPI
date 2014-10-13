@@ -100,7 +100,11 @@ bool GeneratedTexture::ensureInitialized( GLenum tex_target ) {
  return true;
 }
 
-
+void GeneratedTexture::reinitialize () {
+  glDeleteTextures ( 1, &texture_id );
+  texture_id_initialized= false;
+  ensureInitialized ( texture_target );
+}
 
 std::pair<H3DInt32,H3DInt32> H3D::GeneratedTexture::getDefaultSaveDimensions()
 {

@@ -103,13 +103,26 @@ bool X3DProgrammableShaderObject::removeField ( const string& _name ) {
   return H3DDynamicFieldsObject::removeField ( _name );
 }
 
+void X3DProgrammableShaderObject::clearFields() {
+  if ( X3DProgrammableShaderObject::use_bindless_textures ) {
+    for ( field_iterator i= firstField(); i != endField(); ++i ) {
+      Field* field= *i;
+      field->unroute ( update_textures );
+      update_textures->clearField ( *field );
+    }
+  }
+
+  H3DDynamicFieldsObject::clearFields();
+}
+
 void X3DProgrammableShaderObject::UpdateTextures::clearField ( Field& _field ) {
   FieldToNodes::iterator i= fields_to_textures.find ( &_field );
   if ( i != fields_to_textures.end() ) {
-    const NodeVector& n= (*i).second;
+    NodeVector& n= (*i).second;
     for ( NodeVector::const_iterator j= n.begin(); j != n.end(); ++j ) {
       static_cast < H3DSingleTextureNode* > ( *j )->removeShaderField ( _field );
     }
+    fields_to_textures.erase ( &_field );
   }
 }
 
@@ -137,10 +150,13 @@ void X3DProgrammableShaderObject::UpdateTextures::update () {
         fields_to_textures[f].push_back ( t );
       }
     }
-  }
-  default:
     break;
   }
+  default:
+    Console(4) << "ERROR: Unknown field type!" << endl;
+    break;
+  }
+
 }
 
 X3DProgrammableShaderObject::UpdateTextures::~UpdateTextures () {

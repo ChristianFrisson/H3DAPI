@@ -60,6 +60,7 @@
 #include <H3D/SAIFunctions.h>
 #include <H3D/Shape.h>
 #include <H3D/Inline.h>
+#include <H3D/H3DSingleTextureNode.h>
 
 #ifndef H3D_WINDOWS
 #include <unistd.h>
@@ -523,6 +524,24 @@ void Scene::idle() {
 
   Anchor::replaceSceneRoot( this );
 
+  if ( X3DProgrammableShaderObject::use_bindless_textures ) {
+    // Periodically check if there are any resident textures which
+    // have not been used recently, and make them non-resident
+    H3DTime unused_texture_time ( 5 );
+    if( default_settings ) {
+      GraphicsOptions* gfx_options;
+      default_settings->getOptionNode( gfx_options );
+      if ( gfx_options ) {
+        unused_texture_time= gfx_options->bindlessTexturesUnusedTime->getValue();
+      }
+    }
+
+    H3DTime cur_time= time->getValue();
+    if ( cur_time - last_unused_texture_check > unused_texture_time ) {
+      H3DSingleTextureNode::makeUnusedTexturesNonResident ( unused_texture_time );
+      last_unused_texture_check= cur_time;
+    }
+  }
 }
 
 
@@ -551,7 +570,8 @@ Scene::Scene( Inst< SFChildNode >  _sceneRoot,
   active( true ),
   last_traverseinfo( NULL ),
   SAI_browser( this ),
-  shadow_caster( new ShadowCaster ) {
+  shadow_caster( new ShadowCaster ),
+  last_unused_texture_check ( 0 ) {
 
 #ifdef HAVE_PROFILER
   H3DUtil::H3DTimer::setEnabled("H3D_scene",true);

@@ -125,6 +125,23 @@ bool RenderTargetTexture::makeResident () {
   return false;
 }
 
+void RenderTargetTexture::makeNonResident () {
+  FrameBufferTextureGenerator *gen = generator->getValue();
+  H3DInt32 target_index = index->getValue();
+  if( gen && target_index < (H3DInt32)gen->colorTextures->size() ) {
+    return gen->colorTextures->getValueByIndex( target_index )->makeNonResident ();
+  }
+}
+
+bool RenderTargetTexture::isResident() {
+  FrameBufferTextureGenerator *gen = generator->getValue();
+  H3DInt32 target_index = index->getValue();
+  if( gen && target_index < (H3DInt32)gen->colorTextures->size() ) {
+    return gen->colorTextures->getValueByIndex( target_index )->isResident();
+  }
+  return false;
+}
+
 GLuint64 RenderTargetTexture::getTextureHandle() {
   FrameBufferTextureGenerator *gen = generator->getValue();
   H3DInt32 target_index = index->getValue();
@@ -132,4 +149,20 @@ GLuint64 RenderTargetTexture::getTextureHandle() {
     return gen->colorTextures->getValueByIndex( target_index )->getTextureHandle();
   }
   return 0;
+}
+
+void RenderTargetTexture::invalidateTextureHandle () {
+  FrameBufferTextureGenerator *gen = generator->getValue();
+  H3DInt32 target_index = index->getValue();
+  if( gen && target_index < (H3DInt32)gen->colorTextures->size() ) {
+    gen->colorTextures->getValueByIndex( target_index )->invalidateTextureHandle();
+  }
+}
+
+void RenderTargetTexture::inUse () {
+  FrameBufferTextureGenerator *gen = generator->getValue();
+  H3DInt32 target_index = index->getValue();
+  if( gen && target_index < (H3DInt32)gen->colorTextures->size() ) {
+    gen->colorTextures->getValueByIndex( target_index )->inUse();
+  }
 }

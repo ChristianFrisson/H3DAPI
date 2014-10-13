@@ -1373,8 +1373,8 @@ void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
         n = static_cast<SFNode*>(*f)->getValue(); 
         if( H3DSingleTextureNode *t = 
           dynamic_cast< H3DSingleTextureNode *>( n ) ) {
-            GLuint64 h= t->getTextureHandle();
-          if ( h == 0 ) {
+          t->inUse();
+          if ( !t->isResident () ) {
             t->displayList->callList();
 
             if ( t->getTextureId() != 0 ) {
@@ -1394,8 +1394,8 @@ void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
           Node *n = mfnode->getValueByIndex( i ); 
           if( H3DSingleTextureNode *t = 
             dynamic_cast< H3DSingleTextureNode *>( n ) ) {
-            GLuint64 h= t->getTextureHandle();
-            if ( h == 0 ) {
+            t->inUse();
+            if ( !t->isResident () ) {
               t->displayList->callList();
 
               if ( t->getTextureId() != 0 ) {
