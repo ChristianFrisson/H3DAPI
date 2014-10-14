@@ -61,6 +61,7 @@
 #include <H3D/Shape.h>
 #include <H3D/Inline.h>
 #include <H3D/H3DSingleTextureNode.h>
+#include <H3D/X3DProgrammableShaderObject.h>
 
 #ifndef H3D_WINDOWS
 #include <unistd.h>

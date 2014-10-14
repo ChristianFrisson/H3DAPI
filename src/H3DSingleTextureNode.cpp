@@ -29,6 +29,7 @@
 #include <H3D/H3DSingleTextureNode.h> 
 #include <H3D/X3DShaderNode.h>
 #include <H3D/X3DProgrammableShaderObject.h>
+#include <H3D/Scene.h>
 
 //#define DEBUG_BINDLESS
 
