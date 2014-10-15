@@ -45,6 +45,13 @@ namespace {
     "    <FullscreenRectangle zValue='0.99' screenAligned='true' /> "
     "  </Shape>"
     "</FrameBufferTextureGenerator>";
+  const std::string save_to_url_floating_point_x3d=
+    "<FrameBufferTextureGenerator DEF='GENERATOR' outputTextureType='2D' generateColorTextures='RGBA32F' update='NONE'>"
+    "  <Shape>"
+    "    <Appearance DEF='APP' />"
+    "    <FullscreenRectangle zValue='0.99' screenAligned='true' /> "
+    "  </Shape>"
+    "</FrameBufferTextureGenerator>";
 }
 
 using namespace H3D;
@@ -398,10 +405,14 @@ std::pair<H3DInt32,H3DInt32> X3DTextureNode::getDefaultSaveDimensions () {
   return std::pair<H3DInt32,H3DInt32> ( 512, 512 );
 }
 
-Image* X3DTextureNode::renderToImage ( H3DInt32 _width, H3DInt32 _height ) {
+Image* X3DTextureNode::renderToImage ( H3DInt32 _width, H3DInt32 _height, bool output_float_texture ) {
   X3D::DEFNodes dn;
-  AutoRef<FrameBufferTextureGenerator> fbo ( 
-    static_cast<FrameBufferTextureGenerator*>(X3D::createX3DNodeFromString ( save_to_url_x3d, &dn ).get() ) );
+  AutoRef<FrameBufferTextureGenerator> fbo;
+  if( output_float_texture ) {
+    fbo.reset( static_cast<FrameBufferTextureGenerator*>(X3D::createX3DNodeFromString ( save_to_url_floating_point_x3d, &dn ).get() ) );
+  }else{
+    fbo.reset( static_cast<FrameBufferTextureGenerator*>(X3D::createX3DNodeFromString ( save_to_url_x3d, &dn ).get() ) );
+  }
 
   // Set texture save dimensions
   fbo->height->setValue ( _height );
@@ -420,17 +431,33 @@ Image* X3DTextureNode::renderToImage ( H3DInt32 _width, H3DInt32 _height ) {
     // frame buffer size, width was set earlier in the code.
     int buffer_width = fbo->width->getValue();
     int buffer_height = fbo->height->getValue();
-    int bpp = 32;
+
+    int bpp;
 
     // Create container for image data, then bind buffer and read from it.
-    Image* image= new PixelImage ( buffer_width, buffer_height, 1, bpp, Image::BGRA, Image::UNSIGNED );
+    Image* image;
+    if( output_float_texture ) {
+      bpp = sizeof(float)*8*4;
+      image= new PixelImage ( buffer_width, buffer_height, 1, bpp, Image::RGBA, Image::RATIONAL );
+    }else{
+      bpp = 32;
+      image= new PixelImage ( buffer_width, buffer_height, 1, bpp, Image::BGRA, Image::UNSIGNED );
+    }
+    
+    
 
     // Save current FBO
     GLint previous_fbo_id;
     glGetIntegerv( GL_DRAW_FRAMEBUFFER_BINDING, &previous_fbo_id );
 
     glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, fbo->getFBOId() );
-    glReadPixels( 0, 0, buffer_width, buffer_height, GL_BGRA, GL_UNSIGNED_BYTE, image->getImageData() );
+    if( output_float_texture ) {
+      glReadPixels( 0, 0, buffer_width, buffer_height, GL_RGBA, GL_FLOAT, image->getImageData() );
+    }else{
+      glReadPixels( 0, 0, buffer_width, buffer_height, GL_BGRA, GL_UNSIGNED_BYTE, image->getImageData() );
+    }
+    
+    
 
     // Restore previous FBO
     glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, previous_fbo_id );
@@ -449,14 +476,31 @@ void X3DTextureNode::UpdateSaveToURL::onNewValue( const std::string &v ) {
 #ifdef HAVE_FREEIMAGE
   // Set texture save dimensions
   std::pair<H3DInt32,H3DInt32> default_size= node->getDefaultSaveDimensions ();
-
-  AutoRef<Image> image ( node->renderToImage (
+  bool save_exr_float_texture = false;
+  if( v.find(".exr")!=string::npos ) {
+    save_exr_float_texture = true;
+  }
+  
+  AutoRef<Image> image;
+  ( node->renderToImage (
      node->saveWidth->getValue()  == -1 ? default_size.first  : node->saveWidth->getValue(),
      node->saveHeight->getValue() == -1 ? default_size.second : node->saveHeight->getValue()) );
-
-  if ( image.get() ) {
-    node->saveSuccess->setValue ( H3DUtil::saveFreeImagePNG ( v, *image ), node->id );
+  if( v.find(".exr")!=string::npos ) {
+    image.reset( node->renderToImage (
+      node->saveWidth->getValue()  == -1 ? default_size.first  : node->saveWidth->getValue(),
+      node->saveHeight->getValue() == -1 ? default_size.second : node->saveHeight->getValue(), true) );
+    if( image.get() ) {
+      node->saveSuccess->setValue(H3DUtil::saveOpenEXRImage(v, *image), node->id );
+    }
+  }else{
+    image.reset(node->renderToImage (
+      node->saveWidth->getValue()  == -1 ? default_size.first  : node->saveWidth->getValue(),
+      node->saveHeight->getValue() == -1 ? default_size.second : node->saveHeight->getValue()) );
+    if ( image.get() ) {
+      node->saveSuccess->setValue ( H3DUtil::saveFreeImagePNG ( v, *image ), node->id );
+    }
   }
+  
 #else // HAVE_FREEIMAGE
 
   Console(4) << "Warning: Could not save texture to file! Compiled without the required FreeImage library." << endl;

@@ -179,9 +179,10 @@ namespace H3D {
     ///
     /// \param _width The width of the Image to create
     /// \param _height The height of the Image to create
+    /// \param output_float_texture Flag to define if use floating point format for texture
     /// \return A new Image instance, or NULL on failure.
     ///
-    Image* renderToImage ( H3DInt32 _width, H3DInt32 _height );
+    Image* renderToImage ( H3DInt32 _width, H3DInt32 _height, bool output_float_texture = false  );
 
     /// This is the default value for the GlobalSettings::loadTexturesInThread
     /// field.
