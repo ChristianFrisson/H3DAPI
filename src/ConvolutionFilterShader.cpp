@@ -157,7 +157,7 @@ void ConvolutionFilterShader::traverseSG( TraverseInfo &ti ) {
     }else{
       widthInUse->setValue(widthInUse->getValue(),id);
     }
-    if( heightInUse->getValue()==-1 ) {
+    if( height->getValue()==-1 ) {
       heightInUse->setValue(h,id);
     }else{
       heightInUse->setValue(heightInUse->getValue(),id);
