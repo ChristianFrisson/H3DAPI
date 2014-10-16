@@ -166,7 +166,7 @@ void Node::cloneFieldValue ( Field& _from, Field& _to, bool deepCopy, DeepCopyMa
           unsigned char* data = new unsigned char[ data_size ];
           int result = mfield_from->getValueAsVoidPtr( data, nr_elements, data_size );
           if ( result != -1 ) {
-            mfield_to->setValueFromVoidPtr ( data, nr_elements, data_size );
+            mfield_to->setValueFromVoidPtr ( (const void*) data, nr_elements, data_size );
           }
           delete [] data;
         }
@@ -192,7 +192,7 @@ void Node::cloneFieldValue ( Field& _from, Field& _to, bool deepCopy, DeepCopyMa
           unsigned char* data = new unsigned char[ data_size ];
           data_size = sfield_from->getValueAsVoidPtr( data, data_size );
           if ( data_size != -1 ) {
-            sfield_to->setValueFromVoidPtr ( data, data_size );
+            sfield_to->setValueFromVoidPtr ( (const void *)data, data_size );
           }
           delete [] data;
         }

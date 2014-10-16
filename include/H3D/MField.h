@@ -46,14 +46,11 @@ namespace H3D {
     // Virtual destructor.
     virtual ~MFieldClass() {};
 
-    /// Set the value of the field given a pointer to where the value
-    /// of the field is. 
-    /// \param data A pointer to the data.
-    /// \param nr_elements The number of values in the mfield.
-    /// \param size The size in bytes of the each value stored in the data.
-    /// \returns 0 if successful, -1 otherwise.
+    /// \deprecated Use the version of this function which takes const void *
     virtual int setValueFromVoidPtr( void *data, unsigned int nr_elements, 
-                                     unsigned int size, int id = 0 ) = 0;
+                                     unsigned int size, int id = 0 ) {
+      return setValueFromVoidPtr( (const void*)data, nr_elements, size, id );
+    }
 
     /// Get the value of the data copied into a memory buffer.
     /// \param data Buffer to copy the data into.
@@ -70,6 +67,15 @@ namespace H3D {
 
     /// Returns the number of values that is stored in the mfield.
     virtual unsigned int size() = 0; 
+
+    /// Set the value of the field given a pointer to where the value
+    /// of the field is.
+    /// \param data A pointer to the data.
+    /// \param nr_elements The number of values in the mfield.
+    /// \param size The size in bytes of the each value stored in the data.
+    /// \returns 0 if successful, -1 otherwise.
+    virtual int setValueFromVoidPtr( const void *data, unsigned int nr_elements, 
+                                     unsigned int size, int id = 0 ) = 0;
   };
 
 
@@ -263,7 +269,7 @@ namespace H3D {
     /// \param id Id of the node calling this function. Used to check 
     /// access type.
     /// \returns 0 if successful, -1 otherwise.
-    inline virtual int setValueFromVoidPtr( void *data, 
+    inline virtual int setValueFromVoidPtr( const void *data, 
                                             unsigned int nr_elements, 
                                             unsigned int len, int id = 0 ) {
       this->checkAccessTypeSet( id );
@@ -273,7 +279,7 @@ namespace H3D {
       
       std::vector< Type > new_data( nr_elements );
       for( unsigned int i = 0; i < nr_elements; ++i ) {
-        new_data[i] = static_cast< value_type * >( data )[i];
+        new_data[i] = static_cast< const value_type * >( data )[i];
       }
       this->value.swap( new_data );
       this->startEvent();

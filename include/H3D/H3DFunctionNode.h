@@ -85,14 +85,10 @@ namespace H3D {
     }
     
     /// Input value to the function to evaluate.
-    /// 
-    ///  <b>Access type:</b> inputOnly \n
     auto_ptr< MFDouble > input;
 
     /// Output value from the function when evaluated for the input values
     /// given in the input field.
-    /// 
-    ///  <b>Access type:</b> inputOnly \n
     auto_ptr< Value > output;
 
     /// Field that indicated whether the function has changed. Since

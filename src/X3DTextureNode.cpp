@@ -476,11 +476,6 @@ void X3DTextureNode::UpdateSaveToURL::onNewValue( const std::string &v ) {
 #ifdef HAVE_FREEIMAGE
   // Set texture save dimensions
   std::pair<H3DInt32,H3DInt32> default_size= node->getDefaultSaveDimensions ();
-  bool save_exr_float_texture = false;
-  if( v.find(".exr")!=string::npos ) {
-    save_exr_float_texture = true;
-  }
-  
   AutoRef<Image> image;
   ( node->renderToImage (
      node->saveWidth->getValue()  == -1 ? default_size.first  : node->saveWidth->getValue(),
@@ -489,9 +484,13 @@ void X3DTextureNode::UpdateSaveToURL::onNewValue( const std::string &v ) {
     image.reset( node->renderToImage (
       node->saveWidth->getValue()  == -1 ? default_size.first  : node->saveWidth->getValue(),
       node->saveHeight->getValue() == -1 ? default_size.second : node->saveHeight->getValue(), true) );
+#ifdef HAVE_OPENEXR
     if( image.get() ) {
       node->saveSuccess->setValue(H3DUtil::saveOpenEXRImage(v, *image), node->id );
     }
+#else
+    Console(4) << "Warning: Could not save texture to file! Compiled without the required OpenEXR library." << endl;
+#endif
   }else{
     image.reset(node->renderToImage (
       node->saveWidth->getValue()  == -1 ? default_size.first  : node->saveWidth->getValue(),

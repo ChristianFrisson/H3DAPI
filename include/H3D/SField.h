@@ -43,15 +43,11 @@ namespace H3D {
     // Virtual destructor.
     virtual ~SFieldClass() {};
 
-    /// Set the value of the field given a pointer to where the value
-    /// of the field is. 
-    /// \param data A pointer to the data.
-    /// \param size The size in bytes of the value stored in data.
-    /// \param id Id of the node calling this function. Used to check 
-    /// access type.
-    /// \returns 0 if successful, -1 otherwise.
+    /// \deprecated Use the version of this function which takes const void *
     virtual int setValueFromVoidPtr( void *data, unsigned int size, 
-                                     int id = 0 ) = 0;
+                                     int id = 0 ) {
+      return setValueFromVoidPtr( (const void*)data, size, id );
+    }
 
     /// Get the value of the data copied into a memory buffer.
     /// \param data Buffer to copy the data into.
@@ -66,6 +62,16 @@ namespace H3D {
 
     /// Returns the size in bytes of the value type the sfield encapsulates.
     virtual unsigned int valueTypeSize() = 0;
+
+    /// Set the value of the field given a pointer to where the value
+    /// of the field is.
+    /// \param data A pointer to the data.
+    /// \param size The size in bytes of the value stored in data.
+    /// \param id Id of the node calling this function. Used to check 
+    /// access type.
+    /// \returns 0 if successful, -1 otherwise.
+    virtual int setValueFromVoidPtr( const void *data, unsigned int size, 
+                                     int id = 0 ) = 0;
   };
 
 
@@ -98,11 +104,11 @@ namespace H3D {
     /// \param id Id of the node calling this function. Used to check 
     /// access type.
     /// \returns 0 if successful, -1 otherwise.
-    inline virtual int setValueFromVoidPtr( void *data, unsigned int len, 
+    inline virtual int setValueFromVoidPtr( const void *data, unsigned int len, 
                                             int id = 0 ) {
       if( len != sizeof( value_type ) )
         return -1;
-      setValue( *( static_cast< Type * >( data ) ), id );
+      setValue( *( static_cast< const Type * >( data ) ), id );
       return 0;
     }
 
