@@ -94,75 +94,105 @@ void ImageObjectInfo::UpdateFields::update() {
   
   ImageObjectInfo * info = static_cast< ImageObjectInfo * >( getOwner() );
   
-  H3DImageObject *image_object = 
-    static_cast< SFImageObjectNode *>( routes_in[0] )->getValue();
+  H3DImageObject *image_object = dynamic_cast< H3DImageObject * >(
+    static_cast< SFImageObjectNode *>( routes_in[0] )->getValue() );
 
   Image *image = NULL;
   if( image_object ) image = image_object->image->getValue();
+  info->updateFieldsFromImage( image );
+}
 
+void ImageObjectInfo::SFImageObjectNode::onAdd( Node * n ) {
+  SFImageObjectNodeBase::onAdd(n);
+  ImageObjectInfo * info = static_cast< ImageObjectInfo * >( getOwner() );
+  H3DImageObject *image_object = dynamic_cast< H3DImageObject * >(n);
+
+  Image *image = NULL;
+  if( image_object ) image = image_object->image->getValue();
+  info->updateFieldsFromImage( image );
+}
+
+void ImageObjectInfo::updateFieldsFromImage( Image * image ) {
   if( image ) {
     const Vec3f &pixel_size = image->pixelSize();
-    if( info->pixelSize->getValue() != pixel_size ) {
-      info->pixelSize->setValue( pixel_size, info->id );
+    if( pixelSize->getValue() != pixel_size ) {
+      pixelSize->setValue( pixel_size, id );
     }
 
-    if( info->width->getValue() != image->width() ) {
-      info->width->setValue( image->width(), info->id );
+    if( width->getValue() != image->width() ) {
+      width->setValue( image->width(), id );
     }
 
-    if( info->height->getValue() != image->height() ) {
-      info->height->setValue( image->height(), info->id );
+    if( height->getValue() != image->height() ) {
+      height->setValue( image->height(), id );
     }
 
-    if( info->depth->getValue() != image->depth() ) {
-      info->depth->setValue( image->depth(), info->id );
+    if( depth->getValue() != image->depth() ) {
+      depth->setValue( image->depth(), id );
     }
 
-    if( info->bitsPerPixel->getValue() != image->bitsPerPixel() ) {
-      info->bitsPerPixel->setValue( image->bitsPerPixel(), info->id );
+    if( bitsPerPixel->getValue() != image->bitsPerPixel() ) {
+      bitsPerPixel->setValue( image->bitsPerPixel(), id );
     }
 
     Image::PixelType pixel_type = image->pixelType();
+    string new_pixel_type_value;
     if( pixel_type == Image::LUMINANCE ) {
-      info->pixelType->setValue( "LUMINANCE", info->id );
+      new_pixel_type_value = "LUMINANCE";
     } else  if( pixel_type == Image::LUMINANCE_ALPHA ) {
-      info->pixelType->setValue( "LUMINANCE_ALPHA", info->id );
+      new_pixel_type_value = "LUMINANCE_ALPHA";
     } else  if( pixel_type == Image::RGB ) {
-      info->pixelType->setValue( "RGB", info->id );
+      new_pixel_type_value = "RGB";
     } else  if( pixel_type == Image::RGBA ) {
-      info->pixelType->setValue( "RGBA", info->id );
+      new_pixel_type_value = "RGBA";
     } else  if( pixel_type == Image::BGR ) {
-      info->pixelType->setValue( "BGR", info->id );
+      new_pixel_type_value = "BGR";
     } else  if( pixel_type == Image::BGRA ) {
-      info->pixelType->setValue( "BGRA", info->id );
+      new_pixel_type_value = "BGRA";
     } else if( pixel_type == Image::VEC3 ) {
-      info->pixelType->setValue( "VEC3", info->id );
+      new_pixel_type_value = "VEC3";
     } else {
-      info->pixelType->setValue( "UNKNOWN", info->id );
+      new_pixel_type_value = "UNKNOWN";
     }
+
+    if( pixelType->getValue() != new_pixel_type_value )
+      pixelType->setValue( new_pixel_type_value, id );
 
     Image::PixelComponentType component_type = image->pixelComponentType();
+    string new_component_type;
     if( component_type == Image::SIGNED ) {
-      info->pixelComponentType->setValue( "SIGNED", info->id );
+      new_component_type = "SIGNED";
     } else if( component_type == Image::UNSIGNED ) {
-      info->pixelComponentType->setValue( "UNSIGNED" , info->id);
+      new_component_type = "UNSIGNED";
     } else if( component_type == Image::RATIONAL ) {
-      info->pixelComponentType->setValue( "RATIONAL", info->id );
+      new_component_type = "RATIONAL";
     } else {
-      info->pixelComponentType->setValue( "UNKNOWN", info->id );
+      new_component_type = "UNKNOWN";
     }
 
-    info->totalSize->setValue( Vec3f( image->width() * pixel_size.x, 
+    if( pixelComponentType->getValue() != new_component_type )
+      pixelComponentType->setValue( new_component_type, id );
+
+    totalSize->setValue( Vec3f( image->width() * pixel_size.x, 
                                       image->height() * pixel_size.y, 
-                                      image->depth() * pixel_size.z ), info->id ); 
+                                      image->depth() * pixel_size.z ), id ); 
   } else {
-    info->pixelSize->setValue( Vec3f(), info->id );
-    info->width->setValue( 0, info->id );
-    info->height->setValue( 0, info->id );
-    info->depth->setValue( 0, info->id );
-    info->bitsPerPixel->setValue( 0, info->id );
-    info->pixelType->setValue( "UNKNOWN", info->id );
-    info->pixelComponentType->setValue( "UNKNOWN", info->id );
-    info->totalSize->setValue( Vec3f(), info->id ); 
+    if( pixelSize->getValue() != Vec3f() )
+      pixelSize->setValue( Vec3f(), id );
+    if( width->getValue() != 0 )
+      width->setValue( 0, id );
+    if( height->getValue() != 0 )
+      height->setValue( 0, id );
+    if( depth->getValue() != 0 )
+      depth->setValue( 0, id );
+    if( bitsPerPixel->getValue() != 0 )
+      bitsPerPixel->setValue( 0, id );
+    string default_string = "UNKNOWN";
+    if( pixelType->getValue() != default_string )
+      pixelType->setValue( "UNKNOWN", id );
+    if( pixelComponentType->getValue() != default_string )
+      pixelComponentType->setValue( "UNKNOWN", id );
+    if( totalSize->getValue() != Vec3f() )
+      totalSize->setValue( Vec3f(), id ); 
   }
 }

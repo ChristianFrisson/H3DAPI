@@ -47,19 +47,29 @@ namespace H3D {
   ///     ( <a href="examples/ImageObjectInfo.x3d.html">Source</a> )
   class H3DAPI_API ImageObjectInfo : public X3DChildNode {
   public:
-    
+
     /// An MFNode where we make sure the type of the nodes contained
     /// is a subclass of X3DTextureNode.
-    typedef DependentSFNode< X3DTexture3DNode, 
+    class H3DAPI_API SFImageObjectNode : public DependentSFNodeObject< H3DImageObject, 
                              FieldRef< H3DImageObject,
                                        H3DImageObject::SFImage,
                                        &H3DImageObject::image >,
-                             true >
-    SFImageObjectNode;
+                                   true > {
+    typedef DependentSFNodeObject< H3DImageObject, 
+                             FieldRef< H3DImageObject,
+                                       H3DImageObject::SFImage,
+                                       &H3DImageObject::image >,
+                                   true > SFImageObjectNodeBase;
+    protected:
+      /// Sets up a route between the added node's image field and the
+      /// owners image field.
+      virtual void onAdd( Node *n );
+    };
 
     /// Field for updating the output fields when the image object
     /// changes value.
     class H3DAPI_API UpdateFields: public PeriodicUpdate< SFImageObjectNode > {
+    protected:
       virtual void update();
     };
 
@@ -137,6 +147,8 @@ namespace H3D {
   protected:
     /// The field used to update the other fields.
     auto_ptr< UpdateFields > update_fields;
+
+    void updateFieldsFromImage( Image * image );
 
   };
 }

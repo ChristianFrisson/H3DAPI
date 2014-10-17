@@ -388,6 +388,26 @@ namespace H3D {
     //            FieldRefs >( size ){}
         
   };
+
+
+  /// DependentSFNodeObject is similar to DependentSFNode but uses
+  /// TypedSFNodeObject instead of TypedSFNode.
+  template< class NodeType, class FieldRefs = void, bool DynamicCast = false > 
+  class DependentSFNodeObject:
+    public FieldInternals::DependentNodeField<
+    TypedSFNodeObject< NodeType >,
+    FieldRefs, DynamicCast > {
+  public:
+        
+    /// Constructor. Default value of value is NULL.
+    DependentSFNodeObject(){}
+
+    /// Destructor.
+    ~DependentSFNodeObject(){
+      this->value = NULL;
+    }
+
+  };
 }
 
 #endif
