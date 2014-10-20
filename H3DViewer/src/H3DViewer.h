@@ -21,10 +21,10 @@
 #include <wx/splitter.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
+#include <wx/checkbox.h>
 #include <wx/button.h>
 #include <wx/frame.h>
 #include <wx/listbox.h>
-#include <wx/checkbox.h>
 #include <wx/richtext/richtextctrl.h>
 #include <wx/dialog.h>
 #include <wx/bitmap.h>
@@ -48,6 +48,7 @@ class TreeViewDialog : public wxFrame
 		wxPanel* FieldValueViewPanel;
 		wxStaticText* m_staticText2;
 		wxTextCtrl* search_text_ctrl;
+		wxCheckBox* case_sensitive_checkbox;
 		wxButton* btnClose;
 		
 		// Virtual event handlers, overide them in your derived class

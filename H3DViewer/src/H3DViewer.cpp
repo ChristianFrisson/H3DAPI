@@ -52,6 +52,9 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	
 	bSizer8->Add( search_text_ctrl, 1, wxALL, 5 );
 	
+	case_sensitive_checkbox = new wxCheckBox( this, wxID_ANY, wxT("Case sensitive"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer8->Add( case_sensitive_checkbox, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
 	btnClose = new wxButton( this, wxID_CANCEL, wxT("Close"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer8->Add( btnClose, 0, wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL, 5 );
 	

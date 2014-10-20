@@ -84,9 +84,17 @@ void H3DViewerTreeViewDialog::OnNodeSelected( wxTreeEvent& event ) {
   }
 }
 
-bool H3DViewerTreeViewDialog::onSearchTextCtrlHelp( const wxTreeItemId &item, const wxString &to_find, wxTreeItemId &found_item, const wxTreeItemId &check_parent ) {
+bool findStringCase( const wxString &s1, const wxString &s2 ) {
+  return s1.find( s2 ) != string::npos;
+}
+
+bool findStringNoCase( const wxString &s1, const wxString &s2 ) {
+  return findStringCase( s1.Lower(), s2 );
+}
+
+bool H3DViewerTreeViewDialog::onSearchTextCtrlHelp( const wxTreeItemId &item, const wxString &to_find, wxTreeItemId &found_item, bool (*compare_func)( const wxString &s1, const wxString &s2 ), const wxTreeItemId &check_parent ) {
   if( !check_parent.IsOk() || item != check_parent ) {
-    if( TreeViewTree->GetItemText( item ).find( to_find ) != string::npos ) {
+    if( compare_func( TreeViewTree->GetItemText( item ), to_find ) ) {
       found_item = item;
       return true;
     }
@@ -94,21 +102,21 @@ bool H3DViewerTreeViewDialog::onSearchTextCtrlHelp( const wxTreeItemId &item, co
     wxTreeItemIdValue cookie;
     wxTreeItemId first_child = TreeViewTree->GetFirstChild( item, cookie );
     if( first_child.IsOk() ) {
-      if( onSearchTextCtrlHelp( first_child, to_find, found_item ) )
+      if( onSearchTextCtrlHelp( first_child, to_find, found_item, compare_func ) )
         return true;
     }
   }
 
   wxTreeItemId id = TreeViewTree->GetNextSibling( item );
   while( id.IsOk() ) {
-    if( TreeViewTree->GetItemText( id ).find( to_find ) != string::npos ) {
+    if( compare_func( TreeViewTree->GetItemText( id ), to_find ) ) {
       found_item = id;
       return true;
     }
     wxTreeItemIdValue cookie;
     wxTreeItemId first_child = TreeViewTree->GetFirstChild( id, cookie );
     if( first_child.IsOk() ) {
-      if( onSearchTextCtrlHelp( first_child, to_find, found_item ) )
+      if( onSearchTextCtrlHelp( first_child, to_find, found_item, compare_func ) )
         return true;
     }
     id = TreeViewTree->GetNextSibling( id );
@@ -116,7 +124,7 @@ bool H3DViewerTreeViewDialog::onSearchTextCtrlHelp( const wxTreeItemId &item, co
 
   if( check_parent ) {
     id = TreeViewTree->GetItemParent( item );
-    if( id.IsOk() && onSearchTextCtrlHelp( id, to_find, found_item, id ) )
+    if( id.IsOk() && onSearchTextCtrlHelp( id, to_find, found_item, compare_func, id ) )
       return true;
   }
 
@@ -131,7 +139,12 @@ void H3DViewerTreeViewDialog::onSearchTextCtrl( wxCommandEvent& event ) {
   wxTreeItemId id_to_search_from;
   wxTreeItemId selected_id = TreeViewTree->GetSelection();
   wxTreeItemId check_parent;
-  if( selected_id.IsOk() && TreeViewTree->GetItemText( selected_id ).find( string_to_find ) != string::npos ) {
+  bool (*compare_func)( const wxString &s1, const wxString &s2 ) = findStringCase;
+  if( !case_sensitive_checkbox->IsChecked() ) {
+    compare_func = findStringNoCase;
+    string_to_find = string_to_find.Lower();
+  }
+  if( selected_id.IsOk() && compare_func( TreeViewTree->GetItemText( selected_id ), string_to_find ) ) {
     wxTreeItemIdValue cookie;
     id_to_search_from = TreeViewTree->GetFirstChild( selected_id, cookie );
     if( !id_to_search_from.IsOk() ) id_to_search_from = selected_id;
@@ -139,11 +152,11 @@ void H3DViewerTreeViewDialog::onSearchTextCtrl( wxCommandEvent& event ) {
   } else id_to_search_from = TreeViewTree->GetRootItem();
     
   if( id_to_search_from.IsOk() )
-    if( onSearchTextCtrlHelp( id_to_search_from, event.GetString(), found_id, check_parent ) ) {
+    if( onSearchTextCtrlHelp( id_to_search_from, string_to_find, found_id, compare_func, check_parent ) ) {
       if( !TreeViewTree->IsSelected( found_id ) ) {
         TreeViewTree->SelectItem( found_id );
       }
-    } else if( check_parent && onSearchTextCtrlHelp( TreeViewTree->GetRootItem(), event.GetString(), found_id ) ) {
+    } else if( check_parent && onSearchTextCtrlHelp( TreeViewTree->GetRootItem(), string_to_find, found_id, compare_func ) ) {
       if( !TreeViewTree->IsSelected( found_id ) ) {
         TreeViewTree->SelectItem( found_id );
       }

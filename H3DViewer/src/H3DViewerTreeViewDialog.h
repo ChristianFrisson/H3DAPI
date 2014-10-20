@@ -170,6 +170,6 @@ public:
 
 
   // Help function to onSearchTextCtrl, recursive function to find the string in any wx label for any tree item.
-  bool onSearchTextCtrlHelp( const wxTreeItemId &item, const wxString &to_find, wxTreeItemId &found_item, const wxTreeItemId &check_parent = wxTreeItemId() );
+  bool onSearchTextCtrlHelp( const wxTreeItemId &item, const wxString &to_find, wxTreeItemId &found_item, bool (*compare_func)( const wxString &s1, const wxString &s2 ), const wxTreeItemId &check_parent = wxTreeItemId() );
 };
 #endif // __H3DViewerTreeViewDialog__
