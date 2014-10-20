@@ -80,9 +80,8 @@ void MFNodeSplitter::initialize(){
 void MFNodeSplitter::UpdateSelection::update(){
   MFNodeSplitter* mfs = static_cast<MFNodeSplitter*>(this->getOwner());
   vector<int> indexes = mfs->indexes->getValue();
-  // create new SFNodes or update the value it contains if sfnodes already created
+  // update the sfnode value
   for( int i = 0; i<mfs->indexes->size(); ++i ) {
-    // create new SFNode and add it as dynamic field
     stringstream ss;
     ss<<"sfnode_"<<i;
     SFNode* sf = static_cast<SFNode*>( mfs->getField(ss.str()) );
@@ -93,10 +92,6 @@ void MFNodeSplitter::UpdateSelection::update(){
     }else{
       sf->setValue(NULL);
     }
-    
   }
-
-  
- 
 }
 
