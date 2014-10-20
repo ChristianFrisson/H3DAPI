@@ -21,26 +21,41 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file MFNodeSelector.h
+/// \file MFNodeSplitter.h
 /// \brief Base class for all scripting node interfaces
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef __MFNODESELECTOR_H__
-#define __MFNODESELECTOR_H__
+#ifndef __MFNODESPLITTER_H__
+#define __MFNODESPLITTER_H__
 
 #include <H3D/X3DChildNode.h>
+#include <H3D/H3DDynamicFieldsObject.h>
 #include <H3D/MFNode.h>
-#include <H3D/SFNode.h>
 #include <H3D/SFBool.h>
-#include <H3D/SFInt32.h>
+#include <H3D/MFInt32.h>
+
 
 namespace H3D {
 
   /// \ingroup X3DNodes
-  /// \brief MFNodeSelector node is used to split MFNode into certain SFNodes
+  /// \brief MFNodeSplitter node is used to split MFNode into certain SFNodes
   /// yet.
-  class MFNodeSelector : public X3DChildNode {
+  /// 
+  /// This is normally used to make the routing from MFNode to SFNode easier.
+  /// 
+  /// Indexes is a initialized only filed which takes multiple integers and be used
+  /// to decide which indexes of the MFNode will be extracted. If the indexes specified
+  /// value is bigger or equal than the size of MFNode, the no actual content will be
+  /// extracted and output.
+  /// If specified indexes is less than the size of MFNode , then the corresponding node
+  /// will be taken and be set into a SFNode with the name "sfnode_"+index.  
+  ///<b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/MFNodeSplitter.x3d">MFNodeSplitter.x3d</a>
+  ///     ( <a href="examples/MFNodeSplitter.x3d.html">Source</a> )
+  /// \par Internal routes:
+  /// \dotfile MFNodeSplitter.dot
+  class MFNodeSplitter : public X3DChildNode, public H3DDynamicFieldsObject {
   public:
     class UpdateSelection : public Field  
     {
@@ -51,22 +66,19 @@ namespace H3D {
     };
     
     // Constructor
-    MFNodeSelector( Inst< SFNode   > _metadata = 0,
+    MFNodeSplitter( Inst< SFNode   > _metadata = 0,
             Inst< MFNode  > _mfnode = 0,
-            Inst< SFNode  > _sfnode = 0,
-            Inst< SFInt32 > _index = 0);
+            Inst< MFInt32 > _indexes = 0);
     
- 
+    virtual void initialize();
     virtual void traverseSG( TraverseInfo &ti );
 
                       
     /// The source MFNode to be used as source of the selection
     auto_ptr<MFNode> mfnode;
 
-    /// The result SFNode selected from the index position of MFNode
-    auto_ptr<SFNode> sfnode;
-
-    auto_ptr<SFInt32> index;
+    /// The indexes that the node select from the source MFNode
+    auto_ptr<MFInt32> indexes;
 
     /// The X3DNodeDatabase for this node.
     static H3DNodeDatabase database;

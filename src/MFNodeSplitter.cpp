@@ -21,60 +21,81 @@
 //    www.sensegraphics.com for more information.
 //
 //
-/// \file MFNodeSelector.cpp
-/// \brief cpp file for MFNodeSelector
+/// \file MFNodeSplitter.cpp
+/// \brief cpp file for MFNodeSplitter
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
-#include <H3D/MFNodeSelector.h>
+#include <H3D/MFNodeSplitter.h>
 
 
 using namespace H3D;
 
-H3DNodeDatabase MFNodeSelector::database( 
-        "MFNodeSelector", 
-        &(newInstance< MFNodeSelector >),
-        typeid( MFNodeSelector ),
+H3DNodeDatabase MFNodeSplitter::database( 
+        "MFNodeSplitter", 
+        &(newInstance< MFNodeSplitter >),
+        typeid( MFNodeSplitter ),
         &X3DChildNode::database 
         );
 
 namespace ScriptInternals {
-  FIELDDB_ELEMENT( MFNodeSelector, mfnode, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( MFNodeSelector, sfnode, INPUT_OUTPUT );
-  FIELDDB_ELEMENT( MFNodeSelector, index, INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( MFNodeSplitter, mfnode, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( MFNodeSplitter, indexes, INITIALIZE_ONLY );
   
 }
 
-MFNodeSelector::MFNodeSelector( Inst< SFNode   > _metadata,
+MFNodeSplitter::MFNodeSplitter( Inst< SFNode   > _metadata,
                 Inst< MFNode > _mfnode,
-                Inst< SFNode > _sfnode,
-                Inst< SFInt32 > _index) : 
+                Inst< MFInt32 > _indexes) : 
 X3DChildNode( _metadata ),
+H3DDynamicFieldsObject( &database ),
 mfnode(_mfnode),
-sfnode(_sfnode),
-index(_index),
+indexes(_indexes),
 updateSelection(new UpdateSelection){
-  type_name = "MFNodeSelector";
+  type_name = "MFNodeSplitter";
   database.initFields( this );
   updateSelection->setName("updateSelection");
   updateSelection->setOwner(this);
   mfnode->route(updateSelection);
 }
 
-void MFNodeSelector::traverseSG( TraverseInfo &ti ) {
+void MFNodeSplitter::traverseSG( TraverseInfo &ti ) {
   updateSelection->upToDate();
   X3DChildNode::traverseSG(ti);
 }
 
-
-void MFNodeSelector::UpdateSelection::update(){
-  MFNodeSelector* mfs = static_cast<MFNodeSelector*>(this->getOwner());
-  unsigned int index = mfs->index->getValue(mfs->id);
-  if( mfs->mfnode->getValue().size()>index ) {
-    mfs->sfnode->setValue(mfs->mfnode->getValueByIndex(index));
-  }else{
-    mfs->sfnode->setValue(NULL,mfs->id);
+void MFNodeSplitter::initialize(){
+  X3DChildNode::initialize();
+  for( int i = 0 ; i<indexes->size();++i ) {
+    SFNode* sf = new SFNode;
+    stringstream ss;
+    ss<<"sfnode_"<<i;
+    addField(ss.str(), Field::INPUT_OUTPUT, sf);
+    ss.str("");
+    ss.clear();
   }
+  
+}
+
+void MFNodeSplitter::UpdateSelection::update(){
+  MFNodeSplitter* mfs = static_cast<MFNodeSplitter*>(this->getOwner());
+  vector<int> indexes = mfs->indexes->getValue();
+  // create new SFNodes or update the value it contains if sfnodes already created
+  for( int i = 0; i<mfs->indexes->size(); ++i ) {
+    // create new SFNode and add it as dynamic field
+    stringstream ss;
+    ss<<"sfnode_"<<i;
+    SFNode* sf = static_cast<SFNode*>( mfs->getField(ss.str()) );
+    ss.str("");
+    ss.clear();
+    if( mfs->mfnode->getValue().size()>indexes[i] ) {
+      sf->setValue(mfs->mfnode->getValueByIndex(indexes[i]));
+    }else{
+      sf->setValue(NULL);
+    }
+    
+  }
+
   
  
 }

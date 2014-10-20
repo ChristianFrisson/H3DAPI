@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='2.3'>
+  <head>
+    <meta name='title' content='MFNodeSplitter.x3d'/>
+    <meta name='description' content='H3DAPI MFNodeSplitter example. It shows how to split MFNode into certain SFNode. '/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
+  </head>
+
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+
+    <Group>
+      <FrameBufferTextureGenerator DEF="GEN" outputTextureType="2D" splitScene="true" generateDepthTexture="false" generateColorTextures=' "RGBA" "RGBA" ' useNavigation="true" useSpecifiedClearColor="true" clearColor="0 0 0 0">
+        <Shape>
+          <Appearance>
+            <RenderProperties DEF="RP_disable_depth" depthTestEnabled="false" />
+            <GaussianFilterShader kernelSize="7" sigma="100" type="VERTICAL" DEF="GFS_VERT">
+              <ImageTexture url='../textures/Day.jpg' />
+            </GaussianFilterShader>
+          </Appearance>
+          <FullscreenRectangle zValue="0.5"/>
+        </Shape>
+        <Shape>
+          <Appearance>
+            <RenderProperties USE="RP_disable_depth" />
+            <GaussianFilterShader kernelSize="7" sigma="100" type="HORIZONTAL" DEF="GFS_HORI"/>
+          </Appearance>
+          <FullscreenRectangle zValue="0.5"/>
+        </Shape>
+      </FrameBufferTextureGenerator>
+      <MFNodeSplitter DEF="MS_GEN" indexes="0 1"></MFNodeSplitter>
+      <ROUTE fromNode="GEN" fromField="colorTextures" toNode="MS_GEN" toField="mfnode"/>
+      <ROUTE fromNode="MS_GEN" fromField="sfnode_0" toNode="GFS_HORI" toField="texture"/>
+
+      <!-- Shape for rendering result -->
+      <Shape>
+        <Appearance DEF="APP" >
+          <Material/>
+        </Appearance>
+        <FullscreenRectangle zValue="0.5"/>
+      </Shape>
+    </Group>
+
+    <ROUTE fromNode="MS_GEN" fromField="sfnode_1" toNode="APP" toField="texture" />
+  </Scene>
+</X3D>
