@@ -1885,7 +1885,7 @@ class Matrix4d:
   def getScalePart():
     pass
 
-  ## Get the rotation part of the matrix is a
+  ## Get the rotation part of the matrix assuming the matrix is a
   ## transformation matrix.
   ## \return A Matrix3d rotation matrix. 
   def getRotationPart():
