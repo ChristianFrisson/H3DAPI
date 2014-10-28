@@ -165,11 +165,14 @@ Image* Image3DTexture::SFImage::loadImage( Image3DTexture *texture,
 Scene::CallbackCode Image3DTexture::SFImage::loadImageCB( void *data ) {
   CBData *input = static_cast< CBData * >( data );
   input->texture->image->setValue( input->image );
+  input->texture = NULL;
+  input->image = NULL;
   return Scene::CALLBACK_DONE;
 }
 
 void *Image3DTexture::SFImage::loadImageThreadFunc( void * data ) {
   ThreadFuncData *input = static_cast< ThreadFuncData * >( data );
+  input->load_thread_mutex.lock();
   SFImage *sfimage = static_cast< SFImage * >( input->texture->image.get() );
   Image *image = sfimage->loadImage( input->texture,
                                      input->urls,
@@ -178,6 +181,7 @@ void *Image3DTexture::SFImage::loadImageThreadFunc( void * data ) {
   sfimage->cb_data.texture = input->texture;
   sfimage->cb_data.image = image;
   Scene::addCallback( loadImageCB, &sfimage->cb_data );
+  input->load_thread_mutex.unlock();
   return NULL;
 }
 
@@ -252,4 +256,14 @@ void Image3DTexture::render() {
   }
 }
 
-
+Image3DTexture::SFImage::~SFImage() {
+  thread_data.load_thread_mutex.lock();
+  if( cb_data.texture ) {
+    Scene::removeCallback( &cb_data );
+    if( cb_data.image )
+      delete cb_data.image;
+    cb_data.texture = NULL;
+    cb_data.image = NULL;
+  }
+  thread_data.load_thread_mutex.unlock();
+}

@@ -55,7 +55,7 @@ namespace H3D {
   /// \par Internal routes:
   /// \dotfile ImageTexture.dot
 
-  class H3DAPI_API ImageTexture : 
+  class H3DAPI_API ImageTexture :
     public X3DTexture2DNode,
     public X3DUrlObject {
   public:
@@ -108,10 +108,12 @@ namespace H3D {
         ImageTexture *texture;
         vector< string > urls;
         NodeVector image_loaders;
+        MutexLock load_thread_mutex;
       };
       
       /// struct for storing input needed for the callback function.
       struct CBData {
+        CBData():texture(NULL), image(NULL){}
         ImageTexture *texture;
         Image *image;
       };
@@ -129,6 +131,8 @@ namespace H3D {
       /// Function to use in the thread for downloading and creating an
       /// Image object.
       static void *loadImageThreadFunc( void * );
+    public:
+      virtual ~SFImage();
     };
       
     /// Constructor.

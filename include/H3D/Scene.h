@@ -530,6 +530,17 @@ namespace H3D {
 
     /// Time that we last checked for unused resident textures
     H3DTime last_unused_texture_check;
+  public:
+    /// Remove a callback function by finding a callback with the same data adress.
+    static void removeCallback(void *data ) {
+      callback_lock.lock();
+      for( CallbackList::iterator i = callbacks.begin(); i != callbacks.end(); ++i )
+        if( (*i).second == data ) {
+          callbacks.erase( i );
+          break;
+        }
+      callback_lock.unlock();
+    }
   };
 }
 
