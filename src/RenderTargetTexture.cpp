@@ -166,3 +166,25 @@ void RenderTargetTexture::inUse () {
     gen->colorTextures->getValueByIndex( target_index )->inUse();
   }
 }
+
+std::pair<H3DInt32,H3DInt32> H3D::RenderTargetTexture::getDefaultSaveDimensions()
+{
+  FrameBufferTextureGenerator *gen = generator->getValue();
+  H3DInt32 target_index = index->getValue();
+  if( gen && target_index < (H3DInt32)gen->colorTextures->size() ){
+    GeneratedTexture * t = static_cast< GeneratedTexture* >( 
+      gen->colorTextures->getValueByIndex( target_index ) );
+    if( t->textureIdIsInitialized() ) {
+      GLuint tex_id = t->getTextureId();
+      glPushAttrib( GL_TEXTURE_BIT );
+      glBindTexture( getTextureTarget(), tex_id );
+      GLint h, w;
+      glGetTexLevelParameteriv( getTextureTarget(), 0, GL_TEXTURE_WIDTH, &w );
+      glGetTexLevelParameteriv( getTextureTarget(), 0, GL_TEXTURE_HEIGHT, &h);
+      glPopAttrib();
+      return std::pair<H3DInt32,H3DInt32> ( w, h );
+    }
+  }else{
+    return H3DSingleTextureNode::getDefaultSaveDimensions();
+  }
+}

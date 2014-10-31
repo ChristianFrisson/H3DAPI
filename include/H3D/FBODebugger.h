@@ -32,8 +32,12 @@
 #include <H3D/X3DChildNode.h>
 #include <H3D/Group.h>
 #include <H3D/SFString.h>
+#include <H3D/SFFloat.h>
 #include <H3D/X3D.h>
 #include <H3D/RenderTargetTexture.h>
+#include <H3D/X3DTextureNode.h>
+#include <H3D/H3DSingleTextureNode.h>
+#include <H3D/FieldTemplates.h>
 
 namespace H3D {
 
@@ -61,11 +65,24 @@ namespace H3D {
   ///     ( <a href="examples/FBODebugger.x3d.html">Source</a> )
   class FBODebugger : public X3DChildNode {
   public:
-    
+    /// A field used to execute the save to URL operation when the URL is set
+    class H3DAPI_API UpdateSaveToURL : public  AutoUpdate < SFString >  {
+      //virtual void onNewValue( const std::string &v );
+    };
+    //typedef X3DTextureNode::UpdateSaveToURL UpdateSaveToURL;
+    typedef TypedSFNode< H3DSingleTextureNode > SFTextreNode;
+    class ToggleBlend: public TypedField< Field, SFFloat >
+    {
+      protected:
+      virtual void update();
+    };
     /// Constructor.
-    FBODebugger( Inst< SFNode   > _metadata = 0,
-                 Inst< SFString > _fbo = 0,
-                 Inst< SFString > _buffer = 0 );
+    FBODebugger( Inst< SFNode           > _metadata = 0,
+                 Inst< SFString         > _fbo = 0,
+                 Inst< SFString         > _buffer = 0,
+                 Inst< SFFloat          > _transparency = 0,
+                 Inst< UpdateSaveToURL  > _saveToUrl = 0,
+                 Inst< SFBool           > _saveSuccess = 0);
     
     /// Traverse the scenegraph. 
     virtual void traverseSG( TraverseInfo &ti );
@@ -94,6 +111,35 @@ namespace H3D {
     /// <b>Valid values: "NONE" or the name of any FrameBufferTextureGenerator in the scene</b> 
     auto_ptr< SFString > buffer;
 
+    /// Transparency value is used to affect how transparent the current 
+    /// selected texture will be rendered , so it will not completely occlude 
+    /// the actual rendered scene, can be useful for debugging.
+    /// Specially, when transparency equals to zero, blending will be disable 
+    /// for the selected texture rendering 
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0 \n
+    ///
+    auto_ptr< SFFloat > transparency; 
+
+    /// When a new value is specified for saveToUrl the current selected FBO depth/color texture is rendered to
+    /// a buffer and saved to the specified filename. The URL must be a local filename.
+    ///
+    /// The texture is written immediately and the success of failure of the save 
+    /// operation can be checked using the saveSuccess field.
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> "" \n
+    ///
+    auto_ptr < UpdateSaveToURL > saveToUrl;
+
+    /// Contains the result of the last save operation. True if the last save operation
+    /// was successful.
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> false \n
+    ///
+    auto_ptr < SFBool > saveSuccess;
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   protected:
@@ -112,6 +158,14 @@ namespace H3D {
     /// RenderTargetTexture used to show the color buffers of a fbo if
     /// selected.
     AutoRef<RenderTargetTexture> render_target_texture;
+
+    /// Field to monitor transparency field and toggle blending for the selected
+    /// texture rendering if needed.
+    auto_ptr<ToggleBlend> toggleBlend;
+
+    /// texture used to keep the current selected texture
+    auto_ptr<SFTextreNode> selected_texture;
+    
   };
 }
 

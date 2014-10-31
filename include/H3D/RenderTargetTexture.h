@@ -122,6 +122,10 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
+  protected:
+    /// Override getDefaultSaveDimensions function to get current texture dimension
+    /// for this RenderTargetTexture
+    virtual std::pair<H3DInt32,H3DInt32> getDefaultSaveDimensions ();
 
   };
 }
