@@ -158,7 +158,7 @@ namespace H3D {
         return time_lived > total_time_to_live;
       }
 
-      bool operator<( const Particle &p ) {
+      bool operator<( const Particle &p ) const {
         return distance_from_viewer > p.distance_from_viewer;
       }
 
