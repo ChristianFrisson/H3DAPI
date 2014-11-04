@@ -199,11 +199,14 @@ string ConvolutionFilterShader::getFragmentShaderString() {
     s << "  const int texture_height = " << heightInUse->getValueAsString() << "; "<<endl;
     s << "  // the step in texture coordinates between each pixel " << endl;
     string pixel_step_offset = pixelStepOffset->getValueAsString();
+    if( pixelStepOffset->getValue()<-1 ) {
+      pixel_step_offset = "-1.0";
+    }
     if( pixel_step_offset.find(".")==std::string::npos ) {
       pixel_step_offset+= ".0";
     }
-    s << "  const vec2 pixel_step = vec2( (1.0+" << pixel_step_offset 
-      << ") / float( texture_width ), (1.0+" << pixel_step_offset << ") / float( texture_height ) ); " << endl;
+    s << "  const vec2 pixel_step = vec2( (1.0+(" << pixel_step_offset 
+      << ")) / float( texture_width ), (1.0+(" << pixel_step_offset << ")) / float( texture_height ) ); " << endl;
     string weightsInString = "";
     for( unsigned int i = 0; i< weights->size(); ++i ) {
       stringstream ss;

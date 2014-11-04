@@ -162,7 +162,10 @@ namespace H3D {
     /// using in convolving, the metric of this value is pixel, so please keep 
     /// this value relatively small as too many pixel offset will make result strange.
     /// By using this value, you can enhance or weaken the convolving effect with
-    /// slight artifact while no extra texture read
+    /// slight artifact while no extra texture read. When this value is negative, it will
+    /// reduce the convolving effect. Keep in mind that if this value is -1, it will competely
+    /// cancel the convolving effect. This value can not be smaller than -1, as that will
+    /// make the texture sampling impossible. So value smaller than -1 will be clipped to -1
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> 0.0
     /// \dotfile ConvolutionFilterShader_pixelStepOffset.dot
