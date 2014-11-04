@@ -230,7 +230,12 @@ namespace H3D {
                                  Inst< SFBool           > _useSpecifiedClearColor = 0,
                                  Inst< SFColorRGBA      > _clearColor = 0,
                                  Inst< SFBool           > _useDSA = 0,
-                                 Inst< SFBool           > _splitScene = 0);
+                                 Inst< SFBool           > _splitScene = 0,
+                                 Inst< SFBool           > _useScissor = 0,
+                                 Inst< SFInt32          > _scissorBoxX = 0,
+                                 Inst< SFInt32          > _scissorBoxY = 0,
+                                 Inst< SFInt32          > _scissorBoxWidth = 0,
+                                 Inst< SFInt32          > _scissorBoxHeight = 0);
         
     /// Destructor.
     virtual ~FrameBufferTextureGenerator();
@@ -466,6 +471,33 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> -1
     auto_ptr< SFInt32 > height;
+    
+    /// True to use scissor box to limit the rendering
+    auto_ptr< SFBool > useScissor;
+
+    /// scissor box left limit, will be used when useScissor is true
+    ///
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> 0
+    auto_ptr< SFInt32 > scissorBoxX;
+
+    /// scissor box bottom limit, will be used when useScissor is true
+    ///
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> 0
+    auto_ptr< SFInt32 > scissorBoxY;
+
+    /// scissor box width, will be used when useScissor is true
+    ///
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> 800
+    auto_ptr< SFInt32 > scissorBoxWidth;
+
+    /// scissor box height, will be used when useScissor is true
+    /// 
+    /// <b>Access type:</b> inputOutput
+    /// <b>Default value:</b> 600
+    auto_ptr< SFInt32 > scissorBoxHeight;
 
     /// It contains the actual width value used at realtime
     /// <b>Access type:</b> outputOnly

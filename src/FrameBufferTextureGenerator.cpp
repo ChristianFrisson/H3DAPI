@@ -82,6 +82,11 @@ namespace FrameBufferTextureGeneratorInternals {
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, clearColor, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, useDSA, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, splitScene, INITIALIZE_ONLY );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, useScissor, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, scissorBoxX, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, scissorBoxY, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, scissorBoxWidth, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, scissorBoxHeight, INPUT_OUTPUT );
 }
 
 FrameBufferTextureGenerator::~FrameBufferTextureGenerator() {
@@ -139,7 +144,12 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   Inst< SFBool          > _useSpecifiedClearColor,
   Inst< SFColorRGBA     > _clearColor,
   Inst< SFBool          > _useDSA,
-  Inst< SFBool          > _splitScene):
+  Inst< SFBool          > _splitScene,
+  Inst< SFBool          > _useScissor,
+  Inst< SFInt32         > _scissorBoxX,
+  Inst< SFInt32         > _scissorBoxY,
+  Inst< SFInt32         > _scissorBoxWidth,
+  Inst< SFInt32         > _scissorBoxHeight ):
 X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound, 
   _bboxCenter, _bboxSize ),
   generateColorTextures( _generateColorTextures ),
@@ -171,6 +181,11 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   clearColor(_clearColor),
   useDSA(_useDSA),
   splitScene(_splitScene),
+  useScissor(_useScissor),
+  scissorBoxX( _scissorBoxX ),
+  scissorBoxY( _scissorBoxY ),
+  scissorBoxWidth( _scissorBoxWidth ),
+  scissorBoxHeight( _scissorBoxHeight ),
   fbo_initialized( false ),
   buffers_width(-1),
   buffers_height(-1),
@@ -253,6 +268,12 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
     support_dsa = false;
     useDSA->setValue(false);
     splitScene->setValue(false);
+
+    useScissor->setValue(false);
+    scissorBoxX->setValue( 0 );
+    scissorBoxY->setValue( 0 );
+    scissorBoxWidth->setValue( 800 );
+    scissorBoxHeight->setValue( 600 );
 
     clear_color_value = new float[4];
     clear_color_value[0] = 0;
@@ -484,7 +505,7 @@ void FrameBufferTextureGenerator::render()     {
   GLint previous_fbo_id;
   glGetIntegerv( GL_DRAW_FRAMEBUFFER_BINDING, &previous_fbo_id );
   // Save current state.
-  glPushAttrib( GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_VIEWPORT_BIT );
+  glPushAttrib( GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_VIEWPORT_BIT|GL_SCISSOR_BIT );
 
   
 
@@ -542,7 +563,20 @@ void FrameBufferTextureGenerator::render()     {
 #ifdef GLEW_ARB_viewport_array
     if( GLEW_ARB_viewport_array ) {
       glViewportArrayv(0,3, viewports_size);
-      glDisable(GL_SCISSOR_TEST);
+      if( useScissor->getValue() ) {
+        glEnable(GL_SCISSOR_TEST);
+        H3DInt32 scissorBox_size[12];
+        for( int i = 0; i<3; ++i ) {
+          scissorBox_size[4*i] = window->viewports_size[4*i]+scissorBoxX->getValue();
+          scissorBox_size[4*i+1] = window->viewports_size[4*i+1]+scissorBoxY->getValue();
+          scissorBox_size[4*i+2] = scissorBoxWidth->getValue();
+          scissorBox_size[4*i+3] = scissorBoxHeight->getValue();
+        }
+        glScissorArrayv( 0, 3, scissorBox_size );
+      }else{
+        glDisable(GL_SCISSOR_TEST);
+      }
+      
     }else{
 #endif
       Console(4) << "Warning: GL_ARB_viewport_array is not supported by the graphic card. "
@@ -554,6 +588,11 @@ void FrameBufferTextureGenerator::render()     {
   else if( !always_use_existing_viewport) {
     // Set viewport to span entire frame buffer  to be used as target
     glViewport( 0 , 0, desired_fbo_width, desired_fbo_heigth );
+    if( useScissor->getValue() ) {
+      glEnable(GL_SCISSOR_TEST);
+      glScissor( scissorBoxX->getValue(), scissorBoxY->getValue(), 
+        scissorBoxWidth->getValue(), scissorBoxHeight->getValue()  );
+    }
   }
 
   unsigned int current_depth  = output_texture_type == "2D" || output_texture_type == "2D_RECTANGLE" ? 1: std::max( (int)children->size(), 1 );
@@ -1760,24 +1799,24 @@ void FrameBufferTextureGenerator::clearBuffers(GLenum src, int x, int y,
   int width, int height, GLbitfield mask){
     // clear buffer defined by mask of the area defined by x, y, width, height
     //glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, src);
+    glPushAttrib( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_SCISSOR_BIT );
     glScissor( x, y, width, height );
     glEnable( GL_SCISSOR_TEST );
-    glPushAttrib( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
     glClear( mask );
-    glPopAttrib();
     glDisable( GL_SCISSOR_TEST );
+    glPopAttrib();
 }
 
 void FrameBufferTextureGenerator::clearColorBuffer( GLenum src, int x, int y, 
   int width, int height, GLfloat* value, GLint index ){
     // clear index th attached color buffer
     //glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, src );
+    glPushAttrib( GL_COLOR_BUFFER_BIT | GL_SCISSOR_BIT );
     glScissor( x, y, width, height );
     glEnable( GL_SCISSOR_TEST );
-    glPushAttrib( GL_COLOR_BUFFER_BIT );
     glClearBufferfv( GL_COLOR, index, value );
-    glPopAttrib();
     glDisable( GL_SCISSOR_TEST );
+    glPopAttrib();
 }
 
 
@@ -1861,6 +1900,10 @@ void FrameBufferTextureGenerator::blitColorBuffer(GLenum src, GLenum dst,
 
 void FrameBufferTextureGenerator::blitFBOBuffers(GLenum src, GLenum dst, 
   int srcX, int srcY, int w, int h){
+    if( useScissor->getValue() ) {
+      glPushAttrib(GL_SCISSOR_BIT);
+      glDisable(GL_SCISSOR_TEST);
+    }
     if( support_dsa ) {
 #ifdef GL_ARB_direct_state_access
       // blit depth 
@@ -1929,6 +1972,9 @@ void FrameBufferTextureGenerator::blitFBOBuffers(GLenum src, GLenum dst,
         glInvalidateFramebuffer(GL_READ_FRAMEBUFFER,nr_attachments , &attachments[0]);
       }
 #endif
+    }
+    if( useScissor->getValue() ) {
+      glPopAttrib();
     }
 }
 
