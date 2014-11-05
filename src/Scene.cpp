@@ -186,7 +186,7 @@ void Scene::idle() {
     H3DTime sleep_time= min_frame_time-dt0;
     if ( sleep_time > 0 ) {
 #ifdef H3D_WINDOWS
-      Sleep ( sleep_time*1000.0 );
+      Sleep ( (DWORD)(sleep_time*1000.0) );
 #else
       usleep( sleep_time*1e6 );
 #endif

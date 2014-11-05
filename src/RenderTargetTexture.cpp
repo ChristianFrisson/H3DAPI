@@ -184,7 +184,6 @@ std::pair<H3DInt32,H3DInt32> H3D::RenderTargetTexture::getDefaultSaveDimensions(
       glPopAttrib();
       return std::pair<H3DInt32,H3DInt32> ( w, h );
     }
-  }else{
-    return H3DSingleTextureNode::getDefaultSaveDimensions();
   }
+  return H3DSingleTextureNode::getDefaultSaveDimensions();
 }
