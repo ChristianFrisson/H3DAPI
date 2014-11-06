@@ -476,27 +476,35 @@ namespace H3D {
     auto_ptr< SFBool > useScissor;
 
     /// scissor box left limit, will be used when useScissor is true
-    ///
+    /// When this value is negative, it will be used to divided by 100 and
+    /// interpreted as the percentage of the current viewport width
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> 0
     auto_ptr< SFInt32 > scissorBoxX;
 
     /// scissor box bottom limit, will be used when useScissor is true
-    ///
+    /// When this value is negative, it will be used to divided by 100 and
+    /// interpreted as the percentage of the current viewport height
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> 0
     auto_ptr< SFInt32 > scissorBoxY;
 
     /// scissor box width, will be used when useScissor is true
-    ///
+    /// When this value is negative, it will be used to divided by 100 and
+    /// interpreted as the percentage of the current viewport with.
+    /// By default the value is -100 which means the scissor box will have
+    /// the same width as viewport width
     /// <b>Access type:</b> inputOutput
-    /// <b>Default value:</b> 800
+    /// <b>Default value:</b> -100
     auto_ptr< SFInt32 > scissorBoxWidth;
 
     /// scissor box height, will be used when useScissor is true
-    /// 
+    /// When this value is negative, it will be used to divided by 100 and
+    /// interpreted as the percentage of the current viewport height.
+    /// By default the value is -100 which means the scissor box will have
+    /// the same height as viewport height
     /// <b>Access type:</b> inputOutput
-    /// <b>Default value:</b> 600
+    /// <b>Default value:</b> -100
     auto_ptr< SFInt32 > scissorBoxHeight;
 
     /// It contains the actual width value used at realtime
@@ -633,6 +641,9 @@ namespace H3D {
 
     /// Create/recreate all output textures required
     void createOutputTextures ();
+
+    /// Setup scissor box if needed.
+    void setupScissor( bool needSinglePassStereo, float* viewports_size, int desired_fbo_width, int desired_fbo_height );
 
     /// preProcess the FBO before rendering according to the depthBufferStorage
     /// and colorBufferStorages

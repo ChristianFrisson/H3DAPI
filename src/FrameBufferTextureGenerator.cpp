@@ -272,8 +272,8 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
     useScissor->setValue(false);
     scissorBoxX->setValue( 0 );
     scissorBoxY->setValue( 0 );
-    scissorBoxWidth->setValue( 800 );
-    scissorBoxHeight->setValue( 600 );
+    scissorBoxWidth->setValue( -100 );
+    scissorBoxHeight->setValue( -100 );
 
     clear_color_value = new float[4];
     clear_color_value[0] = 0;
@@ -564,15 +564,7 @@ void FrameBufferTextureGenerator::render()     {
     if( GLEW_ARB_viewport_array ) {
       glViewportArrayv(0,3, viewports_size);
       if( useScissor->getValue() ) {
-        glEnable(GL_SCISSOR_TEST);
-        H3DInt32 scissorBox_size[12];
-        for( int i = 0; i<3; ++i ) {
-          scissorBox_size[4*i] = window->viewports_size[4*i]+scissorBoxX->getValue();
-          scissorBox_size[4*i+1] = window->viewports_size[4*i+1]+scissorBoxY->getValue();
-          scissorBox_size[4*i+2] = scissorBoxWidth->getValue();
-          scissorBox_size[4*i+3] = scissorBoxHeight->getValue();
-        }
-        glScissorArrayv( 0, 3, scissorBox_size );
+        setupScissor(true, viewports_size, desired_fbo_width, desired_fbo_heigth );
       }else{
         glDisable(GL_SCISSOR_TEST);
       }
@@ -589,9 +581,7 @@ void FrameBufferTextureGenerator::render()     {
     // Set viewport to span entire frame buffer  to be used as target
     glViewport( 0 , 0, desired_fbo_width, desired_fbo_heigth );
     if( useScissor->getValue() ) {
-      glEnable(GL_SCISSOR_TEST);
-      glScissor( scissorBoxX->getValue(), scissorBoxY->getValue(), 
-        scissorBoxWidth->getValue(), scissorBoxHeight->getValue()  );
+      setupScissor( false, NULL, desired_fbo_width, desired_fbo_heigth );
     }
   }
 
@@ -1982,4 +1972,54 @@ void FrameBufferTextureGenerator::UpdateMode::onNewValue( const std::string& new
     if ( new_value == "NOW" ) {
         static_cast < FrameBufferTextureGenerator* > ( getOwner() )->render();
     }
+}
+
+void FrameBufferTextureGenerator::setupScissor( bool needSinglePassStereo, 
+  float* viewports_size, int desired_fbo_width, int desired_fbo_height ){
+  if( needSinglePassStereo ) {
+    glEnable(GL_SCISSOR_TEST);
+    H3DInt32 scissorBox_size[12];
+    int box_x  = scissorBoxX->getValue();
+    int box_y = scissorBoxY->getValue();
+    int box_w = scissorBoxWidth->getValue();
+    int box_h = scissorBoxHeight->getValue();
+    for( int i = 0; i<3; ++i ) {
+      scissorBox_size[4*i] = viewports_size[4*i]+box_x;
+      scissorBox_size[4*i+1] = viewports_size[4*i+1]+box_y;
+      scissorBox_size[4*i+2] = box_w;
+      scissorBox_size[4*i+3] = box_h;
+      if( box_x<0 ) {
+        scissorBox_size[4*i] = viewports_size[4*i]+viewports_size[4*i+2]*(-box_x/100.0);
+      }
+      if( box_y<0 ) {
+        scissorBox_size[4*i+1] = viewports_size[4*i+1]+viewports_size[4*i+3]*(-box_y/100.0);
+      }
+      if( box_w<0 ) {
+        scissorBox_size[4*i+2] = viewports_size[4*i+2]*(-box_w/100.0);
+      }
+      if( box_h<0 ) {
+        scissorBox_size[4*i+3] = viewports_size[4*i+3]*(-box_h/100.0);
+      }
+    }
+    glScissorArrayv( 0, 3, scissorBox_size );
+  }else{
+    glEnable(GL_SCISSOR_TEST);
+    int box_x  = scissorBoxX->getValue();
+    int box_y = scissorBoxY->getValue();
+    int box_w = scissorBoxWidth->getValue();
+    int box_h = scissorBoxHeight->getValue();
+    if( box_x<0 ) {
+      box_x = (-box_x/100.0)*desired_fbo_width;
+    }
+    if( box_y<0 ) {
+      box_y = (-box_y/100.0)*desired_fbo_height;
+    }
+    if( box_w<0 ) {
+      box_w = (-box_w/100.0)*desired_fbo_width;
+    }
+    if( box_h<0 ) {
+      box_h = (-box_h/100.0)*desired_fbo_height;
+    }
+    glScissor( box_x, box_y, box_w, box_h  );
+  }
 }
