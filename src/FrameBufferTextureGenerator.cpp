@@ -272,8 +272,8 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
     useScissor->setValue(false);
     scissorBoxX->setValue( 0 );
     scissorBoxY->setValue( 0 );
-    scissorBoxWidth->setValue( -100 );
-    scissorBoxHeight->setValue( -100 );
+    scissorBoxWidth->setValue( -10000 );
+    scissorBoxHeight->setValue( -10000 );
 
     clear_color_value = new float[4];
     clear_color_value[0] = 0;
@@ -368,6 +368,10 @@ void FrameBufferTextureGenerator::initialize()
 #undef max
 #endif
 void FrameBufferTextureGenerator::traverseSG( TraverseInfo &ti ) {
+  
+  if( update->getValue()=="NONE" ) {// if update field is none , skip traverseSG
+    return;
+  }
 
   shadow_caster->object->clear();
   shadow_caster->light->clear();
@@ -384,7 +388,7 @@ void FrameBufferTextureGenerator::traverseSG( TraverseInfo &ti ) {
   // specify fbo_require_stereo data , so its children can use this info to decide
   // whether related shader need to be modified when single pass stereo is also needed
   ti.setUserData("fbo_require_stereo", (void*)(useStereo.get()));
-
+  
   X3DGroupingNode::traverseSG( ti );
 
   ti.setUserData("fbo_require_stereo", NULL);
@@ -1990,16 +1994,16 @@ void FrameBufferTextureGenerator::setupScissor( bool needSinglePassStereo,
       scissorBox_size[4*i+2] = box_w;
       scissorBox_size[4*i+3] = box_h;
       if( box_x<0 ) {
-        scissorBox_size[4*i] = viewports_size[4*i]+viewports_size[4*i+2]*(-box_x/100.0);
+        scissorBox_size[4*i] = viewports_size[4*i]+viewports_size[4*i+2]*(-box_x/10000.0);
       }
       if( box_y<0 ) {
-        scissorBox_size[4*i+1] = viewports_size[4*i+1]+viewports_size[4*i+3]*(-box_y/100.0);
+        scissorBox_size[4*i+1] = viewports_size[4*i+1]+viewports_size[4*i+3]*(-box_y/10000.0);
       }
       if( box_w<0 ) {
-        scissorBox_size[4*i+2] = viewports_size[4*i+2]*(-box_w/100.0);
+        scissorBox_size[4*i+2] = viewports_size[4*i+2]*(-box_w/10000.0);
       }
       if( box_h<0 ) {
-        scissorBox_size[4*i+3] = viewports_size[4*i+3]*(-box_h/100.0);
+        scissorBox_size[4*i+3] = viewports_size[4*i+3]*(-box_h/10000.0);
       }
     }
     glScissorArrayv( 0, 3, scissorBox_size );
@@ -2011,16 +2015,16 @@ void FrameBufferTextureGenerator::setupScissor( bool needSinglePassStereo,
     int box_w = scissorBoxWidth->getValue();
     int box_h = scissorBoxHeight->getValue();
     if( box_x<0 ) {
-      box_x = (-box_x/100.0)*desired_fbo_width;
+      box_x = (-box_x/10000.0)*desired_fbo_width;
     }
     if( box_y<0 ) {
-      box_y = (-box_y/100.0)*desired_fbo_height;
+      box_y = (-box_y/10000.0)*desired_fbo_height;
     }
     if( box_w<0 ) {
-      box_w = (-box_w/100.0)*desired_fbo_width;
+      box_w = (-box_w/10000.0)*desired_fbo_width;
     }
     if( box_h<0 ) {
-      box_h = (-box_h/100.0)*desired_fbo_height;
+      box_h = (-box_h/10000.0)*desired_fbo_height;
     }
     glScissor( box_x, box_y, box_w, box_h  );
 #ifdef GL_ARB_viewport_array

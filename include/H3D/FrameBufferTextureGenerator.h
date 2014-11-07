@@ -40,6 +40,7 @@
 #include <H3D/TypedField.h>
 #include <H3D/FieldTemplates.h>
 #include <H3D/SFColorRGBA.h>
+#include <H3D/Field.h>
 
 namespace H3D {
 
@@ -476,35 +477,35 @@ namespace H3D {
     auto_ptr< SFBool > useScissor;
 
     /// scissor box left limit, will be used when useScissor is true
-    /// When this value is negative, it will be used to divided by 100 and
-    /// interpreted as the percentage of the current viewport width
+    /// When this value is negative, it will be used to divided by 10000 and
+    /// interpreted as the percentage(after divided by 100) of the current viewport width
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> 0
     auto_ptr< SFInt32 > scissorBoxX;
 
     /// scissor box bottom limit, will be used when useScissor is true
-    /// When this value is negative, it will be used to divided by 100 and
-    /// interpreted as the percentage of the current viewport height
+    /// When this value is negative, it will be used to divided by 10000 and
+    /// interpreted as the percentage(after divided by 100) of the current viewport height
     /// <b>Access type:</b> inputOutput
     /// <b>Default value:</b> 0
     auto_ptr< SFInt32 > scissorBoxY;
 
     /// scissor box width, will be used when useScissor is true
-    /// When this value is negative, it will be used to divided by 100 and
-    /// interpreted as the percentage of the current viewport with.
-    /// By default the value is -100 which means the scissor box will have
+    /// When this value is negative, it will be used to divided by 10000 and
+    /// interpreted as the percentage(after divided by 100) of the current viewport with.
+    /// By default the value is -10000 which means the scissor box will have
     /// the same width as viewport width
     /// <b>Access type:</b> inputOutput
-    /// <b>Default value:</b> -100
+    /// <b>Default value:</b> -10000
     auto_ptr< SFInt32 > scissorBoxWidth;
 
     /// scissor box height, will be used when useScissor is true
-    /// When this value is negative, it will be used to divided by 100 and
+    /// When this value is negative, it will be used to divided by 10000 and
     /// interpreted as the percentage of the current viewport height.
-    /// By default the value is -100 which means the scissor box will have
+    /// By default the value is -10000 which means the scissor box will have
     /// the same height as viewport height
     /// <b>Access type:</b> inputOutput
-    /// <b>Default value:</b> -100
+    /// <b>Default value:</b> -10000
     auto_ptr< SFInt32 > scissorBoxHeight;
 
     /// It contains the actual width value used at realtime
