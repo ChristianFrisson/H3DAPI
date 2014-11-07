@@ -1976,6 +1976,7 @@ void FrameBufferTextureGenerator::UpdateMode::onNewValue( const std::string& new
 
 void FrameBufferTextureGenerator::setupScissor( bool needSinglePassStereo, 
   float* viewports_size, int desired_fbo_width, int desired_fbo_height ){
+#ifdef GL_ARB_viewport_array
   if( needSinglePassStereo ) {
     glEnable(GL_SCISSOR_TEST);
     H3DInt32 scissorBox_size[12];
@@ -2003,6 +2004,7 @@ void FrameBufferTextureGenerator::setupScissor( bool needSinglePassStereo,
     }
     glScissorArrayv( 0, 3, scissorBox_size );
   }else{
+#endif
     glEnable(GL_SCISSOR_TEST);
     int box_x  = scissorBoxX->getValue();
     int box_y = scissorBoxY->getValue();
@@ -2021,5 +2023,7 @@ void FrameBufferTextureGenerator::setupScissor( bool needSinglePassStereo,
       box_h = (-box_h/100.0)*desired_fbo_height;
     }
     glScissor( box_x, box_y, box_w, box_h  );
+#ifdef GL_ARB_viewport_array
   }
+#endif
 }
