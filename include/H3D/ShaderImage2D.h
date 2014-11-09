@@ -84,6 +84,12 @@ namespace H3D {
     /// <b>Default value:</b> GL_RGBA16F \n
     auto_ptr<SFString> format;
 
+    // map between the image format string and image format qualifier string
+    // which is used in glsl shader to define the type of this ShaderImage 
+    static std::map<string, string> imageFormatQualifier_map;
+    // function to generate imageFormatQualifier map for once
+    static std::map<string, string> initImageFormatQualifier_map ( );
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
