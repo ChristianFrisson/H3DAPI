@@ -22,7 +22,7 @@
 //
 //
 /// \file ShaderImage2D.h
-/// \brief Header file for ShaderImage2D, X3D scene-graph node
+/// \brief Header file for ShaderImage2D.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -36,11 +36,17 @@
 
 namespace H3D {
 
-  /// \ingroup AbstractNodes
+  /// \ingroup H3DNodes
   /// \class ShaderImage2D
-  /// \brief This is the base node type for the child nodes of the
-  ///  ComposedShader node.
+  /// \brief ShaderImage2D is a 2D image which can allow openGL to read from  
+  /// and write to. It comes with extension ARB_shader_image_load_store
   ///
+  /// <b>Examples:</b>
+  ///   - <a href="../../../H3DAPI/examples/All/ABuffer.x3d">ABuffer.x3d</a>
+  ///     ( <a href="examples/ABuffer.x3d.html">Source</a> )
+  ///
+  /// \par Internal routes:
+  /// \dotfile ShaderImage2D.dot
   /// 
   class H3DAPI_API ShaderImage2D :
     public ShaderImageNode {
@@ -49,15 +55,11 @@ namespace H3D {
     /// Constructor.
     ShaderImage2D ( Inst< DisplayList  > _displayList = 0,
                     Inst< SFNode       > _metadata = 0,
-                    Inst< SFInt32      > _imageWidth = 0,
-                    Inst< SFInt32      > _imageHeight = 0,
-                    Inst< SFString     > _imageFormat = 0
+                    Inst< SFInt32      > _width = 0,
+                    Inst< SFInt32      > _height = 0,
+                    Inst< SFString     > _format = 0
   );
 
-    //virtual void preRender();
-
-
-    //virtual void postRender();
 
 
     virtual void render ( );
@@ -66,29 +68,34 @@ namespace H3D {
     /// set up texture and image and configure them
     virtual void prepareShaderImage ( );
 
-    auto_ptr<SFInt32> imageWidth;
+    /// the width of texture image
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 512 \n
+    auto_ptr<SFInt32> width;
 
-    auto_ptr<SFInt32> imageHeight;
+    /// the height of texture image
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 512 \n
+    auto_ptr<SFInt32> height;
 
     /// image internal format to describe how many component are there for the image
     /// and for each component, how many bits are there.
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> GL_RGBA16F \n
-    auto_ptr<SFString> imageFormat;
-
-    static std::map<string, string> imageFormatQualifier_map;
-    static std::map<string, string> initImageFormatQualifier_map ( );
+    auto_ptr<SFString> format;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
   private:
+    // map between format string definition and enum definition
     static std::map<string, GLenum> stringImageFormat_map;
+    // function to generate stringImageFormat map for once
     static std::map<string, GLenum> initStringImageFormat_map ( );
+    // all supported image formats in string type
     static const std::vector<string> image_formats;
+    // function to generate all image formats in string type for once 
     static vector<string> initImage_formats ( );
-    
-
   };
 }
 

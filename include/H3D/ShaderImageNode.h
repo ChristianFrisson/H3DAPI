@@ -22,7 +22,7 @@
 //
 //
 /// \file ShaderImageNode.h
-/// \brief Header file for ShaderImageNode, X3D scene-graph node
+/// \brief Header file for ShaderImageNode.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ namespace H3D {
   /// \ingroup AbstractNodes
   /// \class ShaderImageNode
   /// \brief This is the base node type for the child nodes of the
-  ///  ComposedShader node.
+  ///  ComposedShader node which is image node type.
   ///
   /// 
   class H3DAPI_API ShaderImageNode : 
@@ -48,18 +48,12 @@ namespace H3D {
                             Inst< SFNode>  _metadata = 0 );
 
     /// specify the texture_unit will be used for rendering this shader image
-    /// 
+    /// or more specifically, it is the texture image unit where this image
+    /// unit is located. 
     virtual void preRender( GLenum texture_unit_id );
 
 
     virtual void postRender();
-
-    /// update texture and image if necessary, then bind it to shader program
-    ///virtual void render ( );
-
-    //virtual void renderImage( unsigned int texture_unit_id );
-    /// install texture and image for current node to specified texture unit
-    /*virtual void prepareShaderImage ( );*/
 
     virtual int getImageUnit ( ){
       return image_unit;
@@ -67,13 +61,13 @@ namespace H3D {
 
     ~ShaderImageNode ( );
   protected:
-    /// texutre unit used to provide the texture layer for the image unit
-    /// the value will comes from outside of this node when actually use it
-    /// from a shader program
+    /// The texture image unit for the texture where the image located
     unsigned int texture_unit;
 
     /// image unit used, will be used to bind to shader program
-    /// the value of image_unit will be maintained in this node
+    /// the value of image_unit will be maintained in this node.
+    /// Note: this is different from texture image unit which is used by
+    /// texture object to be accessed in shader
     int image_unit;
 
     /// texture object id which is used to bind to the texture unit
@@ -82,12 +76,16 @@ namespace H3D {
 
     
     
-    // all the current image units already used, it will be used to help
-    // generate non-idential image unit id
+    // collection of all the current image units already used, 
+    //it is be used to help generate non-identical image unit id
     static set<unsigned int> global_image_units;
+    // lock to ensure the access to global_image_units is always safe
     static H3DUtil::MutexLock global_image_units_lock;
     static unsigned int max_image_unit;
+    // create a image unit id, it will be ensured that any shader image
+    // used have different image unit it
     static int generateImage ( );
+    // remove the image unit id
     static void deleteImage ( int id );
   };
 }

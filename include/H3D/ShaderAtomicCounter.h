@@ -35,7 +35,7 @@
 
 namespace H3D {
 
-  /// \ingroup X3DNodes
+  /// \ingroup H3DNodes
   /// \class ShaderAtomicCounter
   /// \brief A ShaderAtomicCounter is a atomic counter can be used in GLSL shader.
   /// 

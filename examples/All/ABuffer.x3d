@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='2.2'>
+  <head>
+    <meta name='title' content='ABuffer.x3d'/>
+    <meta name='description' content='This example uses H3DAPI node(s) and runs on H3DAPI-supported browsers only. Visit http://www.h3d.org for more information and to download an H3DAPI-
+      compatible browser. '/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
+  </head>
+  <Scene>
+    <GlobalSettings>
+      <GraphicsOptions useCaching="false" preferVertexBufferObject="true"/>
+    </GlobalSettings>
+    <Viewpoint position="10 0 0" orientation="0 1 0 1.57"></Viewpoint>
+
+    <Inline DEF='CYLINDER' url='cylinder_oit.x3d' importMode='AUTO' traverseOn='false'/>
+    <Inline DEF='SPHERE' url='sphere_oit.x3d' importMode='AUTO' traverseOn='false'/>
+
+    <FrameBufferTextureGenerator DEF="fb_CLEARABUFFER" outputTextureType="2D" generateColorTextures="RGBA" width="512" height="512"> 
+      <Shape DEF="shape_clearBuffer">
+        <Appearance DEF="appearance_clearBuffer">
+          <ComposedShader DEF="shader_clearBuffer" language="GLSL" geometryInputType="LINES_ADJACENCY" geometryOutputType="TRIANGLE_STRIP" geometryVerticesOut="12" suppressUniformWarnings="false">
+            <field name="SCREEN_WIDTH" type="SFInt32" accessType="inputOutput"/>
+            <field name="SCREEN_HEIGHT" type="SFInt32" accessType="inputOutput"/>
+            <field name="abufferImg" type="SFNode" accessType="inputOutput">
+              <ShaderImage3D DEF="abufferImg" height='512' width = '512' depth = '16' format="GL_RGBA16F">
+              </ShaderImage3D>
+            </field>
+            <field name="abufferCounterImg" type="SFNode" accessType="inputOutput">
+              <ShaderImage2D DEF="abufferCounterImg" height="512" width = "512" format="GL_R32F">
+              </ShaderImage2D>
+            </field>
+            <ShaderPart  type="VERTEX" url="shaders/passThroughVert_oit.glsl"></ShaderPart>
+            <ShaderPart  type="FRAGMENT" url="shaders/clearABufferFrag.glsl"></ShaderPart>
+          </ComposedShader>
+        </Appearance>
+        <TriangleSet>
+          <Coordinate point="
+                -1.0 -1.0 0.0, 
+                1.0 -1.0 0.0, 
+                -1.0 1.0 0.0, 
+                1.0 -1.0 0.0, 
+                1.0 1.0 0.0, 
+                -1.0 1.0 0.0 ">
+          </Coordinate>
+          <FloatVertexAttribute name="vertexPos" value="
+            -1.0, -1.0, 0.0, 1.0,
+            1.0, -1.0, 0.0, 1.0,
+            -1.0, 1.0, 0.0, 1.0,
+            1.0, -1.0, 0.0, 1.0,
+            1.0, 1.0, 0.0, 1.0,
+            -1.0, 1.0, 0.0, 1.0  " numComponents="4"  />
+        </TriangleSet>
+      </Shape>
+    </FrameBufferTextureGenerator >
+
+    <FrameBufferTextureGenerator DEF="fb_renderContent" outputTextureType="2D" generateColorTextures="RGBA" width="512" height="512">
+      <TransformInfo DEF="TOP_LEVEL_TI" outputGLMatrices="true" />
+      <Shape DEF="shape_renderContent">
+        <Appearance DEF="appearance_renderContent">
+          <RenderProperties blendEnabled="false" depthTestEnabled="false" />
+          <ComposedShader DEF="shader_renderContent" language="GLSL" geometryInputType="LINES_ADJACENCY" geometryOutputType="TRIANGLE_STRIP" geometryVerticesOut="12" suppressUniformWarnings="false">
+            <field name="projectionMat" type="SFMatrix4f" accessType="inputOutput" />
+            <field name="modelViewMat" type="SFMatrix4f" accessType="inputOutput" />
+            <field name="modelViewMatIT" type="SFMatrix4f" accessType="inputOutput" />
+            <field name="SCREEN_WIDTH" type="SFInt32" accessType="inputOutput"/>
+            <field name="SCREEN_HEIGHT" type="SFInt32" accessType="inputOutput"/>
+            <field name="abufferImg" type="SFNode" accessType="inputOutput">
+            </field>
+            <field name="abufferCounterImg" type="SFNode" accessType="inputOutput">
+            </field>
+            <ShaderPart  type="VERTEX" url="shaders/renderABufferVert.glsl"></ShaderPart>
+            <ShaderPart  type="FRAGMENT" url="shaders/renderABufferFrag.glsl"></ShaderPart>
+          </ComposedShader>
+        </Appearance>
+        <IndexedTriangleSet DEF="its_content" USE= "ITS_Cylinder">
+          <FloatVertexAttribute DEF="vertexPos" USE="coords_ME_Cylinder"  >
+          </FloatVertexAttribute>
+          <FloatVertexAttribute DEF="vertexNormal" USE="normals_ME_Cylinder">
+          </FloatVertexAttribute>
+        </IndexedTriangleSet>
+      </Shape>
+      <Transform>
+        <TransformInfo DEF="TSINFO_renderContent2" outputGLMatrices="true" />
+        <Shape DEF="shape_renderContent2">
+          <Appearance DEF="appearance_renderContent2">
+            <RenderProperties blendEnabled="false" depthTestEnabled="false" />
+            <ComposedShader DEF="shader_renderContent2" language="GLSL" geometryInputType="LINES_ADJACENCY" geometryOutputType="TRIANGLE_STRIP" geometryVerticesOut="12" suppressUniformWarnings="false">
+              <field name="projectionMat" type="SFMatrix4f" accessType="inputOutput" />
+              <field name="modelViewMat" type="SFMatrix4f" accessType="inputOutput" />
+              <field name="modelViewMatIT" type="SFMatrix4f" accessType="inputOutput" />
+              <field name="SCREEN_WIDTH" type="SFInt32" accessType="inputOutput"/>
+              <field name="SCREEN_HEIGHT" type="SFInt32" accessType="inputOutput"/>
+              <field name="abufferImg" type="SFNode" accessType="inputOutput">
+              </field>
+              <field name="abufferCounterImg" type="SFNode" accessType="inputOutput">
+              </field>
+              <ShaderPart  type="VERTEX" url="shaders/renderABufferVert.glsl"></ShaderPart>
+              <ShaderPart  type="FRAGMENT" url="shaders/renderABufferFrag.glsl"></ShaderPart>
+            </ComposedShader>
+          </Appearance>
+          <IndexedTriangleSet DEF="its_content2" USE= "ITS_Sphere">
+            <FloatVertexAttribute DEF="vertexPos" USE="coords_ME_Sphere"  >
+            </FloatVertexAttribute>
+            <FloatVertexAttribute DEF="vertexNormal" USE="normals_ME_Sphere">
+            </FloatVertexAttribute>
+          </IndexedTriangleSet>
+        </Shape>
+      </Transform>
+    </FrameBufferTextureGenerator>
+
+    <Shape DEF="shape_resolve">
+      <Appearance DEF="appearance_resolve">
+        <ComposedShader DEF="shader_resolve" language="GLSL" geometryInputType="LINES_ADJACENCY" geometryOutputType="TRIANGLE_STRIP" geometryVerticesOut="12" suppressUniformWarnings="false">
+          <field name="SCREEN_WIDTH" type="SFInt32" accessType="inputOutput"/>
+          <field name="SCREEN_HEIGHT" type="SFInt32" accessType="inputOutput"/>
+          <field name="abufferImg" type="SFNode" accessType="inputOutput">
+          </field>
+          <field name="abufferCounterImg" type="SFNode" accessType="inputOutput">
+          </field>
+          <ShaderPart  type="VERTEX" url="shaders/passThroughVert_oit.glsl"></ShaderPart>
+          <ShaderPart  type="FRAGMENT" url="shaders/dispABufferFrag.glsl"></ShaderPart>
+        </ComposedShader>
+      </Appearance>
+      <TriangleSet>
+        <Coordinate point="
+            -1.0 -1.0 0.0, 
+            1.0 -1.0 0.0, 
+            -1.0 1.0 0.0, 
+            1.0 -1.0 0.0, 
+            1.0 1.0 0.0, 
+            -1.0 1.0 0.0 ">
+        </Coordinate>
+        <FloatVertexAttribute name="vertexPos" value="
+        -1.0, -1.0, 0.0, 1.0,
+        1.0, -1.0, 0.0, 1.0,
+        -1.0, 1.0, 0.0, 1.0,
+        1.0, -1.0, 0.0, 1.0,
+        1.0, 1.0, 0.0, 1.0,
+        -1.0, 1.0, 0.0, 1.0  " numComponents="4"  />
+      </TriangleSet>
+    </Shape>
+
+
+    <ROUTE fromNode="TOP_LEVEL_TI" fromField="glModelViewMatrix" toNode="shader_renderContent" toField="modelViewMat"/>
+    <ROUTE fromNode="TOP_LEVEL_TI" fromField="glModelViewMatrixInverseTranspose" toNode="shader_renderContent" toField="modelViewMatIT"/>
+    <ROUTE fromNode="TOP_LEVEL_TI" fromField="glProjectionMatrix" toNode="shader_renderContent" toField="projectionMat"/>
+
+    <ROUTE fromNode="TSINFO_renderContent2" fromField="glModelViewMatrix" toNode="shader_renderContent2" toField="modelViewMat"/>
+    <ROUTE fromNode="TSINFO_renderContent2" fromField="glModelViewMatrixInverseTranspose" toNode="shader_renderContent2" toField="modelViewMatIT"/>
+    <ROUTE fromNode="TSINFO_renderContent2" fromField="glProjectionMatrix" toNode="shader_renderContent2" toField="projectionMat"/>
+
+    <ROUTE fromNode="shader_clearBuffer" fromField="abufferImg" toNode="shader_renderContent" toField="abufferImg"/>
+    <ROUTE fromNode="shader_clearBuffer" fromField="abufferCounterImg" toNode="shader_renderContent" toField="abufferCounterImg"/>
+
+    <ROUTE fromNode="shader_clearBuffer" fromField="abufferImg" toNode="shader_renderContent2" toField="abufferImg"/>
+    <ROUTE fromNode="shader_clearBuffer" fromField="abufferCounterImg" toNode="shader_renderContent2" toField="abufferCounterImg"/>
+
+    <ROUTE fromNode="shader_clearBuffer" fromField="abufferImg" toNode="shader_resolve" toField="abufferImg"/>
+    <ROUTE fromNode="shader_clearBuffer" fromField="abufferCounterImg" toNode="shader_resolve" toField="abufferCounterImg"/>
+    <PythonScript url="ABuffer.py"></PythonScript>
+
+    <FBODebugger/>
+
+  </Scene>
+</X3D>

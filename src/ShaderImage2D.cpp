@@ -22,7 +22,7 @@
 //
 //
 /// \file ShaderImage2D.cpp
-/// \brief CPP file for ShaderImage2D, X3D scene-graph node
+/// \brief CPP file for ShaderImage2D.
 ///
 //
 //
@@ -39,24 +39,22 @@ H3DNodeDatabase ShaderImage2D::database ( "ShaderImage2D",
 
 map<string, GLenum> ShaderImage2D::stringImageFormat_map = ShaderImage2D::initStringImageFormat_map ( );
 const vector<string> ShaderImage2D::image_formats = ShaderImage2D::initImage_formats ( );
-map<string, string> ShaderImage2D::imageFormatQualifier_map = ShaderImage2D::initImageFormatQualifier_map();
-
 namespace ShaderImage2DInternals{
-  FIELDDB_ELEMENT ( ShaderImage2D, imageWidth,  INPUT_OUTPUT );
-  FIELDDB_ELEMENT ( ShaderImage2D, imageHeight, INPUT_OUTPUT );
-  FIELDDB_ELEMENT ( ShaderImage2D, imageFormat, INPUT_OUTPUT );
+  FIELDDB_ELEMENT ( ShaderImage2D, width,  INPUT_OUTPUT );
+  FIELDDB_ELEMENT ( ShaderImage2D, height, INPUT_OUTPUT );
+  FIELDDB_ELEMENT ( ShaderImage2D, format, INPUT_OUTPUT );
 }
 
 ShaderImage2D::ShaderImage2D( 
                                 Inst< DisplayList  > _displayList,
                                 Inst< SFNode       > _metadata,
-                                Inst< SFInt32      > _imageWidth ,
-                                Inst< SFInt32      > _imageHeight,
-                                Inst< SFString     > _imageFormat) :
+                                Inst< SFInt32      > _width ,
+                                Inst< SFInt32      > _height,
+                                Inst< SFString     > _format) :
   ShaderImageNode(_displayList,_metadata),
-  imageWidth(_imageWidth),
-  imageHeight(_imageHeight),
-  imageFormat(_imageFormat){
+  width(_width),
+  height(_height),
+  format(_format){
   type_name = "ShaderImage2D";
   database.initFields ( this );
   displayList->setName( "displayList" );
@@ -64,40 +62,40 @@ ShaderImage2D::ShaderImage2D(
 
   
 
-  imageWidth->setValue ( 512 );
-  imageHeight->setValue ( 512 );
-  imageFormat->addValidValues ( image_formats.begin ( ), image_formats.end ( ) );
-  imageFormat->setValue ( "RGBA16F" );
+  width->setValue ( 512 );
+  height->setValue ( 512 );
+  format->addValidValues ( image_formats.begin ( ), image_formats.end ( ) );
+  format->setValue ( "RGBA16F" );
 
-  imageWidth->route ( displayList );
-  imageHeight->route ( displayList );
-  imageFormat->route ( imageFormat );
+  width->route ( displayList );
+  height->route ( displayList );
+  format->route ( format );
 }
 
-//void ShaderImage2D::preRender(  )
-//{
-//
-//}
-//
-//void ShaderImage2D::postRender()
-//{
-//  cout<<"Being implementation"<<endl;
-//}
 
 void ShaderImage2D::render ( ){
 #ifdef GLEW_ARB_shader_image_load_store
-  if ( texture_id == 0 || image_unit == -1||displayList->hasCausedEvent ( imageWidth )
-    ||displayList->hasCausedEvent(imageHeight)||displayList->hasCausedEvent(imageFormat) )
+  if ( texture_id == 0 || image_unit == -1||displayList->hasCausedEvent ( width )
+    ||displayList->hasCausedEvent(height)||displayList->hasCausedEvent(format) )
   {// either the first render invocation or parameter for the image needs update
     prepareShaderImage ( );
   }
   glActiveTexture ( texture_unit );
+  // For now, always set memory barrier here so image read/write is coherent
+  // to make sure the write to shader image is finish and can be accessed later through read
+  // this is not always necessary of course and can take time for opengl to sync.
+  // TODO: add dedicated node to set up memory barrier by the user, so can be selectively
+  // set only when necessary, or add parameter for this node to decide whether
+  // set barrier or not
   glMemoryBarrier ( GL_SHADER_IMAGE_ACCESS_BARRIER_BIT|GL_ATOMIC_COUNTER_BARRIER_BIT
 #ifdef GL_ARB_shader_storage_buffer_object
       |GL_SHADER_STORAGE_BARRIER_BIT
 #endif
       );
-  glBindImageTextureEXT ( image_unit, texture_id, 0, false, 0, GL_READ_WRITE, stringImageFormat_map[imageFormat->getValue ( )] );
+  // by default, bind the level zero of the texture to the image unit we generated
+  // currently , this is hard coded, maybe can be exposed as parameter later 
+  glBindImageTextureEXT ( image_unit, texture_id, 0, false, 0, 
+    GL_READ_WRITE, stringImageFormat_map[format->getValue ( )] );
 #endif
 }
 
@@ -115,20 +113,20 @@ void ShaderImage2D::prepareShaderImage ( ){
   glActiveTexture ( texture_unit );
   glBindTexture ( GL_TEXTURE_2D, texture_id );
 
-  //glTexStorage2D( GL_TEXTURE_2D, 1, stringImageFormat_map[imageFormat->getValue ( )], imageWidth->getValue(), imageHeight->getValue() );
-  // set filter, have to be GL_NEAREST
+  // set filter
   glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
   glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
   // texture creation 
-  glTexImage2D ( GL_TEXTURE_2D, 0, stringImageFormat_map[imageFormat->getValue ( )], imageWidth->getValue ( ), imageHeight->getValue ( ), 0, GL_RED, GL_UNSIGNED_INT, 0 );
+  glTexImage2D ( GL_TEXTURE_2D, 0, stringImageFormat_map[format->getValue ( )], 
+    width->getValue ( ), height->getValue ( ), 0, GL_RED, GL_UNSIGNED_INT, 0 );
 #endif
 }
 
 std::map<string, GLenum> ShaderImage2D::initStringImageFormat_map ( ){
   map<string, GLenum> m;
-  // there is bug currently, GL_R32UI seems not correctly working
-  // so use GL_R32F  as temp workaround
+  // there is a bug currently, GL_R32UI seems not correctly working
+  // so use GL_R32F  as temp workaround, need to try test and fix later 
   m["GL_RGBA32F"] = GL_RGBA32F; m["GL_RGBA16F"] = GL_RGBA16F; 
   m["GL_R32F"] = GL_R32F; m["GL_R16F"] = GL_R16F;
   m["GL_RGBA32UI"] = GL_RGBA32UI; m["GL_RGBA16UI"] = GL_RGBA16UI; m["GL_RGBA8UI"] = GL_RGBA8UI;
@@ -146,14 +144,4 @@ std::vector<string> ShaderImage2D::initImage_formats ( ){
   return v;
 }
 
-std::map<string, string> ShaderImage2D::initImageFormatQualifier_map(){
-  map<string, string> m;
-  m["GL_RGBA32F"] = "rgba32f"; m["GL_RGBA16F"] = "rgba16f"; 
-  m["GL_R32F"] = "r32f"; m["GL_R16F"] = "r16f";
-  m["GL_RGBA32UI"] = "rgba32ui"; m["GL_RGBA16UI"] = "rgba16ui"; m["GL_RGBA8UI"] = "rgba8ui";
-  m["GL_R32UI"] = "r32ui"; m["GL_R16UI"] = "r16ui"; m["GL_R8UI"] = "r8ui";
-  m["GL_RGBA32I"] = "rgba32i"; m["GL_RGBA16I"] = "rgba16i"; m["GL_RGBA8I"] = "rgba8i";
-  m["GL_R32I"] = "r32i"; m["GL_R16I"] = "r16i"; m["GL_R8I"] = "r8i";
-  return m;
-}
 

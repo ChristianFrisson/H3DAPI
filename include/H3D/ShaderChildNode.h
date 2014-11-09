@@ -22,7 +22,7 @@
 //
 //
 /// \file ShaderChildNode.h
-/// \brief Header file for ShaderChildNode, X3D scene-graph node
+/// \brief Header file for ShaderChildNode.
 ///
 //
 //////////////////////////////////////////////////////////////////////////////

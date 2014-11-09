@@ -22,7 +22,7 @@
 //
 //
 /// \file ShaderChildNode.cpp
-/// \brief CPP file for ShaderChildNode, X3D scene-graph node
+/// \brief CPP file for ShaderChildNode.
 ///
 //
 //

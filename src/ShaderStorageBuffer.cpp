@@ -22,7 +22,7 @@
 //
 //
 /// \file ShaderStorageBuffer.cpp
-/// \brief CPP file for ShaderStorageBuffer, X3D scene-graph node
+/// \brief CPP file for ShaderStorageBuffer.
 ///
 //
 //
@@ -98,11 +98,6 @@ void ShaderStorageBuffer::preRender( unsigned int program )
     program_handle = program;
   }
 #endif
-}
-
-void ShaderStorageBuffer::postRender()
-{
-  // texture_unit = GL_TEXTURE0;
 }
 
 void ShaderStorageBuffer::prepareStorageBuffer ( ){

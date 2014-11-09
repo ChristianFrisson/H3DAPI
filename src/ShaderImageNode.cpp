@@ -22,7 +22,7 @@
 //
 //
 /// \file ShaderImageNode.cpp
-/// \brief CPP file for ShaderImageNode, X3D scene-graph node
+/// \brief CPP file for ShaderImageNode.
 ///
 //
 //
@@ -49,8 +49,7 @@ ShaderImageNode::ShaderImageNode(
   texture_unit = GL_TEXTURE0;
   image_unit = -1;
   glGetIntegerv ( GL_MAX_IMAGE_SAMPLES_EXT, (GLint*)&max_image_unit );
-  //image_unit = generateImage ( );
-  
+
 }
 
 void ShaderImageNode::preRender( GLenum texture_unit_id )
@@ -64,13 +63,6 @@ void ShaderImageNode::postRender()
   texture_unit = GL_TEXTURE0;
 }
 
-//void ShaderImageNode::prepareShaderImage ( ){
-//  if ( !texture_id )
-//  {// current texture id is zero , needs to create new texture object
-//    glGenTextures ( 1, &texture_id );
-//  }
-//
-//}
 
 ShaderImageNode::~ShaderImageNode ( ){
   if ( image_unit!=-1 )
