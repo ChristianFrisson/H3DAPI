@@ -680,6 +680,7 @@ if( check_func( value ) ) { \
       { "addProgramSetting", pythonAddProgramSetting, 0 },
       { "findNodes", pythonFindNodes, 0 },
       { "takeScreenshot", pythonTakeScreenshot, 0 },
+      { "addURNResolveRule", pythonAddURNResolveRule, 0 },
       { NULL, NULL }      
     };
     
@@ -3289,6 +3290,61 @@ call the base class __init__ function." );
         return NULL;
       }
       Py_RETURN_TRUE;
+    }
+
+    PyObject* pythonAddURNResolveRule( PyObject *self, PyObject *args ) {
+           // args are (field, setting_name = "", section_name = "" )
+      if( PyTuple_Check( args ) ) {
+        unsigned int nr_args =  PyTuple_Size( args );
+        
+        if( nr_args != 3 ) {
+          ostringstream err;
+          err << "Invalid number of argument(s) to function addURNResolveRule( field, namespace, prefix, path ). Expected 3, got " << nr_args << "."; 
+          PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+          return NULL;
+        } 
+      }
+      
+      // namespace, prefix, path
+ 
+      PyObject *py_namespace_name = PyTuple_GetItem( args, 0 ); // borrowed ref?
+      if( !py_namespace_name || !PyString_Check( py_namespace_name ) ) {
+        ostringstream err;
+        err << "Invalid argument 0 to function H3D.addURNResolveRule. Should be string.";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }  
+      string namespace_name = PyString_AsString( py_namespace_name );
+      
+      PyObject *py_prefix_name = PyTuple_GetItem( args, 1 ); // borrowed ref?
+      if( !py_prefix_name || !PyString_Check( py_prefix_name ) ) {
+        ostringstream err;
+        err << "Invalid argument 1 to function H3D.addURNResolveRule. Should be string.";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+      string prefix_name = PyString_AsString( py_prefix_name );
+      
+      PyObject *py_path_name = PyTuple_GetItem( args, 2 ); // borrowed ref?
+      if( !py_path_name || !PyString_Check( py_path_name ) ) {
+        ostringstream err;
+        err << "Invalid argument 2 to function H3D.addURNResolveRule. Should be string.";
+        PyErr_SetString( PyExc_ValueError, err.str().c_str() );
+        return 0;
+      }
+      string path_name = PyString_AsString( py_path_name );
+
+      URNResolver *urn_resolver = ResourceResolver::getURNResolver();
+      if( !urn_resolver ) {
+        urn_resolver = new URNResolver();  
+        ResourceResolver::setURNResolver( urn_resolver );
+      }
+
+      urn_resolver->addURNResolveRule( namespace_name, prefix_name, path_name );
+      
+      Py_INCREF(Py_None);
+      return Py_None; 
+
     }
   }
 }
