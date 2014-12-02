@@ -162,6 +162,7 @@ TextureProperties::TextureProperties(
   textureFormat->addValidValue( "NORMAL" );
   textureFormat->addValidValue( "INTEGER" );
   textureFormat->addValidValue( "FLOAT" );
+  textureFormat->addValidValue( "SRGB" );
   textureFormat->setValue( "NORMAL" );
 
   propertyChanged->setName( "propertyChanged" );
@@ -572,7 +573,35 @@ bool TextureProperties::glInternalFormat( Image *image, GLint &internal_format )
             }
           default: return false;
         }
+#ifdef GL_EXT_texture_sRGB
+      } else if( GLEW_EXT_texture_sRGB && texture_format == "SRGB" ) {
+        switch( image->pixelType() ) {
+          case Image::RGB:
+          case Image::BGR:
+            switch( image->pixelComponentType() ) {
+              case Image::UNSIGNED:
+                switch( image->bitsPerPixel() ) {
+                  case 24:  internal_format = GL_SRGB8_EXT;  return true;
+                  default: return false;
+                }
+              default: return false;
+            }
+          case Image::RGBA:
+          case Image::BGRA:
+            switch( image->pixelComponentType() ) {
+              case Image::UNSIGNED:
+                switch( image->bitsPerPixel() ) {
+                  case 32:  internal_format = GL_SRGB8_ALPHA8_EXT; return true;
+                  default: return false;
+                }
+              default: return false;
+            }
+          default: return false;
+        }
       }
+#else
+      }
+#endif
     }
   }
   return false;

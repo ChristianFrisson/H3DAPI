@@ -449,7 +449,7 @@ namespace H3D {
     /// </table>
     ///
     /// <b>Access type:</b> inputOutput \n
-    /// <b>Valid values:</b> "NORMAL", "INTEGER", "FLOAT" \n
+    /// <b>Valid values:</b> "NORMAL", "INTEGER", "FLOAT", "SRGB" \n
     /// <b>Default value:</b> "NORMAL" \n
     /// \todo Perhaps add "NORMALIZED" value to force that type of behaviour. Also test this
     /// feature when mixing RATIONAL image with INTEGER set textureFormat. Does that even work?
