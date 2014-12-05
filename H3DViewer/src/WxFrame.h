@@ -226,7 +226,7 @@ class FrameRateDialog: public wxDialog {
   void updateFrameRates();
   void updateMenuItems();
 
-  void OnKeyDown(wxKeyEvent& event);
+  void OnCharHook(wxKeyEvent& event);
 
   wxBoxSizer *topsizer;
   wxStaticText *graphics_rate;

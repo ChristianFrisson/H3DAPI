@@ -1988,6 +1988,9 @@ void WxFrame::ShowTreeView(wxCommandEvent & event)
     // already shown, bring it up
     tree_view_dialog->SetFocus();
   }
+
+  // Give focus to the search box by default
+  tree_view_dialog->highlightSearchBox ();
 }
 
 //Show program settings window
@@ -3030,7 +3033,7 @@ void WxFrame::OnSettings (wxCommandEvent & event) {
 IMPLEMENT_CLASS(FrameRateDialog, wxDialog)
 
 BEGIN_EVENT_TABLE(FrameRateDialog, wxDialog)
-  EVT_KEY_DOWN(FrameRateDialog::OnKeyDown)
+  EVT_CHAR_HOOK(FrameRateDialog::OnCharHook)
 END_EVENT_TABLE()
 
 FrameRateDialog::FrameRateDialog(wxWindow* win ) :
@@ -3042,20 +3045,18 @@ FrameRateDialog::FrameRateDialog(wxWindow* win ) :
   topsizer = new wxBoxSizer( wxVERTICAL );
 
   updateMenuItems();
-
-  Connect(wxEVT_KEY_DOWN, wxKeyEventHandler(FrameRateDialog::OnKeyDown));
-
+  
   SetSizer( topsizer );      // use the sizer for layout
 
   topsizer->SetSizeHints( this );   // set size hints to honour minimum size
   Layout();
 }
 
-void FrameRateDialog::OnKeyDown(wxKeyEvent& event) {
-  wxMessageBox(wxT("hello from  framerate"));
-  if (event.GetKeyCode() == WXK_ESCAPE || event.GetKeyCode() == WXK_F9) {
+void FrameRateDialog::OnCharHook(wxKeyEvent& event) {
+  if ( event.GetKeyCode() == WXK_ESCAPE ) {
     Hide();
   }
+  event.Skip();
 }
 
 void FrameRateDialog::updateMenuItems() {

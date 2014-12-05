@@ -98,6 +98,12 @@ public:
   // Callback for idle. Does dynamic updates of field values and tree view.
   void OnIdle( wxIdleEvent& event );
 
+  // Handle key-press events for whole window
+  virtual void onCharHook ( wxKeyEvent& event );
+
+  // Give focus to the search box
+  void highlightSearchBox ();
+
   // Update the node field view with the given node.
   void displayFieldsFromNode( Node * );
 

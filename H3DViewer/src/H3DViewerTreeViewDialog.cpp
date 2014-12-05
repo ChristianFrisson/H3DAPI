@@ -65,9 +65,12 @@ H3DViewerTreeViewDialog::H3DViewerTreeViewDialog( wxWindow* parent )
     SplitterWindow->Unsplit();
   SplitterWindow->SplitVertically( TreeViewPanel, field_values_panel, 283 );
   this->Layout();
+
+  this->Connect( wxEVT_CHAR_HOOK, wxKeyEventHandler( H3DViewerTreeViewDialog::onCharHook ) );
 }
 
 H3DViewerTreeViewDialog::~H3DViewerTreeViewDialog() {
+  this->Disconnect( wxEVT_CHAR_HOOK, wxKeyEventHandler( H3DViewerTreeViewDialog::onCharHook ) );
   // If the menu bar is set to NULL in the constructor it will not be
   // cleaned up. Done here explicitly.
   //if( GetMenuBar() == NULL )
@@ -437,6 +440,23 @@ void H3DViewerTreeViewDialog::OnIdle( wxIdleEvent& event ) {
   } catch( ... ) {
     // ignore any errors
   }
+}
+
+void H3DViewerTreeViewDialog::onCharHook ( wxKeyEvent& event ) {
+  if ( event.ControlDown() ) {
+    if ( event.GetKeyCode() == 70 /*F*/ ) {
+      // CTRL+F: Search/find
+      search_text_ctrl->SetFocus();
+      search_text_ctrl->SelectAll();
+    }
+  }
+
+  event.Skip();
+}
+
+void H3DViewerTreeViewDialog::highlightSearchBox () {
+  search_text_ctrl->SetFocus();
+  search_text_ctrl->Clear();
 }
 
 void H3DViewerTreeViewDialog::expandTree( const wxTreeItemId &id ) {
