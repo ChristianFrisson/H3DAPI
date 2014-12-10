@@ -80,7 +80,9 @@ protected:
   /// so we check that this is the case. If the console is used from another 
   /// thread all such data will be put into the other_threads_text member variable.
   /// This can then be put into the wxTextCtrl at a later stage (in the OnIdle function).
-  class ConsoleStreamBuf: public std::streambuf {
+  ///
+  /// \todo It is still NOT thread-safe to write to the console!
+  class ConsoleStreamBuf: public std::stringbuf {
   public:
     
     /// Constructor.
@@ -90,15 +92,8 @@ protected:
       other_threads_text.Alloc(1000);
     }
 
-    /// This function needs to be here in order for xsputn to be called.
-    /// Not sure why..
-    int overflow( int c ) {
-      // return something different from EOF
-      return 0;
-    }
-
-    /// Transfer the string to wxTextCtrl.
-    std::streamsize xsputn ( const char * s, std::streamsize n );
+    // Transfer the string to wxTextCtrl.
+    virtual int sync();
 
     /// Lock to be used for accessing the other_threads_text member.
     H3DUtil::MutexLock text_lock;

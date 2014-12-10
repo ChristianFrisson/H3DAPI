@@ -37,19 +37,21 @@
 
 using namespace std;
 
-std::streamsize WxConsoleDialog::ConsoleStreamBuf::xsputn ( const char * s, 
-                                                          std::streamsize n ) {
-  // output to wxTextCtrl directly if in main wx thread, otherwise
-  // save to temporary wxString.
+int WxConsoleDialog::ConsoleStreamBuf::sync() {
+  wxString msg ( str().c_str(), wxConvUTF8 );
+
   if( wxIsMainThread() ) {
-    text_ctrl->AppendText( wxString( s, wxConvUTF8) );
+    text_ctrl->AppendText ( msg );
   } else {
     text_lock.lock();
-    other_threads_text.Append( wxString( s, wxConvUTF8 ) );
+    other_threads_text.Append ( msg );
     text_lock.unlock();
   }
-  
-  return n;
+
+  // clear buffer
+  str("");
+    
+  return std::streambuf::sync();
 }
 
 WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
