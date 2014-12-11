@@ -80,21 +80,22 @@ protected:
   /// so we check that this is the case. If the console is used from another 
   /// thread all such data will be put into the other_threads_text member variable.
   /// This can then be put into the wxTextCtrl at a later stage (in the OnIdle function).
-  ///
-  /// \todo It is still NOT thread-safe to write to the console!
-  class ConsoleStreamBuf: public std::stringbuf {
+  class ConsoleStreamBuf: public std::streambuf {
   public:
-    
+    /// Max size of buffer for characters
+    static const size_t buffer_size= 1000;
+
     /// Constructor.
     ConsoleStreamBuf( wxTextCtrl *text ):
     text_ctrl( text ) {
       // reserve memory for the string to avoid having to reallocate.
       other_threads_text.Alloc(1000);
+      buffer.reserve ( buffer_size );
     }
 
-    // Transfer the string to wxTextCtrl.
-    virtual int sync();
-
+    /// Write messages to the console text control
+    int overflow( int ch );
+    
     /// Lock to be used for accessing the other_threads_text member.
     H3DUtil::MutexLock text_lock;
 
@@ -105,6 +106,10 @@ protected:
 
     /// The wxTextCtrl to output text to.
     wxTextCtrl *text_ctrl;
+
+    /// A string buffer is used to avoid spamming the text control with single
+    /// characters which affects the performance
+    std::string buffer;
   };
 
   // the buffer object for console_stream. Pointer is owned by

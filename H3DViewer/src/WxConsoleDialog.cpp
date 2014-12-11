@@ -37,22 +37,33 @@
 
 using namespace std;
 
-int WxConsoleDialog::ConsoleStreamBuf::sync() {
-  wxString msg ( str().c_str(), wxConvUTF8 );
-
-  if( wxIsMainThread() ) {
-    text_ctrl->AppendText ( msg );
-  } else {
-    text_lock.lock();
-    other_threads_text.Append ( msg );
-    text_lock.unlock();
+int WxConsoleDialog::ConsoleStreamBuf::overflow( int c ) {
+  if ( traits_type::eq_int_type(c,traits_type::eof()) ) {
+    return traits_type::not_eof(c);
   }
 
-  // clear buffer
-  str("");
-    
-  return std::streambuf::sync();
+  char ch= traits_type::to_char_type ( c );
+  buffer+= ch;
+
+  // Only bother the text control when we have a complete line to write
+  // or if the buffer size is reached
+  if ( ch == '\n' || buffer.size() >= buffer_size ) { 
+
+    if( wxIsMainThread() ) {
+      text_ctrl->AppendText( wxString( buffer.c_str(), wxConvUTF8) );
+    } else {
+      text_lock.lock();
+      other_threads_text.Append( wxString( buffer.c_str(), wxConvUTF8 ) );
+      text_lock.unlock();
+    }
+
+    buffer.clear();
+  }
+
+  return c;
 }
+
+
 
 WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
                  wxWindowID id,
