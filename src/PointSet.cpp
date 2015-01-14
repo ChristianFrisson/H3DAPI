@@ -192,30 +192,31 @@ void PointSet::render() {
           if( attr ) attr->disableVertexBufferObject();
       }
     } else {
-      // render the points
-      glBegin( GL_POINTS );
-      for( unsigned int i = 0; i < coordinate_node->nrAvailableCoords(); ++i ) {
-        // Set up colors if colors are specified per vertex.
-        if( color_node ) {
-          color_node->render( i );
-        }
 
-        // Render vertex attribute
-        for( unsigned int attrib_index = 0;
-             attrib_index < attrib->size(); ++attrib_index ) {
-          X3DVertexAttributeNode *attr = 
-              attrib->getValueByIndex( attrib_index );
-            if( attr ) {
-              attr->render( i );
-            }
-        }
+      if( fog_coord_node ) fog_coord_node->renderArray();
+      if( color_node ) color_node->renderArray();
+      coordinate_node->renderArray();
 
-        // Render the vertices.
-        coordinate_node->render( i );
-         if( fog_coord_node) fog_coord_node->render(i);
+      for( unsigned int attrib_index = 0;
+            attrib_index < attrib->size(); ++attrib_index ) {
+        X3DVertexAttributeNode *attr = 
+            attrib->getValueByIndex( attrib_index );
+          if( attr ) attr->renderArray();
       }
-      // end GL_POLY_LINE
-      glEnd();
+
+      glDrawArrays ( GL_POINTS, 0, coordinate_node->nrAvailableCoords() );
+
+      if( fog_coord_node) fog_coord_node->disableArray();
+      if( color_node ) color_node->disableArray();
+      coordinate_node->disableArray();
+
+      for( unsigned int attrib_index = 0;
+        attrib_index < attrib->size(); ++attrib_index ) {
+          X3DVertexAttributeNode *attr = 
+            attrib->getValueByIndex( attrib_index );
+          if( attr ) attr->disableArray();
+      }
+
     }
 
     // restore previous fog attributes
