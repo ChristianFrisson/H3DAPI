@@ -66,19 +66,19 @@ namespace H3D {
     virtual void traverseSG( TraverseInfo &ti );
 
     /// This function controls the force in the x-direction.
-    /// Input to the function will be system time in milliseconds.
+    /// Input to the function will be time in seconds.
     ///
     /// <b>Access type:</b> inputOutput \n
     auto_ptr< SFFunctionNode > xFunction;
 
     /// This function controls the force in the y-direction.
-    /// Input to the function will be system time in milliseconds.
+    /// Input to the function will be time in seconds.
     ///
     /// <b>Access type:</b> inputOutput \n
     auto_ptr< SFFunctionNode > yFunction;
     
     /// This function controls the force in the z-direction.
-    /// Input to the function will be system time in milliseconds.
+    /// Input to the function will be time in seconds.
     ///
     /// <b>Access type:</b> inputOutput \n
     auto_ptr< SFFunctionNode > zFunction;
