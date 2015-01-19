@@ -425,7 +425,7 @@ namespace H3D {
     void callPostTraverseCallbacks();
 
     /// Class grouping X3DLightNode and its transformation matrix.
-    class LightInfo {
+    class H3DAPI_API LightInfo {
     public:
       /// Constructor.
       LightInfo( X3DLightNode *, const Matrix4f &transform );
