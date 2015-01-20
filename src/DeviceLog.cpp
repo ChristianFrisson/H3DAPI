@@ -166,6 +166,8 @@ HAPI::DeviceLog::LogTypeVector DeviceLog::getLogTypes () {
       log_types.push_back( HAPI::DeviceLog::RAW_POSITION );
       log_types.push_back( HAPI::DeviceLog::RAW_ORIENTATION );
       log_types.push_back( HAPI::DeviceLog::RAW_VELOCITY );
+      log_types.push_back( HAPI::DeviceLog::RAW_FORCE );
+      log_types.push_back( HAPI::DeviceLog::RAW_TORQUE );
       break;
     } else if( (*i) == "TIME" ) {
       log_types.push_back( HAPI::DeviceLog::TIME );
@@ -187,6 +189,10 @@ HAPI::DeviceLog::LogTypeVector DeviceLog::getLogTypes () {
       log_types.push_back( HAPI::DeviceLog::RAW_ORIENTATION );
     } else if( (*i) == "DEVICE_VELOCITY" ) {
       log_types.push_back( HAPI::DeviceLog::RAW_VELOCITY );
+    } else if( (*i) == "DEVICE_FORCE" ) {
+      log_types.push_back( HAPI::DeviceLog::RAW_FORCE );
+    } else if( (*i) == "DEVICE_TORQUE" ) {
+      log_types.push_back( HAPI::DeviceLog::RAW_TORQUE );
     }
   }
 
