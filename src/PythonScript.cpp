@@ -280,6 +280,22 @@ PythonScript::~PythonScript() {
 
   if( module_dict ) {
 
+    // Call an onExit function, if one is defined
+    PyObject *func = 
+      PyDict_GetItemString( static_cast< PyObject * >( module_dict ), 
+                            "onExit" );
+    if( func && PyFunction_Check( func ) ) {
+      PyObject *args = PyTuple_New(0);
+      PyObject *result = PyEval_CallObject( func, args );
+      if ( result == NULL ) {
+        PyErr_Print();
+      } else {
+        Py_DECREF( result );
+      }
+      Py_DECREF( args );
+    }
+
+
     PyObject *temp_sys_module_dict = PyImport_GetModuleDict();
     // Find all modules with a reference count above 1. Use the
     // imported_module_names vector later to remove python modules included
