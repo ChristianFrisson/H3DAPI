@@ -109,6 +109,9 @@ namespace H3D {
         int id = 0 ) {
           assert( H3DUtil::ThreadBase::inMainThread() );
           PeriodicUpdate< BaseField >::setValue( v, id );
+          value_lock.writeLock();
+          rt_value = this->value;
+          value_lock.unlock();
       }
     protected:
       // value used to exchange value between haptic and main thread 
