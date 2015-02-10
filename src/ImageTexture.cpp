@@ -34,7 +34,11 @@
 #include <H3D/GlobalSettings.h>
 #include <H3D/X3DProgrammableShaderObject.h>
 
+//#define DEBUG_SHARING
+
 using namespace H3D;
+
+ImageTexture::ImageDatabase ImageTexture::image_database;
 
 // Add this node to the H3DNodeDatabase system.
 H3DNodeDatabase ImageTexture::database( "ImageTexture", 
@@ -46,6 +50,7 @@ namespace ImageTextureInternals {
   FIELDDB_ELEMENT( ImageTexture, url, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ImageTexture, imageLoader, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ImageTexture, loadInThread, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ImageTexture, canShare, INITIALIZE_ONLY );
 }
 
 
@@ -59,13 +64,18 @@ ImageTexture::ImageTexture(
                            Inst< SFImage       > _image,
                            Inst< MFImageLoader > _imageLoader,
                            Inst< SFTextureProperties > _textureProperties,
-                           Inst< SFString      > _loadInThread ) :
+                           Inst< SFString      > _loadInThread,
+                           Inst< SFBool        > _canShare ) :
   X3DTexture2DNode( _displayList, _metadata, _repeatS, _repeatT,
                     _scaleToP2, _image, _textureProperties ),
   X3DUrlObject( _url ),
   imageLoader( _imageLoader ),
   loadInThread ( _loadInThread ),
-  load_thread( NULL ) {
+  canShare ( _canShare ),
+  load_thread( NULL ),
+  wrapped_image ( NULL ),
+  inited_sharing ( false ),
+  share_textures ( false ) {
 
   type_name = "ImageTexture";
   database.initFields( this );
@@ -75,8 +85,14 @@ ImageTexture::ImageTexture(
   loadInThread->addValidValue ( "SEPARATE" );
   loadInThread->setValue ( "DEFAULT" );
 
+  canShare->setValue ( true );
+
   url->route( image );
   imageLoader->route( image );
+}
+
+ImageTexture::~ImageTexture () {
+  removeSharedImage ();
 }
 
 Image* ImageTexture::SFImage::loadImage( ImageTexture *texture,
@@ -203,6 +219,12 @@ void ImageTexture::SFImage::update() {
   MFImageLoader *image_loaders = static_cast< MFImageLoader * >( routes_in[1] );
   MFString *urls = static_cast< MFString * >( routes_in[0] );
 
+  if ( texture->useSharing () ) {
+    texture->removeSharedImage ();
+    texture->addSharedImage ( urls->getValue() );
+    return;
+  }
+
   bool load_in_thread = X3DTextureNode::load_images_in_separate_thread;
   
   const string& load_in_thread_local= texture->loadInThread->getValue();
@@ -243,7 +265,16 @@ void ImageTexture::SFImage::update() {
 void ImageTexture::render() {
   if( url->size() > 0 ) {
     try {
-      X3DTexture2DNode::render();
+
+      if ( useSharing () ) {
+        image->upToDate();
+        if ( wrapped_image ) {
+          wrapped_image->displayList->callList();
+        }
+      } else {
+        X3DTexture2DNode::render();
+      }
+
     } catch( InvalidTextureDimensions &e ) {
       stringstream s;
       s << e.message << " with url [" ;
@@ -266,6 +297,179 @@ void ImageTexture::render() {
   } else {
     texture_target = getTextureTarget();
     disableTexturing();
+  }
+}
+
+void ImageTexture::postRender() {
+  if ( wrapped_image ) {
+    wrapped_image->postRender ();
+  } else {
+    X3DTexture2DNode::postRender ();
+  }
+}
+
+void ImageTexture::preRender() {
+  if ( wrapped_image ) {
+    wrapped_image->preRender ();
+  } else {
+    X3DTexture2DNode::preRender ();
+  }
+}
+
+void ImageTexture::enableTexturing() {
+  if ( wrapped_image ) {
+    wrapped_image->enableTexturing ();
+  } else {
+    X3DTexture2DNode::enableTexturing ();
+  }
+}
+
+void ImageTexture::disableTexturing() {
+  if ( wrapped_image ) {
+    wrapped_image->disableTexturing ();
+  } else {
+    X3DTexture2DNode::disableTexturing ();
+  }
+}
+
+GLuint ImageTexture::getTextureId() {
+  if ( wrapped_image ) {
+    return wrapped_image->getTextureId ();
+  } else {
+    return X3DTexture2DNode::getTextureId ();
+  }
+}
+
+GLuint ImageTexture::getTextureUnit() {
+  if ( wrapped_image ) {
+    return wrapped_image->getTextureUnit ();
+  } else {
+    return X3DTexture2DNode::getTextureUnit ();
+  }
+}
+
+GLenum ImageTexture::getTextureTarget() {
+  if ( wrapped_image ) {
+    return wrapped_image->getTextureTarget ();
+  } else {
+    return X3DTexture2DNode::getTextureTarget ();
+  }
+}
+
+bool ImageTexture::makeResident() {
+  if ( wrapped_image ) {
+    return wrapped_image->makeResident ();
+  } else {
+    return X3DTexture2DNode::makeResident ();
+  }
+}
+
+void ImageTexture::makeNonResident() {
+  if ( wrapped_image ) {
+    wrapped_image->makeNonResident ();
+  } else {
+    X3DTexture2DNode::makeNonResident ();
+  }
+}
+
+bool ImageTexture::isResident() {
+  if ( wrapped_image ) {
+    return wrapped_image->isResident ();
+  } else {
+    return X3DTexture2DNode::isResident ();
+  }
+}
+
+GLuint64 ImageTexture::getTextureHandle() {
+  if ( wrapped_image ) {
+    return wrapped_image->getTextureHandle ();
+  } else {
+    return X3DTexture2DNode::getTextureHandle ();
+  }
+}
+
+void ImageTexture::invalidateTextureHandle() {
+  if ( wrapped_image ) {
+    wrapped_image->invalidateTextureHandle ();
+  } else {
+    X3DTexture2DNode::invalidateTextureHandle ();
+  }
+}
+
+void ImageTexture::inUse() {
+  if ( wrapped_image ) {
+    wrapped_image->inUse ();
+  } else {
+    X3DTexture2DNode::inUse ();
+  }
+}
+
+bool ImageTexture::useSharing () {
+  if ( !inited_sharing ) {
+    share_textures= false;
+    GraphicsOptions* go = NULL;
+    GlobalSettings* gs = GlobalSettings::getActive();
+    if( gs ) {
+      gs->getOptionNode( go );
+    }
+    if ( go ) {
+      share_textures= go->shareTextures->getValue();
+    }
+    share_textures= share_textures && canShare->getValue ();
+    inited_sharing= true;
+  }
+
+  return share_textures;
+}
+
+void ImageTexture::removeSharedImage () {
+  // Deref shared image
+  if ( useSharing () && wrapped_image ) {
+    wrapped_image->displayList->unroute ( displayList );
+      
+    SharedImage& si= image_database [ wrapped_image->url->getValue() ];
+    si.use_count--;
+    if ( si.use_count <= 0 ) {
+#ifdef DEBUG_SHARING
+      if ( !wrapped_image->url->empty() ) {
+        Console(4) << "[ImageDatabase]: DELETE image: " << wrapped_image->url->getValueByIndex ( 0 ) << endl;
+      }
+#endif
+      image_database.erase ( wrapped_image->url->getValue() );
+    }
+
+    wrapped_image= NULL;
+
+#ifdef DEBUG_SHARING
+    Console(4) << "[ImageDatabase]: DEREF share. There are " << image_database.size() << " image(s) in the database" << endl;
+#endif
+  }
+}
+
+void ImageTexture::addSharedImage ( std::vector < std::string > _urls ) {
+  // Ref shared image
+  if ( useSharing () ) {
+    SharedImage& si= image_database [ _urls ];
+    if ( !si.image.get() ) {
+      ImageTexture* i= new ImageTexture ();
+      i->setName ( getName() + "[WrappedImage]" );
+      i->setURLBase ( getURLBase() );
+      i->canShare->setValue ( false );
+      i->url->setValue ( _urls );
+      si.image.reset ( i );
+#ifdef DEBUG_SHARING
+      if ( !_urls.empty() ) {
+        Console(4) << "[ImageDatabase]: NEW image: " << _urls[0] << endl;
+      }
+#endif
+    }
+    wrapped_image= static_cast < ImageTexture* > ( si.image.get() );
+    wrapped_image->displayList->route ( displayList );
+    si.use_count++;
+
+#ifdef DEBUG_SHARING
+    Console(4) << "[ImageDatabase]: REF share. There are " << image_database.size() << " image(s) in the database" << endl;
+#endif
   }
 }
 

@@ -53,6 +53,7 @@ namespace GraphicsOptionsInternals {
   FIELDDB_ELEMENT( GraphicsOptions, defaultShadowCaster, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GraphicsOptions, bindlessTextures, INPUT_OUTPUT );
   FIELDDB_ELEMENT( GraphicsOptions, bindlessTexturesUnusedTime, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( GraphicsOptions, shareTextures, INPUT_OUTPUT );
 }
 
 GraphicsOptions::GraphicsOptions( 
@@ -68,7 +69,8 @@ GraphicsOptions::GraphicsOptions(
                                  Inst< SFString > _defaultShadowGeometryAlgorithm,
                                  Inst< SFShadowCaster > _defaultShadowCaster,
                                  Inst< SFBool > _bindlessTextures,
-                                 Inst< SFTime > _bindlessTexturesUnusedTime ) :
+                                 Inst< SFTime > _bindlessTexturesUnusedTime,
+                                 Inst< SFBool > _shareTextures ) :
   H3DOptionNode( _metadata ),
   useCaching( _useCaching ),
   cachingDelay( _cachingDelay ),
@@ -81,7 +83,8 @@ GraphicsOptions::GraphicsOptions(
   defaultShadowGeometryAlgorithm( _defaultShadowGeometryAlgorithm ),
   defaultShadowCaster( _defaultShadowCaster ),
   bindlessTextures ( _bindlessTextures ),
-  bindlessTexturesUnusedTime ( _bindlessTexturesUnusedTime ) {
+  bindlessTexturesUnusedTime ( _bindlessTexturesUnusedTime ),
+  shareTextures ( _shareTextures ) {
   
   type_name = "GraphicsOptions";
   database.initFields( this );
@@ -113,6 +116,7 @@ GraphicsOptions::GraphicsOptions(
   defaultShadowGeometryAlgorithm->setValue( "GEOMETRY_SHADER" );
   bindlessTextures->setValue ( false );
   bindlessTexturesUnusedTime->setValue ( H3DTime(5) );
+  shareTextures->setValue ( false );
 
   if( !Scene::scenes.empty() ) {
     defaultShadowCaster->setValue( (*Scene::scenes.begin())->getDefaultShadowCaster() );

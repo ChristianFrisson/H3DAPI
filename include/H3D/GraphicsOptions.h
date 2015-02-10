@@ -62,7 +62,8 @@ namespace H3D {
                      Inst< SFString > _defaultShadowGeometryAlgorithm = 0,
                      Inst< SFShadowCaster > _defaultShadowCaster = 0,
                      Inst< SFBool > _bindlessTextures = 0,
-                     Inst< SFTime > _bindlessTexturesUnusedTime = 0 );
+                     Inst< SFTime > _bindlessTexturesUnusedTime = 0,
+                     Inst< SFBool > _shareTextures = 0 );
     
     bool cacheNode( Node *n ) {
       if( !useCaching->getValue() ) return false;
@@ -190,6 +191,12 @@ namespace H3D {
     /// <b>Default value: </b> 5 \n
     /// <b>Access type: </b> inputOutput \n
     auto_ptr < SFTime > bindlessTexturesUnusedTime;
+
+    /// Share image data which has the same URL.
+    ///
+    /// <b>Default value: </b> false \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr < SFBool > shareTextures;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

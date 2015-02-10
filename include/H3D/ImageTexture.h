@@ -145,10 +145,65 @@ namespace H3D {
                   Inst< SFImage  > _image            = 0,
                   Inst< MFImageLoader > _imageLoader = 0,
                   Inst< SFTextureProperties > _textureProperties = 0,
-                  Inst< SFString > _loadInThread     = 0 );
+                  Inst< SFString > _loadInThread     = 0,
+                  Inst< SFBool   > _canShare         = 0 );
+
+    virtual ~ImageTexture ();
 
     /// render() is overridden to include the url in error messages.
     virtual void render();
+
+    /// Overridden virtual function to perform the same function on the correct 
+    /// shared texture from the database.
+    virtual void postRender();
+
+    /// Overridden virtual function to perform the same function on the correct 
+    /// shared texture from the database.
+    virtual void preRender();
+
+    /// Overridden virtual function to perform the same function on the correct 
+    /// shared texture from the database.
+    virtual void enableTexturing();
+
+    /// Overridden virtual function to perform the same function on the correct 
+    /// shared texture from the database.
+    virtual void disableTexturing();
+
+    /// Overridden virtual function to perform the same function on the correct 
+    /// shared texture from the database.
+    virtual GLuint getTextureId();
+
+    /// Overridden virtual function to perform the same function on the correct 
+    /// shared texture from the database.
+    virtual GLuint getTextureUnit();
+
+    /// Overridden virtual function to perform the same function on the correct 
+    /// shared texture from the database.
+    virtual GLenum getTextureTarget();
+
+    /// Overridden virtual function to perform the same function on the correct 
+    /// shared texture from the database.
+    virtual bool makeResident ();
+
+    /// Overridden virtual function to perform the same function on the correct 
+    /// shared texture from the database.
+    virtual void makeNonResident ();
+
+    /// Overridden virtual function to perform the same function on the correct 
+    /// shared texture from the database.
+    virtual bool isResident ();
+
+    /// Overridden virtual function to perform the same function on the correct 
+    /// shared texture from the database.
+    virtual GLuint64 getTextureHandle();
+
+    /// Overridden virtual function to perform the same function on the correct 
+    /// shared texture from the database.
+    virtual void invalidateTextureHandle ();
+
+    /// Overridden virtual function to perform the same function on the correct 
+    /// shared texture from the database.
+    virtual void inUse ();
 
     /// The ImageLoader nodes to use to read the image files.
     /// 
@@ -171,12 +226,51 @@ namespace H3D {
     /// \dotfile ImageTexture_loadInThread.dot
     auto_ptr< SFString > loadInThread;
 
+    /// Share image data for URLs that are the same. Also requires global
+    /// GraphicsOption to enable.
+    ///
+    /// Note: Images with the same URL and different properties are not handled and
+    /// therefore you should use this option to disable sharing of such textures.
+    ///
+    /// <b>Default value: </b> true \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr< SFBool > canShare;
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
   protected:
+
+    /// Returns true if texture sharing should be enabled
+    bool useSharing ();
+
+    /// If this image is currently referencing some shared texture, remove this reference
+    /// If there are no other references, the texture is deleted
+    void removeSharedImage ();
+
+    /// Add a reference to, or create as needed, a shared texture with this url
+    void addSharedImage ( std::vector < std::string > _urls );
+
     /// The thread used for downloading images when 
     /// load_images_in_separate_thread is true.
     auto_ptr< H3DUtil::SimpleThread > load_thread;
+
+    /// A shared texture
+    struct SharedImage {
+      SharedImage () : use_count ( 0 ) {}
+
+      AutoRef < Node > image;
+      int use_count; ///< Number of images referencing this shared texture
+    };
+
+    /// Pointer to the shared texture currently in use, or NULL
+    ImageTexture* wrapped_image;
+    bool inited_sharing;
+    bool share_textures;
+
+    typedef std::map < std::vector < std::string >, SharedImage > ImageDatabase;
+
+    /// The shared texture database
+    static ImageDatabase image_database;
   };
 }
 
