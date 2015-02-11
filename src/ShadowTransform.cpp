@@ -45,8 +45,9 @@ namespace ShadowTransformInternals {
 
 ShadowTransform::ShadowTransform( Inst< SFNode>  _metadata,
           Inst< SFTransformNode > _transform,
+                  Inst< SFBool > _enabled,
           Inst< MFShadowObjectNode > _shadowVolume ) :
-  H3DShadowObjectNode( _metadata, _transform ),
+  H3DShadowObjectNode( _metadata, _transform, _enabled ),
   shadowVolume( _shadowVolume ) {
 
   type_name = "ShadowTransform";
@@ -58,6 +59,8 @@ void ShadowTransform::renderShadow( X3DLightNode *light,
            bool draw_caps,
            const Matrix4f &local_to_global ) {
   
+  if( !enabled->getValue() ) return;
+
   MatrixTransform *t = transform->getValue();
   for( MFShadowObjectNode::const_iterator i = shadowVolume->begin();
        i != shadowVolume->end(); i++ ) {

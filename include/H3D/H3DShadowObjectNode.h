@@ -52,7 +52,8 @@ namespace H3D {
 
     /// Constructor.
     H3DShadowObjectNode( Inst< SFNode > _metadata = 0,
-                         Inst< SFTransformNode > _transform = 0 );
+                         Inst< SFTransformNode > _transform = 0,
+                         Inst< SFBool > _enabled = 0 );
 
     /// Abstract function for drawing the shadow volume for a given light.
     /// render_caps determines if one should draw end caps to the volume
@@ -73,6 +74,12 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOutput \n
     auto_ptr< SFTransformNode > transform;
+
+    /// Used to turn on/off shadow of this shadow object.
+    ///
+    /// <b>Default value:</b> true \n
+    /// <b>Access type:</b> inputOutput \n
+    auto_ptr< SFBool > enabled;
 
     /// The H3DNodeDatabase for the node
     static H3DNodeDatabase database;

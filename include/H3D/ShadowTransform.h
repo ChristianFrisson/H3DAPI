@@ -57,6 +57,7 @@ namespace H3D {
     /// Constructor.
     ShadowTransform( Inst< SFNode          > _metadata  = 0,
          Inst< SFTransformNode > _transform = 0,
+             Inst< SFBool > _enabled = 0,
          Inst< MFShadowObjectNode  > _shadowVolume  = 0);
 
     /// Render the shadow volume for this shadow object.

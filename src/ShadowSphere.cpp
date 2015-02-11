@@ -65,6 +65,8 @@ ShadowSphere::ShadowSphere( Inst< SFNode>  _metadata,
 void ShadowSphere::renderShadow( X3DLightNode *light, 
                                  bool render_caps,
                                  const Matrix4f &local_to_global ) {
+  
+  if( !enabled->getValue() ) return;
   H3DFloat r = radius->getValue();
   Vec3f pos = position->getValue();
   

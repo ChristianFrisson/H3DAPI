@@ -46,8 +46,9 @@ namespace ShadowGeometryInternals {
 
 ShadowGeometry::ShadowGeometry( Inst< SFNode>  _metadata,
                                 Inst< SFTransformNode > _transform,
+                                Inst< SFBool > _enabled,
                                 Inst< SFGeometryNode > _geometry ) :
-  H3DShadowObjectNode( _metadata, _transform ),
+H3DShadowObjectNode( _metadata, _transform, _enabled ),
   geometry( _geometry ),
   triangles_changed( new Field ),
   modelMatrix( new SFMatrix4f ),
@@ -95,6 +96,8 @@ void ShadowGeometry::renderPointLightQuad( const Vec3d &v1, const Vec3d &v2,
 void ShadowGeometry::renderShadow( X3DLightNode *light, 
                                    bool draw_caps,
                                    const Matrix4f &local_to_global ) {
+  
+  if( !enabled->getValue() ) return;
   
   MatrixTransform *t = transform->getValue();
   X3DGeometryNode *g = geometry->getValue();

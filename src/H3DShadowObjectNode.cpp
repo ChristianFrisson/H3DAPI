@@ -41,14 +41,19 @@ H3DNodeDatabase H3DShadowObjectNode::database(
 
 namespace H3DShadowObjectNodeInternals {
   FIELDDB_ELEMENT( H3DShadowObjectNode, transform, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( H3DShadowObjectNode, enabled, INPUT_OUTPUT );
 }
 
 H3DShadowObjectNode::H3DShadowObjectNode(  Inst< SFNode>  _metadata,
-             Inst< SFTransformNode > _transform ) :
+					   Inst< SFTransformNode > _transform,
+                       Inst< SFBool > _enabled ) :
   X3DNode( _metadata ),
-  transform( _transform ) {
+  transform( _transform ),
+  enabled( _enabled ) {
   type_name = "H3DShadowObjectNode";
   database.initFields( this );
+
+  enabled->setValue( true );
 }
 
 
