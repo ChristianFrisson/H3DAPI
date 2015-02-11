@@ -106,6 +106,7 @@ namespace H3D {
     /// separating bytes.
     /// The encoding will be as follows:
     /// TIME                - double
+    /// TIMESTAMP           - double
     /// TRACKER_POSITION    - double double double
     /// TRACKER_ORIENTATION - double double double double
     /// TRACKER_VELOCITY    - double double double
@@ -145,7 +146,7 @@ namespace H3D {
     ///                        "TRACKER_ORIENTATION", "TRACKER_VELOCITY"
     ///                        "DEVICE_POSITION", "DEVICE_ORIENTATION"
     ///                        "DEVICE_VELOCITY", "BUTTONS"
-    ///                        "FORCE", "TORQUE"
+    ///                        "FORCE", "TORQUE","TIMESTAMP"
     auto_ptr< MFString > logData;
 
     auto_ptr< OnClose > close;
