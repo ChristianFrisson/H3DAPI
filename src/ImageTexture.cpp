@@ -456,6 +456,7 @@ void ImageTexture::addSharedImage ( std::vector < std::string > _urls ) {
       i->setURLBase ( getURLBase() );
       i->canShare->setValue ( false );
       i->url->setValue ( _urls );
+      i->textureProperties->setValue( this->textureProperties->getValue() );
       si.image.reset ( i );
 #ifdef DEBUG_SHARING
       if ( !_urls.empty() ) {
@@ -464,6 +465,7 @@ void ImageTexture::addSharedImage ( std::vector < std::string > _urls ) {
 #endif
     }
     wrapped_image= static_cast < ImageTexture* > ( si.image.get() );
+    wrapped_image->textureProperties->setValue( static_cast < ImageTexture* > ( si.image.get() )->textureProperties->getValue() );
     wrapped_image->displayList->route ( displayList );
     si.use_count++;
 
