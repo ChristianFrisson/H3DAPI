@@ -52,12 +52,19 @@ namespace H3D {
                                         public X3DUrlObject{
   public:
 
+    /// The FieldUpdater field updates all output fields in the SimpleMovieTexture node
+    /// that needs to be updated each frame.
+    class H3DAPI_API FieldUpdater: public PeriodicUpdate< SFTime > {
+      virtual void update();
+    };
+
+
     /// The DecoderManager class manages all state changes in the
     /// decoder depending on the values of the fields in  
     /// SimpleMovieTexture.
-    class DecoderManager: public TypedField< AutoUpdate< SFBool >,
-                          Types< SFBool, SFBool, SFBool, 
-    SFBool, MFString, SFFloat > > {
+    class H3DAPI_API DecoderManager: public TypedField< AutoUpdate< SFBool >,
+                                                        Types< SFBool, SFBool, SFBool, 
+    SFBool, MFString, SFFloat, SFTime > > {
       virtual void update();
     };
 #ifdef __BORLANDC__
@@ -76,13 +83,14 @@ namespace H3D {
                  Inst< SFBool       > _play         = 0,
                  Inst< SFBool       > _stop         = 0,
                  Inst< SFBool       > _pause        = 0,
-                 Inst< SFTime      > _duration       = 0,
-                 Inst< SFFloat     > _rate    = 0,
+                 Inst< SFTime      > _duration      = 0,
+                 Inst< SFFloat     > _rate         = 0,
                  Inst< SFBool      > _playAudio    = 0,
                  Inst< SFBool      > _loop         = 0,
                  Inst< SFInt32     > _width        = 0,
                  Inst< SFInt32     > _height       = 0,
-                 Inst< MFString >  _url             = 0 );
+                 Inst< MFString >  _url            = 0,
+                 Inst< SFTime      > _elapsedTime  = 0 );
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
@@ -168,6 +176,18 @@ namespace H3D {
     /// 
     /// \dotfile SimpleMovieTexture_videoHeight.dot
     auto_ptr< SFInt32 > videoHeight;
+
+    /// The elapsedTime field is the time elapsed from the start time of the clip in seconds. If set the
+    /// movie will jump to that time.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value: </b> 0
+    /// 
+    /// \dotfile SimpleMovieTexture_elapsedTime.dot
+    auto_ptr< SFTime > elapsedTime;
+
+    /// The fieldUpdater field is updating all output fields that needs to be updated each frame.
+    auto_ptr< FieldUpdater > fieldUpdater;
 
     /// The DecoderManager class manages all state changes in the
     /// decoder depending on the values of the fields in  

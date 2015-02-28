@@ -50,6 +50,7 @@ namespace SimpleMovieTextureInternals {
   FIELDDB_ELEMENT( SimpleMovieTexture, loop, INPUT_OUTPUT );
   FIELDDB_ELEMENT( SimpleMovieTexture, playAudio, INPUT_OUTPUT );
   FIELDDB_ELEMENT( SimpleMovieTexture, url, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( SimpleMovieTexture, elapsedTime, INPUT_OUTPUT );
 }
 
 
@@ -70,7 +71,8 @@ SimpleMovieTexture::SimpleMovieTexture(
                                    Inst< SFBool      > _loop,
                                    Inst< SFInt32     > _width,
                                    Inst< SFInt32     > _height,
-                                   Inst< MFString >  _url ):
+                                   Inst< MFString >  _url,
+                                   Inst< SFTime   > _elapsedTime ):
   H3DVideoTextureNode( _displayList, _metadata, _repeatS, _repeatT, _scaleToP2,
                        _image, _textureProperties ),
   X3DUrlObject( _url ),
@@ -83,19 +85,24 @@ SimpleMovieTexture::SimpleMovieTexture(
   loop( _loop ),
   videoWidth( _width ),
   videoHeight( _height ),
-  decoderManager( new DecoderManager ) {
+  elapsedTime( _elapsedTime ),
+  decoderManager( new DecoderManager ),
+  fieldUpdater( new FieldUpdater ) {
   type_name = "SimpleMovieTexture";
   database.initFields( this );
   
   decoderManager->setOwner( this );
   decoderManager->setName( "decoderManager" );
-  
+  fieldUpdater->setOwner( this );
+  fieldUpdater->setName( "fieldUpdater" );
+
   rate->setValue( 1, id );
   playAudio->setValue( true, id );
   loop->setValue( false, id );
   videoWidth->setValue( 0, id );
   videoHeight->setValue( 0, id );
   duration->setValue( 0, id );
+  elapsedTime->setValue( 0, id );
 
   play->routeNoEvent( decoderManager, id );
   stop->routeNoEvent( decoderManager, id );
@@ -103,8 +110,24 @@ SimpleMovieTexture::SimpleMovieTexture(
   loop->routeNoEvent( decoderManager, id );
   url->routeNoEvent( decoderManager, id );
   rate->route( decoderManager, id );
+  elapsedTime->route( decoderManager, id );
+
+  Scene::time->route( fieldUpdater );
 }
 
+void SimpleMovieTexture::FieldUpdater::update() {
+  SimpleMovieTexture *tex = static_cast< SimpleMovieTexture * >( getOwner() );
+  H3DTime elapsed_time = 0;
+  if( tex->decoder.get() ) {
+    elapsed_time = tex->decoder->getPosition();
+  }
+  if( tex->elapsedTime->getValue() != elapsed_time ) {
+    // removing route while setting value to avoid decoderManager to update
+    tex->elapsedTime->unroute( tex->decoderManager );
+    tex->elapsedTime->setValue( elapsed_time, tex->id );
+    tex->elapsedTime->routeNoEvent( tex->decoderManager );
+  }
+}
 
 void SimpleMovieTexture::DecoderManager::update() {
   SimpleMovieTexture *tex = static_cast< SimpleMovieTexture * >( getOwner() );
@@ -173,6 +196,12 @@ void SimpleMovieTexture::DecoderManager::update() {
                    << tex->decoder->getName() << " in " 
                    << tex->getName() << endl;
       }
+    }
+  } else if( event.ptr == routes_in[6] ) {
+    // position
+    H3DTime elapsed_time =static_cast< SFTime * >( routes_in[6] )->getValue( tex->id );
+    if( tex->decoder.get() ) {
+      tex->decoder->setPosition( elapsed_time );
     }
   }
 }
