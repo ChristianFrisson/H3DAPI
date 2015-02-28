@@ -197,7 +197,13 @@ void Scene::idle() {
   TimeStamp dt = t - last_time;
   frameRate->setValue( 1.0f / (H3DFloat)(dt), id );
   last_time = t;
+#ifdef HAVE_PROFILER
+  H3DUtil::H3DTimer::stepBegin("Time_update");
+#endif
   time->setValue( t, id );
+#ifdef HAVE_PROFILER
+  H3DUtil::H3DTimer::stepEnd("Time_update");
+#endif
 
 #ifdef THREAD_LOCK_DEBUG
 #ifndef HAVE_PROFILER
@@ -496,6 +502,10 @@ void Scene::idle() {
 #ifdef HAVE_PROFILER
   H3DUtil::H3DTimer::stepEnd("Event_sink_update");
 #endif
+
+#ifdef HAVE_PROFILER
+  H3DUtil::H3DTimer::stepBegin("Scene_callbacks");
+#endif
   callback_lock.lock();
   // execute callbacks
   for( CallbackList::iterator i = callbacks.begin();
@@ -508,7 +518,10 @@ void Scene::idle() {
     }
   }
   callback_lock.unlock();
-  
+#ifdef HAVE_PROFILER
+  H3DUtil::H3DTimer::stepEnd("Scene_callbacks");
+#endif  
+
   #ifdef HAVE_PROFILER
   H3DUtil::H3DTimer::stepEnd("H3D_scene_loop");
   std::stringstream profiled_result_scene_temp;

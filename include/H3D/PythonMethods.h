@@ -34,7 +34,7 @@
 #include <H3D/X3DFieldConversion.h>
 #include <H3D/X3DTypeFunctions.h>
 #include <H3D/PythonScript.h>
-
+#include <H3D/Profiling.h>
 
 #ifdef HAVE_PYTHON
 #if defined(_MSC_VER)
@@ -250,6 +250,12 @@ namespace H3D {
     }
 
     virtual void update() {
+#ifdef HAVE_PROFILER
+      if( Profiling::profile_python_fields ) {
+        H3DUtil::H3DTimer::stepBegin( getName() );
+      }
+#endif
+
       // ensure we have the GIL lock to work with multiple python threads.
       PyGILState_STATE state = PyGILState_Ensure();
       if( have_update ) {
@@ -286,6 +292,11 @@ namespace H3D {
         F::update();
       }
       PyGILState_Release(state);
+ #ifdef HAVE_PROFILER
+      if( Profiling::profile_python_fields ) {
+        H3DUtil::H3DTimer::stepEnd(getName());
+      }
+#endif
     }
     
     /// Function for checking that a field is of a correct type 

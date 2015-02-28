@@ -90,8 +90,8 @@ protected:
   // Called when text is changed
   void OnTextChange(wxCommandEvent &event);
 
-  // Called when clear button is pressed.
-  void OnConsoleClear (wxCommandEvent & event);
+  // Called when python info button is pressed.
+  void OnPythonInfoChecked (wxCommandEvent & event);
 
   void WxProfiledResultDialog::OnCopyToClipboard(wxCommandEvent &event);
 

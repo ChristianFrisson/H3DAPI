@@ -38,6 +38,7 @@
 #include <H3DUtil/Console.h>
 #include <wx/clipbrd.h>
 #include <H3D/Scene.h>
+#include <H3D/Profiling.h>
 
 using namespace std;
 
@@ -72,8 +73,9 @@ WxProfiledResultDialog::WxProfiledResultDialog ( wxWindow *parent,
                 wxALL,        //   and make border all around
                 10 );         // set border width to 10 */
 
-  // Clear button
-  wxButton *clearBtn = new wxButton(this, wxID_CLEAR, wxT("Cle&ar"));
+  // Python checkbox
+  wxCheckBox *python_checkbox = new wxCheckBox(this, wxID_CLEAR, wxT("Show Python field info"));
+  python_checkbox->SetValue( H3D::Profiling::profile_python_fields );
 
   // Close button
   wxButton *closeButton = new wxButton( this, wxID_CLOSE, wxT("&Close") );
@@ -83,7 +85,7 @@ WxProfiledResultDialog::WxProfiledResultDialog ( wxWindow *parent,
 
   // boxsizer for the buttons
   wxBoxSizer *button_sizer = new wxBoxSizer( wxHORIZONTAL );
-  button_sizer->Add(clearBtn,
+  button_sizer->Add(python_checkbox,
                     0,          // make horizontally unstretchable
                     wxALL,      // make border all around (implicit top alignment)
                     10 );       // set border width to 10
@@ -118,7 +120,7 @@ WxProfiledResultDialog::~WxProfiledResultDialog() {
 /*******************Event Table*********************/
 BEGIN_EVENT_TABLE(WxProfiledResultDialog, wxDialog)
   EVT_BUTTON (wxID_CLOSE, WxProfiledResultDialog::OnConsoleClose)
-  EVT_BUTTON (wxID_CLEAR, WxProfiledResultDialog::OnConsoleClear)
+  EVT_CHECKBOX (wxID_CLEAR, WxProfiledResultDialog::OnPythonInfoChecked)
   EVT_BUTTON (wxID_ANY,   WxProfiledResultDialog::OnCopyToClipboard)
   EVT_IDLE (WxProfiledResultDialog::OnIdle)
   
@@ -144,8 +146,9 @@ void WxProfiledResultDialog::OnCopyToClipboard(wxCommandEvent &event){
   }
 }
 
-void WxProfiledResultDialog::OnConsoleClear(wxCommandEvent &event) {
-  WxProfiledResultDialog::logText->Clear();
+void WxProfiledResultDialog::OnPythonInfoChecked(wxCommandEvent &event) {
+  bool checked = event.IsChecked();
+  H3D::Profiling::profile_python_fields = checked;
 }
 
 void WxProfiledResultDialog::OnScrollbar(wxScrollEvent& event){
