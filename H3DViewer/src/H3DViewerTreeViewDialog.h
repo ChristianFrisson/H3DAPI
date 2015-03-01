@@ -98,6 +98,9 @@ public:
   // Callback for idle. Does dynamic updates of field values and tree view.
   void OnIdle( wxIdleEvent& event );
 
+  // Callback for profiling checkbox
+  void OnProfileCheckbox( wxCommandEvent& event );
+
   // Handle key-press events for whole window
   virtual void onCharHook ( wxKeyEvent& event );
 
@@ -136,6 +139,9 @@ public:
                       string container_field,
                       ExpandMode expand = EXPAND_ALL );
 
+  // Returns a string to use as the label for a Node in the tree.
+  string getNodeLabel( H3D::Node *n, const string &container_field = "" );
+
   // Update a current tree. The list of nodes is a list of all the nodes
   // that are supposed to be children to tree_id. All nodes that are already
   // there are updated, new nodes are added and parts that are nod in the list
@@ -173,7 +179,9 @@ public:
 #endif
   
   MenuContainer *menu_container;
-
+  // if set to true the labels of all Nodes in the node tree will be updated next
+  // loop.
+  bool force_update_labels;
 
   // Help function to onSearchTextCtrl, recursive function to find the string in any wx label for any tree item.
   bool onSearchTextCtrlHelp( const wxTreeItemId &item, const wxString &to_find, wxTreeItemId &found_item, bool (*compare_func)( const wxString &s1, const wxString &s2 ), const wxTreeItemId &check_parent = wxTreeItemId() );

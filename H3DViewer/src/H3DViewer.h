@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Nov  6 2013)
+// C++ code generated with wxFormBuilder (version Jun  5 2014)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -49,6 +49,7 @@ class TreeViewDialog : public wxFrame
 		wxStaticText* m_staticText2;
 		wxTextCtrl* search_text_ctrl;
 		wxCheckBox* case_sensitive_checkbox;
+		wxCheckBox* ProfileCheckbox;
 		wxButton* btnClose;
 		
 		// Virtual event handlers, overide them in your derived class
@@ -57,6 +58,7 @@ class TreeViewDialog : public wxFrame
 		virtual void OnTreeRightClick( wxTreeEvent& event ) { event.Skip(); }
 		virtual void OnNodeSelected( wxTreeEvent& event ) { event.Skip(); }
 		virtual void onSearchTextCtrl( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnProfileCheckbox( wxCommandEvent& event ) { event.Skip(); }
 		virtual void btnCloseClick( wxCommandEvent& event ) { event.Skip(); }
 		
 	

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Nov  6 2013)
+// C++ code generated with wxFormBuilder (version Jun  5 2014)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -55,6 +55,9 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	case_sensitive_checkbox = new wxCheckBox( this, wxID_ANY, wxT("Case sensitive"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer8->Add( case_sensitive_checkbox, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
+	ProfileCheckbox = new wxCheckBox( this, wxID_ANY, wxT("Show profiling"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer8->Add( ProfileCheckbox, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
 	btnClose = new wxButton( this, wxID_CANCEL, wxT("Close"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer8->Add( btnClose, 0, wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxALL, 5 );
 	
@@ -74,6 +77,7 @@ TreeViewDialog::TreeViewDialog( wxWindow* parent, wxWindowID id, const wxString&
 	TreeViewTree->Connect( wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK, wxTreeEventHandler( TreeViewDialog::OnTreeRightClick ), NULL, this );
 	TreeViewTree->Connect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( TreeViewDialog::OnNodeSelected ), NULL, this );
 	search_text_ctrl->Connect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( TreeViewDialog::onSearchTextCtrl ), NULL, this );
+	ProfileCheckbox->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( TreeViewDialog::OnProfileCheckbox ), NULL, this );
 	btnClose->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TreeViewDialog::btnCloseClick ), NULL, this );
 }
 
@@ -85,6 +89,7 @@ TreeViewDialog::~TreeViewDialog()
 	TreeViewTree->Disconnect( wxEVT_COMMAND_TREE_ITEM_RIGHT_CLICK, wxTreeEventHandler( TreeViewDialog::OnTreeRightClick ), NULL, this );
 	TreeViewTree->Disconnect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( TreeViewDialog::OnNodeSelected ), NULL, this );
 	search_text_ctrl->Disconnect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( TreeViewDialog::onSearchTextCtrl ), NULL, this );
+	ProfileCheckbox->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( TreeViewDialog::OnProfileCheckbox ), NULL, this );
 	btnClose->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TreeViewDialog::btnCloseClick ), NULL, this );
 	
 }

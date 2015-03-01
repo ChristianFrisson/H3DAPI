@@ -35,6 +35,7 @@
 #include <H3D/H3DDisplayListObject.h>
 #include <H3D/X3DPointingDeviceSensorNode.h>
 #include <H3D/ClipPlane.h>
+#include <H3D/Profiling.h>
 
 namespace H3D {
   class H3DRenderStateObject;
@@ -235,6 +236,11 @@ namespace H3D {
     
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
+#ifdef HAVE_PROFILER
+    H3DTime time_in_last_render;
+    H3DTime time_in_last_traverseSG;
+#endif
 
     protected:
       vector< X3DPointingDeviceSensorNode * > pt_dev_sensors;

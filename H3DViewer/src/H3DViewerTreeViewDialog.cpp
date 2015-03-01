@@ -45,7 +45,8 @@
 H3DViewerTreeViewDialog::H3DViewerTreeViewDialog( wxWindow* parent )
 :
   TreeViewDialog( parent ),
-  shown_last_loop( false )
+  shown_last_loop( false ),
+  force_update_labels( false )
 {
   TreeViewTree->AddRoot( wxT("World") );
   // add the bindable nodes in the tree view
@@ -67,6 +68,11 @@ H3DViewerTreeViewDialog::H3DViewerTreeViewDialog( wxWindow* parent )
   this->Layout();
 
   this->Connect( wxEVT_CHAR_HOOK, wxKeyEventHandler( H3DViewerTreeViewDialog::onCharHook ) );
+#ifdef HAVE_PROFILER
+  ProfileCheckbox->SetValue( H3D::Profiling::profile_group_nodes );
+#else  
+  ProfileCheckbox->Hide();
+#endif
 }
 
 H3DViewerTreeViewDialog::~H3DViewerTreeViewDialog() {
@@ -210,17 +216,7 @@ void H3DViewerTreeViewDialog::showEntireSceneAsTree( H3DViewerTreeViewDialog::Ex
   updateNodeTree( bindable_tree_id, l, H3DViewerTreeViewDialog::EXPAND_NONE );
 }
 
-void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id, 
-                                             H3D::Node *n,
-                                             string container_field,
-                                             H3DViewerTreeViewDialog::ExpandMode expand ) {
-
-  if( !n ) return;
-
-  if( n->getProtoInstanceParent() ) {
-    n = n->getProtoInstanceParent();
-  }
-
+string H3DViewerTreeViewDialog::getNodeLabel( H3D::Node *n, const string &container_field ) {
   // the name in the tree is NodeType(DEFed name)
   string tree_string = n->getTypeName();
   if( n->hasName() ) {
@@ -240,6 +236,36 @@ void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id,
     }
   }
 
+#ifdef HAVE_PROFILER
+  if( H3D::Profiling::profile_group_nodes ) {
+    X3DGroupingNode *group = dynamic_cast< X3DGroupingNode * >( n );
+    if( group ) {
+      char profile_string[255];
+
+      sprintf( profile_string, " (r: %.1f ms t: %.1f ms)", 1000 * group->time_in_last_render, 1000 * group->time_in_last_traverseSG );
+      tree_string = tree_string + profile_string;
+    }
+  }
+#endif
+
+  if( container_field != n->defaultXMLContainerField() ) {
+    tree_string = tree_string + " (cf: " + container_field + ")";
+  }
+  return tree_string;
+}
+
+
+void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id, 
+                                             H3D::Node *n,
+                                             string container_field,
+                                             H3DViewerTreeViewDialog::ExpandMode expand ) {
+
+  if( !n ) return;
+
+  if( n->getProtoInstanceParent() ) {
+    n = n->getProtoInstanceParent();
+  }
+
   // Check if node has a metadata object named "TreeView_expandMode". If it does the value of it overrides
   // any other settings for expand mode for this node.
   X3DNode *x3d_node = dynamic_cast< X3DNode * >( n );
@@ -256,9 +282,7 @@ void H3DViewerTreeViewDialog::addNodeToTree( wxTreeItemId tree_id,
     }
   }
   
-  if( container_field != n->defaultXMLContainerField() ) {
-    tree_string = tree_string + " (cf: " + container_field + ")";
-  }
+  string tree_string = getNodeLabel( n, container_field );
   // add an item for this node in the tree
   wxTreeItemId new_id = TreeViewTree->AppendItem( tree_id, wxString( tree_string.c_str(), wxConvUTF8 ) );
   unsigned int s1 = node_map.size();
@@ -333,7 +357,15 @@ void H3DViewerTreeViewDialog::updateNodeTree( wxTreeItemId tree_id,
       if( node->getProtoInstanceParent() ) {
         node = node->getProtoInstanceParent(); 
       }
-      if( node == id_node ) break;
+      if( node == id_node ) {
+#ifdef HAVE_PROFILER
+        if( H3D::Profiling::profile_group_nodes || force_update_labels) {
+          string node_label = getNodeLabel( node, (*ni).second ) ;
+          TreeViewTree->SetItemText(*i, wxString( node_label.c_str() ) );
+        }
+#endif
+        break;
+      }
     }
 
     if( ni != nodes.end() ) {
@@ -408,7 +440,12 @@ void H3DViewerTreeViewDialog::clearTreeView() {
   updateNodeTree( TreeViewTree->GetRootItem(), l );
   updateNodeTree( bindable_tree_id, l, H3DViewerTreeViewDialog::EXPAND_NONE, false );
   displayFieldsFromNode( NULL );
+}
 
+void H3DViewerTreeViewDialog::OnProfileCheckbox( wxCommandEvent& event ) {
+  bool checked = event.IsChecked();
+  H3D::Profiling::profile_group_nodes = checked;
+  force_update_labels = true;
 }
 
 void H3DViewerTreeViewDialog::OnIdle( wxIdleEvent& event ) {
@@ -428,6 +465,9 @@ void H3DViewerTreeViewDialog::OnIdle( wxIdleEvent& event ) {
       } else {
         showEntireSceneAsTree( H3DViewerTreeViewDialog::EXPAND_GROUP );
       }
+#ifdef HAVE_PROFILER
+      force_update_labels = false;
+#endif
       last_tree_update = now;
     }
   } else if( shown_last_loop ) {

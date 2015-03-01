@@ -63,7 +63,12 @@ X3DGroupingNode::X3DGroupingNode( Inst< AddChildren    > _addChildren,
   use_union_bound( false ),
   addChildren   ( _addChildren    ),
   removeChildren( _removeChildren ),
-  children      ( _children       ) {
+  children      ( _children       )
+#ifdef HAVE_PROFILER
+  ,time_in_last_render( 0 ),
+  time_in_last_traverseSG( 0 ) 
+#endif
+{
 
   type_name = "X3DGroupingNode";
   database.initFields( this );
@@ -76,6 +81,13 @@ X3DGroupingNode::X3DGroupingNode( Inst< AddChildren    > _addChildren,
 }
 
 void X3DGroupingNode::render()     { 
+#ifdef HAVE_PROFILER
+  H3DTime start_time;
+  if( H3D::Profiling::profile_group_nodes ) {
+    start_time = TimeStamp();
+  }
+#endif
+
   // skip rendering if none of the children are transparent(in multi-pass
   // transparency mode) and the render pass is a pass to render transparent
   // objects.
@@ -113,9 +125,22 @@ void X3DGroupingNode::render()     {
   }
   
 
+#ifdef HAVE_PROFILER
+  if( H3D::Profiling::profile_group_nodes ) {
+    TimeStamp end_time;
+    time_in_last_render = end_time - start_time;
+  }
+#endif
 };
 
 void X3DGroupingNode::traverseSG( TraverseInfo &ti ) {
+#ifdef HAVE_PROFILER
+  H3DTime start_time;
+  if( H3D::Profiling::profile_group_nodes ) {
+    start_time = TimeStamp();
+  }
+#endif
+  
   // save previous state of multi-pass transparency and reset
   // to false in order to be able to identify if any of the children
   // nodes sets it.
@@ -144,6 +169,12 @@ void X3DGroupingNode::traverseSG( TraverseInfo &ti ) {
 
   children_multi_pass_transparency = ti.getMultiPassTransparency();
   ti.setMultiPassTransparency( previous_multi_pass || children_multi_pass_transparency ); 
+#ifdef HAVE_PROFILER
+  if( H3D::Profiling::profile_group_nodes ) {
+    TimeStamp end_time;
+    time_in_last_traverseSG = end_time - start_time;
+  }
+#endif
 }
 
 bool X3DGroupingNode::lineIntersect(

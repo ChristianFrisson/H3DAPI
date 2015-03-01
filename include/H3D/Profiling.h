@@ -35,6 +35,7 @@
 namespace H3D {
   namespace Profiling {
     extern H3DAPI_API bool profile_python_fields;
+    extern H3DAPI_API bool profile_group_nodes;
   }
 }
 

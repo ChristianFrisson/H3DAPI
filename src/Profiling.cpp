@@ -30,5 +30,6 @@
 #include <H3D/Profiling.h>
 
 bool H3D::Profiling::profile_python_fields = true;
+bool H3D::Profiling::profile_group_nodes = true;
 
 
