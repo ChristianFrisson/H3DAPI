@@ -34,6 +34,7 @@
 #include <H3D/SFFloat.h>
 #include <H3D/SFTime.h>
 #include <H3D/SFInt32.h>
+#include <H3D/PeriodicUpdate.h>
 
 namespace H3D {
   /// \ingroup H3DNodes 
