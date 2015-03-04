@@ -37,6 +37,7 @@
 #include <wx/wx.h>
 #include <wx/clipbrd.h>
 #include <sstream>
+#include <fstream>
 #include <memory>
 #include <H3DUtil/Threads.h>
 
@@ -47,12 +48,12 @@ class WxConsoleDialog: public wxDialog
 public:
   /// Constructor
   WxConsoleDialog ( wxWindow *parent,
-          wxWindowID id,
-          const wxString &title,
-          const wxPoint& pos = wxDefaultPosition,
-          const wxSize& size = wxDefaultSize,
-          long style = wxDEFAULT_DIALOG_STYLE
-          );
+    wxWindowID id,
+    const wxString &title,
+    const wxPoint& pos = wxDefaultPosition,
+    const wxSize& size = wxDefaultSize,
+    long style = wxDEFAULT_DIALOG_STYLE
+    );
 
   /// Destructor.
   ~WxConsoleDialog();
@@ -95,7 +96,7 @@ protected:
 
     /// Write messages to the console text control
     int overflow( int ch );
-    
+
     /// Lock to be used for accessing the other_threads_text member.
     H3DUtil::MutexLock text_lock;
 
@@ -106,6 +107,8 @@ protected:
 
     /// The wxTextCtrl to output text to.
     wxTextCtrl *text_ctrl;
+
+    wxString mainthread_text_copy;
 
     /// A string buffer is used to avoid spamming the text control with single
     /// characters which affects the performance
@@ -119,7 +122,7 @@ protected:
   // the streambuf of cerr and cout that was used when this WxConsoleDialog was created.
   std::streambuf *orig_cerr_buf, *orig_cout_buf;
 
-  // The console stream. The contents of other_thread_output is eventuelly
+  // The console stream. The contents of other_thread_output is eventually
   // transferred to this stream.
   std::auto_ptr< std::ostream >console_stream;
   // Called when console is closed.
@@ -132,7 +135,14 @@ protected:
   void OnIdle( wxIdleEvent &event );
   // Declare event table.
   DECLARE_EVENT_TABLE();
- 
+
+  // Flag if console should be logged to file
+  bool filelog_enabled;
+
+  // Files to log console
+  std::ofstream filelog_cout;
+  std::ofstream filelog_console;
+
 };
 
 #endif

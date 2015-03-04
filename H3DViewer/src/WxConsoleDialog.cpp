@@ -51,6 +51,9 @@ int WxConsoleDialog::ConsoleStreamBuf::overflow( int c ) {
 
     if( wxIsMainThread() ) {
       text_ctrl->AppendText( wxString( buffer.c_str(), wxConvUTF8) );
+      text_lock.lock();
+      mainthread_text_copy.Append( wxString( buffer.c_str(), wxConvUTF8) );
+      text_lock.unlock();
     } else {
       text_lock.lock();
       other_threads_text.Append( wxString( buffer.c_str(), wxConvUTF8 ) );
@@ -66,28 +69,28 @@ int WxConsoleDialog::ConsoleStreamBuf::overflow( int c ) {
 
 
 WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
-                 wxWindowID id,
-                 const wxString &title,
-                 const wxPoint& pos,
-                 const wxSize& size,
-                 long style
-                 ): wxDialog (parent, id, title, pos, size, style)
+  wxWindowID id,
+  const wxString &title,
+  const wxPoint& pos,
+  const wxSize& size,
+  long style
+  ): wxDialog (parent, id, title, pos, size, style)
 {
   wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
-  
+
   // create text ctrl with minimal size 400x200
   logText = (wxTextCtrl *) NULL;
   logText = new wxTextCtrl ( this, -1, wxT(""),
-                             wxDefaultPosition, wxSize(400, 200),
-                             wxTE_MULTILINE | wxTE_READONLY );
+    wxDefaultPosition, wxSize(400, 200),
+    wxTE_MULTILINE | wxTE_READONLY );
 
   clip_board = new wxClipboard();
 
   topsizer->Add(logText, 
-                1,            // make vertically stretchable
-                wxEXPAND |    // make horizontally stretchable
-                wxALL,        //   and make border all around
-                10 );         // set border width to 10 */
+    1,            // make vertically stretchable
+    wxEXPAND |    // make horizontally stretchable
+    wxALL,        //   and make border all around
+    10 );         // set border width to 10 */
 
   // Clear button
   wxButton *clearBtn = new wxButton(this, wxID_CLEAR, wxT("Cle&ar"));
@@ -101,28 +104,28 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
   // boxsizer for the buttons
   wxBoxSizer *button_sizer = new wxBoxSizer( wxHORIZONTAL );
   button_sizer->Add(clearBtn,
-                    0,          // make horizontally unstretchable
-                    wxALL,      // make border all around (implicit top alignment)
-                    10 );       // set border width to 10
+    0,          // make horizontally unstretchable
+    wxALL,      // make border all around (implicit top alignment)
+    10 );       // set border width to 10
 
   button_sizer->Add(closeButton, 
-                    0,           // make horizontally unstretchable
-                    wxALL,       // make border all around (implicit top alignment)
-                    10 );        // set border width to 10
+    0,           // make horizontally unstretchable
+    wxALL,       // make border all around (implicit top alignment)
+    10 );        // set border width to 10
 
   button_sizer->Add(copyButton,
-                    0,
-                    wxALL,
-                    10);
+    0,
+    wxALL,
+    10);
 
   topsizer->Add(button_sizer,
-                0,                // make vertically unstretchable
-                wxALIGN_CENTER ); // no border and centre horizontally
-  
+    0,                // make vertically unstretchable
+    wxALIGN_CENTER ); // no border and center horizontally
+
   SetSizer( topsizer );      // use the sizer for layout
-  
-  topsizer->SetSizeHints( this );   // set size hints to honour minimum size
-  
+
+  topsizer->SetSizeHints( this );   // set size hints to honor minimum size
+
   // redirect the console to logText wxTextCtrl.
   console_stream_buf = new ConsoleStreamBuf( logText );
   console_stream.reset( new ostream( console_stream_buf ) );
@@ -133,9 +136,26 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
   orig_cerr_buf = cerr.rdbuf();
   cout.rdbuf(console_stream_buf);
   cerr.rdbuf(console_stream_buf);
+
+  if( char *buffer = getenv("H3D_CONSOLE_LOGFILE") ) {
+    if (strcmp( buffer, "TRUE" ) == 0 ){
+      filelog_enabled = true; }
+    else if (strcmp( buffer, "FALSE" ) == 0 ){
+      filelog_enabled = false; }
+  }
+
+  if (filelog_enabled) {
+    filelog_cout.open("console_cout_and_cerr_log.txt", std::ofstream::out);
+    filelog_console.open("console_main_log.txt", std::ofstream::out);
+  }
 }
 
 WxConsoleDialog::~WxConsoleDialog() {
+  if (filelog_enabled) {
+    filelog_cout.close();
+    filelog_console.close();
+  }
+
   // restore cout and cerr
   cout.rdbuf(orig_cout_buf);
   cerr.rdbuf(orig_cerr_buf);
@@ -143,7 +163,7 @@ WxConsoleDialog::~WxConsoleDialog() {
   // The contained buffer is not deleted, set a new buffer and delete
   // buffer to clear up memory.
   streambuf * tmp_buf = console_stream->rdbuf(NULL);
-  
+
   console_stream.reset( NULL );
   delete tmp_buf;
   delete clip_board;
@@ -155,11 +175,11 @@ BEGIN_EVENT_TABLE(WxConsoleDialog, wxDialog)
   EVT_BUTTON (wxID_CLEAR, WxConsoleDialog::OnConsoleClear)
   EVT_BUTTON (wxID_ANY,   WxConsoleDialog::OnCopyToClipboard)
   EVT_IDLE (WxConsoleDialog::OnIdle)
-END_EVENT_TABLE()
+  END_EVENT_TABLE()
 
-/*******************Member Functions*********************/
-void WxConsoleDialog::OnConsoleClose(wxCommandEvent &event) {
-  Close(TRUE);
+  /*******************Member Functions*********************/
+  void WxConsoleDialog::OnConsoleClose(wxCommandEvent &event) {
+    Close(TRUE);
 }
 
 void WxConsoleDialog::OnConsoleClear(wxCommandEvent &event) {
@@ -179,13 +199,13 @@ void WxConsoleDialog::OnCopyToClipboard(wxCommandEvent &event){
       clip_board->Close();
     }
     /*if(!copied){
-      ::wxMessageBox("The clipboard copy failed", "Error", wxICON_ERROR | wxCENTRE);
+    ::wxMessageBox("The clipboard copy failed", "Error", wxICON_ERROR | wxCENTRE);
     }*/
   }
 }
 
 void WxConsoleDialog::OnIdle(wxIdleEvent &event) {
-  wxString output;
+  wxString output, output2;
 
   // transfer text output to console from other threads than
   // main thread to the output variable and reset the console.
@@ -199,5 +219,19 @@ void WxConsoleDialog::OnIdle(wxIdleEvent &event) {
   // Send available text to wxTextCtrl.
   if( !output.IsEmpty() ) {
     logText->AppendText( output );
+    if (filelog_enabled)
+      filelog_cout << output;
+      filelog_cout.flush();
+  }
+
+  if (filelog_enabled) {
+    console_stream_buf->text_lock.lock();
+    if( !console_stream_buf->mainthread_text_copy.IsEmpty() ) {
+      output2.Alloc( 1000 );
+      output2.swap( console_stream_buf->mainthread_text_copy );
+      filelog_console << output2;
+      filelog_console.flush();
+    }
+    console_stream_buf->text_lock.unlock();
   }
 }
