@@ -126,6 +126,10 @@ namespace H3D {
                                  int xoffset, int yoffset,
                                  int width, int height );
 
+    /// override the render to image function, to download the texture_id
+    /// directly from graphic card
+    virtual Image* renderToImage ( H3DInt32 _width, H3DInt32 _height, bool output_float_texture = false  );
+
     /// If true the texture will repeat itself when the s texture coordinate
     /// is outside the range [0,1]. If false the texture will be clamped if
     /// outside the same range.

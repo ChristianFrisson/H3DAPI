@@ -442,3 +442,30 @@ GLenum X3DTexture2DNode::glPixelFormat( Image *i ) {
     return X3DTextureNode::glPixelFormat( i );
   }
 }
+
+Image* X3DTexture2DNode::renderToImage( H3DInt32 _width, H3DInt32 _height, bool output_float_texture /* = false */ ){
+  GLuint t_id = getTextureId();
+  if( glIsTexture(t_id) ) {
+    Console(4)<<"texture id: "<<t_id<<" is valid, is saving texture"<<endl;
+    int bpp;
+
+    // Create container for image data, then bind buffer and read from it.
+    Image* image;
+    if( output_float_texture ) {
+      Console(4)<<"saving texture for floating point texture"<<endl;
+      bpp = sizeof(float)*8*4;
+      image= new PixelImage ( _width, _height, 1, bpp, Image::RGBA, Image::RATIONAL );
+    }else{
+      bpp = 32;
+      image= new PixelImage ( _width, _height, 1, bpp, Image::BGRA, Image::UNSIGNED );
+    }
+    GLint active_texture_bind = 0;
+    glGetIntegerv( GL_TEXTURE_BINDING_2D, &active_texture_bind );
+    glBindTexture( getTextureTarget(), t_id );
+    glGetTexImage( getTextureTarget(), 0, glPixelFormat( image ), glPixelComponentType(image), image->getImageData() );
+    glBindTexture( getTextureTarget(), active_texture_bind );
+    return image;
+  }
+  Console(4)<<"texture id: "<< t_id << " is not valid, can not save texture "<<endl;
+  return NULL;
+}
