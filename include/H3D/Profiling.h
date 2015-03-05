@@ -31,6 +31,7 @@
 #define __PROFILING_H__
 
 #include <H3D/H3DApi.h>
+#include <H3DUtil/H3DTimer.h>
 
 namespace H3D {
   namespace Profiling {
