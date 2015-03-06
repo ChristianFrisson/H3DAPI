@@ -214,9 +214,9 @@ namespace H3D {
       /// vertex.
       ///
       virtual X3DNormalNode *generateNormalsPerVertex( 
-                                    X3DCoordinateNode *coord,
+                                    X3DCoordinateNode *_coord,
                                     const vector< int > &coord_index,
-                                    bool ccw,
+                                    bool _ccw,
                                     H3DFloat crease_angle );
     
       /// Create a new X3DNormalNode from the arguments given
@@ -235,9 +235,9 @@ namespace H3D {
       /// the vertices are viewed (in the local coordinate system of the Shape)
       /// from the opposite direction as the normal.
        virtual X3DNormalNode *generateNormalsPerVertex( 
-                                    X3DCoordinateNode *coord,
+                                    X3DCoordinateNode *_coord,
                                     const vector< int > &coord_index,
-                                    bool ccw );
+                                    bool _ccw );
 
       /// Create a new X3DNormalNode from the arguments given
       /// with one normal for each face specified.
@@ -256,9 +256,9 @@ namespace H3D {
       /// vertex.
       ///
       virtual X3DNormalNode *generateNormalsPerFace( 
-                                    X3DCoordinateNode *coord,
+                                    X3DCoordinateNode *_coord,
                                     const vector< int > &coord_index,
-                                    bool ccw );
+                                    bool _ccw );
 
     };
 
@@ -296,7 +296,7 @@ namespace H3D {
       /// \param tangent Variable in which generated tangents are set.
       /// \param binormal Variable in which generated binormals are set.
       virtual void generateTangentsPerVertex( 
-                                              X3DCoordinateNode *coord,
+                                              X3DCoordinateNode *_coord,
                                               X3DTextureCoordinateNode *tex_coord,
                                               const vector< int > &coord_index,
                                               const vector< int > &tex_coord_index,
@@ -328,13 +328,13 @@ namespace H3D {
       /// from the opposite direction as the normal.
       /// \param tangent Variable in which generated tangents are set.
       /// \param binormal Variable in which generated binormals are set.
-      virtual void generateTangentsPerVertex( 
-                                             X3DCoordinateNode *coord,
+      virtual void generateTangentsPerVertex(
+                                             X3DCoordinateNode *_coord,
                                              X3DTextureCoordinateNode *tex_coord,
                                              const vector< int > &coord_index,
                                              const vector< int > &tex_coord_index,
                                              H3DFloat crease_angle,
-                                             bool ccw,
+                                             bool _ccw,
                                              FloatVertexAttribute *tangent,
                                              FloatVertexAttribute *binormal
                                               );
@@ -353,7 +353,7 @@ namespace H3D {
       /// \param tangent Variable in which generated tangents are set.
       /// \param binormal Variable in which generated binormals are set.
       virtual void generateTangentsPerFace( 
-                                           X3DCoordinateNode *coord,
+                                           X3DCoordinateNode *_coord,
                                            X3DTextureCoordinateNode *tex_coord,
                                            const vector< int > &coord_index,
                                            const vector< int > &tex_coord_index,
@@ -364,7 +364,7 @@ namespace H3D {
       /// Returns the texture coordinate for a given index. If no
       /// texture coordinate node is specified it will use the
       /// default texture coordinate generation for an IndexedTriangleSet.
-      Vec3f getTexCoord( X3DCoordinateNode *coord,
+      Vec3f getTexCoord( X3DCoordinateNode *_coord,
                          X3DTextureCoordinateNode *tex_coord,
                          int index );
 

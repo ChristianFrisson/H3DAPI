@@ -320,26 +320,26 @@ void TriangleFanSet::traverseSG( TraverseInfo &ti ) {
 void TriangleFanSet::AutoNormal::update() {
   bool normals_per_vertex = 
     static_cast< SFBool * >( routes_in[0] )->getValue();
-  X3DCoordinateNode *coord = 
+  X3DCoordinateNode *_coord = 
     static_cast< X3DCoordinateNode * >( static_cast< SFCoordinateNode * >
                                         ( routes_in[1] )->getValue() );
   const vector<int> &fan_count = 
     static_cast< MFInt32 * >( routes_in[2] )->getValue();
-  bool ccw = static_cast< SFBool * >( routes_in[3] )->getValue();
+  bool _ccw = static_cast< SFBool * >( routes_in[3] )->getValue();
 
   if( normals_per_vertex ) 
-    value = generateNormalsPerVertex( coord, fan_count, ccw );
+    value = generateNormalsPerVertex( _coord, fan_count, _ccw );
   else
-    value = generateNormalsPerFace( coord, fan_count, ccw );
+    value = generateNormalsPerFace( _coord, fan_count, _ccw );
 }
 
 X3DNormalNode *TriangleFanSet::AutoNormal::generateNormalsPerVertex( 
-                                   X3DCoordinateNode *coord,
+                                   X3DCoordinateNode *_coord,
                                    const vector< int > &fan_count,
-                                   bool ccw ) {
-  Normal *normal = new Normal;
-  if( coord ) {
-    vector< Vec3f > normals( coord->nrAvailableCoords(), 
+                                   bool _ccw ) {
+  Normal *_normal = new Normal;
+  if( _coord ) {
+    vector< Vec3f > normals( _coord->nrAvailableCoords(), 
                              Vec3f( 0, 0, 0 ) );
     // the current vertex index
     unsigned int vertex_count = 0;
@@ -354,14 +354,14 @@ X3DNormalNode *TriangleFanSet::AutoNormal::generateNormalsPerVertex(
       for( int j = 0; j < (*sc) - 2; ++j ) {
         Vec3f norm, A, B, C, AB, BC;
         // calculate a normal 
-        A = coord->getCoord( fan_root );
-        B = coord->getCoord( vertex_count+1 );
-        C = coord->getCoord( vertex_count+2 );
+        A = _coord->getCoord( fan_root );
+        B = _coord->getCoord( vertex_count+1 );
+        C = _coord->getCoord( vertex_count+2 );
         AB = B - A;
         BC = C - B;
         norm = AB % BC;
         norm.normalizeSafe();
-        if( !ccw ) 
+        if( !_ccw ) 
           norm = -norm;
         
         normals[ fan_root ] += norm;
@@ -382,17 +382,17 @@ X3DNormalNode *TriangleFanSet::AutoNormal::generateNormalsPerVertex(
          ++i ) {
       (*i).normalizeSafe();
     }
-    normal->vector->setValue( normals );
+    _normal->vector->setValue( normals );
   }
-  return normal;
+  return _normal;
 }
 
 X3DNormalNode *TriangleFanSet::AutoNormal::generateNormalsPerFace( 
-                                             X3DCoordinateNode *coord,
+                                             X3DCoordinateNode *_coord,
                                              const vector< int > &fan_count,
-                                             bool ccw ) {
-  Normal *normal = new Normal;
-  if( coord ) {
+                                             bool _ccw ) {
+  Normal *_normal = new Normal;
+  if( _coord ) {
     vector< Vec3f > normals;
     // the current vertex index
     unsigned int vertex_count = 0;
@@ -408,9 +408,9 @@ X3DNormalNode *TriangleFanSet::AutoNormal::generateNormalsPerFace(
       
         Vec3f norm, A, B, C, AB, BC;
         // calculate a normal for the triangle
-        A = coord->getCoord( fan_root );
-        B = coord->getCoord( vertex_count + 1 );
-        C = coord->getCoord( vertex_count + 2 );
+        A = _coord->getCoord( fan_root );
+        B = _coord->getCoord( vertex_count + 1 );
+        C = _coord->getCoord( vertex_count + 2 );
         
         AB = B - A;
         BC = C - B;
@@ -423,7 +423,7 @@ X3DNormalNode *TriangleFanSet::AutoNormal::generateNormalsPerFace(
           norm = Vec3f( 1, 0, 0 );
         }
         
-        if( !ccw ) 
+        if( !_ccw ) 
           norm = -norm;
         
         normals.push_back( norm );
@@ -435,9 +435,9 @@ X3DNormalNode *TriangleFanSet::AutoNormal::generateNormalsPerFace(
 
       fan_root += *sc;
     }
-    normal->vector->setValue( normals );
+    _normal->vector->setValue( normals );
   }
-  return normal;
+  return _normal;
 }
 
 

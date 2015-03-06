@@ -98,9 +98,9 @@ void SplinePositionInterpolator2D::SFValue::update() {
     weight );
 
 
-  bool closed=interpolator->closed->getValue();
-  bool normalizeVelocity=interpolator->normalizeVelocity->getValue();
-  vector< H3DFloat > key=interpolator->key->getValue();
+  bool _closed = interpolator->closed->getValue();
+  bool _normalizeVelocity = interpolator->normalizeVelocity->getValue();
+  vector< H3DFloat > _key=interpolator->key->getValue();
   
   vector< Vec2f >  T;
   Vec2f T0;
@@ -130,10 +130,10 @@ void SplinePositionInterpolator2D::SFValue::update() {
     // Calculate T for the different conditions
     if(key_velocity.size() == key_value.size())
     {
-      if(!normalizeVelocity){
+      if(!_normalizeVelocity){
         T=key_velocity;
       }
-      else if(normalizeVelocity){  
+      else if(_normalizeVelocity){  
         Vec2f a;
         for(int i=0; i<key_size; ++i){
           a = key_velocity[i];
@@ -144,7 +144,7 @@ void SplinePositionInterpolator2D::SFValue::update() {
     }
 
 
-    else if(closed && !ignoreClosed){
+    else if(_closed && !ignoreClosed){
       for(int i=0; i<key_size; ++i){
         if(i==0){
           T.push_back((key_value[i+1]-key_value[tMinus1])/2);
@@ -158,7 +158,7 @@ void SplinePositionInterpolator2D::SFValue::update() {
       }
     }
 
-    else if(!closed || ignoreClosed){
+    else if(!_closed || ignoreClosed){
       T.push_back(Vec2f(0,0)); 
       for(int i=1; i<key_size-1; ++i){
         T.push_back((key_value[i+1]-key_value[i-1])/2);
@@ -167,7 +167,7 @@ void SplinePositionInterpolator2D::SFValue::update() {
     }
 
     if(key_velocity.size() ==2){
-      if(!normalizeVelocity){
+      if(!_normalizeVelocity){
         T[0] =key_velocity[0];
         if(notSpecified){
           T.push_back(key_velocity[1]); 
@@ -176,7 +176,7 @@ void SplinePositionInterpolator2D::SFValue::update() {
           T[key_size-1] = key_velocity[1]; 
         }
       }
-      else if(normalizeVelocity){
+      else if(_normalizeVelocity){
         Vec2f a= key_velocity[0];
         T[0]=(key_velocity[0]*(D/(a.length() )));
         if(notSpecified){
@@ -192,10 +192,10 @@ void SplinePositionInterpolator2D::SFValue::update() {
     } // Calculations for T are ready
 
     //Calculate F1, F2, T0, T1
-    if (!closed || specified || ignoreClosed){
+    if (!_closed || specified || ignoreClosed){
       for(int i=1; i<key_size-1; ++i){
-        F1.push_back(2*((key[i] - key[i-1])/(key[i+1] - key[i-1])));
-        F2.push_back(2*((key[i+1] - key[i])/(key[i+1] - key[i-1])));
+        F1.push_back(2*((_key[i] - _key[i-1])/(_key[i+1] - _key[i-1])));
+        F2.push_back(2*((_key[i+1] - _key[i])/(_key[i+1] - _key[i-1])));
       }
       if((key_index>0) && (key_index <key_size-2)){
         T0 = (T[key_index]*F1[key_index-1]); 
@@ -219,19 +219,19 @@ void SplinePositionInterpolator2D::SFValue::update() {
       }
     }
 
-    else if(closed && !ignoreClosed){
+    else if(_closed && !ignoreClosed){
       for(int i=0; i<key_size; ++i){
         if(i==0){
-          F1.push_back(2*((key[i] - key[tMinus1])/(key[i+1] - key[tMinus1])));
-          F2.push_back(2*((key[i+1] - key[i])/(key[i+1] - key[tMinus1])));
+          F1.push_back(2*((_key[i] - _key[tMinus1])/(_key[i+1] - _key[tMinus1])));
+          F2.push_back(2*((_key[i+1] - _key[i])/(_key[i+1] - _key[tMinus1])));
         }
         else if(i==(key_size-1)){
-          F1.push_back((key[i] - key[i-1])/(key[tN] - key[i-1]));
-          F2.push_back(2*((key[tN] - key[i])/(key[tN] - key[i-1])));
+          F1.push_back((_key[i] - _key[i-1])/(_key[tN] - _key[i-1]));
+          F2.push_back(2*((_key[tN] - _key[i])/(_key[tN] - _key[i-1])));
         }
         else{
-          F1.push_back(2*((key[i] - key[i-1])/(key[i+1] - key[i-1])));
-          F2.push_back(2*((key[i+1] - key[i])/(key[i+1] - key[i-1])));
+          F1.push_back(2*((_key[i] - _key[i-1])/(_key[i+1] - _key[i-1])));
+          F2.push_back(2*((_key[i+1] - _key[i])/(_key[i+1] - _key[i-1])));
         }
       }
       T0 = (F1[key_index]*T[key_index]);

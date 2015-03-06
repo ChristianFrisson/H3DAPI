@@ -130,8 +130,8 @@ namespace H3D {
     public:
       // Sets either the exitTime or enterTime field depending
       // on the new value.
-      virtual void setValue( const bool &b, int id = 0 ) {
-        SFBool::setValue( b , id );
+      virtual void setValue( const bool &b, int _id = 0 ) {
+        SFBool::setValue( b , _id );
         ProximitySensor *ps = 
           static_cast< ProximitySensor * >( getOwner() );
       if( value )

@@ -79,12 +79,12 @@ H3DDouble GeneralFunction::evaluate(H3D::H3DDouble *x) {
 
 void GeneralFunction::SFFunctionObject::update() {
   if( !value ) value = new HAPI::ParsedFunction;
-  const string &function = 
+  const string &_function = 
     static_cast< SFString * >( routes_in[0] )->getValue();
   const string &param = 
     static_cast< SFString * >( routes_in[1] )->getValue();
-  if( !value->setFunctionString( function, param ) ) {
-    H3DUtil::Console(3) << "Could not parse function expression: \"" << function
+  if( !value->setFunctionString( _function, param ) ) {
+    H3DUtil::Console(3) << "Could not parse function expression: \"" << _function
                         << "\" in ParsedFunction node(" << owner->getName() 
                         <<"). " << endl;
   }

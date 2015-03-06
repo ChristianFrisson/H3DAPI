@@ -114,8 +114,8 @@ namespace H3D {
     public:
       /// Sets either the inputTrue or inputFalse field depending
       /// on the new value.
-      virtual void setValue( const bool &b, int id = 0 ) {
-        SFBool::setValue( b , id );
+      virtual void setValue( const bool &b, int _id = 0 ) {
+        SFBool::setValue( b , _id );
         VisibilitySensor *vs = 
           static_cast< VisibilitySensor * >( getOwner() );
         if( value )

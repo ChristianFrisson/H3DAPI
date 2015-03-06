@@ -79,7 +79,7 @@ void MFNodeSplitter::initialize(){
 
 void MFNodeSplitter::UpdateSelection::update(){
   MFNodeSplitter* mfs = static_cast<MFNodeSplitter*>(this->getOwner());
-  vector<int> indexes = mfs->indexes->getValue();
+  vector<int> _indexes = mfs->indexes->getValue();
   // update the sfnode value
   for( int i = 0; i<mfs->indexes->size(); ++i ) {
     stringstream ss;
@@ -87,8 +87,8 @@ void MFNodeSplitter::UpdateSelection::update(){
     SFNode* sf = static_cast<SFNode*>( mfs->getField(ss.str()) );
     ss.str("");
     ss.clear();
-    if( mfs->mfnode->getValue().size()>indexes[i] ) {
-      sf->setValue(mfs->mfnode->getValueByIndex(indexes[i]));
+    if( mfs->mfnode->getValue().size()>_indexes[i] ) {
+      sf->setValue(mfs->mfnode->getValueByIndex(_indexes[i]));
     }else{
       sf->setValue(NULL);
     }

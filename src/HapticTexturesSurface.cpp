@@ -233,10 +233,10 @@ void HapticTexturesSurface::SetImagePtr::update() {
      static_cast< X3DTexture2DNode::SFImage * >(event.ptr)->getValue();
    HapticTexturesSurface *hms = 
      static_cast< HapticTexturesSurface * >( getOwner() );
-   HAPI::HapticTexturesSurface * hapi_surface = 
+   HAPI::HapticTexturesSurface * _hapi_surface = 
      static_cast< HAPI::HapticTexturesSurface * >( hms->hapi_surface.get() );
-   if( hapi_surface ) {
-     hapi_surface->setParameterImage( image, parameter_type );
+   if(_hapi_surface) {
+     _hapi_surface->setParameterImage( image, parameter_type );
    }
  }
 
@@ -290,10 +290,10 @@ void HapticTexturesSurface::SetImagePtr::update() {
        }
        default: {}
      }
-     HAPI::HapticTexturesSurface * hapi_surface = 
+     HAPI::HapticTexturesSurface * _hapi_surface =
        static_cast< HAPI::HapticTexturesSurface * >( o->hapi_surface.get() );
-     if( hapi_surface )
-       hapi_surface->setParameterImage( 0, parameter_type );
+     if( _hapi_surface )
+       _hapi_surface->setParameterImage( 0, parameter_type );
    }
    SFTexture2DNodeBase::onRemove( n );
  }

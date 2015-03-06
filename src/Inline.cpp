@@ -126,8 +126,7 @@ void Inline::LoadedScene::update() {
   if( !inline_node->DEF_nodes.empty() )
     inline_node->DEF_nodes.clear();
 
-  bool load = static_cast< SFBool * >( routes_in[0] )->getValue();
-  if( load ) {
+  if( static_cast< SFBool * >( routes_in[0] )->getValue() ) {
     MFString *urls = static_cast< MFString * >( routes_in[1] );
     const string &import_mode = inline_node->importMode->getValue();
 
@@ -137,11 +136,11 @@ void Inline::LoadedScene::update() {
       // by the resolvers then fallback to resolve as local filename
       string url_contents= inline_node->resolveURLAsString( *i );
       bool is_tmp_file= false;
-      string url;
+      string _url;
       if ( url_contents == "" ) {
-        url= inline_node->resolveURLAsFile( *i, &is_tmp_file );
+        _url = inline_node->resolveURLAsFile( *i, &is_tmp_file );
       }
-      if( url != "" || url_contents != "" ) {
+      if( _url != "" || url_contents != "" ) {
         string old_url_base = ResourceResolver::getBaseURL();
 #ifdef HAVE_XERCES
         try 
@@ -161,7 +160,7 @@ void Inline::LoadedScene::update() {
                                           NULL );
           } else {
             // We have resolved to local filename, load from file
-            g= X3D::createX3DFromURL( url, 
+            g= X3D::createX3DFromURL( _url, 
                                       &inline_node->DEF_nodes, 
                                       &inline_node->exported_nodes,
                                       NULL, 
@@ -174,7 +173,7 @@ void Inline::LoadedScene::update() {
             inline_node->exported_nodes.merge( &inline_node->DEF_nodes );
           }
 
-          if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
+          if( is_tmp_file ) ResourceResolver::releaseTmpFileName( _url );
           value.push_back( g );
           inline_node->setURLUsed( *i );
           ResourceResolver::setBaseURL( old_url_base );

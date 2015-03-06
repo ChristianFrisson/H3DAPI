@@ -203,15 +203,15 @@ void PlaybackDevice::OnPlay::onNewValue( const bool& new_value ) {
         d->clearDataFields ();
         const std::vector < std::string > field_names= node->playbackData->getValue();
         for ( std::vector < std::string >::const_iterator i= field_names.begin(); i != field_names.end(); ++i ) {
-          std::string name= *i;
+          std::string _name= *i;
 
-          if ( name == "DEVICE_POSITION" ) {
+          if( _name == "DEVICE_POSITION" ) {
             d->addDataField ( "RAW_POSITION" );
-          } else if ( name == "DEVICE_ORIENTATION" ) {
+          } else if( _name == "DEVICE_ORIENTATION" ) {
             d->addDataField ( "RAW_ORIENTATION" );
-          } else if ( name == "DEVICE_VELOCITY" ) {
+          } else if( _name == "DEVICE_VELOCITY" ) {
             d->addDataField ( "RAW_VELOCITY" );
-          } else if ( name == "BUTTONS" ) {
+          } else if( _name == "BUTTONS" ) {
             d->addDataField ( "BUTTONS" );
           }
         }

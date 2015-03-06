@@ -118,9 +118,9 @@ namespace H3D {
       /// vertex.
       ///
       virtual X3DNormalNode *generateNormalsPerVertex( 
-                                                      X3DCoordinateNode *coord,
+                                                      X3DCoordinateNode *_coord,
                                                       const vector< int > &index,
-                                                      bool ccw );
+                                                      bool _ccw );
     
 
       /// Create a new X3DNormalNode from the arguments given
@@ -140,9 +140,9 @@ namespace H3D {
       /// vertex.
       ///
       virtual X3DNormalNode *generateNormalsPerFace( 
-                                                    X3DCoordinateNode *coord,
+                                                    X3DCoordinateNode *_coord,
                                                     const vector< int > &index,
-                                                    bool ccw );
+                                                    bool _ccw );
 
     };
 

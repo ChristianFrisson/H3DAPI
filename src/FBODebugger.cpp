@@ -204,11 +204,11 @@ void FBODebugger::render() {
 void FBODebugger::ToggleBlend::update(){
   FBODebugger* fd = static_cast<FBODebugger*>( getOwner() );
   // user selected transparency
-  float transparency = fd->transparency->getValue();
+  float _transparency = fd->transparency->getValue();
   RenderProperties* rp;
   fd->texture_scene_dn.getNode("RP", rp);
   if( rp ) {
-    if( transparency <= 0 ) {
+    if( _transparency <= 0 ) {
       if( rp ) {
         rp->blendEnabled->setValue(false);
       }

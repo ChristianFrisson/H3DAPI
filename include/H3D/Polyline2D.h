@@ -74,9 +74,9 @@ namespace H3D {
       virtual void update() {
         const vector< Vec2f > &points = 
           static_cast< MFVec2f * >( routes_in[0] )->getValue();
-        BoxBound *bound = new BoxBound();
-        bound->fitAround2DPoints( points.begin(), points.end() );
-        value = bound;
+        BoxBound *_bound = new BoxBound();
+        _bound->fitAround2DPoints( points.begin(), points.end() );
+        value = _bound;
       }
     };
 

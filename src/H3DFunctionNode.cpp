@@ -47,27 +47,27 @@ H3DFunctionNode::H3DFunctionNode( Inst< SFNode>  _metadata,
 
 void H3DFunctionNode::Value::update() {
   H3DFunctionNode *function = static_cast< H3DFunctionNode *>( owner );
-  const vector< H3DDouble > &input = 
+  const vector< H3DDouble > &_input = 
     static_cast< MFDouble * >( routes_in[0] )->getValue();
 
-  if( input.size() != function->nrInputValues() ) {
+  if( _input.size() != function->nrInputValues() ) {
     H3DUtil::Console(3) 
       << "Invalid number of parameters in \"input\" field in \""
-      << owner->getName() << "\". Got " << input.size() 
+      << owner->getName() << "\". Got " << _input.size()
       << ", expected " << function->nrInputValues() << endl;
     value = 0;
   }
 
-  if( input.size() <= 8 ) {
+  if( _input.size() <= 8 ) {
     H3DDouble inp[8];
-    for( unsigned int i = 0; i < input.size(); ++i ) {
-      inp[i] = input[i];
+    for( unsigned int i = 0; i < _input.size(); ++i ) {
+      inp[i] = _input[i];
     }
     value = function->evaluate( inp );
   } else {
-    H3DDouble *inp = new H3DDouble[input.size()];
-    for( unsigned int i = 0; i < input.size(); ++i ) {
-      inp[i] = input[i];
+    H3DDouble *inp = new H3DDouble[_input.size()];
+    for( unsigned int i = 0; i < _input.size(); ++i ) {
+      inp[i] = _input[i];
     }
     value = function->evaluate( inp );
     delete[] inp;

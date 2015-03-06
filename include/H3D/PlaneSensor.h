@@ -116,7 +116,7 @@ namespace H3D {
       public OnValueChangeSField< AutoUpdate< SFVec3f > > {
     public:
     protected:
-      virtual void onValueChange( const Vec3f &new_value ) {
+      virtual void onValueChange( const Vec3f &_new_value ) {
         PlaneSensor * ps = static_cast< PlaneSensor * >(getOwner());
         ps->last_offset_axis_rotation_inv =
           Matrix4f( ps->axisRotation->getValue() ).inverse();

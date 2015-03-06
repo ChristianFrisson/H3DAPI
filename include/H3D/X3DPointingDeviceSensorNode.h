@@ -192,8 +192,8 @@ namespace H3D {
     class H3DAPI_API SetIsEnabled: 
       public AutoUpdate< SFBool > {
     public:
-      virtual void setValue( const bool &b, int id = 0 ) {
-        AutoUpdate< SFBool >::setValue( b, id );
+      virtual void setValue( const bool &b, int _id = 0 ) {
+        AutoUpdate< SFBool >::setValue( b, _id );
         X3DPointingDeviceSensorNode *pdsn =
           static_cast< X3DPointingDeviceSensorNode * >(owner);
         pdsn->setIsEnabled( pdsn->last_primary_button_value );

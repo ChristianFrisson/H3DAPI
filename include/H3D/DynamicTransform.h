@@ -95,11 +95,11 @@ namespace H3D {
                                                     Types< SFFloat, 
                                                            SFVec3f > > {
       virtual void update() {
-        H3DFloat mass = 
+        H3DFloat _mass = 
           static_cast< SFFloat * >( routes_in[0] )->getValue();
-        const Vec3f &momentum = 
+        const Vec3f &_momentum = 
           static_cast< SFVec3f * >( routes_in[1] )->getValue();
-        value = momentum / mass;
+        value = _momentum / _mass;
       }
     };
 

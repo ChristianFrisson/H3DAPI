@@ -249,20 +249,20 @@ void TriangleSet::traverseSG( TraverseInfo &ti ) {
 }
 
 void TriangleSet::AutoNormal::update() {
-  X3DCoordinateNode *coord = 
+  X3DCoordinateNode *_coord = 
     static_cast< X3DCoordinateNode * >( static_cast< SFCoordinateNode * >
                                         ( routes_in[1] )->getValue() );
-  bool ccw = static_cast< SFBool * >( routes_in[2] )->getValue();
+  bool _ccw = static_cast< SFBool * >( routes_in[2] )->getValue();
 
-  value = generateNormalsPerVertex( coord, ccw );
+  value = generateNormalsPerVertex( _coord, _ccw );
  }
 
 X3DNormalNode *TriangleSet::AutoNormal::generateNormalsPerVertex( 
-                                   X3DCoordinateNode *coord,
-                                   bool ccw ) {
-  Normal *normal = new Normal;
-  if( coord ) {
-    unsigned int nr_coords = coord->nrAvailableCoords();
+                                   X3DCoordinateNode *_coord,
+                                   bool _ccw ) {
+  Normal *_normal = new Normal;
+  if( _coord ) {
+    unsigned int nr_coords = _coord->nrAvailableCoords();
     vector< Vec3f > normals( nr_coords, 
                              Vec3f( 0, 0, 0 ) );
     for( unsigned int j = 0; j + 2 < nr_coords; j+=3 ) {
@@ -272,9 +272,9 @@ X3DNormalNode *TriangleSet::AutoNormal::generateNormalsPerVertex(
         norm =  Vec3f( 1, 0, 0 );
       } else {  
         // calculate a normal 
-        A = coord->getCoord( j );
-        B = coord->getCoord( j+1 );
-        C = coord->getCoord( j+2 );
+        A = _coord->getCoord( j );
+        B = _coord->getCoord( j+1 );
+        C = _coord->getCoord( j+2 );
         
         AB = B - A;
         BC = C - B;
@@ -282,7 +282,7 @@ X3DNormalNode *TriangleSet::AutoNormal::generateNormalsPerVertex(
         norm = AB % BC;
       }
       norm.normalizeSafe();
-      if( !ccw ) 
+      if( !_ccw ) 
         norm = -norm;
       normals[j] += norm;
       normals[j+1] += norm;
@@ -293,8 +293,8 @@ X3DNormalNode *TriangleSet::AutoNormal::generateNormalsPerVertex(
          i != normals.end(); 
          ++i ) 
       (*i).normalizeSafe();
-    normal->vector->setValue( normals );
+    _normal->vector->setValue( normals );
   }
-  return normal;
+  return _normal;
 }
 

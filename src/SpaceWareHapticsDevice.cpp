@@ -101,8 +101,8 @@ SpaceWareHapticsDevice::SpaceWareHapticsDevice(
 
 void SpaceWareHapticsDevice::SetMainButton::update() {
   assert( H3DUtil::ThreadBase::inMainThread() );
-  H3DInt32 buttons = static_cast< SFInt32 * >( routes_in[0] )->getValue();
-  value = (buttons != 0);
+  H3DInt32 _buttons = static_cast< SFInt32 * >( routes_in[0] )->getValue();
+  value = (_buttons != 0);
 }
 
 

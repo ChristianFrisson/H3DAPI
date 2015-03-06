@@ -404,36 +404,36 @@ void IndexedFaceSet::render() {
 void IndexedFaceSet::AutoNormal::update() {
   bool normals_per_vertex = 
     static_cast< SFBool * >( routes_in[0] )->getValue();
-  X3DCoordinateNode *coord = 
+  X3DCoordinateNode *_coord = 
     static_cast< X3DCoordinateNode * >( static_cast< SFCoordinateNode * >
                                         ( routes_in[1] )->getValue() );
   const vector<int> &index = 
     static_cast< MFInt32 * >( routes_in[2] )->getValue();
-  bool ccw = static_cast< SFBool * >( routes_in[3] )->getValue();
+  bool _ccw = static_cast< SFBool * >( routes_in[3] )->getValue();
   H3DFloat crease_angle = static_cast< SFFloat * >( routes_in[4] )->getValue();
   if( normals_per_vertex && crease_angle > 0 ) {
     if( crease_angle < Constants::pi )
-      value = generateNormalsPerVertex( coord, index, ccw, crease_angle );
+      value = generateNormalsPerVertex( _coord, index, _ccw, crease_angle );
     else 
-      value = generateNormalsPerVertex( coord, index, ccw );
+      value = generateNormalsPerVertex( _coord, index, _ccw );
   } else {
-    value = generateNormalsPerFace( coord, index, ccw );
+    value = generateNormalsPerFace( _coord, index, _ccw );
   }
 }
 
 
 X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerVertex( 
-                                   X3DCoordinateNode *coord,
+                                   X3DCoordinateNode *_coord,
                                    const vector< int > &coord_index,
-                                   bool ccw ) {
-  Normal *normal = new Normal;
-  if( coord ) {
-    vector< Vec3f > normals( coord->nrAvailableCoords(), 
+                                   bool _ccw ) {
+  Normal *_normal = new Normal;
+  if( _coord ) {
+    vector< Vec3f > normals( _coord->nrAvailableCoords(), 
                              Vec3f( 0, 0, 0 ) );
     AutoRef< X3DNormalNode > normals_per_face;
-    normals_per_face.reset( generateNormalsPerFace( coord,
+    normals_per_face.reset( generateNormalsPerFace( _coord,
                                                     coord_index,
-                                                    ccw ) );
+                                                    _ccw ) );
     unsigned int i = 0;
     for( unsigned int face = 0; 
          face < normals_per_face->nrAvailableNormals(); ++face ) {
@@ -444,34 +444,34 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerVertex(
       ++i;
     }
     
-    for( vector<Vec3f>::iterator i = normals.begin(); 
-         i != normals.end(); 
-         ++i ) {
-      (*i).normalizeSafe();
+    for( vector<Vec3f>::iterator j = normals.begin(); 
+         j != normals.end(); 
+         ++j ) {
+      (*j).normalizeSafe();
     }
-    normal->vector->setValue( normals );
+    _normal->vector->setValue( normals );
   }
-  return normal;
+  return _normal;
 }
 
 X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerVertex( 
-                                   X3DCoordinateNode *coord,
+                                   X3DCoordinateNode *_coord,
                                    const vector< int > &coord_index,
-                                   bool ccw,
+                                   bool _ccw,
                                    H3DFloat crease_angle ) {
-  Normal *normal = new Normal;
-  if( coord ) {
+  Normal *_normal = new Normal;
+  if( _coord ) {
     AutoRef< X3DNormalNode > normals_per_face;
-    normals_per_face.reset( generateNormalsPerFace( coord,
+    normals_per_face.reset( generateNormalsPerFace( _coord,
                                                     coord_index,
-                                                    ccw ) );
+                                                    _ccw ) );
     unsigned int i = 0;
     vector< Vec3f > normals( coord_index.size(),
                              Vec3f( 0, 0, 0 ) );
     normals.clear();
 
     std::vector< vector< int > > point_to_face_normal_map;
-    point_to_face_normal_map.resize( coord->nrAvailableCoords() );
+    point_to_face_normal_map.resize( _coord->nrAvailableCoords() );
 
     H3DFloat cos_crease_angle = H3DCos( crease_angle );
 
@@ -514,17 +514,17 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerVertex(
       }
       ++i;
     }
-    normal->vector->setValue( normals );
+    _normal->vector->setValue( normals );
   }
-  return normal;
+  return _normal;
 }
 
 X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerFace( 
-                                             X3DCoordinateNode *coord,
+                                             X3DCoordinateNode *_coord,
                                              const vector< int > &coord_index,
-                                             bool ccw ) {
-  Normal *normal = new Normal;
-  if( coord ) {
+                                             bool _ccw ) {
+  Normal *_normal = new Normal;
+  if( _coord ) {
     vector< Vec3f > normals;
     for( size_t j = 0; j < coord_index.size(); ) {
       Vec3f norm, A, B, C, AB, BC;
@@ -537,9 +537,9 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerFace(
       } else {  
         // we try to calculate a normal using the first three vertices
         // in the face.
-        A = coord->getCoord( coord_index[ j++ ] );
-        B = coord->getCoord( coord_index[ j++ ] );
-        C = coord->getCoord( coord_index[ j++ ] );
+        A = _coord->getCoord( coord_index[ j++ ] );
+        B = _coord->getCoord( coord_index[ j++ ] );
+        C = _coord->getCoord( coord_index[ j++ ] );
       
         AB = B - A;
         BC = C - B;
@@ -557,7 +557,7 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerFace(
         while( AB*AB < Constants::f_epsilon &&
                j < coord_index.size() &&
                coord_index[j] != -1 ) {
-          A = coord->getCoord( coord_index[ j++ ] ); 
+          A = _coord->getCoord( coord_index[ j++ ] );
           AB = B - A;
         }
 
@@ -571,7 +571,7 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerFace(
           // try to find an edge that together with AB can generate
           // a normal
           while( j < coord_index.size() && coord_index[j] != -1 ) {
-            C = coord->getCoord( coord_index[ j++ ] );
+            C = _coord->getCoord( coord_index[ j++ ] );
             BC = B - C;
             norm = AB % BC;
             l = norm.length();
@@ -591,14 +591,14 @@ X3DNormalNode *IndexedFaceSet::AutoNormal::generateNormalsPerFace(
       // skip the rest of the vertices in the face.
       while( j < coord_index.size() && coord_index[j++] != -1 );
 
-      if( !ccw ) 
+      if( !_ccw ) 
         norm = -norm;
 
       normals.push_back( norm );
     }
-    normal->vector->setValue( normals );
+    _normal->vector->setValue( normals );
   }
-  return normal;
+  return _normal;
 }
 
 void IndexedFaceSet::traverseSG( TraverseInfo &ti ) {
@@ -625,7 +625,7 @@ void IndexedFaceSet::traverseSG( TraverseInfo &ti ) {
 }
 
 
-Vec3f IndexedFaceSet::AutoTangent::getTexCoord( X3DCoordinateNode *coord,
+Vec3f IndexedFaceSet::AutoTangent::getTexCoord( X3DCoordinateNode *_coord,
                                                     X3DTextureCoordinateNode *tex_coord,
                                                     int index ) {
   if( tex_coord ) {
@@ -638,7 +638,7 @@ Vec3f IndexedFaceSet::AutoTangent::getTexCoord( X3DCoordinateNode *coord,
   } else {
     IndexedFaceSet *its = static_cast< IndexedFaceSet * >( getOwner() );
     Matrix4f to_str = its->getDefaultTexGenMatrix();
-    return to_str * coord->getCoord( index );
+    return to_str * _coord->getCoord( index );
   }
 
   return Vec3f(0,0,0);
@@ -691,7 +691,7 @@ void IndexedFaceSet::AutoTangent::calculateTangent( const Vec3f &a, const Vec3f 
 void IndexedFaceSet::AutoTangent::update() {
   bool normals_per_vertex = 
     static_cast< SFBool * >( routes_in[0] )->getValue();
-  X3DCoordinateNode *coord = 
+  X3DCoordinateNode *_coord =
     static_cast< X3DCoordinateNode * >( static_cast< SFCoordinateNode * >
                                         ( routes_in[1] )->getValue() );
   const vector<int> &coord_index = 
@@ -705,7 +705,7 @@ void IndexedFaceSet::AutoTangent::update() {
     static_cast< MFInt32 * >( routes_in[4] )->getValue();
 
   H3DFloat crease_angle = static_cast< SFFloat * >( routes_in[5] )->getValue();
-  bool ccw = static_cast< SFBool * >( routes_in[6] )->getValue();
+  bool _ccw = static_cast< SFBool * >( routes_in[6] )->getValue();
   
   if( value.empty() ) {
     value.push_back( new FloatVertexAttribute );
@@ -716,24 +716,24 @@ void IndexedFaceSet::AutoTangent::update() {
   FloatVertexAttribute *binormal = static_cast< FloatVertexAttribute * >(value[1]);
   if( normals_per_vertex && crease_angle > 0 ) {
     if( crease_angle < Constants::pi ) {
-      generateTangentsPerVertex( coord, tex_coord, 
-                                 coord_index, 
-                                 tex_coord_index.empty() ? 
-                                 coord_index : tex_coord_index, 
-                                 crease_angle, ccw,
+      generateTangentsPerVertex( _coord, tex_coord,
+                                 coord_index,
+                                 tex_coord_index.empty() ?
+                                 coord_index : tex_coord_index,
+                                 crease_angle, _ccw,
                                  tangent, binormal );
     } else { 
-      generateTangentsPerVertex( coord, tex_coord, 
-                                 coord_index, 
-                                 tex_coord_index.empty() ? 
-                                 coord_index : tex_coord_index, 
+      generateTangentsPerVertex( _coord, tex_coord,
+                                 coord_index,
+                                 tex_coord_index.empty() ?
+                                 coord_index : tex_coord_index,
                                  tangent, binormal );
     }
   } else {
-    generateTangentsPerFace(  coord, tex_coord, 
-                              coord_index, 
-                              tex_coord_index.empty() ? 
-                              coord_index : tex_coord_index, 
+    generateTangentsPerFace(  _coord, tex_coord,
+                              coord_index,
+                              tex_coord_index.empty() ?
+                              coord_index : tex_coord_index,
                               true,
                               tangent, binormal );
   }
@@ -741,7 +741,7 @@ void IndexedFaceSet::AutoTangent::update() {
 
 
 void IndexedFaceSet::AutoTangent::generateTangentsPerFace( 
-                                             X3DCoordinateNode *coord,
+                                             X3DCoordinateNode *_coord,
                                              X3DTextureCoordinateNode *tex_coord,
                                              const vector< int > &coord_index,
                                              const vector< int > &tex_coord_index,
@@ -755,7 +755,7 @@ void IndexedFaceSet::AutoTangent::generateTangentsPerFace(
   binormal_node->numComponents->setValue( 3 );
   binormal_node->value->clear();
 
-  if( coord ) {
+  if( _coord ) {
     vector< float > tangents;
     vector< float > binormals;
 
@@ -772,13 +772,13 @@ void IndexedFaceSet::AutoTangent::generateTangentsPerFace(
         tangent =  Vec3f( 0, 1, 0 );
         binormal = Vec3f( 0, 0, 1 );
       } else {  
-        Vec3f a = coord->getCoord( coord_index[ j ] );
-        Vec3f b = coord->getCoord( coord_index[ j + 1 ] );
-        Vec3f c = coord->getCoord( coord_index[ j + 2 ] );
+        Vec3f a = _coord->getCoord( coord_index[ j ] );
+        Vec3f b = _coord->getCoord( coord_index[ j + 1 ] );
+        Vec3f c = _coord->getCoord( coord_index[ j + 2 ] );
         
-        Vec3f ta = getTexCoord( coord, tex_coord, tex_coord_index[j] );
-        Vec3f tb = getTexCoord( coord, tex_coord, tex_coord_index[j+1] );
-        Vec3f tc = getTexCoord( coord, tex_coord, tex_coord_index[j+2] );
+        Vec3f ta = getTexCoord( _coord, tex_coord, tex_coord_index[j] );
+        Vec3f tb = getTexCoord( _coord, tex_coord, tex_coord_index[j+1] );
+        Vec3f tc = getTexCoord( _coord, tex_coord, tex_coord_index[j+2] );
 
         calculateTangent( a, b, c,
                           ta, tb, tc,
@@ -826,7 +826,7 @@ void IndexedFaceSet::AutoTangent::generateTangentsPerFace(
 }
 
 void IndexedFaceSet::AutoTangent::generateTangentsPerVertex( 
-                                X3DCoordinateNode *coord,
+                                X3DCoordinateNode *_coord,
                                 X3DTextureCoordinateNode *tex_coord,
                                 const vector< int > &coord_index,
                                 const vector< int > &tex_coord_index,
@@ -839,15 +839,15 @@ void IndexedFaceSet::AutoTangent::generateTangentsPerVertex(
   binormal_node->numComponents->setValue( 3 );
   binormal_node->value->clear();
 
-  if( coord ) {
+  if( _coord ) {
     // the tangent and binormal for a vertex is the average of the tangent
     // of all triangles sharing that vertex.
-    vector< float > tangents( coord->nrAvailableCoords() * 3, 0 );
-    vector< float > binormals( coord->nrAvailableCoords() * 3, 0 );
+    vector< float > tangents( _coord->nrAvailableCoords() * 3, 0 );
+    vector< float > binormals( _coord->nrAvailableCoords() * 3, 0 );
 
     AutoRef< FloatVertexAttribute > tangents_per_face_node( new FloatVertexAttribute );
     AutoRef< FloatVertexAttribute > binormals_per_face_node( new FloatVertexAttribute );
-    generateTangentsPerFace( coord,
+    generateTangentsPerFace( _coord,
                              tex_coord,
                              coord_index,
                              tex_coord_index,
@@ -878,17 +878,17 @@ void IndexedFaceSet::AutoTangent::generateTangentsPerVertex(
     
     // normalize tangents and binormals
            
-    for( unsigned int i = 0; i < tangents.size(); i+=3 ) {
-      Vec3f t( tangents[i], tangents[i+1], tangents[i+2] );
-      Vec3f b( binormals[i], binormals[i+1], binormals[i+2] );
+    for( unsigned int j = 0; j < tangents.size(); j+=3 ) {
+      Vec3f t( tangents[j], tangents[j+1], tangents[j+2] );
+      Vec3f b( binormals[j], binormals[j+1], binormals[j+2] );
       t.normalizeSafe();
       b.normalizeSafe();
-      tangents[i] = t.x;
-      tangents[i+1] = t.y;
-      tangents[i+2] = t.z;
-      binormals[i] = b.x;
-      binormals[i+1] = b.y;
-      binormals[i+2] = b.z;
+      tangents[j] = t.x;
+      tangents[j+1] = t.y;
+      tangents[j+2] = t.z;
+      binormals[j] = b.x;
+      binormals[j+1] = b.y;
+      binormals[j+2] = b.z;
     }
 
     tangent_node->value->setValue( tangents );
@@ -898,12 +898,12 @@ void IndexedFaceSet::AutoTangent::generateTangentsPerVertex(
 
 
 void IndexedFaceSet::AutoTangent::generateTangentsPerVertex( 
-                                X3DCoordinateNode *coord,
+                                X3DCoordinateNode *_coord,
                                 X3DTextureCoordinateNode *tex_coord,
                                 const vector< int > &coord_index,
                                 const vector< int > &tex_coord_index,
                                 H3DFloat crease_angle,
-                                bool ccw,
+                                bool _ccw,
                                 FloatVertexAttribute *tangent_node,
                                 FloatVertexAttribute *binormal_node ) {
   tangent_node->name->setValue( "tangent" );
@@ -915,15 +915,15 @@ void IndexedFaceSet::AutoTangent::generateTangentsPerVertex(
 
   IndexedFaceSet *ifs = static_cast< IndexedFaceSet * >( getOwner() );
 
-  if( coord ) {
+  if( _coord ) {
     AutoRef< X3DNormalNode > normals_per_face;
-    normals_per_face.reset( ifs->autoNormal->generateNormalsPerFace( coord,
+    normals_per_face.reset( ifs->autoNormal->generateNormalsPerFace( _coord,
                                                                      coord_index,
-                                                                     ccw ) );
+                                                                     _ccw ) );
 
     AutoRef< FloatVertexAttribute > tangents_per_face_node( new FloatVertexAttribute );
     AutoRef< FloatVertexAttribute > binormals_per_face_node( new FloatVertexAttribute );
-    generateTangentsPerFace( coord,
+    generateTangentsPerFace( _coord,
                              tex_coord,
                              coord_index,
                              tex_coord_index,
@@ -946,7 +946,7 @@ void IndexedFaceSet::AutoTangent::generateTangentsPerVertex(
     binormals.reserve( coord_index.size() * 3 );
 
     std::vector< vector< int > > point_to_face_normal_map;
-    point_to_face_normal_map.resize( coord->nrAvailableCoords() );
+    point_to_face_normal_map.resize( _coord->nrAvailableCoords() );
 
     H3DFloat cos_crease_angle = H3DCos( crease_angle );
 

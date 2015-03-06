@@ -157,16 +157,16 @@ void SimpleMovieTexture::DecoderManager::update() {
     // url
     MFString *urls = static_cast< MFString * >( routes_in[4] );
     for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {
-      string url = tex->resolveURLAsFile( *i );
-      H3DVideoClipDecoderNode *decoder = 
-        H3DVideoClipDecoderNode::getSupportedDecoder( url );
-      if( decoder ) {
-        if( decoder->loadClip( url ) ) {
-          tex->decoder.reset( decoder );
+      string _url = tex->resolveURLAsFile( *i );
+      H3DVideoClipDecoderNode *_decoder = 
+        H3DVideoClipDecoderNode::getSupportedDecoder( _url );
+      if( _decoder ) {
+        if( _decoder->loadClip( _url ) ) {
+          tex->decoder.reset( _decoder );
           tex->setURLUsed( *i );
-          tex->videoWidth->setValue( decoder->getFrameWidth(), tex->id );
-          tex->videoHeight->setValue( decoder->getFrameHeight(), tex->id );
-          tex->duration->setValue( decoder->getDuration(), tex->id );
+          tex->videoWidth->setValue( _decoder->getFrameWidth(), tex->id );
+          tex->videoHeight->setValue( _decoder->getFrameHeight(), tex->id );
+          tex->duration->setValue( _decoder->getDuration(), tex->id );
           return;
         }
       } else {
@@ -188,10 +188,10 @@ void SimpleMovieTexture::DecoderManager::update() {
     tex->setURLUsed( "" );
   } else if( event.ptr == routes_in[5] ) {
     // rate
-    H3DFloat rate =static_cast< SFFloat * >( routes_in[5] )->getValue( tex->id );
+    H3DFloat _rate =static_cast< SFFloat * >( routes_in[5] )->getValue( tex->id );
     if( tex->decoder.get() ) {
-      if(! tex->decoder->setRate( rate ) ) {
-        Console(3) << "Warning: Unable to set rate to " << rate 
+      if(! tex->decoder->setRate( _rate ) ) {
+        Console(3) << "Warning: Unable to set rate to " << _rate
                    << ". Rate not supported by decoder ( " 
                    << tex->decoder->getName() << " in " 
                    << tex->getName() << endl;

@@ -105,36 +105,36 @@ NoiseTexture::NoiseTexture(
 }
 
 void NoiseTexture::SFImage::update() {
-  H3DFloat frequency = static_cast< SFFloat * >(routes_in[0])->getValue(); 
-  H3DFloat lacunarity = static_cast< SFFloat * >(routes_in[1])->getValue(); 
-  H3DInt32 octaveCount = static_cast< SFInt32 * >(routes_in[2])->getValue(); 
-  H3DFloat persistence = static_cast< SFFloat * >(routes_in[3])->getValue(); 
-  H3DInt32 seed = static_cast< SFInt32 * >(routes_in[4])->getValue();
-  H3DInt32 width = static_cast< SFInt32 * >(routes_in[5])->getValue();
-  H3DInt32 height = static_cast< SFInt32 * >(routes_in[6])->getValue();
-  const string & type = static_cast< SFString * >(routes_in[7])->getValue();
-  bool tileable = static_cast< SFBool * >(routes_in[8])->getValue();
+  H3DFloat _frequency = static_cast< SFFloat * >(routes_in[0])->getValue();
+  H3DFloat _lacunarity = static_cast< SFFloat * >(routes_in[1])->getValue();
+  H3DInt32 _octaveCount = static_cast< SFInt32 * >(routes_in[2])->getValue();
+  H3DFloat _persistence = static_cast< SFFloat * >(routes_in[3])->getValue();
+  H3DInt32 _seed = static_cast< SFInt32 * >(routes_in[4])->getValue();
+  H3DInt32 _width = static_cast< SFInt32 * >(routes_in[5])->getValue();
+  H3DInt32 _height = static_cast< SFInt32 * >(routes_in[6])->getValue();
+  const string & _type = static_cast< SFString * >(routes_in[7])->getValue();
+  bool _tileable = static_cast< SFBool * >(routes_in[8])->getValue();
 
-  bool simplexNoise = type == "SIMPLEX";
+  bool simplexNoise = _type == "SIMPLEX";
 
-  unsigned char *data = new unsigned char[ width * height ];
+  unsigned char *data = new unsigned char[ _width * _height ];
 
   int x, y;
   H3DFloat perlinValue;
   H3DFloat perlinGrayValue;
 
-  H3DFloat width_minus_1 = H3DFloat( width-1 );
-  H3DFloat height_minus_1 = H3DFloat( height-1 );
-  for( y = 0; y < height; ++y ) {
-    for( x = 0; x < width; ++x) {
+  H3DFloat width_minus_1 = H3DFloat( _width-1 );
+  H3DFloat height_minus_1 = H3DFloat( _height-1 );
+  for( y = 0; y < _height; ++y ) {
+    for( x = 0; x < _width; ++x) {
       H3DFloat x_norm = x/width_minus_1;
       H3DFloat y_norm = y/height_minus_1;
       if( !simplexNoise ) {
       } else {
-        if( tileable ) {
-          perlinValue = NoiseTexture::simplexNoiseTileable( x_norm, y_norm, frequency, lacunarity, H3DFloat( octaveCount ), persistence );
+        if( _tileable ) {
+          perlinValue = NoiseTexture::simplexNoiseTileable( x_norm, y_norm, _frequency, _lacunarity, H3DFloat( _octaveCount ), _persistence );
         } else {
-          perlinValue = NoiseTexture::simplexNoise( x_norm, y_norm, frequency, lacunarity, H3DFloat( octaveCount ), persistence );
+          perlinValue = NoiseTexture::simplexNoise( x_norm, y_norm, _frequency, _lacunarity, H3DFloat( _octaveCount ), _persistence );
         }
       }
       // just in case clamp to -1.0 or +1.0, because of a warning in the libnoise documentation
@@ -145,10 +145,10 @@ void NoiseTexture::SFImage::update() {
       // shift to interval 0.0 to 1.0
       perlinGrayValue = H3DFloat( 0.5 * perlinValue + 0.5 );
 
-      data[y*width + x ] = (unsigned char)(255 * perlinGrayValue);
+      data[y*_width + x ] = (unsigned char)(255 * perlinGrayValue);
     }
   }
-  value = new PixelImage( width, height, 1, 8, 
+  value = new PixelImage( _width, _height, 1, 8,
                           PixelImage::LUMINANCE,
                           PixelImage::UNSIGNED, data, false, Vec3f(0.01f, 0.01f, 0.01f) );
 }

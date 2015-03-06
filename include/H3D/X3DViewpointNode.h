@@ -257,8 +257,8 @@ namespace H3D {
     /// navigation.
     class H3DAPI_API SFPosition:  public SFVec3f {
     public:
-      virtual void setValue( const Vec3f &v, int id = 0 ) {
-        SFVec3f::setValue( v, id );
+      virtual void setValue( const Vec3f &v, int _id = 0 ) {
+        SFVec3f::setValue( v, _id );
         X3DViewpointNode * temp_owner =
           static_cast< X3DViewpointNode * >( getOwner() );
         temp_owner->relPos->setValue( Vec3f() );
@@ -283,8 +283,8 @@ namespace H3D {
     /// navigation.
     class H3DAPI_API SFOrientation:  public SFRotation {
     public:
-      virtual void setValue( const Rotation &v, int id = 0 ) {
-        SFRotation::setValue( v, id );
+      virtual void setValue( const Rotation &v, int _id = 0 ) {
+        SFRotation::setValue( v, _id );
         X3DViewpointNode * temp_owner =
           static_cast< X3DViewpointNode * >( getOwner() );
         temp_owner->relPos->setValue( Vec3f() );

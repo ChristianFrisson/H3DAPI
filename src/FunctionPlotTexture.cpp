@@ -94,7 +94,7 @@ FunctionPlotTexture::FunctionPlotTexture(
 }
 
 void FunctionPlotTexture::SFImage::update() {
-  H3DFunctionNode *function = static_cast< SFFunctionNode * >( routes_in[0] )->getValue();
+  H3DFunctionNode *_function = static_cast< SFFunctionNode * >( routes_in[0] )->getValue();
   const RGBA &bg_color = static_cast< SFColorRGBA * >( routes_in[1] )->getValue();
   const RGBA &plot_color = static_cast< SFColorRGBA * >( routes_in[2] )->getValue();
   const Vec2f &x_range = static_cast< SFVec2f * >( routes_in[3] )->getValue();
@@ -122,7 +122,7 @@ void FunctionPlotTexture::SFImage::update() {
                             data ) );
   }
 
-  if( !function ) {
+  if( !_function ) {
     for( unsigned int x = 0; x < (unsigned int)x_resolution; ++x ) {
       for( unsigned int y = 0; y < (unsigned int)y_resolution; ++y ) {
         setPixel( x, y, bg_color );
@@ -133,7 +133,7 @@ void FunctionPlotTexture::SFImage::update() {
     H3DFloat step_length = (x_range.y - x_range.x) / x_resolution;
     for( unsigned int i = 0; i < (unsigned int)x_resolution; ++i ) {
       H3DDouble x = x_range.x +  i * step_length;
-      H3DDouble y = function->evaluate( &x );
+      H3DDouble y = _function->evaluate( &x );
       
       H3DInt32 y_pixel = (H3DInt32 ) ((y - y_range.x)/(y_range.y-y_range.x) * (y_resolution - 1 ));
 

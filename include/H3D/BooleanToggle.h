@@ -57,8 +57,8 @@ namespace H3D {
     class H3DAPI_API SetBoolean: public AutoUpdate< SFBool > {
     public:
       // Negates the toggle field if true.
-      virtual void setValue( const bool &b, int id = 0 ) {
-        SFBool::setValue( b );
+      virtual void setValue( const bool &b, int _id = 0 ) {
+        SFBool::setValue( b, _id );
         BooleanToggle *bf = 
           static_cast< BooleanToggle * >( getOwner() );
         if( value )

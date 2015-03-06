@@ -73,31 +73,31 @@ ConvolutionFilterShader( _displayList, _metadata, _isSelected,
   type->route( weights, id );
 }
 
-std::vector<float> GaussianFilterShader::gauss2D(int width, int height, float sigma) {
-  float sigmaSqr = sigma*sigma;
-  int nr_weights = width*height;
-  int midX = int(width/2);
-  int midY = int(height/2);
+std::vector<float> GaussianFilterShader::gauss2D(int _width, int _height, float _sigma) {
+  float sigmaSqr = _sigma*_sigma;
+  int nr_weights = _width*_height;
+  int midX = int(_width /2);
+  int midY = int(_height /2);
   float sum = 0;
   std::vector<float> result(nr_weights,0.0);
-  for(int  x=0; x<width;x++) {
-    for(int y=0;y<height;y++) {
+  for(int  x=0; x<_width;x++) {
+    for(int y=0;y<_height;y++) {
       // make use of the symmetry to simplify the calclation
       // result[x*sizeX+y] is the xth row, yth column
       float g = 0;
       if(x>midX&&y>midY)
-        g = result[(width-x-1)*width+(height-y-1)];
+        g = result[(_width -x-1)*_width +(_height -y-1)];
       else if(x>midX&&y<midY)
-        g = result[(width-x-1)*width+y];
+        g = result[(_width -x-1)*_width +y];
       else if(x<midX&&y>midY)
-        g = result[x*width+(height-y-1)];
+        g = result[x*_width +(_height -y-1)];
       else {
         H3DFloat i_x = x - midX;
         H3DFloat i_y = y - midY;
-        g = (float) ( 1/(2.0*H3DUtil::Constants::pi*sigma*sigma)*H3DUtil::H3DExp(-(i_x*i_x+i_y*i_y)/(2*sigma*sigma)) );
+        g = (float) ( 1/(2.0*H3DUtil::Constants::pi*_sigma*_sigma)*H3DUtil::H3DExp(-(i_x*i_x+i_y*i_y)/(2* _sigma*_sigma)) );
 
       }
-     result[x*width+y] = g;
+     result[x*_width+y] = g;
       sum += g;
     }
   }
@@ -108,18 +108,18 @@ std::vector<float> GaussianFilterShader::gauss2D(int width, int height, float si
   return result;
 }
 
-std::vector<float> GaussianFilterShader::gauss1D(int width, float sigma) {
+std::vector<float> GaussianFilterShader::gauss1D(int _width, float _sigma) {
   float sum = 0;
-  int mid= (width-1)/2;
-  std::vector<float> result(width,0.0);
-  for(int i=0;i<width;i++ ) {
+  int mid= (_width -1)/2;
+  std::vector<float> result(_width,0.0);
+  for(int i=0;i<_width;i++ ) {
     int current_index = i-mid;
     float g = 0;
-    g= 1/(H3DUtil::H3DSqrt(2*H3DUtil::Constants::pi)*sigma) * H3DUtil::H3DExp(-current_index*current_index/(2.0f*sigma*sigma));
+    g= 1/(H3DUtil::H3DSqrt(2*H3DUtil::Constants::pi)*_sigma) * H3DUtil::H3DExp(-current_index*current_index/(2.0f*_sigma*_sigma));
     result.at(i) = g;
     sum+=g;
   }
-  for(int i = 0; i<width;i++) {
+  for(int i = 0; i<_width;i++) {
     result[i] = result[i]/sum;
   }
 
@@ -144,11 +144,11 @@ void GaussianFilterShader::MFWeights::update() {
     return;
   }
 
-  const string &type = gfs->type->getValue();
+  const string &_type = gfs->type->getValue();
 
-  if ( type == "FULL") {
+  if ( _type == "FULL") {
     value = gfs->gauss2D(demand_kernel_size ,demand_kernel_size ,demand_sigma);
-  } else if( type == "VERTICAL"|| type == "HORIZONTAL") {
+  } else if( _type == "VERTICAL"|| _type == "HORIZONTAL") {
     value = gfs->gauss1D(demand_kernel_size,demand_sigma);
   }
 }

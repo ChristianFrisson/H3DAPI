@@ -200,8 +200,8 @@ void KeyboardNavigation::handleKeyAction( int key, bool pressed ) {
   Vec3f temp_move_dir;
   Rotation temp_rel_rot;
   bool temp_value = false;
-  string nav_type = getNavType();
-  if( nav_type == "WALK" || nav_type == "FLY" ) {
+  string _nav_type = getNavType();
+  if( _nav_type == "WALK" || _nav_type == "FLY" ) {
     if( upPressed ) {
       temp_move_dir += Vec3f( 0, 0, -1 );
       temp_rel_rot = Rotation();
@@ -223,7 +223,7 @@ void KeyboardNavigation::handleKeyAction( int key, bool pressed ) {
       temp_value = true;
     }
   }
-  else if( nav_type == "EXAMINE" || nav_type == "ANY" ) {
+  else if( _nav_type == "EXAMINE" || _nav_type == "ANY" ) {
     if( upPressed ) {
       temp_move_dir = Vec3f( 0, 0, 0 );
       temp_rel_rot *= Rotation( 1, 0, 0, 0.01f );
@@ -296,8 +296,8 @@ void HapticDeviceNavigation::CalculateHapticDeviceMoveInfo::update( ) {
   }
   
   if( button_pressed ) {
-    string nav_type = the_owner->getNavType();
-    if( nav_type == "EXAMINE" || nav_type == "ANY" ) {
+    string _nav_type = the_owner->getNavType();
+    if( _nav_type == "EXAMINE" || _nav_type == "ANY" ) {
       Rotation this_orn = device_orn;
       the_owner->rel_rot = -(this_orn * -last_orn);
       last_orn = this_orn;
@@ -309,48 +309,48 @@ void HapticDeviceNavigation::CalculateHapticDeviceMoveInfo::update( ) {
       last_pos = device_pos;
       the_owner->use_center = true;
     }
-    else if( nav_type == "WALK" ) {
+    else if( _nav_type == "WALK" ) {
       Vec3f dist_change = device_pos - last_pos;
       dist_change.y = 0;
       dist_change.normalizeSafe();
       Rotation this_orn = device_orn;
       last_orn = this_orn;
-      Rotation rel_rot = Rotation();
+      Rotation _rel_rot = Rotation();
       try {
         Vec3f point = this_orn * Vec3f( 0, 0, 1 );
         point.y = 0.0f;
         point.normalize();
-        rel_rot = Rotation( Vec3f( 0, 0, 1 ), point );
-        if( rel_rot.angle < 0.02 )
-          rel_rot.angle = 0.0f;
+        _rel_rot = Rotation( Vec3f( 0, 0, 1 ), point );
+        if( _rel_rot.angle < 0.02 )
+          _rel_rot.angle = 0.0f;
         else
-          rel_rot.angle = 0.01f * rel_rot.angle;
+          _rel_rot.angle = 0.01f * _rel_rot.angle;
       }
       catch( const Exception::H3DException & ) {
       }
       the_owner->move_dir = dist_change;
-      the_owner->rel_rot = rel_rot;
+      the_owner->rel_rot = _rel_rot;
       the_owner->use_center = false;
     }
-    else if( nav_type == "FLY" ) {
+    else if( _nav_type == "FLY" ) {
       the_owner->rel_rot = Rotation();
       Vec3f dist_change = device_pos - last_pos;
       dist_change.y = 0;
       dist_change.normalizeSafe();
       Rotation this_orn = device_orn;
       last_orn = this_orn;
-      Rotation rel_rot = Rotation();
+      Rotation _rel_rot = Rotation();
       try {
         Vec3f point1 = this_orn * Vec3f( 0, 0, 1 );
         Vec3f point2 = point1;
         point1.y = 0.0f;
         point1.normalize();
-        rel_rot = Rotation( Vec3f( 0, 0, 1 ), point1 );
+        _rel_rot = Rotation( Vec3f( 0, 0, 1 ), point1 );
         
-        if( rel_rot.angle < 0.02 )
-          rel_rot.angle = 0.0f;
+        if( _rel_rot.angle < 0.02 )
+          _rel_rot.angle = 0.0f;
         else
-          rel_rot.angle = 0.01f * rel_rot.angle;
+          _rel_rot.angle = 0.01f * _rel_rot.angle;
         try {
           point2.x = 0.0f;
           point2.normalize();
@@ -359,7 +359,7 @@ void HapticDeviceNavigation::CalculateHapticDeviceMoveInfo::update( ) {
             rel_rot2.angle = 0.0f;
           else
             rel_rot2.angle = 0.01f * rel_rot2.angle;
-          rel_rot = rel_rot * rel_rot2;
+          _rel_rot = _rel_rot * rel_rot2;
         }
         catch( const Exception::H3DException & ) {
         }
@@ -367,10 +367,10 @@ void HapticDeviceNavigation::CalculateHapticDeviceMoveInfo::update( ) {
       catch( const Exception::H3DException & ) {
       }
       the_owner->move_dir = dist_change;
-      the_owner->rel_rot = rel_rot;
+      the_owner->rel_rot = _rel_rot;
       the_owner->use_center = false;
     }
-    else if( nav_type == "LOOKAT" ) {
+    else if( _nav_type == "LOOKAT" ) {
     }
     value = true;
     return;
@@ -409,16 +409,16 @@ void SWSNavigation::resetAll() {
 }
 
 void SWSNavigation::CalculateSWSMoveInfo::update( ) {
-  string nav_type = the_owner->getNavType();
+  string _nav_type = the_owner->getNavType();
   if( event.ptr == routes_in[0] ) {
-    if( nav_type == "WALK" ) {
+    if( _nav_type == "WALK" ) {
       Vec3f direction = static_cast< SFVec3f * >( routes_in[0] )->getValue();
       direction.y = 0.0f;
       direction.normalizeSafe();
       the_owner->move_dir = direction;
       value = true;
     }
-    else if( nav_type == "FLY" ) {
+    else if( _nav_type == "FLY" ) {
       Vec3f direction = static_cast< SFVec3f * >( routes_in[0] )->getValue();
       direction.normalizeSafe();
       the_owner->move_dir = direction;
@@ -426,14 +426,14 @@ void SWSNavigation::CalculateSWSMoveInfo::update( ) {
     }
   }
   else if( event.ptr == routes_in[1] ) {
-    if( nav_type == "EXAMINE" || nav_type == "FLY" || nav_type == "ANY" ) {
+    if( _nav_type == "EXAMINE" || _nav_type == "FLY" || _nav_type == "ANY" ) {
       the_owner->rel_rot =
         static_cast< SFRotation * >( routes_in[1] )->getValue();
       value = true;
     }
   }
   else if( event.ptr == routes_in[2] ) {
-    if( nav_type == "WALK" ) {
+    if( _nav_type == "WALK" ) {
       the_owner->rel_rot =
         static_cast< SFRotation * >( routes_in[2] )->getValue();
       value = true;

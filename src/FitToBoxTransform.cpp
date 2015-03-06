@@ -94,10 +94,10 @@ void FitToBoxTransform::SFMatrix4f::update() {
   Bound *b = static_cast< SFBound * >( routes_in[2] )->getValue();
   bool uniform_scaling = 
     static_cast< SFBool * >( routes_in[3] )->getValue();  
-  bool active = 
+  bool _active = 
     static_cast< SFBool * >( routes_in[4] )->getValue();  
   
-  if( active && size * size > Constants::f_epsilon ) {
+  if( _active && size * size > Constants::f_epsilon ) {
     BoxBound *bb = dynamic_cast< BoxBound * >( b );
     if( bb ) {
       const Vec3f &bound_size = bb->size->getValue();

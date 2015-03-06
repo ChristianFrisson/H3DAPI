@@ -110,23 +110,23 @@ Image* ImageTexture::SFImage::loadImage( ImageTexture *texture,
         string url_contents= ResourceResolver::resolveURLAsString ( *i );
         if ( url_contents != "" ) {
           istringstream tmp_istream( url_contents );
-          Image *image = 
+          Image *_image =
             static_cast< H3DImageLoaderNode * >(*il)->loadImage ( tmp_istream );
-          if( image ) {
+          if( _image ) {
             texture->setURLUsed( *i );
-            return image;
+            return _image;
           }
         }
 
         bool is_tmp_file;
-        string url = texture->resolveURLAsFile( *i, &is_tmp_file );
-        if( !url.empty() ) {
-          Image *image = 
-            static_cast< H3DImageLoaderNode * >(*il)->loadImage( url );
-          if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
-          if( image ) {
+        string _url = texture->resolveURLAsFile( *i, &is_tmp_file );
+        if( !_url.empty() ) {
+          Image *_image = 
+            static_cast< H3DImageLoaderNode * >(*il)->loadImage( _url );
+          if( is_tmp_file ) ResourceResolver::releaseTmpFileName( _url );
+          if( _image ) {
             texture->setURLUsed( *i );
-            return image;
+            return _image;
           }
         }
       }
@@ -146,16 +146,16 @@ Image* ImageTexture::SFImage::loadImage( ImageTexture *texture,
 
       if( il.get() ) {
         texture->setURLUsed( *i );
-        Image *image = il->loadImage( iss );
-        return image;
+        Image *_image = il->loadImage( iss );
+        return _image;
       }
     }
 
     bool is_tmp_file;
-    string url = texture->resolveURLAsFile( *i, &is_tmp_file );
-    if( !url.empty() ) {
+    string _url = texture->resolveURLAsFile( *i, &is_tmp_file );
+    if( !_url.empty() ) {
       auto_ptr< H3DImageLoaderNode > 
-        il( H3DImageLoaderNode::getSupportedFileReader( url ) );
+        il( H3DImageLoaderNode::getSupportedFileReader( _url ) );
 
       // special case for if we have a DicomImageLoader. Since DICOM 3d image
       // files often are distributed over several files the default behavior
@@ -170,11 +170,11 @@ Image* ImageTexture::SFImage::loadImage( ImageTexture *texture,
 
       if( il.get() ) {
         texture->setURLUsed( *i );
-        Image *image = il->loadImage( url );
-        if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
-        return image;
+        Image *_image = il->loadImage( _url );
+        if( is_tmp_file ) ResourceResolver::releaseTmpFileName( _url );
+        return _image;
       }
-      if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
+      if( is_tmp_file ) ResourceResolver::releaseTmpFileName( _url );
     }
   }
 

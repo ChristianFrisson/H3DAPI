@@ -69,11 +69,11 @@ PointNormalClipPlane::PointNormalClipPlane( Inst< SFNode  > _metadata,
 }
 
 void PointNormalClipPlane::PlaneEq::update() {
-  const Vec3f &point = static_cast< SFVec3f * >( routes_in[0] )->getValue();
-  Vec3f normal = static_cast< SFVec3f * >( routes_in[1] )->getValue();
-  normal.normalizeSafe();
-  value = Vec4d( normal.x, normal.y, normal.z, 
-                 -normal.x*point.x - normal.y*point.y - normal.z*point.z );
+  const Vec3f &_point = static_cast< SFVec3f * >( routes_in[0] )->getValue();
+  Vec3f _normal = static_cast< SFVec3f * >( routes_in[1] )->getValue();
+  _normal.normalizeSafe();
+  value = Vec4d( _normal.x, _normal.y, _normal.z,
+                 -_normal.x*_point.x - _normal.y*_point.y - _normal.z*_point.z );
 }
 
 

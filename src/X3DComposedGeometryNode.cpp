@@ -106,7 +106,7 @@ void X3DComposedGeometryNode::DisplayList::callList( bool build_list ) {
   X3DComposedGeometryNode *cgn = 
     static_cast< X3DComposedGeometryNode * >( owner );
 
-  bool ccw = cgn->ccw->getValue();  
+  bool _ccw = cgn->ccw->getValue();  
   // determine which side of polygons is front and back face. Since the 
   // GLWindow renderCamera() function might scale the y-axis with -1 and
   // set the GL_FRONT_FACE to GL_CW if scaled and GL_CCW otherwise, we have
@@ -117,12 +117,12 @@ void X3DComposedGeometryNode::DisplayList::callList( bool build_list ) {
   if( front_face == GL_CW ) {
     // we are in mirrored mode, so we have to set the front face
     // to the opposite in order for it to be right when mirrored.
-    if( ccw )
+    if( _ccw )
       glFrontFace( GL_CW );
     else
       glFrontFace( GL_CCW );
   } else {
-    if( ccw )
+    if( _ccw )
       glFrontFace( GL_CCW );
     else 
       glFrontFace( GL_CW );

@@ -507,26 +507,26 @@ void IndexedTriangleSet::AutoNormal::update() {
  // Console(4) << "Calculating normals" << endl;
   bool normals_per_vertex = 
     static_cast< SFBool * >( routes_in[0] )->getValue();
-  X3DCoordinateNode *coord = 
+  X3DCoordinateNode *_coord = 
     static_cast< X3DCoordinateNode * >( static_cast< SFCoordinateNode * >
     ( routes_in[1] )->getValue() );
-  const vector<int> &index = 
+  const vector<int> &_index = 
     static_cast< MFInt32 * >( routes_in[2] )->getValue();
-  bool ccw = static_cast< SFBool * >( routes_in[3] )->getValue();
+  bool _ccw = static_cast< SFBool * >( routes_in[3] )->getValue();
 
   if( normals_per_vertex ) 
-    value = generateNormalsPerVertex( coord, index, ccw );
+    value = generateNormalsPerVertex( _coord, _index, _ccw );
   else
-    value = generateNormalsPerFace( coord, index, ccw );
+    value = generateNormalsPerFace( _coord, _index, _ccw);
 }
 
 void IndexedTriangleSet::AutoTangent::update() {
   bool normals_per_vertex = 
     static_cast< SFBool * >( routes_in[0] )->getValue();
-  X3DCoordinateNode *coord = 
+  X3DCoordinateNode *_coord = 
     static_cast< X3DCoordinateNode * >( static_cast< SFCoordinateNode * >
     ( routes_in[1] )->getValue() );
-  const vector<int> &index = 
+  const vector<int> &_index = 
     static_cast< MFInt32 * >( routes_in[2] )->getValue();
   X3DTextureCoordinateNode *tex_coord = 
     static_cast< X3DTextureCoordinateNode * >( static_cast< SFTextureCoordinateNode * >
@@ -540,9 +540,9 @@ void IndexedTriangleSet::AutoTangent::update() {
   for( unsigned int i = 0; i < its->attrib->size(); ++i ) {
     X3DVertexAttributeNode *attr = its->attrib->getValueByIndex( i );
     if( attr ) {
-      const string &name = attr->name->getValue();
-      if( name == "tangent" ) have_tangents_in_attrib = true; 
-      if( name == "binormal" ) have_binormals_in_attrib = true; 
+      const string &_name = attr->name->getValue();
+      if( _name == "tangent" ) have_tangents_in_attrib = true; 
+      if( _name == "binormal" ) have_binormals_in_attrib = true; 
     }
   }
 
@@ -581,30 +581,30 @@ void IndexedTriangleSet::AutoTangent::update() {
   }
 
   if( normals_per_vertex ) 
-    generateTangentsPerVertex( coord, tex_coord, index, tangent, binormal );
+    generateTangentsPerVertex( _coord, tex_coord, _index, tangent, binormal );
   else
-    generateTangentsPerFace( coord, tex_coord, index, tangent, binormal );
+    generateTangentsPerFace( _coord, tex_coord, _index, tangent, binormal );
 }
 
 
 X3DNormalNode *IndexedTriangleSet::AutoNormal::generateNormalsPerVertex( 
-  X3DCoordinateNode *coord,
-  const vector< int > &index,
-  bool ccw ) {
-    Normal *normal = new Normal;
-    if( coord ) {
-      vector< Vec3f > normals( coord->nrAvailableCoords(), 
+  X3DCoordinateNode *_coord,
+  const vector< int > &_index,
+  bool _ccw ) {
+    Normal *_normal = new Normal;
+    if( _coord ) {
+      vector< Vec3f > normals( _coord->nrAvailableCoords(), 
         Vec3f( 0, 0, 0 ) );
-      for( unsigned int j = 0; j < index.size(); j+=3 ) {
+      for( unsigned int j = 0; j < _index.size(); j+=3 ) {
         Vec3f norm, A, B, C, AB, BC;
         // make sure we have a valid face. If not use a dummy normal. 
-        if( j+2 >= index.size() ) {
+        if( j+2 >= _index.size() ) {
           norm =  Vec3f( 1, 0, 0 );
         } else {  
           // calculate a normal 
-          A = coord->getCoord( index[ j ] );
-          B = coord->getCoord( index[ j+1 ] );
-          C = coord->getCoord( index[ j+2 ] );
+          A = _coord->getCoord( _index[ j ] );
+          B = _coord->getCoord( _index[ j+1 ] );
+          C = _coord->getCoord( _index[ j+2 ] );
 
           AB = B - A;
           BC = C - B;
@@ -612,11 +612,11 @@ X3DNormalNode *IndexedTriangleSet::AutoNormal::generateNormalsPerVertex(
           norm = AB % BC;
         }
         norm.normalizeSafe();
-        if( !ccw ) 
+        if( !_ccw ) 
           norm = -norm;
-        normals[index[ j ]] += norm;
-        normals[index[ j+1 ]] += norm;
-        normals[index[ j+2 ]] += norm;
+        normals[_index[ j ]] += norm;
+        normals[_index[ j+1 ]] += norm;
+        normals[_index[ j+2 ]] += norm;
       }
 
       for( vector<Vec3f>::iterator i = normals.begin(); 
@@ -624,29 +624,29 @@ X3DNormalNode *IndexedTriangleSet::AutoNormal::generateNormalsPerVertex(
         ++i ) {
           (*i).normalizeSafe();
       }
-      normal->vector->setValue( normals );
+      _normal->vector->setValue( normals );
     }
-    return normal;
+    return _normal;
 }
 
 X3DNormalNode *IndexedTriangleSet::AutoNormal::generateNormalsPerFace( 
-                                      X3DCoordinateNode *coord,
-                                      const vector< int > &index,
-                                      bool ccw ) {
-  Normal *normal = new Normal;
-  if( coord ) {
+                                      X3DCoordinateNode *_coord,
+                                      const vector< int > &_index,
+                                      bool _ccw ) {
+  Normal *_normal = new Normal;
+  if( _coord ) {
     vector< Vec3f > normals;
-    normals.reserve( index.size() / 3 );
-    for( size_t j = 0; j < index.size(); j+=3 ) {
+    normals.reserve( _index.size() / 3 );
+    for( size_t j = 0; j < _index.size(); j+=3 ) {
       Vec3f norm, A, B, C, AB, BC;
       // make sure we have a valid face. If not use a dummy normal. 
-      if( j+2 >= index.size() ) {
+      if( j+2 >= _index.size() ) {
         norm =  Vec3f( 1, 0, 0 );
       } else {  
         // calculate a normal for the triangle
-        A = coord->getCoord( index[ j ] );
-        B = coord->getCoord( index[ j + 1 ] );
-        C = coord->getCoord( index[ j + 2 ] );
+        A = _coord->getCoord( _index[ j ] );
+        B = _coord->getCoord( _index[ j + 1 ] );
+        C = _coord->getCoord( _index[ j + 2 ] );
         
         AB = B - A;
         BC = C - B;
@@ -660,22 +660,22 @@ X3DNormalNode *IndexedTriangleSet::AutoNormal::generateNormalsPerFace(
         norm = Vec3f( 1, 0, 0 );
       }
       
-      if( !ccw ) 
+      if( !_ccw)
         norm = -norm;
       
       normals.push_back( norm );
     }
-    normal->vector->setValue( normals );
+    _normal->vector->setValue( normals );
   }
-  return normal;
+  return _normal;
 }
 
 
 
 void IndexedTriangleSet::AutoTangent::generateTangentsPerVertex( 
-                                                           X3DCoordinateNode *coord,
+                                                           X3DCoordinateNode *_coord,
                                                            X3DTextureCoordinateNode *tex_coord,
-                                                           const vector< int > &index,
+                                                           const vector< int > &_index,
                                                            FloatVertexAttribute *tangent_node,
                                                            FloatVertexAttribute *binormal_node) {
   if( tangent_node ) {
@@ -690,26 +690,26 @@ void IndexedTriangleSet::AutoTangent::generateTangentsPerVertex(
     binormal_node->value->clear();
   }
 
-  if( coord ) {
+  if( _coord ) {
     // the tangent and binormal for a vertex is the average of the tangent
     // of all triangles sharing that vertex.
-    vector< float > tangents( coord->nrAvailableCoords() * 3, 0 );
-    vector< float > binormals( coord->nrAvailableCoords() * 3, 0 );
-    for( unsigned int j = 0; j < index.size(); j+=3 ) {
+    vector< float > tangents( _coord->nrAvailableCoords() * 3, 0 );
+    vector< float > binormals( _coord->nrAvailableCoords() * 3, 0 );
+    for( unsigned int j = 0; j < _index.size(); j+=3 ) {
       Vec3f tangent, binormal;
       // make sure we have a valid face. If not use a dummy tangent. 
-      if( j+2 >= index.size() ) {
+      if( j+2 >= _index.size() ) {
         tangent =  Vec3f( 0, 1, 0 );
         binormal =  Vec3f( 0, 0, 1 );
       } else {  
         // calculate a tangent
-        Vec3f a = coord->getCoord( index[ j ] );
-        Vec3f b = coord->getCoord( index[ j + 1 ] );
-        Vec3f c = coord->getCoord( index[ j + 2 ] );
+        Vec3f a = _coord->getCoord( _index[ j ] );
+        Vec3f b = _coord->getCoord( _index[ j + 1 ] );
+        Vec3f c = _coord->getCoord( _index[ j + 2 ] );
 
-        Vec3f ta = getTexCoord( coord, tex_coord, index[j] );
-        Vec3f tb = getTexCoord( coord, tex_coord, index[j+1] );
-        Vec3f tc = getTexCoord( coord, tex_coord, index[j+2] );
+        Vec3f ta = getTexCoord( _coord, tex_coord, _index[j] );
+        Vec3f tb = getTexCoord( _coord, tex_coord, _index[j+1] );
+        Vec3f tc = getTexCoord( _coord, tex_coord, _index[j+2] );
         
         calculateTangent( a, b, c,
                           ta, tb, tc,
@@ -717,25 +717,25 @@ void IndexedTriangleSet::AutoTangent::generateTangentsPerVertex(
 
       }
 
-      tangents[index[ j     ]*3   ] += tangent.x;
-      tangents[index[ j     ]*3+1 ] += tangent.y;
-      tangents[index[ j     ]*3+2 ] += tangent.z;
-      tangents[index[ j + 1 ]*3   ] += tangent.x;
-      tangents[index[ j + 1 ]*3+1 ] += tangent.y;
-      tangents[index[ j + 1 ]*3+2 ] += tangent.z;
-      tangents[index[ j + 2 ]*3   ] += tangent.x;
-      tangents[index[ j + 2 ]*3+1 ] += tangent.y;
-      tangents[index[ j + 2 ]*3+2 ] += tangent.z;
+      tangents[_index[ j     ]*3   ] += tangent.x;
+      tangents[_index[ j     ]*3+1 ] += tangent.y;
+      tangents[_index[ j     ]*3+2 ] += tangent.z;
+      tangents[_index[ j + 1 ]*3   ] += tangent.x;
+      tangents[_index[ j + 1 ]*3+1 ] += tangent.y;
+      tangents[_index[ j + 1 ]*3+2 ] += tangent.z;
+      tangents[_index[ j + 2 ]*3   ] += tangent.x;
+      tangents[_index[ j + 2 ]*3+1 ] += tangent.y;
+      tangents[_index[ j + 2 ]*3+2 ] += tangent.z;
 
-      binormals[index[ j     ]*3   ] += binormal.x;
-      binormals[index[ j     ]*3+1 ] += binormal.y;
-      binormals[index[ j     ]*3+2 ] += binormal.z;
-      binormals[index[ j + 1 ]*3   ] += binormal.x;
-      binormals[index[ j + 1 ]*3+1 ] += binormal.y;
-      binormals[index[ j + 1 ]*3+2 ] += binormal.z;
-      binormals[index[ j + 2 ]*3   ] += binormal.x;
-      binormals[index[ j + 2 ]*3+1 ] += binormal.y;
-      binormals[index[ j + 2 ]*3+2 ] += binormal.z;
+      binormals[_index[ j     ]*3   ] += binormal.x;
+      binormals[_index[ j     ]*3+1 ] += binormal.y;
+      binormals[_index[ j     ]*3+2 ] += binormal.z;
+      binormals[_index[ j + 1 ]*3   ] += binormal.x;
+      binormals[_index[ j + 1 ]*3+1 ] += binormal.y;
+      binormals[_index[ j + 1 ]*3+2 ] += binormal.z;
+      binormals[_index[ j + 2 ]*3   ] += binormal.x;
+      binormals[_index[ j + 2 ]*3+1 ] += binormal.y;
+      binormals[_index[ j + 2 ]*3+2 ] += binormal.z;
  
      }
     
@@ -776,9 +776,9 @@ void IndexedTriangleSet::AutoTangent::generateTangentsPerVertex(
 }
 
 void IndexedTriangleSet::AutoTangent::generateTangentsPerFace( 
-                                                              X3DCoordinateNode *coord,
+                                                              X3DCoordinateNode *_coord,
                                                               X3DTextureCoordinateNode *tex_coord,
-                                                              const vector< int > &index,
+                                                              const vector< int > &_index,
                                                               FloatVertexAttribute *tangent_node,
                                                               FloatVertexAttribute *binormal_node ) {
 
@@ -794,28 +794,28 @@ void IndexedTriangleSet::AutoTangent::generateTangentsPerFace(
     binormal_node->value->clear();
   }
 
-  if( coord ) {
+  if( _coord ) {
     vector< float > tangents;
     vector< float > binormals;
 
-    tangents.reserve( index.size() / 3 );
-    binormals.reserve( index.size() / 3 );
+    tangents.reserve( _index.size() / 3 );
+    binormals.reserve( _index.size() / 3 );
 
-    for( size_t j = 0; j < index.size(); j+=3 ) {
+    for( size_t j = 0; j < _index.size(); j+=3 ) {
       Vec3f tangent, binormal;
       // make sure we have a valid face. If not use a dummy normal. 
-      if( j+2 >= index.size() ) {
+      if( j+2 >= _index.size() ) {
         tangent =  Vec3f( 0, 1, 0 );
         binormal = Vec3f( 0, 0, 1 );
       } else {  
         // calculate a tangent
-        Vec3f a = coord->getCoord( index[ j ] );
-        Vec3f b = coord->getCoord( index[ j + 1 ] );
-        Vec3f c = coord->getCoord( index[ j + 2 ] );
+        Vec3f a = _coord->getCoord( _index[ j ] );
+        Vec3f b = _coord->getCoord( _index[ j + 1 ] );
+        Vec3f c = _coord->getCoord( _index[ j + 2 ] );
 
-        Vec3f ta = getTexCoord( coord, tex_coord, index[j] );
-        Vec3f tb = getTexCoord( coord, tex_coord, index[j+1] );
-        Vec3f tc = getTexCoord( coord, tex_coord, index[j+2] );
+        Vec3f ta = getTexCoord( _coord, tex_coord, _index[j] );
+        Vec3f tb = getTexCoord( _coord, tex_coord, _index[j+1] );
+        Vec3f tc = getTexCoord( _coord, tex_coord, _index[j+2] );
         
         calculateTangent( a, b, c,
                           ta, tb, tc,
@@ -855,12 +855,12 @@ void IndexedTriangleSet::AutoTangent::generateTangentsPerFace(
 
 
 
-Vec3f IndexedTriangleSet::AutoTangent::getTexCoord( X3DCoordinateNode *coord,
+Vec3f IndexedTriangleSet::AutoTangent::getTexCoord( X3DCoordinateNode *_coord,
                                                     X3DTextureCoordinateNode *tex_coord,
-                                                    int index ) {
+                                                    int _index ) {
   if( tex_coord ) {
     if( tex_coord->supportsGetTexCoord( 0 ) ) {
-      Vec4f tc = tex_coord->getTexCoord( index, 0 );
+      Vec4f tc = tex_coord->getTexCoord( _index, 0 );
       return Vec3f( tc.x, tc.y, tc.z ) / tc.w;
     } else {
       Console(4) << "Warning: X3DTextureCoordinateNode does not support getTexCoord() function. Tangents and binormals cannot be calculated for IndexedTriangleSet." << endl;
@@ -868,7 +868,7 @@ Vec3f IndexedTriangleSet::AutoTangent::getTexCoord( X3DCoordinateNode *coord,
   } else {
     IndexedTriangleSet *its = static_cast< IndexedTriangleSet * >( getOwner() );
     Matrix4f to_str = its->getDefaultTexGenMatrix();
-    return to_str * coord->getCoord( index );
+    return to_str * _coord->getCoord( _index );
   }
 
   return Vec3f(0,0,0);

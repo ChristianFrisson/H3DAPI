@@ -79,7 +79,7 @@ namespace H3D {
     class GetValueSafeField: public PeriodicUpdate< BaseField > {
     public:
       /// Get the value of the field.
-      inline virtual const typename BaseField::value_type &getValue( int id = 0 ) {
+      inline virtual const typename BaseField::value_type &getValue( int _id = 0 ) {
         if( H3DUtil::HapticThread::inHapticThread() ) {
           // if in haptic thread only get the rt_value and return
           value_lock.readLock();
@@ -88,7 +88,7 @@ namespace H3D {
           return value_for_haptic;
         } else {
           assert( H3DUtil::ThreadBase::inMainThread() );
-          return PeriodicUpdate< BaseField >::getValue( id );
+          return PeriodicUpdate< BaseField >::getValue( _id );
         }
       }
       /// update can not happens in non-main thread
@@ -106,9 +106,9 @@ namespace H3D {
       }
       /// Set the value of the field, also only allowed in main thread
       inline virtual void setValue( const typename BaseField::value_type &v,
-        int id = 0 ) {
+                                    int _id = 0 ) {
           assert( H3DUtil::ThreadBase::inMainThread() );
-          PeriodicUpdate< BaseField >::setValue( v, id );
+          PeriodicUpdate< BaseField >::setValue( v, _id );
           value_lock.writeLock();
           rt_value = this->value;
           value_lock.unlock();

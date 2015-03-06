@@ -84,12 +84,12 @@ TimeSensor::TimeSensor( Inst< SFNode >  _metadata,
   time->setValue( TimeStamp(), id );
 }
 
-void TimeSensor::TimeHandler::activate( H3DTime time ) {
+void TimeSensor::TimeHandler::activate( H3DTime _time ) {
   TimeSensor *time_node = 
     static_cast< TimeSensor * >( getOwner() );
   H3DTime start_time = time_node->startTime->getValue();
   time_node->cycleTime->setValue( start_time, time_node->id );
-  X3DTimeDependentNode::TimeHandler::activate( time );
+  X3DTimeDependentNode::TimeHandler::activate( _time );
   elapsed_cycle_time = time_node->elapsedTime->getValue();
 
   H3DTime cycle_interval = time_node->cycleInterval->getValue();
@@ -111,11 +111,11 @@ void TimeSensor::TimeHandler::activate( H3DTime time ) {
                                        cycle_interval ),
                            time_node->id );
   }
-  time_node->time->setValue( time, time_node->id );
+  time_node->time->setValue( _time, time_node->id );
 }
 
 void TimeSensor::TimeHandler::update() {
-  H3DTime time = static_cast< SFTime * >( event.ptr )->getValue();
+  H3DTime _time = static_cast< SFTime * >( event.ptr )->getValue();
   TimeSensor *time_node = 
     static_cast< TimeSensor * >( getOwner() );
   H3DTime cycle_time = time_node->cycleTime->getValue();
@@ -125,27 +125,27 @@ void TimeSensor::TimeHandler::update() {
   if( this_enabled ) {
     if( time_node->isActive->getValue() ) {
       if( !time_node->isPaused->getValue() ) {
-        elapsed_cycle_time = elapsed_cycle_time + time - value;
+        elapsed_cycle_time = elapsed_cycle_time + _time - value;
         if( elapsed_cycle_time >= cycle_interval ) {
           if( time_node->loop->getValue() ) {
             // maybe make sure the not two intervals have
-            H3DTime paused_time = (time - cycle_time ) - elapsed_cycle_time;
+            H3DTime paused_time = (_time - cycle_time ) - elapsed_cycle_time;
             H3DTime new_cycle_time = 
               cycle_time +  paused_time;
             new_cycle_time += cycle_interval * 
-              H3DFloor( (time - new_cycle_time) / cycle_interval);
+              H3DFloor( (_time - new_cycle_time) / cycle_interval);
             time_node->cycleTime->setValue( new_cycle_time, time_node->id ); 
-            elapsed_cycle_time = time - new_cycle_time;
+            elapsed_cycle_time = _time - new_cycle_time;
           } else {
             // reached end of cycle and loop is FALSE.
-            deactivate( time );
+            deactivate( _time );
             elapsed_cycle_time = cycle_interval;
           }
         }
         time_node->fraction_changed->setValue( (H3DFloat)( elapsed_cycle_time/ 
                                                cycle_interval ),
                                                time_node->id );
-        time_node->time->setValue( time, time_node->id );
+        time_node->time->setValue( _time, time_node->id );
       }
     }
 
@@ -160,13 +160,13 @@ void TimeSensor::TimeHandler::update() {
 
     if( time_node->activate_through_enabled &&
         !time_node->isActive->getValue() )
-      activate( time );
+      activate( _time );
 
     if( time_node->activate_through_enabled )
       time_node->activate_through_enabled = false;
   } else {
     if( time_node->isActive->getValue() ) {
-      deactivate( time );
+      deactivate( _time );
     }
   }
 

@@ -120,9 +120,9 @@ namespace H3D {
       /// vertex.
       ///
       virtual X3DNormalNode *generateNormalsPerVertex( 
-                                                      X3DCoordinateNode *coord,
+                                                      X3DCoordinateNode *_coord,
                                                       const vector< int > &index,
-                                                      bool ccw );
+                                                      bool _ccw );
     
 
       /// Create a new X3DNormalNode from the arguments given
@@ -142,9 +142,9 @@ namespace H3D {
       /// vertex.
       ///
       virtual X3DNormalNode *generateNormalsPerFace( 
-                                                    X3DCoordinateNode *coord,
+                                                    X3DCoordinateNode *_coord,
                                                     const vector< int > &index,
-                                                    bool ccw );
+                                                    bool _ccw );
 
     };
 
@@ -173,7 +173,7 @@ namespace H3D {
       /// \param tex_coord Node with the texture coordinates.
       /// \param index The indices in coord for the vertices.
       virtual void generateTangentsPerVertex( 
-                X3DCoordinateNode *coord,
+                X3DCoordinateNode *_coord,
                 X3DTextureCoordinateNode *tex_coord,
                 const vector< int > &index,
                 FloatVertexAttribute *tangent,
@@ -188,7 +188,7 @@ namespace H3D {
       /// \param tex_coord Node with the texture coordinates.
       /// \param index The indices in coord for the vertices.
       virtual void generateTangentsPerFace( 
-             X3DCoordinateNode *coord,
+             X3DCoordinateNode *_coord,
              X3DTextureCoordinateNode *tex_coord,
              const vector< int > &index,
              FloatVertexAttribute *tangent,
@@ -197,7 +197,7 @@ namespace H3D {
       /// Returns the texture coordinate for a given index. If no
       /// texture coordinate node is specified it will use the
       /// default texture coordinate generation for an IndexedTriangleSet.
-      Vec3f getTexCoord( X3DCoordinateNode *coord,
+      Vec3f getTexCoord( X3DCoordinateNode *_coord,
                          X3DTextureCoordinateNode *tex_coord,
                         int index );
 

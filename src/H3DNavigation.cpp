@@ -145,7 +145,7 @@ void H3DNavigation::doNavigation(
 
   if( !linear_interpolate ) {
 
-    Rotation vp_full_orientation = vp->totalOrientation->getValue();
+    vp_full_orientation = vp->totalOrientation->getValue();
     H3DTime delta_time = current_time - last_time;
     last_time = current_time;
 

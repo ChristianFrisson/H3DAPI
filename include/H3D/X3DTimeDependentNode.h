@@ -76,11 +76,11 @@ namespace H3D {
     public:
       /// Overrides the setValue function so that the value is only
       /// changed if the owner X3DTimeDependentNode is inactive. 
-      virtual void setValue( const H3DDouble &time, int id = 0 ) {
+      virtual void setValue( const H3DDouble &time, int _id = 0 ) {
         X3DTimeDependentNode *time_node = 
           static_cast< X3DTimeDependentNode * >( getOwner() );
         if( !time_node->isActive->getValue() ) {
-          SFTime::setValue( time, id );
+          SFTime::setValue( time, _id );
         }
       } 
 

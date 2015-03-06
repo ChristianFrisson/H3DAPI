@@ -53,16 +53,16 @@ namespace H3D {
     class H3DAPI_API SetTouchTime: 
       public AutoUpdate< TypedField < SFBool, SFBool > > {
     public:
-      virtual void setValue( const bool &b, int id = 0 ) {
-        SFBool::setValue( b, id );
+      virtual void setValue( const bool &b, int _id = 0 ) {
+        SFBool::setValue( b, _id );
       }
     protected:
       virtual void update() {
         SFBool::update();
-        bool isActive = static_cast< SFBool * >( routes_in[0] )->getValue();
+        bool _isActive = static_cast< SFBool * >( routes_in[0] )->getValue();
         X3DTouchSensorNode *ts = 
             static_cast< X3DTouchSensorNode * >( getOwner() );
-        if( !isActive && ts->isOver->getValue() ) {
+        if( !_isActive && ts->isOver->getValue() ) {
           ts->touchTime->setValue( event.time_stamp, ts->id );
         }
       }

@@ -74,8 +74,8 @@ namespace H3D {
     public:
       /// Sets either the inputTrue or inputFalse field depending
       /// on the new value.
-      virtual void setValue( const bool &b, int id = 0 ) {
-        SFBool::setValue( b );
+      virtual void setValue( const bool &b, int _id = 0 ) {
+        SFBool::setValue( b, _id );
         BooleanFilter *bf = 
           static_cast< BooleanFilter * >( getOwner() );
         if( value )

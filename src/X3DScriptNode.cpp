@@ -77,9 +77,9 @@ void X3DScriptNode::SFScriptString::update() {
     }
 
     bool is_tmp_file;
-    string url = script_node->resolveURLAsFile( *i, &is_tmp_file );
-    if( url != "" ) {
-      ifstream is( url.c_str() );
+    string _url = script_node->resolveURLAsFile( *i, &is_tmp_file );
+    if( _url != "" ) {
+      ifstream is( _url.c_str() );
       if( is.good() ) {
         std::streamsize length;
         char * buffer;
@@ -95,7 +95,7 @@ void X3DScriptNode::SFScriptString::update() {
         is.read (buffer,length);
         length = is.gcount();
         is.close();
-        if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
+        if( is_tmp_file ) ResourceResolver::releaseTmpFileName( _url );
         buffer[length] = '\0';
         script_node->setURLUsed( *i );
         value = string( buffer );
@@ -103,7 +103,7 @@ void X3DScriptNode::SFScriptString::update() {
         return;
       }
       is.close();
-      if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
+      if( is_tmp_file ) ResourceResolver::releaseTmpFileName( _url );
      }
   }
   Console(4) << "None of the urls [";

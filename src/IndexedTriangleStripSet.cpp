@@ -437,38 +437,38 @@ void IndexedTriangleStripSet::traverseSG( TraverseInfo &ti ) {
 void IndexedTriangleStripSet::AutoNormal::update() {
   bool normals_per_vertex = 
     static_cast< SFBool * >( routes_in[0] )->getValue();
-  X3DCoordinateNode *coord = 
+  X3DCoordinateNode *_coord = 
     static_cast< X3DCoordinateNode * >( static_cast< SFCoordinateNode * >
                                         ( routes_in[1] )->getValue() );
-  const vector<int> &index = 
+  const vector<int> &_index = 
     static_cast< MFInt32 * >( routes_in[2] )->getValue();
-  bool ccw = static_cast< SFBool * >( routes_in[3] )->getValue();
+  bool _ccw = static_cast< SFBool * >( routes_in[3] )->getValue();
 
   if( normals_per_vertex ) 
-    value = generateNormalsPerVertex( coord, index, ccw );
+    value = generateNormalsPerVertex( _coord, _index, _ccw );
   else
-    value = generateNormalsPerFace( coord, index, ccw );
+    value = generateNormalsPerFace( _coord, _index, _ccw );
 }
 
 X3DNormalNode *IndexedTriangleStripSet::AutoNormal::generateNormalsPerVertex( 
-                                   X3DCoordinateNode *coord,
-                                   const vector< int > &index,
-                                   bool ccw ) {
-  Normal *normal = new Normal;
-  if( coord ) {
-    vector< Vec3f > normals( coord->nrAvailableCoords(), 
+                                   X3DCoordinateNode *_coord,
+                                   const vector< int > &_index,
+                                   bool _ccw ) {
+  Normal *_normal = new Normal;
+  if( _coord ) {
+    vector< Vec3f > normals( _coord->nrAvailableCoords(), 
                              Vec3f( 0, 0, 0 ) );
     unsigned int triangles_in_strip = 0;
-    for( unsigned int j = 0; j < index.size() - 2; ++j ) {
-      if( j+2 < index.size() && 
-          index[j] != -1 && 
-          index[j+1] != -1 && 
-          index[j+2] != -1 ) {
+    for( unsigned int j = 0; j < _index.size() - 2; ++j ) {
+      if( j+2 < _index.size() && 
+          _index[j] != -1 && 
+          _index[j+1] != -1 && 
+          _index[j+2] != -1 ) {
         Vec3f norm, A, B, C, AB, BC;
         // calculate a normal 
-        A = coord->getCoord( index[ j ] );
-        B = coord->getCoord( index[ j+1 ] );
-        C = coord->getCoord( index[ j+2 ] );
+        A = _coord->getCoord( _index[ j ] );
+        B = _coord->getCoord( _index[ j+1 ] );
+        C = _coord->getCoord( _index[ j+2 ] );
         
         AB = B - A;
         BC = C - B;
@@ -476,15 +476,15 @@ X3DNormalNode *IndexedTriangleStripSet::AutoNormal::generateNormalsPerVertex(
         norm = AB % BC;
 
         norm.normalizeSafe();
-        if( !ccw ) 
+        if( !_ccw ) 
           norm = -norm;
         // since indices are specified as triangle strip we have to flip the 
         // normal every second triangle
         if( triangles_in_strip % 2 == 1 )
           norm = -norm;
-        normals[index[ j ]] += norm;
-        normals[index[ j+1 ]] += norm;
-        normals[index[ j+2 ]] += norm;
+        normals[_index[ j ]] += norm;
+        normals[_index[ j+1 ]] += norm;
+        normals[_index[ j+2 ]] += norm;
         ++triangles_in_strip;
       } else {
         triangles_in_strip = 0;
@@ -496,31 +496,31 @@ X3DNormalNode *IndexedTriangleStripSet::AutoNormal::generateNormalsPerVertex(
          ++i ) {
         (*i).normalizeSafe();
     }
-    normal->vector->setValue( normals );
+    _normal->vector->setValue( normals );
   }
-  return normal;
+  return _normal;
 }
 
 X3DNormalNode *IndexedTriangleStripSet::AutoNormal::generateNormalsPerFace( 
-                                             X3DCoordinateNode *coord,
-                                             const vector< int > &index,
-                                             bool ccw ) {
-  Normal *normal = new Normal;
-  if( coord ) {
+                                             X3DCoordinateNode *_coord,
+                                             const vector< int > &_index,
+                                             bool _ccw ) {
+  Normal *_normal = new Normal;
+  if( _coord ) {
     vector< Vec3f > normals;
     unsigned int triangles_in_strip = 0;
-    for( unsigned int j = 0; j < index.size() - 2; ++j ) {
+    for( unsigned int j = 0; j < _index.size() - 2; ++j ) {
       
-      if( j+2 < index.size() && 
-          index[j] != -1 && 
-          index[j+1] != -1 && 
-          index[j+2] != -1 ) {
+      if( j+2 < _index.size() && 
+          _index[j] != -1 && 
+          _index[j+1] != -1 && 
+          _index[j+2] != -1 ) {
         
         Vec3f norm, A, B, C, AB, BC;
         // calculate a normal for the triangle
-        A = coord->getCoord( index[ j ] );
-        B = coord->getCoord( index[ j + 1 ] );
-        C = coord->getCoord( index[ j + 2 ] );
+        A = _coord->getCoord( _index[ j ] );
+        B = _coord->getCoord( _index[ j + 1 ] );
+        C = _coord->getCoord( _index[ j + 2 ] );
         
         AB = B - A;
         BC = C - B;
@@ -533,7 +533,7 @@ X3DNormalNode *IndexedTriangleStripSet::AutoNormal::generateNormalsPerFace(
           norm = Vec3f( 1, 0, 0 );
         }
         
-        if( !ccw ) 
+        if( !_ccw ) 
           norm = -norm;
         
         // since indices are specified as triangle strip we have to flip the 
@@ -547,8 +547,8 @@ X3DNormalNode *IndexedTriangleStripSet::AutoNormal::generateNormalsPerFace(
         triangles_in_strip = 0;
       }
     }
-    normal->vector->setValue( normals );
+    _normal->vector->setValue( normals );
   }
-  return normal;
+  return _normal;
 }
 

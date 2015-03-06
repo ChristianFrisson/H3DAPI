@@ -433,7 +433,7 @@ void Text::traverseSG( TraverseInfo &ti ) {
 void Text::SFBound::update() {
   X3DFontStyleNode *font_style = 
     static_cast< SFFontStyleNode * >( routes_in[0] )->getValue(); 
-  const vector<H3DFloat> &length = 
+  const vector<H3DFloat> &_length = 
     static_cast< MFFloat * >( routes_in[1] )->getValue();
   H3DFloat max_extent = static_cast< SFFloat * >( routes_in[2] )->getValue();
   const vector< string > &text = static_cast< MFString * >( routes_in[3] )->getValue();
@@ -455,7 +455,7 @@ void Text::SFBound::update() {
     Vec3f box_center( 0, 0, 0 );
     Vec3f text_dims = font_style->stringDimensions( text,
                                                     alignment,
-                                                    length );
+                                                    _length );
     if( alignment == X3DFontStyleNode::HORIZONTAL ) {
       if( max_extent > 0 && text_dims.x > max_extent ) text_dims.x = max_extent;
       if( major == X3DFontStyleNode::BEGIN || 

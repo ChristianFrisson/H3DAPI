@@ -104,8 +104,8 @@ namespace H3D {
       /// vertex.
       ///
       virtual X3DNormalNode *generateNormalsPerVertex( 
-                                                      X3DCoordinateNode *coord,
-                                                      bool ccw );
+                                                      X3DCoordinateNode *_coord,
+                                                      bool _ccw );
     };
 
     /// Constructor.

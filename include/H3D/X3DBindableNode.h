@@ -122,8 +122,8 @@ namespace H3D {
       }
       
       /// Set the value of the field.
-      inline virtual void setValue( const bool &v, int id = 0 ) {
-        SFBool::setValue( v, id );
+      inline virtual void setValue( const bool &v, int _id = 0 ) {
+        SFBool::setValue( v, _id );
         if( value )
           static_cast< X3DBindableNode * >( owner )->toStackTop();
         else 

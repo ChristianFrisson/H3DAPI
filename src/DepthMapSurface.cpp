@@ -107,12 +107,12 @@ DepthMapSurface::DepthMapSurface(
  void DepthMapSurface::SetImagePtr::update() {
    Image *image =
      static_cast< X3DTexture2DNode::SFImage * >(routes_in[0])->getValue();
-   DepthMapSurface *hms = 
+   DepthMapSurface *dms = 
      static_cast< DepthMapSurface * >( getOwner() );
-   HAPI::DepthMapSurface * hapi_surface = 
-     static_cast< HAPI::DepthMapSurface * >( hms->hapi_surface.get() );
-   if( hapi_surface )
-     hapi_surface->setImage( image );
+   HAPI::DepthMapSurface * _hapi_surface = 
+     static_cast< HAPI::DepthMapSurface * >( dms->hapi_surface.get() );
+   if(_hapi_surface)
+     _hapi_surface->setImage( image );
  }
 
  void DepthMapSurface::SFTexture2DNode::onAdd( Node *n ) {
@@ -129,10 +129,10 @@ DepthMapSurface::DepthMapSurface(
    DepthMapSurface *o = static_cast< DepthMapSurface* >( owner );
    if( c ) {
      c->image->unroute( o->setImagePtr );
-     HAPI::DepthMapSurface * hapi_surface = 
+     HAPI::DepthMapSurface * _hapi_surface = 
        static_cast< HAPI::DepthMapSurface * >( o->hapi_surface.get() );
-     if( hapi_surface )
-       hapi_surface->setImage( 0 );
+     if( _hapi_surface )
+       _hapi_surface->setImage( 0 );
    }
    SFTexture2DNodeBase::onRemove( n );
  }

@@ -191,19 +191,19 @@ void SuperShape::traverseSG( TraverseInfo &ti ) {
 
 void SuperShape::SFCoordinateNode::update() {
   
-  H3DFloat ss1_m = static_cast< SFFloat * >(routes_in[0])->getValue();
-  H3DFloat ss1_a = static_cast< SFFloat * >(routes_in[1])->getValue();
-  H3DFloat ss1_b = static_cast< SFFloat * >(routes_in[2])->getValue();
-  H3DFloat ss1_n1 = static_cast< SFFloat * >(routes_in[3])->getValue();
-  H3DFloat ss1_n2 = static_cast< SFFloat * >(routes_in[4])->getValue();
-  H3DFloat ss1_n3 = static_cast< SFFloat * >(routes_in[5])->getValue();
+  H3DFloat _ss1_m = static_cast< SFFloat * >(routes_in[0])->getValue();
+  H3DFloat _ss1_a = static_cast< SFFloat * >(routes_in[1])->getValue();
+  H3DFloat _ss1_b = static_cast< SFFloat * >(routes_in[2])->getValue();
+  H3DFloat _ss1_n1 = static_cast< SFFloat * >(routes_in[3])->getValue();
+  H3DFloat _ss1_n2 = static_cast< SFFloat * >(routes_in[4])->getValue();
+  H3DFloat _ss1_n3 = static_cast< SFFloat * >(routes_in[5])->getValue();
 
-  H3DFloat ss2_m = static_cast< SFFloat * >(routes_in[6])->getValue();
-  H3DFloat ss2_a = static_cast< SFFloat * >(routes_in[7])->getValue();
-  H3DFloat ss2_b = static_cast< SFFloat * >(routes_in[8])->getValue();
-  H3DFloat ss2_n1 = static_cast< SFFloat * >(routes_in[9])->getValue();
-  H3DFloat ss2_n2 = static_cast< SFFloat * >(routes_in[10])->getValue();
-  H3DFloat ss2_n3 = static_cast< SFFloat * >(routes_in[11])->getValue();
+  H3DFloat _ss2_m = static_cast< SFFloat * >(routes_in[6])->getValue();
+  H3DFloat _ss2_a = static_cast< SFFloat * >(routes_in[7])->getValue();
+  H3DFloat _ss2_b = static_cast< SFFloat * >(routes_in[8])->getValue();
+  H3DFloat _ss2_n1 = static_cast< SFFloat * >(routes_in[9])->getValue();
+  H3DFloat _ss2_n2 = static_cast< SFFloat * >(routes_in[10])->getValue();
+  H3DFloat _ss2_n3 = static_cast< SFFloat * >(routes_in[11])->getValue();
 
   H3DInt32 res = static_cast< SFInt32 * >(routes_in[12])->getValue();
 
@@ -233,54 +233,54 @@ void SuperShape::SFCoordinateNode::update() {
         H3DFloat theta2 = theta1 + long_step;
         H3DFloat theta0 = theta1 - long_step;
         Vec3f p10 = SS( theta1, phi0,
-                        ss1_m,  ss1_a,  
-                        ss1_b,  ss1_n1, 
-                        ss1_n2, ss1_n3, 
-                        ss2_m,  ss2_a,  
-                        ss2_b,  ss2_n1, 
-                        ss2_n2, ss2_n3 );
+                        _ss1_m,  _ss1_a,  
+                        _ss1_b,  _ss1_n1, 
+                        _ss1_n2, _ss1_n3, 
+                        _ss2_m,  _ss2_a,  
+                        _ss2_b,  _ss2_n1, 
+                        _ss2_n2, _ss2_n3 );
 
         Vec3f p01 = SS( theta0, phi1,
-                        ss1_m,  ss1_a,  
-                        ss1_b,  ss1_n1, 
-                        ss1_n2, ss1_n3, 
-                        ss2_m,  ss2_a,  
-                        ss2_b,  ss2_n1, 
-                        ss2_n2, ss2_n3);
+                        _ss1_m,  _ss1_a,  
+                        _ss1_b,  _ss1_n1, 
+                        _ss1_n2, _ss1_n3, 
+                        _ss2_m,  _ss2_a,  
+                        _ss2_b,  _ss2_n1, 
+                        _ss2_n2, _ss2_n3);
         Vec3f p11 = SS(theta1, phi1,
-                       ss1_m,  ss1_a,  
-                       ss1_b,  ss1_n1, 
-                       ss1_n2, ss1_n3, 
-                       ss2_m,  ss2_a,  
-                       ss2_b,  ss2_n1, 
-                       ss2_n2, ss2_n3);
+                       _ss1_m,  _ss1_a,  
+                       _ss1_b,  _ss1_n1, 
+                       _ss1_n2, _ss1_n3, 
+                       _ss2_m,  _ss2_a,  
+                       _ss2_b,  _ss2_n1, 
+                       _ss2_n2, _ss2_n3);
         Vec3f p21 = SS(theta2, phi1,
-                       ss1_m,  ss1_a,  ss1_b,
-                       ss1_n1, ss1_n2, ss1_n3, 
-                       ss2_m,  ss2_a,  ss2_b,
-                       ss2_n1, ss2_n2, ss2_n3);
+                       _ss1_m,  _ss1_a,  _ss1_b,
+                       _ss1_n1, _ss1_n2, _ss1_n3, 
+                       _ss2_m,  _ss2_a,  _ss2_b,
+                       _ss2_n1, _ss2_n2, _ss2_n3);
 
         Vec3f p02 = SS(theta0, phi2,
-                       ss1_m,  ss1_a,  ss1_b,
-                       ss1_n1, ss1_n2, ss1_n3, 
-                       ss2_m,  ss2_a,  ss2_b,
-                       ss2_n1, ss2_n2, ss2_n3);
+                       _ss1_m,  _ss1_a,  _ss1_b,
+                       _ss1_n1, _ss1_n2, _ss1_n3, 
+                       _ss2_m,  _ss2_a,  _ss2_b,
+                       _ss2_n1, _ss2_n2, _ss2_n3);
         Vec3f p12 = SS(theta1, phi2,
-                       ss1_m,  ss1_a,  ss1_b,
-                       ss1_n1, ss1_n2, ss1_n3, 
-                       ss2_m,  ss2_a,  ss2_b,
-                       ss2_n1, ss2_n2, ss2_n3);
+                       _ss1_m,  _ss1_a,  _ss1_b,
+                       _ss1_n1, _ss1_n2, _ss1_n3, 
+                       _ss2_m,  _ss2_a,  _ss2_b,
+                       _ss2_n1, _ss2_n2, _ss2_n3);
         Vec3f p22 = SS(theta2, phi2,
-                       ss1_m,  ss1_a,  ss1_b,
-                       ss1_n1, ss1_n2, ss1_n3, 
-                       ss2_m,  ss2_a,  ss2_b,
-                       ss2_n1, ss2_n2, ss2_n3);
+                       _ss1_m,  _ss1_a,  _ss1_b,
+                       _ss1_n1, _ss1_n2, _ss1_n3, 
+                       _ss2_m,  _ss2_a,  _ss2_b,
+                       _ss2_n1, _ss2_n2, _ss2_n3);
 
         Vec3f p13 = SS(theta1, phi3,
-                       ss1_m,  ss1_a,  ss1_b,
-                       ss1_n1, ss1_n2, ss1_n3, 
-                       ss2_m,  ss2_a,  ss2_b,
-                       ss2_n1, ss2_n2, ss2_n3);
+                       _ss1_m,  _ss1_a,  _ss1_b,
+                       _ss1_n1, _ss1_n2, _ss1_n3, 
+                       _ss2_m,  _ss2_a,  _ss2_b,
+                       _ss2_n1, _ss2_n2, _ss2_n3);
             
         Vec3f n;
         n =  (p12-p02).crossProduct(p12-p11);

@@ -148,9 +148,9 @@ namespace H3D {
     public:
       CheckAngleLimits() { limit = 2 * (H3DFloat)Constants::pi; }
 
-      virtual void setValue( const H3DFloat &b, int id = 0 ) {
+      virtual void setValue( const H3DFloat &b, int _id = 0 ) {
         if( b < -limit ) {
-          SFFloat::setValue( -limit, id );
+          SFFloat::setValue( -limit, _id );
           Console(3) << "Warning: The value of field " << getName()
                      << " in CylinderSensor node( "
                      << owner->getName() 
@@ -158,7 +158,7 @@ namespace H3D {
                      << " Value set to -2pi" << endl;
         }
         else if( b > limit ) {
-          SFFloat::setValue( limit, id );
+          SFFloat::setValue( limit, _id );
           Console(3) << "Warning: The value of field " << getName()
                      << " in CylinderSensor node( "
                      << owner->getName() 
@@ -166,7 +166,7 @@ namespace H3D {
                      << " Value set to 2pi" << endl;
         }
         else
-          SFFloat::setValue( b, id );
+          SFFloat::setValue( b, _id );
       }
     protected:
       virtual void update() {

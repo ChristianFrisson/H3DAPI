@@ -264,8 +264,8 @@ void X3DGeometryNode::DisplayList::callList( bool build_list ) {
   GLboolean culling_enabled;
   glGetBooleanv( GL_CULL_FACE, &culling_enabled );
 
-  GLint cull_face;
-  glGetIntegerv( GL_CULL_FACE_MODE, &cull_face );
+  GLint old_cull_face;
+  glGetIntegerv( GL_CULL_FACE_MODE, &old_cull_face );
 
   if( geom->usingCulling() && geom->allowingCulling() ) {
     glEnable( GL_CULL_FACE );
@@ -331,26 +331,26 @@ void X3DGeometryNode::DisplayList::callList( bool build_list ) {
   if( culling_enabled ) glEnable( GL_CULL_FACE );
   else glDisable( GL_CULL_FACE );
   
-  glCullFace( cull_face );
+  glCullFace( old_cull_face );
 
 }
 
 unsigned int X3DGeometryNode::DisplayList::cachingDelay(){
   // use local graphic option first, if local graphic option is null, check global one
-  GraphicsOptions *options = NULL;
+  GraphicsOptions *_options = NULL;
   X3DGeometryNode *geom = static_cast< X3DGeometryNode * >( getOwner() );
-  geom->getOptionNode( options );
-  if( options ) {// This geometry contains graphic option 
-    return options->cachingDelay->getValue();
+  geom->getOptionNode( _options );
+  if( _options ) {// This geometry contains graphic option 
+    return _options->cachingDelay->getValue();
   }
   else {// check global graphic option instead
     GlobalSettings *default_settings = GlobalSettings::getActive();
     if( default_settings&&default_settings->optionNodesUpdated() ) {
-      default_settings->getOptionNode( options );
-      if( options ) {// update graphic options
-        graphic_options_previous = options;
+      default_settings->getOptionNode( _options );
+      if( _options ) {// update graphic options
+        graphic_options_previous = _options;
         //cache_delay_previous = options->cachingDelay->getValue();
-        return options->cachingDelay->getValue();
+        return _options->cachingDelay->getValue();
       }else{
         // global setting change in last frame, but no graphic in it now
         graphic_options_previous = NULL;
@@ -379,16 +379,16 @@ bool X3DGeometryNode::DisplayList::usingCaching(){
   if( cache_mode == ON ) return true;
   if( cache_mode == OFF ) return false;
 
-  GraphicsOptions *options = NULL;
+  GraphicsOptions *_options = NULL;
 
-  geom->getOptionNode( options );
-  if( !options ) {// no local option, try to use global setting
+  geom->getOptionNode( _options );
+  if( !_options ) {// no local option, try to use global setting
     GlobalSettings *default_settings = GlobalSettings::getActive();
     if( default_settings&&default_settings->optionNodesUpdated() ) {
-      default_settings->getOptionNode( options );
-      if( options ) { // global graphic option exist and need update
-        graphic_options_previous = options;
-        return options->useCaching->getValue();
+      default_settings->getOptionNode( _options );
+      if( _options ) { // global graphic option exist and need update
+        graphic_options_previous = _options;
+        return _options->useCaching->getValue();
       }else{
         // no graphic option in updated global setting
         graphic_options_previous = NULL;
@@ -406,7 +406,7 @@ bool X3DGeometryNode::DisplayList::usingCaching(){
     }
   }else{
     // local option exist, use local option
-    return options->useCaching->getValue();
+    return _options->useCaching->getValue();
   }
 }
 
@@ -425,18 +425,18 @@ void X3DGeometryNode::SFBoundTree::update() {
                                                     lines, 
                                                     points );
   
-  GeometryBoundTreeOptions *options = NULL;
-  geometry->getOptionNode( options );
-  if( !options ) {
+  GeometryBoundTreeOptions *_options = NULL;
+  geometry->getOptionNode( _options );
+  if( !_options ) {
     GlobalSettings *default_settings = GlobalSettings::getActive();
     if( default_settings ) {
-      default_settings->getOptionNode( options );
+      default_settings->getOptionNode( _options );
     }
   }
 
-  if( options ) {
-    const string &type = options->boundType->getValue();
-    H3DInt32 max_triangles = options->maxTrianglesInLeaf->getValue();
+  if( _options ) {
+    const string &type = _options->boundType->getValue();
+    H3DInt32 max_triangles = _options->maxTrianglesInLeaf->getValue();
     if( type == "AABB" ) {
       value = new HAPI::Collision::AABBTree( triangles,
                                           lines,

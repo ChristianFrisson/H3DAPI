@@ -105,10 +105,10 @@ void NurbsCurve::SFBound::update() {
   Coordinate *c = 
     dynamic_cast< Coordinate * >(coord_node);
 
-  BoxBound *bound = new BoxBound();
+  BoxBound *_bound = new BoxBound();
   if ( c ){
-    bound->fitAroundPoints( c->point->begin(), c->point->end() );
-    value = bound;
+    _bound->fitAroundPoints( c->point->begin(), c->point->end() );
+    value = _bound;
   }
 }
 

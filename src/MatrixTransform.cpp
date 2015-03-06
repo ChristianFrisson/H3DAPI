@@ -182,17 +182,17 @@ void MatrixTransform::closestPoint( const Vec3f &p,
 
 
 void MatrixTransform::SFTransformedBound::update() {
-  Bound *bound = static_cast< SFBound * >( routes_in[1] )->getValue();
-  BoxBound *box_bound = dynamic_cast< BoxBound * >( bound );
+  Bound *_bound = static_cast< SFBound * >( routes_in[1] )->getValue();
+  BoxBound *box_bound = dynamic_cast< BoxBound * >( _bound );
   if( box_bound ) {
     value = new TransformedBoxBound;
-  }else if( dynamic_cast< InfiniteBound * >( bound ) ) {
+  }else if( dynamic_cast< InfiniteBound * >( _bound ) ) {
     value = new InfiniteBound;
-  } else if( dynamic_cast< EmptyBound * >( bound ) ) {
+  } else if( dynamic_cast< EmptyBound * >( _bound ) ) {
     value = new EmptyBound;
-  } else if( bound ) {
+  } else if( _bound ) {
     stringstream s;
-    s << "Unsupported Bound type " << typeid( *bound ).name();
+    s << "Unsupported Bound type " << typeid( *_bound ).name();
     throw Exception::H3DAPIException( s.str(), H3D_FULL_LOCATION );
   } else {
     stringstream s;

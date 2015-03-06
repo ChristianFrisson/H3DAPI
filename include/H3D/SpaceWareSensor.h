@@ -100,8 +100,8 @@ namespace H3D {
       public AutoUpdate< SFRotation > {
         AccumulateRotation() { last_time = TimeStamp(); }
       
-      virtual void setValue( const Rotation &r, int id = 0 ) {
-        SFRotation::setValue( r, id );
+      virtual void setValue( const Rotation &r, int _id = 0 ) {
+        SFRotation::setValue( r, _id );
         last_time = TimeStamp();
       }
 
@@ -127,8 +127,8 @@ namespace H3D {
       public AutoUpdate< SFRotation > {
 
      public:
-      virtual void setValue( const Rotation &r, int id = 0 ) {
-        SFRotation::setValue( r );
+      virtual void setValue( const Rotation &r, int _id = 0 ) {
+        SFRotation::setValue( r, _id );
         SpaceWareSensor * sws = static_cast< SpaceWareSensor * >(owner);
         sws->accumulatedRotation->setValue( r, sws->id );
         Rotation temp_r = r;
@@ -168,8 +168,8 @@ namespace H3D {
       public AutoUpdate< SFVec3f > {
       AccumulateTranslation() { last_time = TimeStamp(); }
 
-      virtual void setValue( const Vec3f &v, int id = 0 ) {
-        SFVec3f::setValue( v, id );
+      virtual void setValue( const Vec3f &v, int _id = 0 ) {
+        SFVec3f::setValue( v, _id );
         last_time = TimeStamp();
       }
       
@@ -192,8 +192,8 @@ namespace H3D {
     class H3DAPI_API ResetAccumulatedTranslation: 
       public AutoUpdate< SFVec3f > {
     public:
-      virtual void setValue( const Vec3f &v, int id = 0 ) {
-        SFVec3f::setValue( v );
+      virtual void setValue( const Vec3f &v, int _id = 0 ) {
+        SFVec3f::setValue( v, _id );
         SpaceWareSensor * sws = static_cast< SpaceWareSensor * >(owner);
         sws->accumulatedTranslation->setValue( v, sws->id );
       }
