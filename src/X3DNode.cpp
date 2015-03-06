@@ -46,8 +46,8 @@ X3DNode::X3DNode(
   database.initFields( this );
 }
 
-X3DMetadataObject *X3DNode::getMetadataByName( const string &name ) {
+X3DMetadataObject *X3DNode::getMetadataByName( const string &_name ) {
   X3DMetadataObject *object = dynamic_cast< X3DMetadataObject * >(metadata->getValue());
-  if( object ) return object->getMetadataByName( name );
+  if( object ) return object->getMetadataByName( _name );
   else return NULL;
 }

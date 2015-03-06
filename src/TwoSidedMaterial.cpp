@@ -171,15 +171,15 @@ void TwoSidedMaterial::render()  {
   glMaterialfv( front_material_face, GL_DIFFUSE, material );
 
   if( separateBackColor->getValue() ) {
-    H3DFloat t = backTransparency->getValue();
-    material[3] = 1 - t;    
+    H3DFloat bt = backTransparency->getValue();
+    material[3] = 1 - bt;    
 
     // Ambient
     intensity = backAmbientIntensity->getValue(); 
-    RGB d = backDiffuseColor->getValue();
-    material[0] = d.r * intensity; 
-    material[1] = d.g * intensity; 
-    material[2] = d.b * intensity;
+    RGB bd = backDiffuseColor->getValue();
+    material[0] = bd.r * intensity; 
+    material[1] = bd.g * intensity; 
+    material[2] = bd.b * intensity;
     glMaterialfv( GL_BACK, GL_AMBIENT, material );
   
     // Specular 
@@ -201,9 +201,9 @@ void TwoSidedMaterial::render()  {
     glMaterialfv( GL_BACK, GL_EMISSION, material );
 
     // Diffuse
-    material[0] = d.r;
-    material[1] = d.g;
-    material[2] = d.b;
+    material[0] = bd.r;
+    material[1] = bd.g;
+    material[2] = bd.b;
 
     glMaterialfv( GL_BACK, GL_DIFFUSE, material );
   }

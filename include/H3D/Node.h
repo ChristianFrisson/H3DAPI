@@ -345,7 +345,7 @@ namespace H3D {
     }
     
     /// return a pointer to the field specified by name within this instance 
-    virtual Field *getField( const string &name ) const;
+    virtual Field *getField( const string &_name ) const;
     
     /// Add a callback function to be run on destruction of node.
     /// Returns 0 on success.

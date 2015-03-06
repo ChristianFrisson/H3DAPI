@@ -75,10 +75,10 @@ PackagedShader::PackagedShader( Inst< DisplayList  > _displayList,
 
 #ifdef HAVE_CG
 
-bool PackagedShader::addField( const string &name,
+bool PackagedShader::addField( const string &_name,
                                const Field::AccessType &access,
                                Field *field ) {
-  bool success = X3DProgrammableShaderObject::addField( name, 
+  bool success = X3DProgrammableShaderObject::addField( _name, 
                                                         access, 
                                                         field  );
   if( success ) {

@@ -100,7 +100,7 @@ namespace H3D {
 
     /// The addField method is specialized to add a route from the field
     /// added to the displayList field.
-    virtual bool addField( const string &name,
+    virtual bool addField( const string &_name,
                            const Field::AccessType &access,
                            Field *field );
 #endif

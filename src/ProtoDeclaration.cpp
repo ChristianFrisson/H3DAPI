@@ -155,7 +155,7 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
       // parse and set any extra nodes from the proto body
       for( unsigned int i = 0; i < body_extra.size(); ++i ) {
         if( !body_extra[i].empty() ) {
-          AutoRef<Node> n = createProtoInstanceNodeX3D( proto, &dn, body_extra[i] );
+          n = createProtoInstanceNodeX3D( proto, &dn, body_extra[i] );
           if( n.get() ) {
             if( set_body_instead )
               proto->setPrototypedNode( n.get() );
@@ -178,10 +178,10 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
 
 AutoRef< Node > ProtoDeclaration::createProtoInstanceNodeVRML( PrototypeInstance *proto,
                                                                X3D::DEFNodes *dn,
-                                                               const string &body ) {
+                                                               const string &_body ) {
   AutoRef< Node > n;
   stringstream s;
-  s << body;
+  s << _body;
   VrmlDriver driver;
   driver.proto_instance = proto;
   if (driver.parse( &s, "<proto>", dn, NULL, NULL )) {
@@ -201,13 +201,13 @@ AutoRef< Node > ProtoDeclaration::createProtoInstanceNodeVRML( PrototypeInstance
 
 AutoRef< Node > ProtoDeclaration::createProtoInstanceNodeX3D( PrototypeInstance *proto,
                                                               X3D::DEFNodes *dn,
-                                                              const string &body ) {
+                                                              const string &_body) {
 #ifdef HAVE_XERCES
   auto_ptr< SAX2XMLReader > parser( X3D::getNewXMLParser() );
   X3D::X3DSAX2Handlers handler(dn, NULL, existing_protos, true );
   handler.proto_instance = proto;
   stringstream s;
-  s << body;
+  s << _body;
   parser->setContentHandler(&handler);
   parser->setErrorHandler(&handler); 
   parser->setLexicalHandler( &handler );

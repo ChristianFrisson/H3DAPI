@@ -345,17 +345,17 @@ void ParticleSystem::traverseSG( TraverseInfo &ti ) {
     if( geometryType->getValue() == "GEOMETRY" ) {
       if( (*p).geometry.get() ) {
         X3DGeometryNode *g = (*p).geometry.get();
-        BoxBound *bb = dynamic_cast< BoxBound * >( g->bound->getValue() );
-        if( bb ) {
-          Vec3f center = bb->center->getValue();
-          Vec3f half_size = bb->size->getValue();
-          Vec3f min = center - half_size;
-          Vec3f max = center + half_size;
-          ps = H3DMax( H3DAbs( min.x ), H3DAbs( min.y ) );
-          ps = H3DMax( ps, H3DAbs( min.z ) );
-          ps = H3DMax( ps, H3DAbs( max.x ) );
-          ps = H3DMax( ps, H3DAbs( max.y ) );
-          ps = H3DMax( ps, H3DAbs( min.z ) );
+        BoxBound *_bb = dynamic_cast< BoxBound * >( g->bound->getValue() );
+        if( _bb ) {
+          Vec3f center = _bb->center->getValue();
+          Vec3f half_size = _bb->size->getValue();
+          Vec3f _min = center - half_size;
+          Vec3f _max = center + half_size;
+          ps = H3DMax( H3DAbs( _min.x ), H3DAbs( _min.y ) );
+          ps = H3DMax( ps, H3DAbs( _min.z ) );
+          ps = H3DMax( ps, H3DAbs( _max.x ) );
+          ps = H3DMax( ps, H3DAbs( _max.y ) );
+          ps = H3DMax( ps, H3DAbs( _min.z ) );
         }
       }
     } else {

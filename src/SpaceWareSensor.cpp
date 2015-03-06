@@ -236,18 +236,18 @@ namespace SpaceWareSensorInternal {
           // the event is a 3DxWare event
           switch (si_event.type) {
           case SI_MOTION_EVENT: {
-            const SiSpwData & data = si_event.u.spwData;
+            const SiSpwData & _data = si_event.u.spwData;
             // we have to negate the z component since H3D API
             // and the SpaceWare have different coordinate systems.
             space_ware_sensor->thread_translation =
-              Vec3f( (H3DFloat)data.mData[ SI_TX ],
-                     (H3DFloat)data.mData[ SI_TY ],
-                     (H3DFloat)-data.mData[ SI_TZ ] );
+              Vec3f( (H3DFloat)_data.mData[ SI_TX ],
+                     (H3DFloat)_data.mData[ SI_TY ],
+                     (H3DFloat)-_data.mData[ SI_TZ ] );
             // convert to radians
             space_ware_sensor->thread_rotation = 
-              Vec3f( (H3DFloat)data.mData[SI_RX],
-                     (H3DFloat)data.mData[SI_RY],
-                     (H3DFloat)-data.mData[SI_RZ] ) * ( Constants::pi / 180 );
+              Vec3f( (H3DFloat)_data.mData[SI_RX],
+                     (H3DFloat)_data.mData[SI_RY],
+                     (H3DFloat)-_data.mData[SI_RZ] ) * ( Constants::pi / 180 );
             space_ware_sensor->thread_motion_event = true;
             break;
           }
@@ -255,10 +255,10 @@ namespace SpaceWareSensorInternal {
             break;
     
           case SI_BUTTON_EVENT: {
-            const SiSpwData & data = si_event.u.spwData;
-            SpaceWareSensor::ButtonData bd( data.bData.pressed,
-                                            data.bData.released,
-                                            data.bData.current );
+            const SiSpwData & _data = si_event.u.spwData;
+            SpaceWareSensor::ButtonData bd( _data.bData.pressed,
+                                            _data.bData.released,
+                                            _data.bData.current );
             space_ware_sensor->thread_buttons.push_back( bd );
             break;
           }

@@ -121,7 +121,7 @@ namespace H3D {
 
     /// The addField method is specialized to add a route from the field
     /// added to the displayList field.
-    virtual bool addField( const string &name,
+    virtual bool addField( const string &_name,
                            const Field::AccessType &access,
                            Field *field );
     
@@ -288,7 +288,7 @@ namespace H3D {
     static std::string genKeyFromShader(ComposedShader* shader);
 
     /// Sets geometry shader paramters based on fields.
-    void setGeometryShaderParameters( GLenum program_handle);
+    void setGeometryShaderParameters( GLenum _program_handle);
 
     /// Class used to set up routes from nodes in SFNode and MFNode fields
     /// to correctly break cache. Since it is impossible to know which fields

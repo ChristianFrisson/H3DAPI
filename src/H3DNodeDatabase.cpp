@@ -163,8 +163,8 @@ void H3DNodeDatabase::initFields( Node *n ) const {
 Field *H3DNodeDatabase::getFieldHelp( const Node *n, const string &f ) const {
   for( FieldDBType::const_iterator i = fields.begin(); i != fields.end(); ++i ) {
     FieldDBElement *fdb = (*i).second;
-    const string &name = (*i).first;
-    if ( name == f )
+    const string &_name = (*i).first;
+    if( _name == f )
       return fdb->getField( n );
   }
   if ( parent )
@@ -173,22 +173,22 @@ Field *H3DNodeDatabase::getFieldHelp( const Node *n, const string &f ) const {
     return NULL;
 }
 
-Field *H3DNodeDatabase::getField( const Node *n, const string &name ) const {
-  Field *f = getFieldHelp( n, name );
+Field *H3DNodeDatabase::getField( const Node *n, const string &_name ) const {
+  Field *f = getFieldHelp( n, _name );
   if( f ) return f;
-  
+
   // could not find the field with the given name. If the name starts with
   // "set_" try to remove that prefix.
-  if( name.size() > 4 && name.substr( 0, 4 ) == "set_" ) {
-    f = getFieldHelp( n, name.substr( 4, name.size() - 4 ) );
+  if( _name.size() > 4 && _name.substr( 0, 4 ) == "set_" ) {
+    f = getFieldHelp( n, _name.substr( 4, _name.size() - 4 ) );
     if( f && f->getAccessType() == Field::INPUT_OUTPUT ) return f;
   }
 
-  if( name.size() > 8 && name.substr( name.size() - 8, 8 ) == "_changed" ) {
-    f = getFieldHelp( n, name.substr( 0, name.size() - 8 ) );
+  if( _name.size() > 8 && _name.substr( _name.size() - 8, 8 ) == "_changed" ) {
+    f = getFieldHelp( n, _name.substr( 0, _name.size() - 8 ) );
     if( f && f->getAccessType() == Field::INPUT_OUTPUT ) return f;
   }
-  
+
   return NULL;
 }
 

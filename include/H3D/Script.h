@@ -56,7 +56,7 @@ namespace H3D {
 
     /// Override the addField method from H3DDynamicFieldsObject
     /// to add the field to the script engine.
-    virtual bool addField( const string &name,
+    virtual bool addField( const string &_name,
                            const Field::AccessType &access,
                            Field *field );
 

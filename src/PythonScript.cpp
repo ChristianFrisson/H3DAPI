@@ -142,26 +142,26 @@ void PythonScript::disallowMainThreadPython() {
   }
 }
 
-PyObject *PythonScript::getPythonAttribute( const string &name ) {
+PyObject *PythonScript::getPythonAttribute( const string &_name ) {
   if( module_dict ) {
     // ensure we have the GIL lock to work with multiple python threads.
     PyGILState_STATE state = PyGILState_Ensure();
     PyObject *fname = 
       PyDict_GetItemString( static_cast< PyObject * >( module_dict ), 
-                            name.c_str() );
+                            _name.c_str() );
     PyGILState_Release(state);
     return fname;
   }
   return NULL;
 }
 
-Field *PythonScript::lookupField( const string &name ) const {
+Field *PythonScript::lookupField( const string &_name) const {
   if( module_dict ) {
     // ensure we have the GIL lock to work with multiple python threads.
     PyGILState_STATE state = PyGILState_Ensure();
     PyObject *fname = 
       PyDict_GetItemString( static_cast< PyObject * >( module_dict ), 
-                            name.c_str() );
+                            _name.c_str() );
     if ( fname ) {
       // it was a variable in the python script, so extract the C++ type
       // pointer and return it
@@ -197,8 +197,8 @@ void PythonScript::getTopLevelFields( vector< pair< string, Field *> > &fields )
       if ( fieldptr ) {
         if( PyCObject_Check( fieldptr ) && PyString_Check( key ) ) {
           Field *f = static_cast< Field* >( PyCObject_AsVoidPtr( fieldptr ) );
-          string name = PyString_AsString( key );
-          fields.push_back( make_pair( name, f ) );
+          string _name = PyString_AsString( key );
+          fields.push_back( make_pair( _name, f ) );
         }
         Py_DECREF( fieldptr );
       }
@@ -510,13 +510,13 @@ void PythonScript::initialize() {
     // by the resolvers then fallback to resolve as local filename
     string url_contents= resolveURLAsString( *i );
     bool is_tmp_file= false;
-    string url;
+    string _url;
     if ( url_contents == "" ) {
-      url= resolveURLAsFile( *i, &is_tmp_file );
+      _url = resolveURLAsFile( *i, &is_tmp_file );
     }
-    if( url != "" || url_contents != "" ) {
-      loadScript( url, url_contents );
-      if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
+    if( _url != "" || url_contents != "" ) {
+      loadScript( _url, url_contents );
+      if( is_tmp_file ) ResourceResolver::releaseTmpFileName( _url );
       script_loaded = true;
       break;
     }

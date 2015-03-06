@@ -76,7 +76,7 @@ namespace H3D {
     virtual void initWindowHandler() { initGLUT(); }
 
     /// Sets fullscreen mode.
-    virtual void setFullscreen( bool fullscreen );
+    virtual void setFullscreen( bool _fullscreen );
 
     /// Make this the current window.
     virtual void makeWindowActive();

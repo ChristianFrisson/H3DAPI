@@ -269,8 +269,6 @@ void LayeredRenderer::MFHapticsRendererNode::onAdd( Node *n ) {
     for( unsigned int i = 0; i < devices.size(); ++i ) {
       H3DHapticsDevice * h3d_device =
         static_cast< H3DHapticsDevice * >(devices[i]);
-      LayeredRenderer *layered_renderer =
-        static_cast< LayeredRenderer * >( getOwner() );
       if( h3d_device && h3d_device->hapticsRenderer->getValue() == layered_renderer ) {
         if( HAPI::HAPIHapticsDevice* hapi_device= h3d_device->getHAPIDevice() ) {
           if ( PeriodicThreadBase* ht= hapi_device->getThread() ) {
@@ -299,8 +297,6 @@ void LayeredRenderer::MFHapticsRendererNode::onRemove( Node *n ) {
     for( unsigned int i = 0; i < devices.size(); ++i ) {
       H3DHapticsDevice * h3d_device =
         static_cast< H3DHapticsDevice * >(devices[i]);
-      LayeredRenderer *layered_renderer =
-        static_cast< LayeredRenderer * >( getOwner() );
       if( h3d_device && h3d_device->hapticsRenderer->getValue() == layered_renderer ) {
         renderer_in_these_devices.push_back( h3d_device );
       }

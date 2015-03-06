@@ -162,7 +162,7 @@ namespace H3D {
     ///
     /// \return The preprocessed shader source, with all preprocessor commands applied.
     ///
-    std::string preProcess ( const std::string& input, const std::string& url, int depth= 0 );
+    std::string preProcess ( const std::string& input, const std::string& _url, int depth= 0 );
 
     bool printShaderLog();
     DebugOptions *debug_options_previous;

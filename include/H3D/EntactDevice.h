@@ -53,7 +53,7 @@ namespace H3D {
     /// Field class that calibrates the device when a true event is received
     /// or the field is set to true.
     class H3DAPI_API Calibrate: public AutoUpdate< OnValueChangeSField< SFBool > > {
-      virtual void onValueChange( const bool &value );
+      virtual void onValueChange( const bool &_value );
     };
 
     /// Constructor.

@@ -110,7 +110,7 @@ namespace H3D {
     virtual void disableTexturing();
 
     /// Returns the internal OpenGL format to use given an Image
-    virtual GLint glInternalFormat( Image *image );
+    virtual GLint glInternalFormat( Image *_image );
 
     /// Installs the given image as a OpenGL texture with a call to 
     /// the glTexImage2D function. This function is used by renderImage ()
@@ -118,11 +118,11 @@ namespace H3D {
     /// glPixelComponentType () functions to get the arguments to the
     /// glTexImage2D call.
     ///
-    virtual void glTexImage( Image *image, GLenum texture_target, 
+    virtual void glTexImage( Image *_image, GLenum texture_target, 
                              bool scale_to_power_of_two );
       
     /// Replaces part of the current texture from an image. 
-    virtual void renderSubImage( Image *image, GLenum texture_target, 
+    virtual void renderSubImage( Image *_image, GLenum texture_target, 
                                  int xoffset, int yoffset,
                                  int width, int height );
 
@@ -191,7 +191,7 @@ namespace H3D {
     auto_ptr< Field > imageNeedsUpdate;
   public:
     /// Returns the OpenGL pixel format to use given an Image, e.g. 
-    virtual GLenum glPixelFormat( Image *image );
+    virtual GLenum glPixelFormat( Image *_image );
   };
 }
 

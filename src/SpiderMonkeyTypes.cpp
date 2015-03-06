@@ -2799,8 +2799,8 @@ JSBool SpiderMonkey::SFImage_setProperty(JSContext *cx, JSObject *obj, jsval id,
 
         stringstream ss;
         ss<< img->width() << "" << img->height() << " " << (int)img->pixelType() + 1;
-        for( unsigned int i = 0; i < vals.size(); ++i ) {
-          ss<< " " << vals[i];
+        for( unsigned int j = 0; j < vals.size(); ++j ) {
+          ss<< " " << vals[j];
         }
         string s = ss.str();
         sfimg->setValueFromString( s );

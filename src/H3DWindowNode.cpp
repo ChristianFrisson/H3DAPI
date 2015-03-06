@@ -640,7 +640,7 @@ void H3DWindowNode::initWindowWithContext() {
 }
 
 void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode, 
-  H3DInt32& viewport_width, H3DInt32& viewport_height, H3DFloat* viewports_size )
+  H3DInt32& viewport_width, H3DInt32& viewport_height, H3DFloat* _viewports_size )
 {
     H3DInt32 window_width = width->getValue();
     H3DInt32 window_height = height->getValue();
@@ -748,17 +748,17 @@ void H3DWindowNode::configureViewPortsSize( RenderMode::Mode stereo_mode,
         break;
       }
     }
-    if( viewports_size ) {
+    if(_viewports_size) {
       // set the windows dimension as the first four value
-      viewports_size[0] = 0;
-      viewports_size[1] = 0;
-      viewports_size[2] = (H3DFloat)window_width;
-      viewports_size[3] = (H3DFloat)window_height;
+      _viewports_size[0] = 0;
+      _viewports_size[1] = 0;
+      _viewports_size[2] = (H3DFloat)window_width;
+      _viewports_size[3] = (H3DFloat)window_height;
       for( int i = 0; i < n; ++i ) {
-        viewports_size[4*(i+1)+0] = (H3DFloat)vx[i];
-        viewports_size[4*(i+1)+1] = (H3DFloat)vy[i];
-        viewports_size[4*(i+1)+2] = (H3DFloat)viewport_width;
-        viewports_size[4*(i+1)+3] = (H3DFloat)viewport_height;
+        _viewports_size[4*(i+1)+0] = (H3DFloat)vx[i];
+        _viewports_size[4*(i+1)+1] = (H3DFloat)vy[i];
+        _viewports_size[4*(i+1)+2] = (H3DFloat)viewport_width;
+        _viewports_size[4*(i+1)+3] = (H3DFloat)viewport_height;
       }
     }
     nr_viewports = n;

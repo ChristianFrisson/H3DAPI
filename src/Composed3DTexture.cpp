@@ -65,16 +65,16 @@ Composed3DTexture::Composed3DTexture(
 }
 
 void Composed3DTexture::SFImage::update() {
-  MFTexture2DNode *texture = static_cast< MFTexture2DNode * >(routes_in[0]);
+  MFTexture2DNode *_texture = static_cast< MFTexture2DNode * >(routes_in[0]);
 
   unsigned int width  = 1;
   unsigned int height = 1;
-  unsigned int depth = (unsigned int)texture->size();
+  unsigned int depth = (unsigned int)_texture->size();
   Vec3f pixel_size = Vec3f(1,1,1);
   Image::PixelType pixel_type = Image::LUMINANCE;
   unsigned int bits_per_pixel = 1;
 
-  if( texture->size() == 0 ) {
+  if(_texture->size() == 0 ) {
     value = NULL;
     return;
   }
@@ -82,8 +82,8 @@ void Composed3DTexture::SFImage::update() {
   bool have_all_images = true;
 
   // check that all the texture nodes has images loaded. 
-  for( unsigned int i = 0; i < texture->size(); ++i ) {
-    X3DTexture2DNode *t = texture->getValueByIndex( i );
+  for( unsigned int i = 0; i < _texture->size(); ++i ) {
+    X3DTexture2DNode *t = _texture->getValueByIndex( i );
     if( !t || !t->image->getValue() ) {
       have_all_images = false;
       // we do not break here since we want all images to be updated
@@ -98,8 +98,8 @@ void Composed3DTexture::SFImage::update() {
   // find the maximum width, height and bit depth of all the textures. Also
   // find the pixel type that has most components. These will be used as
   // internal format for the 3d texture we are going to render.
-  for( unsigned int i = 0; i < texture->size(); ++i ) {
-    X3DTexture2DNode *t = texture->getValueByIndex( i );
+  for( unsigned int i = 0; i < _texture->size(); ++i ) {
+    X3DTexture2DNode *t = _texture->getValueByIndex( i );
     if(t) {
       Image *tex_image = t->image->getValue();
       if( tex_image ) {
@@ -134,8 +134,8 @@ void Composed3DTexture::SFImage::update() {
 
   // for each 2d texture, scale it to proper size and transfer it to texture
   // memory
-  for( unsigned int i = 0; i < texture->size(); ++i ) {
-    X3DTexture2DNode *t = texture->getValueByIndex( i );
+  for( unsigned int i = 0; i < _texture->size(); ++i ) {
+    X3DTexture2DNode *t = _texture->getValueByIndex( i );
     if(t) {
       Image *tex_image = t->image->getValue();
       if( tex_image ) {
@@ -147,12 +147,12 @@ void Composed3DTexture::SFImage::update() {
             height != tex_image->height() ) {
           // the image is not the same size as the final 3d texture
           // so we need to scale it
-          unsigned int bytes_per_pixel = tex_image->bitsPerPixel();
-          bytes_per_pixel = 
-            bytes_per_pixel % 8 == 0 ? 
-            bytes_per_pixel / 8 : bytes_per_pixel / 8 + 1;
+          unsigned int _bytes_per_pixel = tex_image->bitsPerPixel();
+          _bytes_per_pixel =
+            _bytes_per_pixel % 8 == 0 ?
+            _bytes_per_pixel / 8 : _bytes_per_pixel / 8 + 1;
       
-          unsigned int new_size = width*height*bytes_per_pixel;
+          unsigned int new_size = width*height*_bytes_per_pixel;
           void * new_data = malloc( new_size );
           gluScaleImage( t->glPixelFormat( tex_image ), 
                          tex_image->width(),

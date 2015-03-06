@@ -88,7 +88,7 @@ X3DNurbsSurfaceGeometryNode( _metadata, _bound, _displayList, _isTouched,
 }
 
 void NurbsTrimmedSurface::renderBetweenBeginEnd( 
-                                GLUnurbsObj *nurbs_object,
+                                GLUnurbsObj *_nurbs_object,
                                 X3DTextureCoordinateNode *tex_coord_node,
                                 TextureCoordinateGenerator *tex_coord_gen,
                                 NurbsTextureCoordinate *nurbs_tex_coord, 

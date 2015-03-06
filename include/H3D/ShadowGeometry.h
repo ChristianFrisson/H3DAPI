@@ -102,7 +102,7 @@ namespace H3D {
     /// Render the shadow volume for this shadow object using geometry
     /// shader. Requires graphics card to support OpenGL 
     /// extension EXT_geometry_shader4.
-    virtual void renderShadowGeometryShader( X3DGeometryNode *geometry, 
+    virtual void renderShadowGeometryShader( X3DGeometryNode *_geometry, 
                                              X3DLightNode *light, 
                                              bool render_caps,
                                              const Matrix4f &local_to_global,
@@ -112,7 +112,7 @@ namespace H3D {
     /// Render the shadow volume for this shadow object without geometry
     /// shader. This is the fallback option if graphics card does not
     /// support geometry shaders
-    virtual void renderShadowFallback( X3DGeometryNode *geometry, 
+    virtual void renderShadowFallback( X3DGeometryNode *_geometry,
                                        X3DLightNode *light, 
                                        bool render_caps,
                                        const Matrix4f &local_to_global,

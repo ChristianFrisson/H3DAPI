@@ -57,13 +57,13 @@ namespace H3D {
                   Inst< MFNode    > _references = 0,
                   Inst< SFString > _moduleName = 0 );
     
-    virtual Field * getField( const string&name ) const {
-      Field *f = H3DScriptNode::getField( name );
+    virtual Field * getField( const string& _name) const {
+      Field *f = H3DScriptNode::getField( _name );
       if( f ) return f;
-      if ( name == "references" )
+      if ( _name == "references" )
         return references.get();
       else
-        return lookupField( name );
+        return lookupField( _name );
     }
     
      /// Destructor.
@@ -72,13 +72,13 @@ namespace H3D {
     /// lookupField() returns the field pointer to the field with the
     /// specified string field name, used when creating nodes via
     /// the H3DNodeDatabase service.
-    virtual Field *lookupField( const string &name ) const;
+    virtual Field *lookupField( const string &_name ) const;
 
     /// Returns the python object with the specified name from the
     /// python module used by the PythonScript node. NULL if no
     /// object with the specified name is found. The return value is a new
     /// reference to the python object.
-    virtual PyObject *getPythonAttribute( const string &name ); 
+    virtual PyObject *getPythonAttribute( const string &_name ); 
 
     /// Adds the fields at the top level of the PythonScript
     /// node and its Python variable name to the given vector.

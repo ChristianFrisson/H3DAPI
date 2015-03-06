@@ -322,18 +322,18 @@ string ShaderCombiner::getVertexShaderString() {
 
 string ShaderCombiner::applyModifier( const string &variable_name,
               const string &modifier,
-              const string &value ) {
+              const string &_value ) {
 
   if( modifier == "COMPLEMENT" ) {
     return variable_name + ".rgb = 1.0 - " + variable_name + ".rgb;";
   } else if( modifier == "MULTIPLY" ) {
-    return variable_name + ".rgb  *= " + value + ";";
+    return variable_name + ".rgb  *= " + _value + ";";
   } else if( modifier == "DIVIDE" ) {
-    return variable_name + ".rgb  /= " + value + ";";
+    return variable_name + ".rgb  /= " + _value + ";";
   } else if( modifier == "ADD" ) {
-    return variable_name + ".rgb  += " + value + ";";
+    return variable_name + ".rgb  += " + _value + ";";
   } else if( modifier == "SUBTRACT" ) {
-    return variable_name + ".rgb  -= " + value + ";";
+    return variable_name + ".rgb  -= " + _value + ";";
   } else if( modifier == "NEGATE" ) {
     return variable_name + ".rgb  = -" + variable_name + ".rgb;";
   } else if( modifier == "MULTIPLY_ALPHA" ) {
@@ -350,18 +350,18 @@ string ShaderCombiner::applyModifier( const string &variable_name,
 
 string ShaderCombiner::applyAlphaModifier( const string &variable_name,
              const string &modifier,
-             const string &value ) {
+             const string &_value ) {
 
   if( modifier == "COMPLEMENT" ) {
     return variable_name + ".a = 1.0 - " + variable_name + ".a;";
   } else if( modifier == "MULTIPLY" ) {
-    return variable_name + ".a  *= " + value + ";";
+    return variable_name + ".a  *= " + _value + ";";
   } else if( modifier == "DIVIDE" ) {
-    return variable_name + ".a  /= " + value + ";";
+    return variable_name + ".a  /= " + _value + ";";
   } else if( modifier == "ADD" ) {
-    return variable_name + ".a  += " + value + ";";
+    return variable_name + ".a  += " + _value + ";";
   } else if( modifier == "SUBTRACT" ) {
-    return variable_name + ".a  -= " + value + ";";
+    return variable_name + ".a  -= " + _value + ";";
   } else if( modifier == "NEGATE" ) {
     return variable_name + ".a  = -" + variable_name + ".a;";
   } 
@@ -373,26 +373,26 @@ string ShaderCombiner::applyAlphaModifier( const string &variable_name,
 
 string ShaderCombiner::combineFunction( const string &v0,
           const string &v1,
-          const string &function,
-          const string &value ) {
+          const string &_function,
+          const string &_value ) {
 
-  if( function == "SELECT0" ) {
+  if( _function == "SELECT0" ) {
     return v0;
-  } else if( function == "SELECT1" ) {
+  } else if( _function == "SELECT1" ) {
     return v1 ;
-  } else if( function == "ADD" ) {
+  } else if( _function == "ADD" ) {
     return v0 + " + " + v1;
-  } else if( function == "SUBTRACT" ) {
+  } else if( _function == "SUBTRACT" ) {
     return v0 + " - " + v1;
-  } else if( function == "MULTIPLY" ) {
+  } else if( _function == "MULTIPLY" ) {
     return v0 + " * " + v1;
-  } else if( function == "DIVIDE" ) {
+  } else if( _function == "DIVIDE" ) {
     return v0 + " / " + v1;
-  } else if( function == "BLEND_VALUE" ) {
-    return value + " * " + v0 + " + (1.0-" + value + ")*" + v1;
+  } else if( _function == "BLEND_VALUE" ) {
+    return _value + " * " + v0 + " + (1.0-" + _value + ")*" + v1;
   } 
 
-  Console(4) << "Invalid function: \"" << function << "\" in ShaderCombiner. Using \"SELECT1\" instead. " << endl;
+  Console(4) << "Invalid function: \"" << _function << "\" in ShaderCombiner. Using \"SELECT1\" instead. " << endl;
   return v1;
 }
 
@@ -439,8 +439,7 @@ string ShaderCombiner::getFragmentShaderString() {
       s << applyModifier( v0_string, m0, uniqueShaderName( "arg0Value" ) ) << endl;   
       s << applyAlphaModifier( v0_string, am0, uniqueShaderName( "alphaArg0Value" ) ) << endl;   
 
-      H3DGeneratedFragmentShaderNode *fs = 
-        static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
+      fs = static_cast< H3DGeneratedFragmentShaderNode * >( c[i] );
       s << fs->getFragmentShaderString();
       s << "     " << v1_string << " = generated_color; " << endl;   
       s << "     " << applyModifier( v1_string, m1, uniqueShaderName( "arg1Value" ) ) << endl;

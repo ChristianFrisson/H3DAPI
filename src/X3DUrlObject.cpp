@@ -43,23 +43,23 @@ X3DUrlObject::X3DUrlObject(
 }
 
 
-string X3DUrlObject::resolveURLAsFile( const string &url,
+string X3DUrlObject::resolveURLAsFile( const string &_url,
                                        bool *is_tmp_file ) {
-  return resolveURL ( url, false, is_tmp_file );
+  return resolveURL ( _url, false, is_tmp_file );
 }
 
-string X3DUrlObject::resolveURLAsString( const string &url ) {
-  return resolveURL ( url, true );
+string X3DUrlObject::resolveURLAsString( const string &_url ) {
+  return resolveURL ( _url, true );
 }
 
-string X3DUrlObject::resolveURL ( const string& url, bool return_contents, bool *is_tmp_file ) {
+string X3DUrlObject::resolveURL ( const string& _url, bool return_contents, bool *is_tmp_file ) {
   for( list< string >::const_iterator i = supported_inline_prefixes.begin();
        i != supported_inline_prefixes.end(); ++i ) {
     size_t start = 0;
-    size_t url_size = url.size();
-    while( start < url_size && isspace(url[start]) ) ++start;
-    if( url.compare( start, (*i).size(), *i ) == 0 ) {
-      string contents= url.substr(start+(*i).size(), url.size()-1);
+    size_t url_size = _url.size();
+    while( start < url_size && isspace(_url[start]) ) ++start;
+    if( _url.compare( start, (*i).size(), *i ) == 0 ) {
+      string contents= _url.substr(start+(*i).size(), _url.size()-1);
       if ( return_contents ) {
         return contents;
       } else {
@@ -79,9 +79,9 @@ string X3DUrlObject::resolveURL ( const string& url, bool return_contents, bool 
   ResourceResolver::setBaseURL( url_base );
   string result;
   if ( return_contents ) {
-    result= ResourceResolver::resolveURLAsString ( url );
+    result= ResourceResolver::resolveURLAsString ( _url );
   } else {
-    result= ResourceResolver::resolveURLAsFile ( url, is_tmp_file );
+    result= ResourceResolver::resolveURLAsFile ( _url, is_tmp_file );
   }
   ResourceResolver::setBaseURL( old_base );
   return result;

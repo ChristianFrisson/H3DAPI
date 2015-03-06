@@ -179,17 +179,17 @@ void Contour2D::renderTrimmedCurve( GLUnurbsObj *nurbs_object ) {
       if( theKnot.size() == theCurve.size() + order )  {
         generateUniform = false;
         H3DInt32 consecutiveKnots = 0;
-        for( unsigned int i = 0; i < theKnot.size(); ++i ){
-          knot[i] = (GLfloat)theKnot[i];        
-          if( i > 0 ) {
-            if( knot[i] == knot[ i - 1 ] )
+        for( unsigned int j = 0; j < theKnot.size(); ++j ){
+          knot[j] = (GLfloat)theKnot[j];
+          if( j > 0 ) {
+            if( knot[j] == knot[ j - 1 ] )
               ++consecutiveKnots;
             else
               consecutiveKnots = 0;
             if( consecutiveKnots > order - 1 )
               generateUniform = true;
 
-            if( knot[ i - 1 ] > knot[i] )
+            if( knot[ j - 1 ] > knot[j] )
               generateUniform = true;
           }
         }
@@ -205,8 +205,8 @@ void Contour2D::renderTrimmedCurve( GLUnurbsObj *nurbs_object ) {
         if( knot != NULL )
           delete [] knot;
         knot = new GLfloat[ theSizeToUse ];
-        for( int i = 0; i < theSizeToUse; ++i )
-          knot[i] = (GLfloat)( (H3DDouble)i / ( theSizeToUse - 1 ) );
+        for( int j = 0; j < theSizeToUse; ++j )
+          knot[j] = (GLfloat)( (H3DDouble)j / ( theSizeToUse - 1 ) );
       }
 
       if( curve != NULL )

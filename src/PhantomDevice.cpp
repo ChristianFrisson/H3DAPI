@@ -202,13 +202,13 @@ void PhantomDevice::updateDeviceValues() {
 #endif
 }
 
-void PhantomDevice::Calibrate::onValueChange( const bool &value ) {
+void PhantomDevice::Calibrate::onValueChange( const bool &new_value ) {
 #ifdef HAVE_OPENHAPTICS
-  if ( value ) {
+  if( new_value ) {
     PhantomDevice *h3d_device = static_cast< PhantomDevice * >( getOwner() );
-    HAPI::PhantomHapticsDevice *hapi_device = static_cast< HAPI::PhantomHapticsDevice * >( h3d_device->hapi_device.get() );
-    if( hapi_device ) {
-      hapi_device->calibrateDevice();
+    HAPI::PhantomHapticsDevice *_hapi_device = static_cast< HAPI::PhantomHapticsDevice * >( h3d_device->hapi_device.get() );
+    if( _hapi_device ) {
+      _hapi_device->calibrateDevice();
     }
   }
 #endif

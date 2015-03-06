@@ -716,7 +716,7 @@ namespace H3D {
     /// \param height The height of the area to be cleared
     /// \param value  A four component value to be used as clear color.
     /// \param index  The color buffer index inside current active fbo
-    void clearColorBuffer(GLenum src, int x, int y, int width, int height, 
+    void clearColorBuffer(GLenum src, int x, int y, int _width, int _height, 
                            GLfloat* value, GLint index );
 
     /// Clear buffers of src fbo, will not bind fbo in the function, assume it is
@@ -727,7 +727,7 @@ namespace H3D {
     /// \param width  The width of the area to be cleared
     /// \param height The height of the area to be cleared
     /// \param mask   The mask indicate what buffers in current fbo will be cleared
-    void clearBuffers(GLenum src, int x, int y, int width, int height, GLbitfield mask);
+    void clearBuffers(GLenum src, int x, int y, int _width, int _height, GLbitfield mask);
 
 
     /// Flag used to determine if initializeFBO has been called or not.

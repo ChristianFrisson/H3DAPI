@@ -79,7 +79,7 @@ void DeviceInfo::removeFromStack() {
   StackType &s =  stack[bindable_stack_name];
   bool is_active = false;
   if( s.size() > 0 ) {
-    bool is_active = (s.front() == this);
+    is_active = (s.front() == this);
   }
   X3DBindableNode::removeFromStack();
 

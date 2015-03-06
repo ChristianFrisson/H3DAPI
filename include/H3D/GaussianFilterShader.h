@@ -98,8 +98,8 @@ namespace H3D {
     //virtual void generateKernel();
 
   private:
-    std::vector<float> gauss2D(int x,int y, float sigma);
-    std::vector<float> gauss1D(int x,float sigma);
+    std::vector<float> gauss2D(int x,int y, float _sigma);
+    std::vector<float> gauss1D(int x,float _sigma);
 
 
   };

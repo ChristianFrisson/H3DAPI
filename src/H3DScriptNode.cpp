@@ -60,17 +60,17 @@ void H3DScriptNode::addNamedNodes( X3D::DEFNodes *dn ) {
   }
 }
 
-void H3DScriptNode::addNamedNode( const string &name, Node *n ) {
-  NamedNodes::iterator i = named_nodes.find( name );
+void H3DScriptNode::addNamedNode( const string &_name, Node *n ) {
+  NamedNodes::iterator i = named_nodes.find( _name );
   if( i != named_nodes.end() ) {
     (*i).second->removeDestructCallback( removeNamedNodeCB, this );
   }
-  named_nodes[ name ] = n;
+  named_nodes[ _name ] = n;
   n->addDestructCallback( removeNamedNodeCB, this );
 }
 
-int H3DScriptNode::removeNamedNode( const string &name ) {
-  NamedNodes::iterator i = named_nodes.find( name );
+int H3DScriptNode::removeNamedNode( const string &_name ) {
+  NamedNodes::iterator i = named_nodes.find( _name );
   if( i == named_nodes.end() ) {
     return -1;
   } else {
@@ -88,8 +88,8 @@ void H3DScriptNode::clearNamedNodes() {
   named_nodes.clear();
 }
 
-Node *H3DScriptNode::getNamedNode( const string &name ) {
-  NamedNodes::iterator i = named_nodes.find( name );
+Node *H3DScriptNode::getNamedNode( const string &_name ) {
+  NamedNodes::iterator i = named_nodes.find( _name );
   if( i == named_nodes.end() ) {
     return NULL;
   } else {

@@ -128,23 +128,23 @@ namespace H3D {
     /// \param value The value of the field.
     /// \returns An empty string if adding the field succeeded otherwise the
     /// string is an error message.
-    string addFieldDeclaration( const string &name,
+    string addFieldDeclaration( const string &_name,
                                 const X3DTypes::X3DType &type,
                                 const Field::AccessType &access_type,
                                 const string &value = ""  ) {
-      FieldDeclaration *field_declaration = getFieldDeclaration( name );
+      FieldDeclaration *field_declaration = getFieldDeclaration( _name );
       if( field_declaration ) {
         if( field_declaration->external ) {
           string error_message = "";
           if( field_declaration->type != type )
             error_message =
               "Warning: Value for \"type\" attribute of \"field\" element with name"
-              + name + " does not match the value in found ExternProto. Attribute is ignored.";
+              + _name + " does not match the value in found ExternProto. Attribute is ignored.";
           if( error_message == "" &&
               field_declaration->access_type != access_type )
             error_message =
               "Warning: Value for \"access_type\" attribute of \"field\" element with name"
-              + name + " does not match the value in found ExternProto. Attribute is ignored.";
+              + _name + " does not match the value in found ExternProto. Attribute is ignored.";
           if( value != "" )
             field_declaration->value = "";
           // No need to add field declaration. Just indicate that it is no
@@ -152,20 +152,20 @@ namespace H3D {
           field_declaration->external = false;
           return error_message;
         } else {
-          return "\"field\" element with name " + name
+          return "\"field\" element with name " + _name
                  + " already exists. The field will not be added.";
         }
       }
-      field_declarations.push_back( FieldDeclaration( name, type, access_type, value ) );
+      field_declarations.push_back( FieldDeclaration(_name, type, access_type, value ) );
       return "";
     }
 
     /// Get the field declaration of the given name.
     /// Returns true if such a field declaration exists, false otherwise
-    FieldDeclaration *getFieldDeclaration( const string& name ) {
+    FieldDeclaration *getFieldDeclaration( const string& _name ) {
       for( list< FieldDeclaration >::iterator i = field_declarations.begin();
            i != field_declarations.end(); ++i ) {
-        if( (*i).name == name ) {
+        if( (*i).name == _name ) {
           return &(*i);
         }
       }

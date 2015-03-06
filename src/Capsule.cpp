@@ -421,11 +421,8 @@ void Capsule::render() {
     }
 
 
-    H3DFloat inc_theta = (H3DFloat) Constants::pi*2 / theta_parts;
-    H3DFloat inc_phi =   (H3DFloat) (Constants::pi/2) /phi_parts;
     H3DFloat r = radius->getValue();
-    H3DFloat h = height->getValue()/2;
-    H3DFloat double_pi = (H3DFloat) Constants::pi * 2;
+    H3DFloat h = height->getValue() / 2;
 
     // render top
     if ( top->getValue() ) {

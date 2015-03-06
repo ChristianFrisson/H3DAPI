@@ -33,11 +33,11 @@
 using namespace H3D;
 using namespace H3DUtil;
 
-void URNResolver::loadConfigFile( const string &config_file ) {
-  ifstream is( config_file.c_str() );
+void URNResolver::loadConfigFile( const string &_config_file ) {
+  ifstream is( _config_file.c_str() );
   if( !is.good() ) {
     Console(4) << "Warning: Could not open file URN resolver config file \"" 
-               << config_file << "\"" << endl; 
+               << _config_file << "\"" << endl; 
     return;
   }
   string line;
@@ -60,7 +60,7 @@ void URNResolver::loadConfigFile( const string &config_file ) {
     string urn = line.substr( pos, 4 );
     if( !nonCaseEquals( urn, "urn:" ) ) {
       Console(3) << "Invalid urn in URN resolve rule \"" << line 
-                 << "\" in file \"" << config_file << "\"" << endl;
+                 << "\" in file \"" << _config_file << "\"" << endl;
       continue;
     } 
     
@@ -70,7 +70,7 @@ void URNResolver::loadConfigFile( const string &config_file ) {
     pos = line.find( ':', characters_processed );
     if( pos == string::npos ) {
       Console(3) << "Invalid urn in URN resolve rule \"" << line
-                 << "\" in file \"" << config_file << "\"" << endl;
+                 << "\" in file \"" << _config_file << "\"" << endl;
       continue;
     } 
     
@@ -100,7 +100,7 @@ void URNResolver::loadConfigFile( const string &config_file ) {
     
     if( pos >= line.size() ) {
       Console(3) << "Invalid URN resolve rule \"" << line
-                 << "\" in file \"" << config_file << endl;
+                 << "\" in file \"" << _config_file << endl;
       continue;
     }
     

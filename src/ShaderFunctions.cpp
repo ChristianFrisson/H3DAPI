@@ -1391,9 +1391,9 @@ void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
       {
         mfnode = static_cast< MFNode * >( *f );
         for( unsigned int i = 0; i < mfnode->size(); ++i ) {
-          Node *n = mfnode->getValueByIndex( i ); 
+          Node *_n = mfnode->getValueByIndex( i );
           if( H3DSingleTextureNode *t = 
-            dynamic_cast< H3DSingleTextureNode *>( n ) ) {
+            dynamic_cast< H3DSingleTextureNode *>( _n ) ) {
             t->inUse();
             if ( !t->isResident () ) {
               t->displayList->callList();
@@ -1442,14 +1442,14 @@ void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
       {
         mfnode = static_cast< MFNode * >( *f );
         for( unsigned int i = 0; i < mfnode->size(); ++i ) {
-          Node *n = mfnode->getValueByIndex( i ); 
+          Node *_n = mfnode->getValueByIndex( i ); 
           if( H3DSingleTextureNode *t = 
-            dynamic_cast< H3DSingleTextureNode *>( n ) ) {
+            dynamic_cast< H3DSingleTextureNode *>( _n ) ) {
               glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
               t->preRender();
               ++nr_textures;
           }
-          else if ( ShaderImageNode* si = dynamic_cast<ShaderImageNode*>(n) ){
+          else if ( ShaderImageNode* si = dynamic_cast<ShaderImageNode*>(_n) ){
             current_texture_unit = GL_TEXTURE0_ARB + nr_textures;
             glActiveTextureARB ( current_texture_unit );
             si->preRender ( current_texture_unit );
@@ -1606,14 +1606,14 @@ void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
     {
       mfnode = static_cast< MFNode * >( *f );
       for( unsigned int i = 0; i < mfnode->size(); ++i ) {
-          Node *n = mfnode->getValueByIndex( i ); 
+          Node *_n = mfnode->getValueByIndex( i ); 
           if( H3DSingleTextureNode *t = 
-            dynamic_cast< H3DSingleTextureNode *>( n ) ) {
+            dynamic_cast< H3DSingleTextureNode *>( _n ) ) {
               glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
               t->displayList->callList();
               ++nr_textures;
           }
-          else if ( ShaderImageNode *si = dynamic_cast<ShaderImageNode*>( n ) ){
+          else if ( ShaderImageNode *si = dynamic_cast<ShaderImageNode*>( _n ) ){
             glActiveTextureARB ( GL_TEXTURE0_ARB + nr_textures );
             si->displayList->callList ( );
             ++nr_textures;
@@ -1644,10 +1644,10 @@ void H3D::Shaders::renderShaderResources( H3DDynamicFieldsObject * dfo){
     }else if( x3d_type==X3DTypes::MFNODE ) {
       mfnode = static_cast< MFNode* >(*f);
       for( unsigned int i = 0; i < mfnode->size(); ++i ) {
-        Node *n = mfnode->getValueByIndex( i ); 
-        if( ShaderStorageBuffer* ssbo = dynamic_cast<ShaderStorageBuffer*>(n) ) {
+        Node *_n = mfnode->getValueByIndex( i );
+        if( ShaderStorageBuffer* ssbo = dynamic_cast<ShaderStorageBuffer*>(_n) ) {
           ssbo->displayList->callList();
-        }else if( ShaderAtomicCounter* sac = dynamic_cast<ShaderAtomicCounter*>(n) ) {
+        }else if( ShaderAtomicCounter* sac = dynamic_cast<ShaderAtomicCounter*>(_n) ) {
           sac->displayList->callList();
         }
       }

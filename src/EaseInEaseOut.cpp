@@ -107,20 +107,20 @@ void EaseInEaseOut::SFFraction::update() {
   e->checkKeyEaseInEaseOut();
   H3DFloat fraction 
     = static_cast< SFFloat* >(routes_in[0])->getValue(e->id);
-  vector< H3DFloat > key 
+  vector< H3DFloat > _key
     = static_cast< MFFloat* >(routes_in[1])->getValue();
   vector< Vec2f > ease 
     = static_cast< MFVec2f* >(routes_in[2])->getValue();
   
   // No keys, return
-  if ( key.size() == 0 ) return;
+  if ( _key.size() == 0 ) return;
 
   // Calculations as specified in X3D specification
   H3DFloat u, eout, ein;
   int key_index = e->lookupKey( fraction, u );
 
   eout = ease.at( key_index ).y;
-  ein = ease.at( (key_index+1)%key.size() ).x;
+  ein = ease.at( (key_index+1) % _key.size() ).x;
   
   H3DFloat sum, t = 0;
   sum = ein + eout;

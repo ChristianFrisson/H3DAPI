@@ -129,30 +129,30 @@ void Appearance::render()     {
     Image::PixelType pixel_type = image->pixelType();
     if( pixel_type == Image::RGB ||
         pixel_type == Image::BGR ) {
-      GLfloat material[4];
-      glGetMaterialfv( GL_BACK, GL_DIFFUSE, material );
-      
-      material[0] = 1;
-      material[1] = 1;
-      material[2] = 1;
-      
-      glMaterialfv( GL_BACK, GL_DIFFUSE, material );
+      GLfloat _gl_material[4];
+      glGetMaterialfv( GL_BACK, GL_DIFFUSE, _gl_material);
 
-      glGetMaterialfv( GL_FRONT, GL_DIFFUSE, material );
+      _gl_material[0] = 1;
+      _gl_material[1] = 1;
+      _gl_material[2] = 1;
+
+      glMaterialfv( GL_BACK, GL_DIFFUSE, _gl_material);
+
+      glGetMaterialfv( GL_FRONT, GL_DIFFUSE, _gl_material);
       
-      material[0] = 1;
-      material[1] = 1;
-      material[2] = 1;
+      _gl_material[0] = 1;
+      _gl_material[1] = 1;
+      _gl_material[2] = 1;
       
-      glMaterialfv( GL_FRONT, GL_DIFFUSE, material );
+      glMaterialfv( GL_FRONT, GL_DIFFUSE, _gl_material);
     } else if( pixel_type == Image::RGBA ||
                pixel_type == Image::BGRA ) {
-      GLfloat material[4];
-      material[0] = 1;
-      material[1] = 1;
-      material[2] = 1; 
-      material[3] = 1;
-      glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, material );
+      GLfloat _gl_material[4];
+      _gl_material[0] = 1;
+      _gl_material[1] = 1;
+      _gl_material[2] = 1;
+      _gl_material[3] = 1;
+      glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, _gl_material );
     }
   }
 

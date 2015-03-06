@@ -62,7 +62,7 @@ namespace H3D {
     
     virtual void loadScript( const string &script_filename, const string &script_content= "" )= 0;
     
-    virtual Field* lookupField( const string &name ) const = 0;
+    virtual Field* lookupField( const string &_name ) const = 0;
 
     /// Add all nodes from the given DEFNodes instance to the scripts
     /// set of named nodes. If nodes with the same name already exists
@@ -71,18 +71,18 @@ namespace H3D {
 
     /// Add a named node to the script. If a node with the same name 
     /// already exists it will be overwritten.
-    void addNamedNode( const string &name, Node *n );
+    void addNamedNode( const string &_name, Node *n );
 
     /// Remove the named node with the provided name. 
     /// \return 0 on success, -1 if node with that name does not exist.
-    int removeNamedNode( const string &name );
+    int removeNamedNode( const string &_name );
 
     /// Remove all named nodes.
     void clearNamedNodes();
 
     /// Returns the named node with the given name. NULL if no such node
     /// exists.
-    Node *getNamedNode( const string &name );
+    Node *getNamedNode( const string &_name );
     
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

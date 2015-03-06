@@ -131,7 +131,7 @@ GLint X3DTexture2DNode::glInternalFormat( Image *i ) {
   }
 }
 
-void X3DTexture2DNode::glTexImage( Image *i, GLenum texture_target,
+void X3DTexture2DNode::glTexImage( Image *i, GLenum _texture_target,
                                    bool scale_to_power_of_two ) {
   // the image data to render
   void *image_data = i->getImageData();
@@ -210,7 +210,7 @@ void X3DTexture2DNode::glTexImage( Image *i, GLenum texture_target,
   }
 
   if( texture_properties && texture_properties->generateMipMaps->getValue() ) {
-    gluBuild2DMipmaps(  texture_target, 
+    gluBuild2DMipmaps(  _texture_target, 
                         glInternalFormat( i ),
                         width,
                         height,
@@ -230,7 +230,7 @@ void X3DTexture2DNode::glTexImage( Image *i, GLenum texture_target,
     }
 
     // install the image as a 2d texture/
-    glTexImage2D( texture_target, 
+    glTexImage2D( _texture_target, 
                   0, // mipmap level
                   glInternalFormat( i ),
                   width,
@@ -319,25 +319,25 @@ void X3DTexture2DNode::renderTextureProperties() {
   }
 }
 
-void X3DTexture2DNode::renderSubImage( Image *image, GLenum texture_target, 
+void X3DTexture2DNode::renderSubImage( Image *_image, GLenum _texture_target, 
                                        int x_offset, int y_offset,
                                        int width, int height ) {
   // todo: is there a way to do this without copying data?
-  unsigned char *image_data = (unsigned char *) image->getImageData();
+  unsigned char *image_data = (unsigned char *) _image->getImageData();
 
-  unsigned int bytes_per_pixel = image->bitsPerPixel() / 8;
+  unsigned int bytes_per_pixel = _image->bitsPerPixel() / 8;
 
   unsigned char *modified_data = 
     new unsigned char[ width * height * bytes_per_pixel ]; 
   for( unsigned int i = 0; i < (unsigned int)height; ++i ) {
     memcpy( modified_data + i * width * bytes_per_pixel, 
-            image_data + ( (i + y_offset )* image->width() + x_offset) * bytes_per_pixel,
+            image_data + ( (i + y_offset )* _image->width() + x_offset) * bytes_per_pixel,
             width * bytes_per_pixel );
   }
 
  GLint byte_alignment;
   glGetIntegerv( GL_UNPACK_ALIGNMENT, &byte_alignment );
-  glPixelStorei( GL_UNPACK_ALIGNMENT, image->byteAlignment() );
+  glPixelStorei( GL_UNPACK_ALIGNMENT, _image->byteAlignment() );
 
   TextureProperties *texture_properties = textureProperties->getValue();
   if( texture_properties ) {
@@ -355,11 +355,11 @@ void X3DTexture2DNode::renderSubImage( Image *image, GLenum texture_target,
     glPixelTransferf( GL_ALPHA_BIAS, bias.w );
   }
 
-  glTexSubImage2D( texture_target, 0, 
+  glTexSubImage2D( _texture_target, 0, 
                    x_offset, y_offset, 
                    width, height, 
-                   glPixelFormat( image ),
-                   glPixelComponentType( image ), 
+                   glPixelFormat( _image ),
+                   glPixelComponentType( _image ), 
                    modified_data );
 
   if( texture_properties ) glPopAttrib();
@@ -450,21 +450,21 @@ Image* X3DTexture2DNode::renderToImage( H3DInt32 _width, H3DInt32 _height, bool 
     int bpp;
 
     // Create container for image data, then bind buffer and read from it.
-    Image* image;
+    Image* _image;
     if( output_float_texture ) {
       Console(4)<<"saving texture for floating point texture"<<endl;
       bpp = sizeof(float)*8*4;
-      image= new PixelImage ( _width, _height, 1, bpp, Image::RGBA, Image::RATIONAL );
+      _image= new PixelImage ( _width, _height, 1, bpp, Image::RGBA, Image::RATIONAL );
     }else{
       bpp = 32;
-      image= new PixelImage ( _width, _height, 1, bpp, Image::BGRA, Image::UNSIGNED );
+      _image= new PixelImage ( _width, _height, 1, bpp, Image::BGRA, Image::UNSIGNED );
     }
     GLint active_texture_bind = 0;
     glGetIntegerv( GL_TEXTURE_BINDING_2D, &active_texture_bind );
     glBindTexture( getTextureTarget(), t_id );
-    glGetTexImage( getTextureTarget(), 0, glPixelFormat( image ), glPixelComponentType(image), image->getImageData() );
+    glGetTexImage( getTextureTarget(), 0, glPixelFormat( _image ), glPixelComponentType(_image), _image->getImageData() );
     glBindTexture( getTextureTarget(), active_texture_bind );
-    return image;
+    return _image;
   }
   Console(4)<<"texture id: "<< t_id << " is not valid, can not save texture "<<endl;
   return NULL;

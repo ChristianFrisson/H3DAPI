@@ -142,15 +142,15 @@ void Browser::setDescription( const string &description ) {
 }
 
 SAIScene *Browser::createX3DFromString( const string &s ) {
-  SAIScene *scene = new SAIScene;
+  SAIScene *new_scene = new SAIScene;
   try {
-    scene->root_node.reset( X3D::createX3DFromString( s, 
-                                                      &scene->named_nodes, 
-                                                      &scene->exported_nodes, 
-                                                      &scene->protos ) );
-    return scene;
+    new_scene->root_node.reset( X3D::createX3DFromString( s,
+                                                       &new_scene->named_nodes,
+                                                       &new_scene->exported_nodes,
+                                                       &new_scene->protos ) );
+    return new_scene;
   } catch( const Exception::H3DException &e ) {
-    delete scene;
+    delete new_scene;
     throw SAIError( SAIError::SAI_INVALID_X3D, e.message );
   }
   return NULL;
@@ -163,17 +163,17 @@ SAIScene *Browser::createX3DFromStream( const istream &s ) {
 }
 
 SAIScene *Browser::createX3DFromURL( MFString *urls ) {
-  SAIScene *scene = new SAIScene;
+  SAIScene *new_scene = new SAIScene;
   
   for( MFString::const_iterator i = urls->begin();
        i != urls->end(); ++i ) {
     try {
-      scene->root_node.reset( X3D::createX3DFromURL( *i, 
-                                                     &scene->named_nodes, 
-                                                     &scene->exported_nodes, 
-                                                     &scene->protos ) );
+      new_scene->root_node.reset( X3D::createX3DFromURL( *i,
+                                                      &new_scene->named_nodes,
+                                                      &new_scene->exported_nodes,
+                                                      &new_scene->protos ) );
       
-      return scene;
+      return new_scene;
     } catch( Exception::H3DException &e ) {
       // If there was an exception while reading a file, we check if the
       // file exists. If it does not exist we continue by trying the next file
@@ -186,13 +186,13 @@ SAIScene *Browser::createX3DFromURL( MFString *urls ) {
         ResourceResolver::releaseTmpFileName( resolved_url );
       
       if( resolved_url != "" ) {
-        delete scene;
+        delete new_scene;
         throw SAIError( SAIError::SAI_INVALID_URL, e.message );
       }
     }
   }
 
-  delete scene;
+  delete new_scene;
   throw SAIError( SAIError::SAI_URL_UNAVAILABLE );
 }
 

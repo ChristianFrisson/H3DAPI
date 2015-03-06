@@ -122,7 +122,7 @@ namespace H3D {
     auto_ptr< MFString >  url;
   protected:
     /// Helper function for resolveURLAs*() functions
-    string resolveURL ( const string& url, bool return_contents, bool *is_tmp_file = NULL ); 
+    string resolveURL ( const string& _url, bool return_contents, bool *is_tmp_file = NULL ); 
 
     /// Add a inline prefix that this node supports.
     void addInlinePrefix( const string &s );

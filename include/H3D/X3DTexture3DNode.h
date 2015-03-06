@@ -88,7 +88,7 @@ namespace H3D {
     virtual void renderTextureProperties();
 
     /// Returns the internal OpenGL format to use given an Image
-    virtual GLint glInternalFormat( Image *image );
+    virtual GLint glInternalFormat( Image *_image );
 
     /// Virtual function for making all OpenGL calls that are needed to
     /// enable texturing for the texture.
@@ -138,11 +138,11 @@ namespace H3D {
     /// glPixelComponentType () functions to get the arguments to the
     /// glTexImage3D call.
     ///
-    virtual void glTexImage( Image *image, GLenum texture_target, 
+    virtual void glTexImage( Image *_image, GLenum texture_target, 
                              bool scale_to_power_of_two );
       
     /// Replaces part of the current texture from an image. 
-    virtual void renderSubImage( Image *image, GLenum texture_target, 
+    virtual void renderSubImage( Image *_image, GLenum texture_target, 
                                  int xoffset, int yoffset, int z_offset,
                                  int width, int height, int depth );
 
@@ -217,7 +217,7 @@ namespace H3D {
     auto_ptr< Field > imageNeedsUpdate;
   public:
     /// Returns the OpenGL pixel format to use given an Image, e.g. 
-    virtual GLenum glPixelFormat( Image *image );
+    virtual GLenum glPixelFormat( Image *_image );
   };
 }
 

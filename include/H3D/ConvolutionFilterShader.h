@@ -88,8 +88,8 @@ namespace H3D {
     {
     public:
       virtual void onValueChange(  const int &new_value ){
-        ConvolutionFilterShader* owner = dynamic_cast<ConvolutionFilterShader*> (getOwner());
-        owner->buildShader();
+        ConvolutionFilterShader* _owner = dynamic_cast<ConvolutionFilterShader*> (getOwner());
+        _owner->buildShader();
       }
     };
 

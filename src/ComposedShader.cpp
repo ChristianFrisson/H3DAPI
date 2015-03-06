@@ -164,7 +164,7 @@ bool ComposedShader::isTransparent( X3DMaterialNode *material ) {
   return false;
 }
 
-bool ComposedShader::addField( const string &name, 
+bool ComposedShader::addField( const string &_name, 
                                const Field::AccessType &access, Field *field ){
   // composed shader added field can be node field such as texture
   // or just field such as SFFloat, SFBool
@@ -172,18 +172,18 @@ bool ComposedShader::addField( const string &name,
   // as the id for field.
   // For shader program, the name in dynamic field will match the field in shader
   
-  if( !field || uniformFields.find( name )!=uniformFields.end() ) {
+  if( !field || uniformFields.find( _name )!=uniformFields.end() ) {
     // different shader part may add the same field with same name
     // as uniformFields is a global dataset for the shader program
       return false;
     }
   // the field being added have a unique name never being used before in this shader
-  bool success = X3DProgrammableShaderObject::addField( name, access, field  );
+  bool success = X3DProgrammableShaderObject::addField( _name, access, field  );
   if( success ) {
     // insert a new entry for the newly added field
     
     H3D::Shaders::UniformInfo ui = { field, 0 };
-    uniformFields.insert( std::pair< string, H3D::Shaders::UniformInfo >( name , ui ) );
+    uniformFields.insert( std::pair< string, H3D::Shaders::UniformInfo >( _name , ui ) );
     // if inserted node is a SFNode, or MFNode, need to handle the actul node inside
     // the field specially
     SFNode * sf_node_field = dynamic_cast< SFNode * >( field );
@@ -197,7 +197,7 @@ bool ComposedShader::addField( const string &name,
   }else{
     // can not add same field twice,even though it has different name.
     // This is the limit of h3d dynamic field object. 
-    Console(4)<<"Warning: Failed to add field: "<<name<<" to shader "<< getName()
+    Console(4)<<"Warning: Failed to add field: "<<_name<<" to shader "<< getName()
       <<", either current node is invalid or the added field is already in the node database!"
       <<endl;
   }
@@ -210,8 +210,8 @@ bool ComposedShader::removeField ( const string& _name ) {
 
   // Remove from uniformFields map
   for( UniformFieldMap::iterator i = uniformFields.begin(); i != uniformFields.end(); ++i  ) {
-    const string &name = i->first;
-    if ( name == _name ) {
+    const string &name_tmp = i->first;
+    if( name_tmp == _name ) {
       uniformFields.erase ( i );
       break;
     }
@@ -539,51 +539,51 @@ GLhandleARB ComposedShader::createHandle(ComposedShader* shader) {
 }
 
 
-void ComposedShader::setGeometryShaderParameters( GLenum program_handle ) {
+void ComposedShader::setGeometryShaderParameters( GLenum _program_handle ) {
   if( GLEW_EXT_geometry_shader4 ) {
     // Setting input type.
     const string &input_type = geometryInputType->getValue();
     if( input_type == "POINTS" ) {
-      glProgramParameteriEXT(program_handle, 
+      glProgramParameteriEXT(_program_handle,
                              GL_GEOMETRY_INPUT_TYPE_EXT, GL_POINTS);
     } else if( input_type == "LINES" ) {
-      glProgramParameteriEXT(program_handle, 
+      glProgramParameteriEXT(_program_handle,
                              GL_GEOMETRY_INPUT_TYPE_EXT,GL_LINES);
     } else if( input_type == "TRIANGLES" ) {
-      glProgramParameteriEXT(program_handle, 
+      glProgramParameteriEXT(_program_handle,
                              GL_GEOMETRY_INPUT_TYPE_EXT, GL_TRIANGLES);
     } else if( input_type == "LINES_ADJACENCY" ) {
-      glProgramParameteriEXT(program_handle, 
+      glProgramParameteriEXT(_program_handle,
                              GL_GEOMETRY_INPUT_TYPE_EXT,
                              GL_LINES_ADJACENCY_EXT );
     } else if( input_type == "TRIANGLES_ADJACENCY" ) {
-      glProgramParameteriEXT(program_handle, 
+      glProgramParameteriEXT(_program_handle,
                              GL_GEOMETRY_INPUT_TYPE_EXT, 
                              GL_TRIANGLES_ADJACENCY_EXT );
     } else {
       Console(4) << "Invalid geometryInputType \"" << input_type
                  << "\" in ComposedShader. Using \"TRIANGLES\" instead." << endl;
-      glProgramParameteriEXT(program_handle, 
+      glProgramParameteriEXT(_program_handle,
                              GL_GEOMETRY_INPUT_TYPE_EXT, 4/*GL_TRIANGLES*/);
     }
 
     // Setting output type.
     const string &output_type = geometryOutputType->getValue();
     if( output_type == "POINTS" ) {
-      glProgramParameteriEXT(program_handle, 
+      glProgramParameteriEXT(_program_handle,
                              GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_POINTS);
     } else if( output_type == "LINE_STRIP" ) {
-      glProgramParameteriEXT(program_handle, 
+      glProgramParameteriEXT(_program_handle,
                              GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_LINE_STRIP );
     } else if( output_type == "TRIANGLE_STRIP" ) {
-      glProgramParameteriEXT(program_handle, 
+      glProgramParameteriEXT(_program_handle,
                              GL_GEOMETRY_OUTPUT_TYPE_EXT, 
                              GL_TRIANGLE_STRIP );
     } else {
       Console(4) << "Invalid geometryOutputType \"" << output_type
                  << "\" in ComposedShader. Using \"TRIANGLE_STRIP\" instead."
                  << endl;
-      glProgramParameteriEXT(program_handle, 
+      glProgramParameteriEXT(_program_handle,
                              GL_GEOMETRY_OUTPUT_TYPE_EXT, 4/*GL_TRIANGLES*/);
     } 
 
@@ -600,7 +600,7 @@ void ComposedShader::setGeometryShaderParameters( GLenum program_handle ) {
     }
 
     // number of output vertices for geometry shader.
-    glProgramParameteriEXT(program_handle,
+    glProgramParameteriEXT(_program_handle,
                            GL_GEOMETRY_VERTICES_OUT_EXT,
                            nr_output_vertices );
     
@@ -669,9 +669,9 @@ void ComposedShader::UpdateUniforms::update() {
     // update the uniform location information in unifromFields
     UniformFieldMap::iterator it;
     for( it = node->uniformFields.begin(); it!= node->uniformFields.end(); ++it  ) {
-      const string &name = it->first;
+      const string &_name = it->first;
       GLint location = glGetUniformLocationARB( node->program_handle,
-        name.c_str() );
+        _name.c_str() );
       it->second.location = location;
       if( !Shaders::setGLSLUniformVariableValue( node->program_handle, it->second.field, &(it->second), true /* force update */ ) 
         && !node->suppressUniformWarnings->getValue() ) {

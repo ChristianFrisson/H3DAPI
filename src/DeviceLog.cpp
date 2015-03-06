@@ -132,10 +132,10 @@ void DeviceLog::createLogForceEffect( int index ) {
                << " Each device needs a corresponding url in the url field."
                << endl;
   } else {
-    string url_used = urls[index];
+    string _url_used = urls[index];
     
     // Create an instance of the HAPI::DeviceLog class.
-    log_force_effect.set( index, createHAPIDeviceLog( url_used ));
+    log_force_effect.set( index, createHAPIDeviceLog( _url_used ));
   }
 }
 

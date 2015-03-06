@@ -368,8 +368,7 @@ void Scene::idle() {
 #ifdef HAVE_PROFILER
     H3DUtil::H3DTimer::stepEnd("Scene_traverse");
 #endif
-    /// traverse the stylus of all haptics devices
-    DeviceInfo *di = DeviceInfo::getActive();
+    // traverse the stylus of all haptics devices
     if( di ) {
       for( DeviceInfo::MFDevice::const_iterator i = di->device->begin();
            i != di->device->end(); ++i ) {
@@ -482,14 +481,14 @@ void Scene::idle() {
   // call window's render function
   for( MFWindow::const_iterator w = window->begin(); 
        w != window->end(); ++w ) {
-    H3DWindowNode *window = static_cast< H3DWindowNode * >(*w);
-    bool used_mpt = window->getMultiPassTransparency();
-    window->setMultiPassTransparency( 
+    H3DWindowNode *_window = static_cast< H3DWindowNode * >(*w);
+    bool used_mpt = _window->getMultiPassTransparency();
+    _window->setMultiPassTransparency(
                        last_traverseinfo->getMultiPassTransparency() );
-    if( used_mpt != window->getMultiPassTransparency() ) {
+    if( used_mpt != _window->getMultiPassTransparency() ) {
       H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
     }
-    window->render( scene_root );
+    _window->render( scene_root );
   }
 #ifdef HAVE_PROFILER
   H3DUtil::H3DTimer::stepEnd("Graphic_rendering");
@@ -739,9 +738,9 @@ bool Scene::removeProgramSetting( Field *field ) {
       field->markProgramSetting( false );
       removed = true;
       // call callbacks
-      for( ProgramSettingsCallbackList::iterator i = program_settings_callbacks.begin();
-           i != program_settings_callbacks.end(); ++i ) {
-        (*i).first( REMOVE_SETTING, setting, (*i).second );
+      for( ProgramSettingsCallbackList::iterator j = program_settings_callbacks.begin();
+           j != program_settings_callbacks.end(); ++j ) {
+        (*j).first( REMOVE_SETTING, setting, (*j).second );
       }
       
       // remove any more existants of field
@@ -804,10 +803,10 @@ H3D::Node* Scene::findNodeType(H3D::Node *node, const std::string &nodeType, con
         }
       }
       for( unsigned int i = 0; i < c.size(); ++i ) {
-        if( c[i]){
-          H3D::Node *node = findNodeType(c[i], nodeType, nodeName);
-          if (node)
-            return node;
+        if( c[i] ){
+          H3D::Node *_node = findNodeType(c[i], nodeType, nodeName);
+          if( _node )
+            return _node;
         }
       }
       return NULL;
@@ -836,9 +835,9 @@ H3D::Node* Scene::findNodeType(H3D::Node *node, const std::string &nodeType, con
         }
         else
         {
-          H3D::Node *node = findNodeType(appearance, nodeType, nodeName);
-          if (node)
-            return node;
+          H3D::Node *_node = findNodeType(appearance, nodeType, nodeName);
+          if( _node )
+            return _node;
         }
       }
       return NULL;
@@ -879,9 +878,9 @@ H3D::Node* Scene::findNodeType(H3D::Node *node, const std::string &nodeType, con
         for( unsigned int i = 0; i < inlinenode->loadedScene->size(); ++i ) {
           Group *g = inlinenode->loadedScene->getValueByIndex( i );
           if( g){
-            H3D::Node *node = findNodeType(g, nodeType, nodeName);
-            if (node)
-              return node;
+            H3D::Node *_node = findNodeType(g, nodeType, nodeName);
+            if( _node )
+              return _node;
           }
         }
       }

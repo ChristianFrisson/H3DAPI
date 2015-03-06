@@ -396,12 +396,14 @@ int main(int argc, char* argv[]) {
 #endif
 
   bool ini_file_exists = false;
-  ifstream check_ini_file( ini_file_path.c_str() );
-  if( check_ini_file.is_open() ) {
-    ini_file_exists = true;
+  {
+    ifstream check_ini_file( ini_file_path.c_str() );
+    if( check_ini_file.is_open() ) {
+      ini_file_exists = true;
+    }
+    check_ini_file.close();
   }
-  check_ini_file.close();
-  
+
   if( !ini_file_exists ){
     ini_file_path = h3d_root + "/settings/h3dload.ini";
     

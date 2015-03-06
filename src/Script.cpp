@@ -105,10 +105,10 @@ void Script::traverseSG( TraverseInfo &ti ) {
 
 /// Override the addField method from H3DDynamicFieldsObject
 /// to add the field to the script engine.
-bool Script::addField( const string &name,
+bool Script::addField( const string &_name,
                        const Field::AccessType &access,
                        Field *field ) {
-  bool b = H3DDynamicFieldsObject::addField( name, access, field );
+  bool b = H3DDynamicFieldsObject::addField( _name, access, field );
 
   /// TODO: do proper access check in SpiderMonkeyTypes.cpp. For now
   /// disable so that. outputOnly fields would not work otherwise

@@ -471,8 +471,8 @@ namespace H3D {
               }
             } else if ( MFNode* mf_node= dynamic_cast< MFNode * >( f ) ) {
               const NodeVector& children= mf_node->getValue();
-              for ( NodeVector::const_iterator i= children.begin(); i != children.end(); ++i ) {
-                Node* c= *i;
+              for ( NodeVector::const_iterator j = children.begin(); j != children.end(); ++j ) {
+                Node* c= *j;
                 if ( c ) {
                   if ( _verbose ) {
                     Console(4) << "Node::findNodes(): " << _node.getName() << " -> " << f->getName() << endl;

@@ -1407,7 +1407,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
       } else {
         const XMLCh *use_name = attrs.getValue( gUSE );
         const XMLCh *copy_value = attrs.getValue( gCOPY );
-        bool proto_instance = false;
+        bool _proto_instance = false;
 
         if( use_name ) {
           // if we have a USE attribute, lookup the matching node and use that.
@@ -1451,7 +1451,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
             // since we don't want it to occur until all child nodes
             // have been created and set.
             if( new_node ) new_node->setManualInitialize( true );
-            proto_instance = true;
+            _proto_instance = true;
           } else {
             try {
               new_node = 
@@ -1517,7 +1517,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
                            << getLocationString() << endl;
               }
 #endif
-            } else if( proto_instance ) {
+            } else if( _proto_instance ) {
             } else if( use_name ) {
               // node is defined by USE, so we ignore all fields that are not
               // USE, class, DEF, or containerField

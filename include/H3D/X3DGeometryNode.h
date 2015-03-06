@@ -207,9 +207,9 @@ namespace H3D {
     void getOptionNode( OptionNodeType * &option ) {
        for( MFOptionsNode::const_iterator i = options->begin();
            i != options->end(); ++i ) {
-        OptionNodeType *options = dynamic_cast< OptionNodeType * >( *i );
-        if( options ) {
-          option = options;
+        OptionNodeType *_options = dynamic_cast< OptionNodeType * >( *i );
+        if( _options ) {
+          option = _options;
           return;
         }
        }

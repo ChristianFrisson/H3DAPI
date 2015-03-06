@@ -134,7 +134,7 @@ GLint X3DTexture3DNode::glInternalFormat( Image *i ) {
   }
 }
 
-void X3DTexture3DNode::glTexImage( Image *i, GLenum texture_target,
+void X3DTexture3DNode::glTexImage( Image *i, GLenum _texture_target,
                                    bool scale_to_power_of_two ) {
   // the image data to render
   void *image_data = i->getImageData();
@@ -200,7 +200,7 @@ void X3DTexture3DNode::glTexImage( Image *i, GLenum texture_target,
 
   if( texture_properties && texture_properties->generateMipMaps->getValue() ) {
 #if( GLU_VERSION_1_3 )
-    gluBuild3DMipmaps(  texture_target, 
+    gluBuild3DMipmaps(  _texture_target, 
                         glInternalFormat( i ),
                         width,
                         height,
@@ -222,7 +222,7 @@ void X3DTexture3DNode::glTexImage( Image *i, GLenum texture_target,
     }
     
     // install the image as a 3d texture/
-    glTexImage3D( texture_target, 
+    glTexImage3D( _texture_target, 
                   0, // mipmap level
                   glInternalFormat( i ),
                   width,
@@ -318,8 +318,8 @@ void X3DTexture3DNode::renderTextureProperties() {
   }
 }
 
-void X3DTexture3DNode::renderSubImage( Image *image, 
-                                       GLenum texture_target, 
+void X3DTexture3DNode::renderSubImage( Image *_image, 
+                                       GLenum _texture_target, 
                                        int x_offset, 
                                        int y_offset, 
                                        int z_offset,
@@ -327,9 +327,9 @@ void X3DTexture3DNode::renderSubImage( Image *image,
                                        int height,
                                        int depth ) {
   // todo: is there a way to do this without copying data?
-  unsigned char *image_data = (unsigned char *) image->getImageData();
+  unsigned char *image_data = (unsigned char *) _image->getImageData();
 
-  unsigned int bytes_per_pixel = image->bitsPerPixel() / 8;
+  unsigned int bytes_per_pixel = _image->bitsPerPixel() / 8;
 
   unsigned char *modified_data = 
     new unsigned char[ width * height * depth * bytes_per_pixel ]; 
@@ -337,15 +337,15 @@ void X3DTexture3DNode::renderSubImage( Image *image,
     for( unsigned int y = 0; y < (unsigned int)height; ++y ) {
       memcpy( modified_data + (z * height + y ) * width * bytes_per_pixel, 
               image_data + 
-              ( ((z + z_offset) * image->height() + (y + y_offset ) ) * 
-                image->width() + x_offset) * bytes_per_pixel,
+              ( ((z + z_offset) * _image->height() + (y + y_offset ) ) * 
+                _image->width() + x_offset) * bytes_per_pixel,
               width * bytes_per_pixel );
     }
   }
 
   GLint byte_alignment;
   glGetIntegerv( GL_UNPACK_ALIGNMENT, &byte_alignment );
-  glPixelStorei( GL_UNPACK_ALIGNMENT, image->byteAlignment() );
+  glPixelStorei( GL_UNPACK_ALIGNMENT, _image->byteAlignment() );
 
   TextureProperties *texture_properties = textureProperties->getValue();
   if( texture_properties ) {
@@ -363,11 +363,11 @@ void X3DTexture3DNode::renderSubImage( Image *image,
     glPixelTransferf( GL_ALPHA_BIAS, bias.w );
   }
 
-  glTexSubImage3D( texture_target, 0, 
+  glTexSubImage3D( _texture_target, 0, 
                    x_offset, y_offset, z_offset, 
                    width, height, depth, 
-                   glPixelFormat( image ),
-                   glPixelComponentType( image ), 
+                   glPixelFormat( _image ),
+                   glPixelComponentType( _image ), 
                    modified_data );
 
   if( texture_properties ) glPopAttrib();

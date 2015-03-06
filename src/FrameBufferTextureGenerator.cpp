@@ -1410,7 +1410,7 @@ bool FrameBufferTextureGenerator::parseColorBufferStorage(std::string color_buff
   }
 }
 
-bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height, H3DInt32 depth ) {
+bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 _width, H3DInt32 _height, H3DInt32 depth ) {
 
   if ( X3DProgrammableShaderObject::use_bindless_textures ) {
     // Bindless textures are immutable once they are resident, so we need to make
@@ -1486,7 +1486,7 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
     // create multi sample render buffers
     glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, multi_samples_depth_id );
     glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, nr_samples, 
-      depth_internal_format, width, height);
+      depth_internal_format, _width, _height);
     glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, 
       GL_RENDERBUFFER_EXT, multi_samples_depth_id);
     if( using_stencil_buffer )
@@ -1497,7 +1497,7 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
       glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, multi_samples_color_ids[i] );
       glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, nr_samples, 
         stringToInternalFormat( color_texture_types[i]) ,
-        width, height);
+        _width, _height);
       glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i, 
         GL_RENDERBUFFER_EXT, multi_samples_color_ids[i]);
     }
@@ -1523,21 +1523,21 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
       }
 
       if( texture_type == GL_TEXTURE_2D_ARRAY_EXT ) {
-        glTexImage3D(GL_TEXTURE_2D_ARRAY_EXT, 0, depth_internal_format, width, height, depth, 0, 
+        glTexImage3D(GL_TEXTURE_2D_ARRAY_EXT, 0, depth_internal_format, _width, _height, depth, 0,
           depth_format, depth_type, NULL);
 
         glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0, 0 );
         if( using_stencil_buffer )
           glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,depth_id, 0, 0 );
       }else if (texture_type==GL_TEXTURE_2D_MULTISAMPLE){
-        glTexImage2DMultisample( texture_type, nr_samples, depth_internal_format, width, height, GL_TRUE );
+        glTexImage2DMultisample( texture_type, nr_samples, depth_internal_format, _width, _height, GL_TRUE );
         glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texture_type, depth_id, 0 );
         if (using_stencil_buffer){
           glFramebufferTexture2D( GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT_EXT, texture_type, depth_id, 0 );
         }
       }
       else {
-        glTexImage2D( texture_type, 0, depth_internal_format, width, height, 0, 
+        glTexImage2D( texture_type, 0, depth_internal_format, _width, _height, 0,
           depth_format, depth_type, NULL);
         glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
           texture_type, depth_id, 0 );
@@ -1552,7 +1552,7 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
       // create multi sample render buffers
       glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depth_id );
       glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, nr_samples, 
-        depth_internal_format, width, height);
+        depth_internal_format, _width, _height);
       glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, 
         GL_RENDERBUFFER_EXT, depth_id);
       if( using_stencil_buffer )
@@ -1561,7 +1561,7 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
     }else{
       glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depth_id);
       glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, depth_internal_format,
-        width, height); 
+        _width, _height);
       glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
         GL_RENDERBUFFER_EXT, depth_id);
       if( using_stencil_buffer )
@@ -1577,7 +1577,7 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
   // is to use the DEPTH_STENCIL depthBufferType.
   /*glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, stencil_id);
   glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_STENCIL_INDEX8_EXT,
-  width, height); 
+  _width, _height); 
   glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
   GL_RENDERBUFFER_EXT, stencil_id);
   */
@@ -1597,27 +1597,27 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
     GLint internal_format = stringToInternalFormat( color_texture_types[i] );
 
     if( texture_type == GL_TEXTURE_2D ) {
-      glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, 
+      glTexImage2D(GL_TEXTURE_2D, 0, internal_format, _width, _height, 0,
         GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
       glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ),
         GL_TEXTURE_2D, color_ids[i], 0 );        
     } else if( texture_type == GL_TEXTURE_RECTANGLE_ARB ) {
-      glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, internal_format, width, height, 0, 
+      glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, internal_format, _width, _height, 0,
         GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
       glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ),
         GL_TEXTURE_RECTANGLE_ARB, color_ids[i], 0 );        
     } else if ( texture_type == GL_TEXTURE_2D_MULTISAMPLE ){
-      glTexImage2DMultisample( GL_TEXTURE_2D_MULTISAMPLE, nr_samples, internal_format, width, height, GL_TRUE );
+      glTexImage2DMultisample( GL_TEXTURE_2D_MULTISAMPLE, nr_samples, internal_format, _width, _height, GL_TRUE );
       glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D_MULTISAMPLE, color_ids.at(i), 0);
     } else if( texture_type == GL_TEXTURE_2D_ARRAY_EXT ) {
-      glTexImage3D(GL_TEXTURE_2D_ARRAY_EXT, 0, internal_format, width, height, depth, 0, 
+      glTexImage3D(GL_TEXTURE_2D_ARRAY_EXT, 0, internal_format, _width, _height, depth, 0,
         GL_RGBA, GL_UNSIGNED_BYTE, NULL);
       glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ),
         color_ids[i], 0,0 );        
     } else if( texture_type == GL_TEXTURE_3D ) {
-      glTexImage3D(GL_TEXTURE_3D, 0, internal_format, width, height, depth, 0, 
+      glTexImage3D(GL_TEXTURE_3D, 0, internal_format, _width, _height, depth, 0,
         GL_RGBA, GL_UNSIGNED_BYTE, NULL);
       glFramebufferTexture3DEXT(GL_FRAMEBUFFER_EXT, (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ),
         GL_TEXTURE_3D, color_ids[i], 0, 0 );        
@@ -1632,8 +1632,8 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 width, H3DInt32 height
 
   if( !checkFBOCompleteness() ) return false;
 
-  buffers_width = width;
-  buffers_height = height;
+  buffers_width = _width;
+  buffers_height = _height;
   buffers_depth = depth;
   return true;
 }
@@ -1790,11 +1790,11 @@ GLenum FrameBufferTextureGenerator::stringToInternalDepthFormat( const string &s
 }
 
 void FrameBufferTextureGenerator::clearBuffers(GLenum src, int x, int y, 
-  int width, int height, GLbitfield mask){
+  int _width, int _height, GLbitfield mask){
     // clear buffer defined by mask of the area defined by x, y, width, height
     //glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, src);
     glPushAttrib( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_SCISSOR_BIT );
-    glScissor( x, y, width, height );
+    glScissor( x, y, _width, _height );
     glEnable( GL_SCISSOR_TEST );
     glClear( mask );
     glDisable( GL_SCISSOR_TEST );
@@ -1802,11 +1802,11 @@ void FrameBufferTextureGenerator::clearBuffers(GLenum src, int x, int y,
 }
 
 void FrameBufferTextureGenerator::clearColorBuffer( GLenum src, int x, int y, 
-  int width, int height, GLfloat* value, GLint index ){
+  int _width, int _height, GLfloat* value, GLint index ){
     // clear index th attached color buffer
     //glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, src );
     glPushAttrib( GL_COLOR_BUFFER_BIT | GL_SCISSOR_BIT );
-    glScissor( x, y, width, height );
+    glScissor( x, y, _width, _height );
     glEnable( GL_SCISSOR_TEST );
     glClearBufferfv( GL_COLOR, index, value );
     glDisable( GL_SCISSOR_TEST );

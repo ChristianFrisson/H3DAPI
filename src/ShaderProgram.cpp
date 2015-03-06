@@ -97,11 +97,11 @@ void ShaderProgram::render() {
   }
 }
 
-bool ShaderProgram::addField( const string &name,
+bool ShaderProgram::addField( const string &_name,
                               const Field::AccessType &access,
                               Field *field ) {
-  bool success = X3DProgrammableShaderObject::addField( name, 
-                                                        access, 
+  bool success = X3DProgrammableShaderObject::addField( _name,
+                                                        access,
                                                         field  );
   if( success ) {
     field->route( displayList );

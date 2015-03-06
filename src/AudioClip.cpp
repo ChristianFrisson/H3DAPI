@@ -95,11 +95,11 @@ void AudioClip::ALrender() {
     
     setURLUsed( "" );
     for( MFString::const_iterator i = url->begin(); i != url->end(); ++i ) {
-      string url = resolveURLAsFile( *i );
-      if( url != "" ) {
-        H3DSoundFileNode *sf = H3DSoundFileNode::getSupportedFileReader( url );
+      string _url = resolveURLAsFile( *i );
+      if( _url != "" ) {
+        H3DSoundFileNode *sf = H3DSoundFileNode::getSupportedFileReader( _url );
         if( sf ) {
-          sf->load( url );
+          sf->load( _url );
           reader.reset( sf );
           setURLUsed( *i );
           break;

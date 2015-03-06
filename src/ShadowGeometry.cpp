@@ -255,47 +255,47 @@ void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
   glPopMatrix();
 }
 
-void ShadowGeometry::updateSilhouetteEdgesDirectionalLight( const vector< HAPI::Collision::Triangle > &triangles,
-                                                            const vector<int> &neighbours,
+void ShadowGeometry::updateSilhouetteEdgesDirectionalLight( const vector< HAPI::Collision::Triangle > &_triangles,
+                                                            const vector<int> &_neighbours,
                                                             const Vec3d &direction ) {
 
-  triangle_facing_light.resize( triangles.size(), false );
-  is_silhouette_edge.resize( triangles.size()*3, false );
+  triangle_facing_light.resize( _triangles.size(), false );
+  is_silhouette_edge.resize( _triangles.size()*3, false );
   
-  for( size_t i = 0; i < triangles.size(); ++i ) {
-    triangle_facing_light[i] = direction.dotProduct( triangles[i].normal ) <= 0;
+  for( size_t i = 0; i < _triangles.size(); ++i ) {
+    triangle_facing_light[i] = direction.dotProduct( _triangles[i].normal ) <= 0;
   }
  
-  for( size_t i = 0; i < neighbours.size(); ++i ) {
+  for( size_t i = 0; i < _neighbours.size(); ++i ) {
     if(!triangle_facing_light[i/3]) {
       // silhouette edges are only on triangles facing the light
       is_silhouette_edge[i] = false;
     } else {
       // silhouette if no neighbour or the neighbour is not facing the light
-      is_silhouette_edge[i] = neighbours[i] == -1 || !triangle_facing_light[neighbours[i]];
+      is_silhouette_edge[i] = _neighbours[i] == -1 || !triangle_facing_light[_neighbours[i]];
     }
   }
 }
 
 
-void ShadowGeometry::updateSilhouetteEdgesPointLight( const vector< HAPI::Collision::Triangle > &triangles,
-                                                      const vector<int> &neighbours,
+void ShadowGeometry::updateSilhouetteEdgesPointLight( const vector< HAPI::Collision::Triangle > &_triangles,
+                                                      const vector<int> &_neighbours,
                                                       const Vec3d &pos ) {
-  triangle_facing_light.resize( triangles.size(), false );
-  is_silhouette_edge.resize( triangles.size()*3, false );
+  triangle_facing_light.resize( _triangles.size(), false );
+  is_silhouette_edge.resize( _triangles.size()*3, false );
 
-  for( size_t i = 0; i < triangles.size(); ++i ) {
-    Vec3d direction = triangles[i].a - pos;
-    triangle_facing_light[i] = direction.dotProduct( triangles[i].normal ) <= 0;
+  for( size_t i = 0; i < _triangles.size(); ++i ) {
+    Vec3d direction = _triangles[i].a - pos;
+    triangle_facing_light[i] = direction.dotProduct( _triangles[i].normal ) <= 0;
   }
 
-  for( size_t i = 0; i < neighbours.size(); ++i ) {
+  for( size_t i = 0; i < _neighbours.size(); ++i ) {
     if(!triangle_facing_light[i/3]) {
       // silhouette edges are only on triangles facing the light
       is_silhouette_edge[i] = false;
     } else {
       // silhouette if no neighbour or the neighbour is not facing the light
-      is_silhouette_edge[i] = neighbours[i] == -1 || !triangle_facing_light[neighbours[i]];
+      is_silhouette_edge[i] = _neighbours[i] == -1 || !triangle_facing_light[_neighbours[i]];
     }
   }
 
@@ -316,17 +316,17 @@ struct lt {
   }
 };
 
-void ShadowGeometry::updateNeighbours( const vector< HAPI::Collision::Triangle > &triangles ) {
+void ShadowGeometry::updateNeighbours( const vector< HAPI::Collision::Triangle > &_triangles ) {
   neighbours.clear();
-  neighbours.resize( triangles.size()*3, -1 );
+  neighbours.resize( _triangles.size()*3, -1 );
 
   // map from triangle edge(as pair of vertex) to pair of 
   // (triangle index, edge index within triangle) 
   typedef map< pair< Vec3d, Vec3d >, pair<int, int>, lt >  EdgeTriangleMap;
   EdgeTriangleMap edges;
  
-  for( unsigned int i = 0; i < triangles.size(); ++i ) {
-    const HAPI::Collision::Triangle &tri = triangles[i];
+  for( unsigned int i = 0; i < _triangles.size(); ++i ) {
+    const HAPI::Collision::Triangle &tri = _triangles[i];
 
     // ignore invalid triangles that are lines or points
     if( tri.a == tri.b || tri.b == tri.c || tri.a == tri.c ) {
@@ -548,30 +548,30 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
 }
 
 
-void ShadowGeometry::updateAdjacenctVertexArray( const vector< HAPI::Collision::Triangle > &triangles, 
-                                                 vector< Vec3d > &triangle_points, 
-                                                 vector< unsigned int > &adjacency_index ) {
-  updateNeighbours( triangles );
+void ShadowGeometry::updateAdjacenctVertexArray( const vector< HAPI::Collision::Triangle > &_triangles,
+                                                 vector< Vec3d > &_triangle_points, 
+                                                 vector< unsigned int > &_adjacency_index ) {
+  updateNeighbours( _triangles );
   
-  triangle_points.clear();
-  triangle_points.reserve( triangles.size() * 3 );
-  adjacency_index.clear();
-  adjacency_index.reserve( triangles.size() * 6 );
+  _triangle_points.clear();
+  _triangle_points.reserve( _triangles.size() * 3 );
+  _adjacency_index.clear();
+  _adjacency_index.reserve( _triangles.size() * 6 );
 
-  for( unsigned int i = 0; i < triangles.size(); ++i ) {
-   
-        triangle_points.push_back( triangles[i].a );
-    triangle_points.push_back( triangles[i].b );
-    triangle_points.push_back( triangles[i].c );
+  for( unsigned int i = 0; i < _triangles.size(); ++i ) {
+
+    _triangle_points.push_back( _triangles[i].a );
+    _triangle_points.push_back( _triangles[i].b );
+    _triangle_points.push_back( _triangles[i].c );
 
         // if( triangles[i].a == triangles[i].b ||
         //      triangles[i].b == triangles[i].c ||
         //      triangles[i].c == triangles[i].a ) { Console(4) << "Degenerate" << endl; continue; }
     //    cerr << triangles[i].a << endl;
 
-    //    adjacency_index.push_back( i*3 );
-    //    adjacency_index.push_back( i*3 +1);
-    //    adjacency_index.push_back( i*3 +2);
+    //    _adjacency_index.push_back( i*3 );
+    //    _adjacency_index.push_back( i*3 +1);
+    //    _adjacency_index.push_back( i*3 +2);
     //    continue;
     // Triangle adjacency specification order
     // 1 - - - 2 - - - 3    
@@ -592,52 +592,52 @@ void ShadowGeometry::updateAdjacenctVertexArray( const vector< HAPI::Collision::
     //
     //                 5    
 
-    adjacency_index.push_back( i*3 );
+    _adjacency_index.push_back( i*3 );
 
     // find neighbour triangle vertex index
     int n0_index = neighbours[ i*3 ];
     if( n0_index == -1 ) {
       // no neighbour so just repeat the vertex
       //Console(4) << "No neighbour" << endl;
-      adjacency_index.push_back( i*3 );
+      _adjacency_index.push_back( i*3 );
     } else {
-      const HAPI::Collision::Triangle &n0 = triangles[n0_index];
-      adjacency_index.push_back( n0_index*3 + 
+      const HAPI::Collision::Triangle &n0 = _triangles[n0_index];
+      _adjacency_index.push_back( n0_index*3 + 
                                  getMissingPointIndex( n0,
-                                                       triangles[i].a,
-                                                       triangles[i].b ) );
+                                                       _triangles[i].a,
+                                                       _triangles[i].b ) );
     }
 
-    adjacency_index.push_back( i*3+1 );
+    _adjacency_index.push_back( i*3+1 );
 
     // find neighbour triangle vertex index
     int n1_index = neighbours[ i*3 + 1];
     if( n1_index == -1 ) {
       // no neighbour so just repeat the vertex
       // Console(4) << "No neighbour" << endl;
-      adjacency_index.push_back( i*3 + 1 );
+      _adjacency_index.push_back( i*3 + 1 );
     } else {
-      const HAPI::Collision::Triangle &n1 = triangles[n1_index];
-      adjacency_index.push_back( n1_index*3 + 
+      const HAPI::Collision::Triangle &n1 = _triangles[n1_index];
+      _adjacency_index.push_back( n1_index*3 + 
                                  getMissingPointIndex( n1,
-                                                       triangles[i].b,
-                                                       triangles[i].c ) );
+                                                       _triangles[i].b,
+                                                       _triangles[i].c ) );
     }
 
-    adjacency_index.push_back( i*3+2 );
+    _adjacency_index.push_back( i*3+2 );
 
     // find neighbour triangle vertex index
     int n2_index = neighbours[ i*3 + 2];
     if( n2_index == -1 ) {
       // no neighbour so just repeat the vertex
       // Console(4) << "No neighbour" << endl;
-      adjacency_index.push_back( i*3 + 2 );
+      _adjacency_index.push_back( i*3 + 2 );
     } else {
-      const HAPI::Collision::Triangle &n2 = triangles[n2_index];
-      adjacency_index.push_back( n2_index*3 + 
+      const HAPI::Collision::Triangle &n2 = _triangles[n2_index];
+      _adjacency_index.push_back( n2_index*3 + 
                                  getMissingPointIndex( n2,
-                                                       triangles[i].c,
-                                                       triangles[i].a ) );
+                                                       _triangles[i].c,
+                                                       _triangles[i].a ) );
     }
   }
 }

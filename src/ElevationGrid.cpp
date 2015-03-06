@@ -179,21 +179,21 @@ void ElevationGrid::AutoNormal::update() {
   H3DInt32 z_dim = static_cast< SFInt32 * >( routes_in[2] )->getValue();
   H3DFloat x_spacing = static_cast< SFFloat * >( routes_in[3] )->getValue();
   H3DFloat z_spacing = static_cast< SFFloat * >( routes_in[4] )->getValue();
-  const vector< H3DFloat > &height = 
+  const vector< H3DFloat > &_height =
     static_cast< MFFloat * >( routes_in[5] )->getValue();
-  bool ccw = static_cast< SFBool * >( routes_in[6] )->getValue();
+  bool _ccw = static_cast< SFBool * >( routes_in[6] )->getValue();
   H3DFloat crease_angle = static_cast< SFFloat * >( routes_in[7] )->getValue();
   
   if( normals_per_vertex && crease_angle > 0 ) {
     if( crease_angle < Constants::pi )
       value = generateNormalsPerVertex( x_dim, z_dim, x_spacing, z_spacing, 
-                                        height, ccw, crease_angle );
+                                        _height, _ccw, crease_angle );
     else 
       value = generateNormalsPerVertex( x_dim, z_dim, x_spacing, z_spacing, 
-                                        height, ccw );
+                                        _height, _ccw );
   } else {
     value = generateNormalsPerFace( x_dim, z_dim, x_spacing, z_spacing, 
-                                    height, ccw );
+                                    _height, _ccw );
   }
 }
 
@@ -201,7 +201,7 @@ void ElevationGrid::DisplayList::callList( bool build_list ) {
   ElevationGrid *cgn = 
     static_cast< ElevationGrid * >( owner );
     
-  bool ccw = cgn->ccw->getValue();  
+  bool _ccw = cgn->ccw->getValue();  
   // determine which side of polygons is front and back face. Since the 
   // GLWindow renderCamera() function might scale the y-axis with -1 and
   // set the GL_FRONT_FACE to GL_CW if scaled and GL_CCW otherwise, we have
@@ -212,12 +212,12 @@ void ElevationGrid::DisplayList::callList( bool build_list ) {
   if( front_face == GL_CW ) {
     // we are in mirrored mode, so we have to set the front face
       // to the opposite in order for it to be right when mirrored.
-    if( ccw )
+    if( _ccw )
       glFrontFace( GL_CW );
       else  
         glFrontFace( GL_CCW );
   } else {
-    if( ccw )
+    if( _ccw )
       glFrontFace( GL_CCW );
     else 
       glFrontFace( GL_CW );
@@ -331,14 +331,14 @@ void ElevationGrid::render() {
         for( int z = 0; z < zdim; ++z ) {
           for( int x = 0; x < xdim; ++x ) {
             int base_index = z * xdim + x;
-            int vertex_index = base_index * nr_data_vertices;
-            vertices[vertex_index] = x * xspace;
-            vertices[vertex_index + 1] = heights[base_index];
-            vertices[vertex_index + 2] = z * zspace;
+            int _vertex_index = base_index * nr_data_vertices;
+            vertices[_vertex_index] = x * xspace;
+            vertices[_vertex_index + 1] = heights[base_index];
+            vertices[_vertex_index + 2] = z * zspace;
             if( !tex_coord_node ) {
-              vertices[vertex_index + 3] = x / (float)(xdim - 1);
-              vertices[vertex_index + 4] = z / (float)(zdim - 1);
-              vertices[vertex_index + 5] = 0;
+              vertices[_vertex_index + 3] = x / (float)(xdim - 1);
+              vertices[_vertex_index + 4] = z / (float)(zdim - 1);
+              vertices[_vertex_index + 5] = 0;
             }
 
              
@@ -749,16 +749,16 @@ X3DNormalNode *ElevationGrid::AutoNormal::generateNormalsPerVertex(
                                H3DInt32 z_dim,
                                H3DFloat x_spacing,
                                H3DFloat z_spacing,
-                               const vector< H3DFloat > &height,
-                               bool ccw ) {
-  Normal *normal = new Normal;
+                               const vector< H3DFloat > &_height,
+                               bool _ccw ) {
+  Normal *_normal = new Normal;
   if( x_dim > 1 && z_dim > 1 ) {
     vector< Vec3f > normals( x_dim * z_dim, 
                              Vec3f( 0, 0, 0 ) );
     AutoRef< X3DNormalNode > normals_per_face;
     normals_per_face.reset( generateNormalsPerFace( x_dim, z_dim, 
                                                     x_spacing, z_spacing,
-                                                    height, ccw ) );
+                                                    _height, _ccw ) );
     for( unsigned int face = 0; 
          face < normals_per_face->nrAvailableNormals(); ++face ) {
       int row = face / (x_dim-1);
@@ -775,9 +775,9 @@ X3DNormalNode *ElevationGrid::AutoNormal::generateNormalsPerVertex(
          ++i ) {
       (*i).normalizeSafe();
     }
-    normal->vector->setValue( normals );
+    _normal->vector->setValue( normals );
   }
-  return normal;
+  return _normal;
 }
 
 X3DNormalNode *ElevationGrid::AutoNormal::generateNormalsPerVertex( 
@@ -785,15 +785,15 @@ X3DNormalNode *ElevationGrid::AutoNormal::generateNormalsPerVertex(
                                   H3DInt32 z_dim,
                                   H3DFloat x_spacing,
                                   H3DFloat z_spacing,
-                                  const vector< H3DFloat > &height,
-                                  bool ccw,
+                                  const vector< H3DFloat > &_height,
+                                  bool _ccw,
                                   H3DFloat crease_angle ) {
-  Normal *normal = new Normal;
+  Normal *_normal = new Normal;
   if( x_dim > 1 && z_dim > 1 ) {
     AutoRef< X3DNormalNode > normals_per_face;
     normals_per_face.reset( generateNormalsPerFace( x_dim, z_dim,
                                                     x_spacing, z_spacing,
-                                                    height, ccw ) );
+                                                    _height, _ccw) );
     vector< Vec3f > normals( (x_dim -1) * (z_dim -1 ) * 4,
                              Vec3f( 0, 0, 0 ) );
     normals.clear();
@@ -905,9 +905,9 @@ X3DNormalNode *ElevationGrid::AutoNormal::generateNormalsPerVertex(
       n.normalizeSafe();
       normals.push_back( n );
     }
-    normal->vector->setValue( normals );
+    _normal->vector->setValue( normals );
   }
-  return normal;
+  return _normal;
 }
 
 X3DNormalNode *ElevationGrid::AutoNormal::generateNormalsPerFace( 
@@ -915,9 +915,9 @@ X3DNormalNode *ElevationGrid::AutoNormal::generateNormalsPerFace(
                                   H3DInt32 z_dim,
                                   H3DFloat x_spacing,
                                   H3DFloat z_spacing,
-                                  const vector< H3DFloat > &height,
-                                  bool ccw ) {
-  Normal *normal = new Normal;
+                                  const vector< H3DFloat > &_height,
+                                  bool _ccw ) {
+  Normal *_normal = new Normal;
   if( x_dim > 1 && z_dim > 1 ) {
     unsigned int quad_x_dim = x_dim -1;
     unsigned int quad_z_dim = z_dim -1;
@@ -939,10 +939,10 @@ X3DNormalNode *ElevationGrid::AutoNormal::generateNormalsPerFace(
 
       int vertex_index = row * x_dim + col;
 
-      A_height = height[ vertex_index ];
-      B_height = height[ vertex_index + x_dim ];
-      C_height = height[ vertex_index + x_dim + 1 ];
-      D_height = height[ vertex_index + 1 ];
+      A_height = _height[ vertex_index ];
+      B_height = _height[ vertex_index + x_dim ];
+      C_height = _height[ vertex_index + x_dim + 1 ];
+      D_height = _height[ vertex_index + 1 ];
       
       AB = Vec3f( 0, B_height - A_height, z_spacing);
       AD = Vec3f( x_spacing, D_height - A_height, 0);
@@ -960,9 +960,9 @@ X3DNormalNode *ElevationGrid::AutoNormal::generateNormalsPerFace(
       }
       normals.push_back( norm );
     }
-    normal->vector->setValue( normals );
+    _normal->vector->setValue( normals );
   }
-  return normal;
+  return _normal;
 }
 
 void ElevationGrid::SFBound::update() {
@@ -970,15 +970,15 @@ void ElevationGrid::SFBound::update() {
   H3DInt32 zdim = static_cast< SFInt32 * >( routes_in[1] )->getValue();
   H3DFloat xspace = static_cast< SFFloat * >( routes_in[2] )->getValue();
   H3DFloat zspace = static_cast< SFFloat * >( routes_in[3] )->getValue();
-  const vector< H3DFloat > &height = 
+  const vector< H3DFloat > &_height = 
     static_cast< MFFloat * >( routes_in[4] )->getValue();
 
   // find the max and min height values.  
   H3DFloat max_h, min_h;
-  if( height.size() > 0 ) {
-    min_h = max_h = height[0];
-    for( vector< H3DFloat >::const_iterator i = height.begin();
-         i != height.end(); ++i ) {
+  if(_height.size() > 0 ) {
+    min_h = max_h = _height[0];
+    for( vector< H3DFloat >::const_iterator i = _height.begin();
+         i != _height.end(); ++i ) {
       if( *i < min_h ) min_h = *i;
       else if( *i  > max_h ) max_h = *i;
     }

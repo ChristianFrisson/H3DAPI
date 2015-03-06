@@ -96,13 +96,13 @@ void Anchor::GeometrySelected::update() {
   bool isActive = static_cast< SFBool * >( event.ptr )->getValue();
   if( isActive ) {
     Anchor * anchor = static_cast< Anchor * >( getOwner() );
-    const vector< string > &url = anchor->url->getValue();
-    if( url.empty() ) {
+    const vector< string > &_url = anchor->url->getValue();
+    if( _url.empty() ) {
     }
     else {
       bool no_valid_things = true;
 
-      for( vector<string>::const_iterator i = url.begin(); i != url.end(); ++i ) {
+      for( vector<string>::const_iterator i = _url.begin(); i != _url.end(); ++i ) {
         X3D::DEFNodes node_names;
         string base_url;
         string vp_name = "";

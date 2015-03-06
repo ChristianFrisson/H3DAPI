@@ -102,7 +102,7 @@ FalconDevice::FalconDevice(
 void FalconDevice::initialize() {
   H3DHapticsDevice::initialize();
   H3DInt32 index     = deviceIndex->getValue();
-  const string &name = deviceName->getValue();
+  const string &device_name = deviceName->getValue();
 
   const string &preferred_driver = preferredDriver->getValue();
 
@@ -112,8 +112,8 @@ void FalconDevice::initialize() {
   usedDriver->setValue( "NIFALCON" );
 #else
 #ifdef HAVE_FALCONAPI
-  if( name != "" ) {
-    hapi_device.reset( new HAPI::FalconHapticsDevice( name ) );
+  if( device_name != "" ) {
+    hapi_device.reset( new HAPI::FalconHapticsDevice( device_name ) );
   } else {
     hapi_device.reset( new HAPI::FalconHapticsDevice( index ) );
   }
@@ -134,8 +134,8 @@ void FalconDevice::initialize() {
                  << "\"NOVINT\" instead" << endl;
     }
 #ifdef HAVE_FALCONAPI
-    if( name != "" ) {
-      hapi_device.reset( new HAPI::FalconHapticsDevice( name ) );
+    if( device_name != "" ) {
+      hapi_device.reset( new HAPI::FalconHapticsDevice( device_name ) );
     } else {
       hapi_device.reset( new HAPI::FalconHapticsDevice( index ) );
     }

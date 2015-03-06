@@ -80,7 +80,7 @@ namespace H3D {
     /// If no such X3DMetadataObject exists, NULL is returned.
     /// \param name The name of the X3DMetadataObject to get.
     /// \returns The first X3DMetadataObject in the metadata field that matches that name if it exists, NULL otherwise
-    X3DMetadataObject *getMetadataByName( const string &name );
+    X3DMetadataObject *getMetadataByName( const string &_name );
   };
 }
 

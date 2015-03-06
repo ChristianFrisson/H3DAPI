@@ -579,7 +579,6 @@ void Extrusion::render() {
                                                v_tex_coord[i],
                                                0 ) );
         if( normal_per_vertex ) {
-          Vec3f n;
           if( crease_angle_below_pi )
             n = normals[ if_caps_add + quad_index * 6 ];
           else
@@ -625,7 +624,6 @@ void Extrusion::render() {
                                                v_tex_coord[i],
                                                0 ) );
         if( normal_per_vertex ) {
-          Vec3f n;
           if( crease_angle_below_pi )
             n = normals[ if_caps_add + quad_index * 6 + 3 ];
           else
@@ -673,7 +671,6 @@ void Extrusion::render() {
 
       glBegin( GL_POLYGON );
 
-      Vec3f n, v;
       if( !normal_per_vertex ) {
         n = normals.back();
         glNormal3f( n.x, n.y, n.z );

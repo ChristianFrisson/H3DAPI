@@ -118,13 +118,13 @@ void EntactDevice::updateDeviceValues() {
 #endif
 }
 
-void EntactDevice::Calibrate::onValueChange( const bool &value ) {
+void EntactDevice::Calibrate::onValueChange( const bool &new_value ) {
 #ifdef HAVE_ENTACTAPI
-  if ( value ) {
+  if( new_value ) {
     EntactDevice *h3d_device = static_cast< EntactDevice * >( getOwner() );
-    HAPI::EntactHapticsDevice *hapi_device = static_cast< HAPI::EntactHapticsDevice * >( h3d_device->hapi_device.get() );
-    if( hapi_device ) {
-      hapi_device->calibrateDevice();
+    HAPI::EntactHapticsDevice *_hapi_device = static_cast< HAPI::EntactHapticsDevice * >( h3d_device->hapi_device.get() );
+    if( _hapi_device ) {
+      _hapi_device->calibrateDevice();
     }
   }
 #endif

@@ -1229,9 +1229,9 @@ string PhongShader::getLightContribution( X3DLightNode *light,
 
 string PhongShader::uniqueLightFieldName( const string &field_name,
                                           X3DLightNode *light) {
-  stringstream name;
-  name << field_name << (unsigned long)light;
-  return uniqueShaderName( name.str() );
+  stringstream name_ss;
+  name_ss << field_name << (unsigned long)light;
+  return uniqueShaderName( name_ss.str() );
 }
 
 

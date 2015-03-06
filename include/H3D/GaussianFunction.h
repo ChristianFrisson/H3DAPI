@@ -47,7 +47,7 @@ namespace H3D {
                       Inst< SFFloat > _width     = 0 );
 
     /// Evaluate the function for the given input.
-    virtual H3DDouble evaluate( H3DDouble *input );
+    virtual H3DDouble evaluate( H3DDouble *_input );
 
     /// Returns the number of input values the function takes.
     virtual unsigned int nrInputValues() { return 1; };

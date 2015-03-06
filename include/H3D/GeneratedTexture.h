@@ -60,7 +60,7 @@ namespace H3D {
     /// \param texture_target The OpenGL texture target the texture id is 
     /// to be used for. E.g. GL_TEXTURE_2D.
     /// \return  true on success, false on failure to initialize.
-    bool ensureInitialized( GLenum texture_target = GL_TEXTURE_2D  );
+    bool ensureInitialized( GLenum _texture_target = GL_TEXTURE_2D  );
 
     /// Render all OpenGL texture properties.
     virtual void renderTextureProperties();

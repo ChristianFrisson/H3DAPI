@@ -377,7 +377,7 @@ namespace H3D {
     /// field.
     string applyModifier( const string &variable_name,
         const string &modifier,
-        const string &value = "0" );
+        const string &_value = "0" );
 
     /// Returns a glsl string to perform the specified modifier function.
     /// It returns a line
@@ -387,7 +387,7 @@ namespace H3D {
     /// field.
     string applyAlphaModifier( const string &variable_name,
              const string &modifier,
-             const string &value = "0" );
+             const string &_value = "0" );
 
     /// Returns a glsl string that evaluates to the variable v0 and v1 combined
     /// with the specified funtion.
@@ -395,8 +395,8 @@ namespace H3D {
     /// field.
     string combineFunction( const string &v0,
           const string &v1,
-          const string &function,
-          const string &value = "0" );
+          const string &_function,
+          const string &_value = "0" );
   };
 }
 

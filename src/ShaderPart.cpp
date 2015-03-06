@@ -184,9 +184,9 @@ std::string ShaderPart::shaderStringFromURL ( const std::string& shader_url ) {
   }
 
   bool is_tmp_file;
-  string url = resolveURLAsFile( shader_url, &is_tmp_file );
-  if( url != "" ) {
-    ifstream is( url.c_str() );
+  string _url = resolveURLAsFile( shader_url, &is_tmp_file );
+  if( _url != "" ) {
+    ifstream is( _url.c_str() );
     if( is.good() ) {
       std::streamsize length;
       char * buffer;
@@ -202,7 +202,7 @@ std::string ShaderPart::shaderStringFromURL ( const std::string& shader_url ) {
       is.read (buffer,length);
       length = is.gcount();
       is.close();
-      if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
+      if( is_tmp_file ) ResourceResolver::releaseTmpFileName( _url );
       buffer[length] = '\0';
       string value= string( buffer );
       delete [] buffer;
@@ -210,13 +210,13 @@ std::string ShaderPart::shaderStringFromURL ( const std::string& shader_url ) {
       return value;
     }
     is.close();
-    if( is_tmp_file ) ResourceResolver::releaseTmpFileName( url );
+    if( is_tmp_file ) ResourceResolver::releaseTmpFileName( _url );
   }
 
   return "";
 }
 
-std::string ShaderPart::preProcess ( const std::string& input, const std::string& url, int depth ) {
+std::string ShaderPart::preProcess ( const std::string& input, const std::string& _url, int depth ) {
   // Catch infinite recursion
   if ( depth > pre_processor_max_recurse_depth ) {
     Console(4) << "Warning: ShaderPart: " << getName() << ": Maximum recursion depth reached in pre-processing. Could be recursive include." << endl;
@@ -241,7 +241,7 @@ std::string ShaderPart::preProcess ( const std::string& input, const std::string
 
       // change url resolver base
       string old_base= getURLBase ();
-      string base= url.substr( 0, url.find_last_of( "/\\" ) + 1 );
+      string base= _url.substr( 0, _url.find_last_of( "/\\" ) + 1 );
 
       // if the url is relative this should succeed
       setURLBase ( old_base + base );

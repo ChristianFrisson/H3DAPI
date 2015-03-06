@@ -140,8 +140,8 @@ namespace H3D {
 
       /// setValue is specialized so that the stencil mask is rebuilt if
       /// the mode choosen is one that requires a stencil mask
-      virtual void setValue( const string &v,  int id = 0 ) {
-        SFString::setValue( v, id );
+      virtual void setValue( const string &v,  int _id = 0 ) {
+        SFString::setValue( v, _id );
         if( value == "VERTICAL_INTERLACED" ||
             value == "HORIZONTAL_INTERLACED" ||
             value == "VERTICAL_INTERLACED_GREEN_SHIFT" ) {
@@ -584,7 +584,7 @@ namespace H3D {
     // for all the viewports. The function will take windows width and height and 
     // give back viewport width and height based on the stereo mode
     void configureViewPortsSize( RenderMode::Mode stereo_mode,
-    H3DInt32& viewport_width, H3DInt32& viewport_height, H3DFloat* viewports_size );
+    H3DInt32& viewport_width, H3DInt32& viewport_height, H3DFloat* _viewports_size );
   public:
     /// Saves the currently rendered buffer to file. That is, a screenshot
     /// of the openGL window.

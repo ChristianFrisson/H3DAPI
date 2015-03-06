@@ -208,10 +208,10 @@ void Node::cloneFieldValue ( Field& _from, Field& _to, bool deepCopy, DeepCopyMa
   }
 }
 
-Field *Node::getField( const string &name ) const {
+Field *Node::getField( const string &_name ) const {
   H3DNodeDatabase *db = H3DNodeDatabase::lookupNodeInstance( this );
   if ( db )
-    return db->getField( this, name );
+    return db->getField( this, _name );
   else
     return NULL;  // Should probably throw an error in this case
 }

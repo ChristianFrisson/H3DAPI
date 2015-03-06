@@ -206,11 +206,10 @@ void HAnimHumanoid::updateCoordinates( const VectorType &orig_points,
     if( joint ) {
       const NodeVector &disp = joint->displacers->getValue();  
       if( disp.size() > 0 ) {
-        for( unsigned int i = 0; i < disp.size(); ++i ) {
-          HAnimDisplacer *displacer = 
-            static_cast< HAnimDisplacer* >( disp[i]);
+        for( unsigned int j = 0; j < disp.size(); ++j ) {
+          HAnimDisplacer *displacer = static_cast< HAnimDisplacer* >( disp[j]);
           if( displacer ) {
-            displacer->displaceCoordinates(modified_points, 
+            displacer->displaceCoordinates(modified_points,
                                            joint->accumulatedJointMatrix->getValue() );
           }
         }
