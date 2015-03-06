@@ -101,16 +101,24 @@ class Field:
   def getRoutesOut( self ):
     return fieldGetRoutesOut( self )
 
-  ## Sets the field's access type.
+  ## Sets the field's access type as an int. 
   ##
-  ## Possible values: INITIALIZE_ONLY, OUTPUT_INPUT, INPUT_ONLY, INPUT_OUTPUT.
+  ## Possible values:
+  ## 0 - INITIALIZE_ONLY
+  ## 1 - OUTPUT_ONLY
+  ## 2 - INPUT_ONLY
+  ## 3 - INPUT_OUTPUT.
   ##
   def setAccessType( self, access_type ):
     return fieldSetAccessType( self, access_type )
 
   ## Returns a int constant describing the field's access type.
   ##
-  ## Possible return values: INITIALIZE_ONLY, OUTPUT_INPUT, INPUT_ONLY, INPUT_OUTPUT.
+  ## Possible return values:
+  ## 0 - INITIALIZE_ONLY
+  ## 1 - OUTPUT_ONLY
+  ## 2 - INPUT_ONLY
+  ## 3 - INPUT_OUTPUT.
   ##
   def getAccessType( self ):
     return fieldGetAccessType( self )
