@@ -486,3 +486,15 @@ ImageTexture::SFImage::~SFImage() {
   }
   thread_data.load_thread_mutex.unlock();
 }
+
+Image* ImageTexture::renderToImage( H3DInt32 _width, H3DInt32 _height, bool output_float_texture /* = false */ ){
+  return X3DTextureNode::renderToImage(_width, _height, output_float_texture);
+}
+
+std::pair<H3DInt32,H3DInt32> ImageTexture::getDefaultSaveDimensions(){
+  if ( wrapped_image ) {
+    return wrapped_image->getDefaultSaveDimensions ();
+  } else {
+    return X3DTexture2DNode::getDefaultSaveDimensions ();
+  }
+}

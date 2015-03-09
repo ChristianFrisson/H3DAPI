@@ -205,6 +205,15 @@ namespace H3D {
     /// shared texture from the database.
     virtual void inUse ();
 
+
+    virtual Image* renderToImage ( H3DInt32 _width, H3DInt32 _height, bool output_float_texture = false  );
+
+    /// Returns the default dimensions to use when this texture is saved to file.
+    ///
+    /// Returns the dimensions of the Image object
+    ///
+    virtual std::pair<H3DInt32,H3DInt32> getDefaultSaveDimensions ();
+
     /// The ImageLoader nodes to use to read the image files.
     /// 
     /// <b>Access type:</b> inputOutput \n
