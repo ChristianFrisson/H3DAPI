@@ -76,7 +76,7 @@ DeviceLog::DeviceLog( Inst< SFNode> _metadata,
 }
 
 DeviceLog::~DeviceLog () {
-  HapticThread::synchronousHapticCB ( closeCallback, this );
+  closeFile ();
 }
 
 void DeviceLog::traverseSG( TraverseInfo &ti ) {
@@ -202,20 +202,17 @@ HAPI::DeviceLog::LogTypeVector DeviceLog::getLogTypes () {
   return log_types;
 }
 
-PeriodicThread::CallbackCode DeviceLog::closeCallback ( void* data ) {
-  DeviceLog* o= static_cast < DeviceLog* > ( data );
-
+void DeviceLog::closeFile () {
   for ( 
-    AutoRefVector< HAPI::DeviceLog >::const_iterator i= o->log_force_effect.begin(); 
-    i != o->log_force_effect.end(); ++i ) {
+    AutoRefVector< HAPI::DeviceLog >::const_iterator i= log_force_effect.begin(); 
+    i != log_force_effect.end(); ++i ) {
     (*i)->close();
   }
-
-  return PeriodicThread::CALLBACK_DONE;
 }
+
 
 void DeviceLog::OnClose::onNewValue( const bool &v ) {
   if ( v ) {
-    HapticThread::synchronousHapticCB ( closeCallback, getOwner() );
+    static_cast < DeviceLog* > ( getOwner() )->closeFile ();
   }
 }

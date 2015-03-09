@@ -168,9 +168,7 @@ namespace H3D {
     /// Returns a list of parameters to be logged by the HAPI DeviceLog class
     HAPI::DeviceLog::LogTypeVector getLogTypes ();
 
-    /// A callback executed in the haptic thread when the node is destroyed
-    /// in order to force the HAPI loggers to flush and close their logging files
-    static PeriodicThread::CallbackCode closeCallback ( void* data );
+    void closeFile ();
 
     auto_ptr< Field > updateLogForceEffect;
   };
