@@ -473,37 +473,40 @@ void X3DTextureNode::UpdateSaveToURL::onNewValue( const std::string &v ) {
 
   if ( v.empty() ) return;
 
-#ifdef HAVE_FREEIMAGE
+  float need_exr_format = false;
+
+  if( v.find(".exr")!=string::npos ) {
+    need_exr_format = true;
+  }
+
+  node->saveSuccess->setValue( false, node->id );
+
+#ifndef HAVE_OPENEXR
+  if( need_exr_format ) { // need to save as EXR file but without openexr library
+    Console(4) << "Warning: Could not save texture to file! Compiled without the required OpenEXR library." << endl;
+    node->saveSuccess->setValue ( false, node->id );
+    return;
+  }
+#endif
+#ifndef HAVE_FREEIMAGE
+  if( !need_exr_format ) { // need to save as PNG file but without freeimage library
+    Console(4) << "Warning: Could not save texture to file! Compiled without the required FreeImage library." << endl;
+    node->saveSuccess->setValue ( false, node->id );
+    return;
+  }
+#endif
+
   // Set texture save dimensions
   std::pair<H3DInt32,H3DInt32> default_size= node->getDefaultSaveDimensions ();
   AutoRef<Image> image;
-  ( node->renderToImage (
-     node->saveWidth->getValue()  == -1 ? default_size.first  : node->saveWidth->getValue(),
-     node->saveHeight->getValue() == -1 ? default_size.second : node->saveHeight->getValue()) );
-  if( v.find(".exr")!=string::npos ) {
-    image.reset( node->renderToImage (
-      node->saveWidth->getValue()  == -1 ? default_size.first  : node->saveWidth->getValue(),
-      node->saveHeight->getValue() == -1 ? default_size.second : node->saveHeight->getValue(), true) );
-#ifdef HAVE_OPENEXR
-    if( image.get() ) {
+  image.reset( node->renderToImage (
+    node->saveWidth->getValue()  == -1 ? default_size.first  : node->saveWidth->getValue(),
+    node->saveHeight->getValue() == -1 ? default_size.second : node->saveHeight->getValue(), need_exr_format) );
+  if( image.get() ) {
+    if( need_exr_format ) {
       node->saveSuccess->setValue(H3DUtil::saveOpenEXRImage(v, *image), node->id );
-    }
-#else
-    Console(4) << "Warning: Could not save texture to file! Compiled without the required OpenEXR library." << endl;
-#endif
-  }else{
-    image.reset(node->renderToImage (
-      node->saveWidth->getValue()  == -1 ? default_size.first  : node->saveWidth->getValue(),
-      node->saveHeight->getValue() == -1 ? default_size.second : node->saveHeight->getValue()) );
-    if ( image.get() ) {
+    }else{
       node->saveSuccess->setValue ( H3DUtil::saveFreeImagePNG ( v, *image ), node->id );
     }
   }
-  
-#else // HAVE_FREEIMAGE
-
-  Console(4) << "Warning: Could not save texture to file! Compiled without the required FreeImage library." << endl;
-  node->saveSuccess->setValue ( false, node->id );
-
-#endif // HAVE_FREEIMAGE
 }
