@@ -175,12 +175,14 @@ class ViewImage : public wxFrame
 	
 	protected:
 		wxPanel* m_panel4;
+		wxButton* m_button5;
 		wxButton* m_button4;
 		wxCheckBox* m_checkBox4;
 		wxScrolledWindow* m_imagePanel;
 		wxTimer m_timerRefresh;
 		
 		// Virtual event handlers, overide them in your derived class
+		virtual void OnSave( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnRefresh( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAutoRefresh( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTimer( wxTimerEvent& event ) { event.Skip(); }

@@ -42,6 +42,8 @@
 #include <H3D/X3DGeometryNode.h>
 #include <H3D/X3D.h>
 
+#include <H3DUtil/LoadImageFunctions.h>
+
 H3DViewerTreeViewDialog::H3DViewerTreeViewDialog( wxWindow* parent )
 :
   TreeViewDialog( parent ),
@@ -620,6 +622,42 @@ H3DViewImage::H3DViewImage ( wxWindow* parent, X3DTextureNode& _texture )
   updateImage();
 
   SetTitle ( "View: " + _texture.getName() );
+}
+
+void H3DViewImage::OnSave( wxCommandEvent& event ) {
+#ifdef HAVE_FREEIMAGE
+  auto_ptr< wxFileDialog > file_dialog ( new wxFileDialog ( this,
+                                                            wxT("File to save as.."),
+                                                            wxT(""),
+                                                            wxT(""),
+                                                            wxT("*.png"),
+                                                            wxFD_SAVE,
+                                                            wxDefaultPosition) );
+
+  if (file_dialog->ShowModal() == wxID_OK) {
+    try {
+      Image* image= texture->renderToImage ( -1, -1 );
+      if ( !image ) {
+        wxMessageBox( wxT("Failed to render texture to image!"), wxT("Error"),
+                    wxOK | wxICON_EXCLAMATION);
+        return;
+      }
+ 
+      if( !H3DUtil::saveFreeImagePNG( string(file_dialog->GetPath().mb_str()),
+                                        *image ) ) {
+        stringstream s;
+        s << "Error saving png file";
+        wxMessageBox( wxString(s.str().c_str(),wxConvUTF8), wxT("Error"),
+                      wxOK | wxICON_EXCLAMATION);
+      }
+    } catch (const Exception::H3DException &e) {
+      stringstream s;
+      s << e;
+      wxMessageBox( wxString(s.str().c_str(),wxConvUTF8), wxT("Error"),
+                    wxOK | wxICON_EXCLAMATION);
+    }
+  }
+#endif
 }
 
 void H3DViewImage::OnRefresh ( wxCommandEvent& event ) {

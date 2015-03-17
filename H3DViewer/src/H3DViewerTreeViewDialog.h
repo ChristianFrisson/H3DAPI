@@ -77,6 +77,7 @@ public:
   H3DViewImage ( wxWindow* parent, X3DTextureNode& _texture );
 
 protected:
+  virtual void OnSave( wxCommandEvent& event );
   virtual void OnRefresh( wxCommandEvent& event );
   virtual void OnAutoRefresh( wxCommandEvent& event );
   virtual void OnTimer ( wxTimerEvent& event );

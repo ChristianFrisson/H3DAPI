@@ -399,6 +399,9 @@ ViewImage::ViewImage( wxWindow* parent, wxWindowID id, const wxString& title, co
 	wxBoxSizer* bSizer10;
 	bSizer10 = new wxBoxSizer( wxHORIZONTAL );
 	
+	m_button5 = new wxButton( m_panel4, wxID_ANY, wxT("Save..."), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer10->Add( m_button5, 0, wxALL, 5 );
+	
 	m_button4 = new wxButton( m_panel4, wxID_ANY, wxT("Refresh"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer10->Add( m_button4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
@@ -435,6 +438,7 @@ ViewImage::ViewImage( wxWindow* parent, wxWindowID id, const wxString& title, co
 	this->Centre( wxBOTH );
 	
 	// Connect Events
+	m_button5->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ViewImage::OnSave ), NULL, this );
 	m_button4->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ViewImage::OnRefresh ), NULL, this );
 	m_checkBox4->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ViewImage::OnAutoRefresh ), NULL, this );
 	this->Connect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( ViewImage::OnTimer ) );
@@ -443,6 +447,7 @@ ViewImage::ViewImage( wxWindow* parent, wxWindowID id, const wxString& title, co
 ViewImage::~ViewImage()
 {
 	// Disconnect Events
+	m_button5->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ViewImage::OnSave ), NULL, this );
 	m_button4->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ViewImage::OnRefresh ), NULL, this );
 	m_checkBox4->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ViewImage::OnAutoRefresh ), NULL, this );
 	this->Disconnect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( ViewImage::OnTimer ) );
