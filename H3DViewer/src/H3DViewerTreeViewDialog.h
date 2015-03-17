@@ -56,6 +56,37 @@
 #endif
 
 using namespace H3D;
+
+// A panel which renders a bitmap image
+class wxImagePanel : public wxPanel {
+public:
+  wxImagePanel(wxWindow* parent);
+ 
+  void paintEvent(wxPaintEvent & evt);
+  void setImage ( wxImage _image );
+
+  DECLARE_EVENT_TABLE()
+
+protected:
+  wxBitmap image;
+};
+
+/// An image viewer window which renders an X3DTextureNode
+class H3DViewImage : public ViewImage {
+public:
+  H3DViewImage ( wxWindow* parent, X3DTextureNode& _texture );
+
+protected:
+  virtual void OnRefresh( wxCommandEvent& event );
+  virtual void OnAutoRefresh( wxCommandEvent& event );
+  virtual void OnTimer ( wxTimerEvent& event );
+
+  void updateImage ();
+
+  wxImagePanel* draw_pane;
+  AutoRef < X3DTextureNode > texture;
+};
+
 /** Implementing TreeViewDialog */
 class H3DViewerTreeViewDialog : public TreeViewDialog
 {
@@ -74,6 +105,9 @@ public:
 
   /// Destructor
   ~H3DViewerTreeViewDialog();
+
+  /// Open an image viewer window to render the specified texture
+  void showImage ( X3DTextureNode& _image );
 
   void collectAllTriangles( Node *n, 
                             const Matrix4f &transform,

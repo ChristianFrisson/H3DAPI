@@ -255,6 +255,10 @@ MenuContainer::MenuContainer( wxWindow* parent, wxWindowID id, const wxString& t
 	TreeViewSavePng = new wxMenuItem( RightClickMenuTexture, wxID_ANY, wxString( wxT("Save texture image in png format..") ) , wxT("For 3D-textures depth will be 0."), wxITEM_NORMAL );
 	RightClickMenuTexture->Append( TreeViewSavePng );
 	
+	wxMenuItem* TreeViewShowImage;
+	TreeViewShowImage = new wxMenuItem( RightClickMenuTexture, wxID_ANY, wxString( wxT("Show image...") ) , wxEmptyString, wxITEM_NORMAL );
+	RightClickMenuTexture->Append( TreeViewShowImage );
+	
 	m_menubar2->Append( RightClickMenuTexture, wxT("Action") ); 
 	
 	RightClickMenuGeometry = new wxMenu();
@@ -324,6 +328,7 @@ MenuContainer::MenuContainer( wxWindow* parent, wxWindowID id, const wxString& t
 	this->Connect( TreeViewNodeWatch11->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewNodeWatch ) );
 	this->Connect( TreeViewSaveNrrd->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveNrrd ) );
 	this->Connect( TreeViewSavePng->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSavePng ) );
+	this->Connect( TreeViewShowImage->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewShowImage ) );
 	this->Connect( TreeViewCollapseAll1->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseAll ) );
 	this->Connect( TreeViewExpandAll1->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewExpandAll ) );
 	this->Connect( TreeViewCollapseChildren1->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseChildren ) );
@@ -356,6 +361,7 @@ MenuContainer::~MenuContainer()
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewNodeWatch ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSaveNrrd ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewSavePng ) );
+	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewShowImage ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseAll ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewExpandAll ) );
 	this->Disconnect( wxID_ANY, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( MenuContainer::OnTreeViewCollapseChildren ) );
@@ -374,4 +380,73 @@ MenuContainer2::MenuContainer2( long style ) : wxMenuBar( style )
 
 MenuContainer2::~MenuContainer2()
 {
+}
+
+ViewImage::ViewImage( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+	
+	wxBoxSizer* bSizerViewImage;
+	bSizerViewImage = new wxBoxSizer( wxVERTICAL );
+	
+	m_panel4 = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	m_panel4->SetForegroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_WINDOW ) );
+	m_panel4->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_WINDOW ) );
+	
+	wxBoxSizer* bSizer12;
+	bSizer12 = new wxBoxSizer( wxVERTICAL );
+	
+	wxBoxSizer* bSizer10;
+	bSizer10 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_button4 = new wxButton( m_panel4, wxID_ANY, wxT("Refresh"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizer10->Add( m_button4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
+	m_checkBox4 = new wxCheckBox( m_panel4, wxID_ANY, wxT("Auto refresh"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_checkBox4->SetForegroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_BTNTEXT ) );
+	
+	bSizer10->Add( m_checkBox4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
+	
+	bSizer12->Add( bSizer10, 0, wxEXPAND, 5 );
+	
+	
+	m_panel4->SetSizer( bSizer12 );
+	m_panel4->Layout();
+	bSizer12->Fit( m_panel4 );
+	bSizerViewImage->Add( m_panel4, 0, wxEXPAND, 5 );
+	
+	m_imagePanel = new wxScrolledWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxSUNKEN_BORDER|wxVSCROLL );
+	m_imagePanel->SetScrollRate( 5, 5 );
+	wxBoxSizer* bSizer13;
+	bSizer13 = new wxBoxSizer( wxVERTICAL );
+	
+	
+	m_imagePanel->SetSizer( bSizer13 );
+	m_imagePanel->Layout();
+	bSizer13->Fit( m_imagePanel );
+	bSizerViewImage->Add( m_imagePanel, 1, wxEXPAND, 5 );
+	
+	
+	this->SetSizer( bSizerViewImage );
+	this->Layout();
+	m_timerRefresh.SetOwner( this, wxID_ANY );
+	
+	this->Centre( wxBOTH );
+	
+	// Connect Events
+	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( ViewImage::OnClose ) );
+	m_button4->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ViewImage::OnRefresh ), NULL, this );
+	m_checkBox4->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ViewImage::OnAutoRefresh ), NULL, this );
+	this->Connect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( ViewImage::OnTimer ) );
+}
+
+ViewImage::~ViewImage()
+{
+	// Disconnect Events
+	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( ViewImage::OnClose ) );
+	m_button4->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ViewImage::OnRefresh ), NULL, this );
+	m_checkBox4->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ViewImage::OnAutoRefresh ), NULL, this );
+	this->Disconnect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( ViewImage::OnTimer ) );
+	
 }

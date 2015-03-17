@@ -83,6 +83,11 @@ H3DViewerTreeViewDialog::~H3DViewerTreeViewDialog() {
   //  delete m_menubar1;
 }
 
+void H3DViewerTreeViewDialog::showImage ( X3DTextureNode& _image ) {
+  H3DViewImage* view_image= new H3DViewImage ( this, _image );
+  view_image->Show ();
+}
+
 void H3DViewerTreeViewDialog::OnNodeSelected( wxTreeEvent& event ) {
 
  TreeIdMap::iterator ni = node_map.find( event.GetItem().m_pItem );
@@ -587,3 +592,73 @@ void H3DViewerTreeViewDialog::collectAllTriangles( Node *n,
   }
 }
 
+BEGIN_EVENT_TABLE(wxImagePanel, wxPanel)
+EVT_PAINT(wxImagePanel::paintEvent)
+END_EVENT_TABLE()
+ 
+wxImagePanel::wxImagePanel(wxWindow* parent) : wxPanel(parent) {}
+
+void wxImagePanel::paintEvent(wxPaintEvent & evt) {
+  wxPaintDC dc(this);
+  dc.DrawBitmap( image, 0, 0, false );
+}
+
+void wxImagePanel::setImage ( wxImage _image ) {
+  image= wxBitmap ( _image );
+
+  wxSize s ( image.GetWidth(), image.GetHeight() );
+  SetMinSize ( s );
+  SetMaxSize ( s );
+}
+
+H3DViewImage::H3DViewImage ( wxWindow* parent, X3DTextureNode& _texture ) 
+: ViewImage ( parent ) {
+  draw_pane = new wxImagePanel ( m_imagePanel );
+  m_imagePanel->GetSizer()->Add(draw_pane, 1, wxEXPAND);
+
+  texture.reset ( &_texture );
+  updateImage();
+
+  SetTitle ( "View: " + _texture.getName() );
+}
+
+void H3DViewImage::OnRefresh ( wxCommandEvent& event ) {
+  updateImage ();
+  draw_pane->Refresh ();
+}
+
+void H3DViewImage::OnAutoRefresh ( wxCommandEvent& event ) {
+  if ( event.IsChecked() ) {
+    m_timerRefresh.Start( 2000 );
+  } else {
+    m_timerRefresh.Stop();
+  }
+}
+
+void H3DViewImage::OnTimer ( wxTimerEvent& event ) {
+  updateImage ();
+  draw_pane->Refresh ();
+}
+
+void H3DViewImage::updateImage () {
+  Image* image= texture->renderToImage ( -1, -1 );
+  if ( !image ) {
+    Console(4) << "ERROR: Failed to render texture to image!" << endl;
+    return;
+  }
+
+  unsigned char* rgb= new unsigned char [ image->width()*image->height()*3 ];
+
+  size_t offset= 0;
+  for ( size_t y= 0; y < image->height(); ++y ) {
+    for ( size_t x= 0; x < image->width(); ++x ) {
+        RGBA rgba= image->getPixel ( x, image->height()-1-y );
+        rgb[offset++]= (unsigned char)(rgba.r*255);
+        rgb[offset++]= (unsigned char)(rgba.g*255);
+        rgb[offset++]= (unsigned char)(rgba.b*255);
+      }
+  }
+
+  draw_pane->setImage ( wxImage ( image->width(), image->height(), rgb ) );
+  Layout ();
+}

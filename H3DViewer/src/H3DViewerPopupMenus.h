@@ -78,6 +78,9 @@ public:
    /// Callback for node save png menu choice.
   virtual void OnTreeViewSavePng( wxCommandEvent& event );
 
+  /// Callback for node show image menu choice.
+  virtual void OnTreeViewShowImage( wxCommandEvent& event );
+
   /// Callback for node save VRML menu choice.
   virtual void OnTreeViewSaveVRML( wxCommandEvent& event );
 

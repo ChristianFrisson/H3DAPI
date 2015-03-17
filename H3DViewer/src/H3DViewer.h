@@ -31,6 +31,8 @@
 #include <wx/image.h>
 #include <wx/icon.h>
 #include <wx/menu.h>
+#include <wx/scrolwin.h>
+#include <wx/timer.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -133,6 +135,7 @@ class MenuContainer : public wxFrame
 		virtual void onTreeViewLookAt( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTreeViewSaveNrrd( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTreeViewSavePng( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTreeViewShowImage( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTreeViewSaveSTL( wxCommandEvent& event ) { event.Skip(); }
 		
 	
@@ -160,6 +163,35 @@ class MenuContainer2 : public wxMenuBar
 		
 		MenuContainer2( long style = 0 );
 		~MenuContainer2();
+	
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class ViewImage
+///////////////////////////////////////////////////////////////////////////////
+class ViewImage : public wxFrame 
+{
+	private:
+	
+	protected:
+		wxPanel* m_panel4;
+		wxButton* m_button4;
+		wxCheckBox* m_checkBox4;
+		wxScrolledWindow* m_imagePanel;
+		wxTimer m_timerRefresh;
+		
+		// Virtual event handlers, overide them in your derived class
+		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
+		virtual void OnRefresh( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnAutoRefresh( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTimer( wxTimerEvent& event ) { event.Skip(); }
+		
+	
+	public:
+		
+		ViewImage( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("View Image"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 571,496 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		
+		~ViewImage();
 	
 };
 

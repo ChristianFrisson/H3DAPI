@@ -446,13 +446,18 @@ GLenum X3DTexture2DNode::glPixelFormat( Image *i ) {
 Image* X3DTexture2DNode::renderToImage( H3DInt32 _width, H3DInt32 _height, bool output_float_texture /* = false */ ){
   GLuint t_id = getTextureId();
   if( glIsTexture(t_id) ) {
-    Console(4)<<"texture id: "<<t_id<<" is valid, is saving texture"<<endl;
     int bpp;
+
+    // Note: Resizing of image is not supported
+    std::pair < H3DInt32, H3DInt32 > size= getDefaultSaveDimensions ();
+    if ( _width != size.first || _height != size.second ) {
+      _width= size.first;
+      _height= size.second;
+    }
 
     // Create container for image data, then bind buffer and read from it.
     Image* _image;
     if( output_float_texture ) {
-      Console(4)<<"saving texture for floating point texture"<<endl;
       bpp = sizeof(float)*8*4;
       _image= new PixelImage ( _width, _height, 1, bpp, Image::RGBA, Image::RATIONAL );
     }else{
@@ -466,6 +471,7 @@ Image* X3DTexture2DNode::renderToImage( H3DInt32 _width, H3DInt32 _height, bool 
     glBindTexture( getTextureTarget(), active_texture_bind );
     return _image;
   }
-  Console(4)<<"texture id: "<< t_id << " is not valid, can not save texture "<<endl;
+
+  Console(4) << "ERROR: Texture ID: "<< t_id << " is not valid. Can not save texture!"<<endl;
   return NULL;
 }

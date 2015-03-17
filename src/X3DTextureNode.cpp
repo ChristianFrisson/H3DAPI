@@ -406,6 +406,15 @@ std::pair<H3DInt32,H3DInt32> X3DTextureNode::getDefaultSaveDimensions () {
 }
 
 Image* X3DTextureNode::renderToImage ( H3DInt32 _width, H3DInt32 _height, bool output_float_texture ) {
+
+  std::pair<H3DInt32,H3DInt32> default_size= getDefaultSaveDimensions ();
+  if ( _width == -1 ) {
+    _width= default_size.first;
+  }
+  if ( _height == -1 ) {
+    _height= default_size.second;
+  }
+
   X3D::DEFNodes dn;
   AutoRef<FrameBufferTextureGenerator> fbo;
   if( output_float_texture ) {
@@ -496,12 +505,10 @@ void X3DTextureNode::UpdateSaveToURL::onNewValue( const std::string &v ) {
   }
 #endif
 
-  // Set texture save dimensions
-  std::pair<H3DInt32,H3DInt32> default_size= node->getDefaultSaveDimensions ();
   AutoRef<Image> image;
   image.reset( node->renderToImage (
-    node->saveWidth->getValue()  == -1 ? default_size.first  : node->saveWidth->getValue(),
-    node->saveHeight->getValue() == -1 ? default_size.second : node->saveHeight->getValue(), need_exr_format) );
+    node->saveWidth->getValue(),
+    node->saveHeight->getValue(), need_exr_format) );
   if( image.get() ) {
 #ifdef HAVE_OPENEXR
     if( need_exr_format ) {

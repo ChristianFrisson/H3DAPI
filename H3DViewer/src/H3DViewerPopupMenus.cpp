@@ -598,3 +598,25 @@ void H3DViewerPopupMenus::OnTreeViewSavePng( wxCommandEvent& event ) {
   }
 #endif
 }
+
+void H3DViewerPopupMenus::OnTreeViewShowImage ( wxCommandEvent& event ) {
+#ifdef HAVE_FREEIMAGE
+  wxTreeItemId id = treeview_dialog->TreeViewTree->GetSelection();
+  
+  H3DViewerTreeViewDialog::TreeIdMap::iterator ni = treeview_dialog->node_map.find( id.m_pItem );
+  if( ni == treeview_dialog->node_map.end() ) {
+    wxMessageBox( wxT("Selected tree item is not a node"),
+                  wxT("Error"),
+                  wxOK | wxICON_EXCLAMATION);
+  } else {
+    X3DTextureNode* image = dynamic_cast < X3DTextureNode* > ( (*ni).second.get() );
+    if ( image ) {
+      treeview_dialog->showImage ( *image );
+    } else {
+      wxMessageBox( wxT("Selected tree item is not an X3DTextureNode"),
+                    wxT("Error"),
+                    wxOK | wxICON_EXCLAMATION);
+    }
+  }
+#endif
+}
