@@ -181,7 +181,6 @@ class ViewImage : public wxFrame
 		wxTimer m_timerRefresh;
 		
 		// Virtual event handlers, overide them in your derived class
-		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void OnRefresh( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAutoRefresh( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTimer( wxTimerEvent& event ) { event.Skip(); }

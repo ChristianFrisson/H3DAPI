@@ -435,7 +435,6 @@ ViewImage::ViewImage( wxWindow* parent, wxWindowID id, const wxString& title, co
 	this->Centre( wxBOTH );
 	
 	// Connect Events
-	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( ViewImage::OnClose ) );
 	m_button4->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ViewImage::OnRefresh ), NULL, this );
 	m_checkBox4->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ViewImage::OnAutoRefresh ), NULL, this );
 	this->Connect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( ViewImage::OnTimer ) );
@@ -444,7 +443,6 @@ ViewImage::ViewImage( wxWindow* parent, wxWindowID id, const wxString& title, co
 ViewImage::~ViewImage()
 {
 	// Disconnect Events
-	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( ViewImage::OnClose ) );
 	m_button4->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ViewImage::OnRefresh ), NULL, this );
 	m_checkBox4->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ViewImage::OnAutoRefresh ), NULL, this );
 	this->Disconnect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( ViewImage::OnTimer ) );
