@@ -503,10 +503,14 @@ void X3DTextureNode::UpdateSaveToURL::onNewValue( const std::string &v ) {
     node->saveWidth->getValue()  == -1 ? default_size.first  : node->saveWidth->getValue(),
     node->saveHeight->getValue() == -1 ? default_size.second : node->saveHeight->getValue(), need_exr_format) );
   if( image.get() ) {
+#ifdef HAVE_OPENEXR
     if( need_exr_format ) {
       node->saveSuccess->setValue(H3DUtil::saveOpenEXRImage(v, *image), node->id );
     }else{
+#endif
       node->saveSuccess->setValue ( H3DUtil::saveFreeImagePNG ( v, *image ), node->id );
+#ifdef HAVE_OPENEXR
     }
+#endif
   }
 }
