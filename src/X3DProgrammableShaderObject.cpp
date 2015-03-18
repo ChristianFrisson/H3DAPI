@@ -42,7 +42,8 @@ X3DProgrammableShaderObject::X3DProgrammableShaderObject( H3DNodeDatabase* _data
   if( GlobalSettings* default_settings= GlobalSettings::getActive() ) {
     GraphicsOptions* options;
     default_settings->getOptionNode( options );
-    wants_bindless_textures= options->bindlessTextures->getValue();
+    if( options )
+      wants_bindless_textures= options->bindlessTextures->getValue();
   }
 
 #ifdef GL_ARB_bindless_texture
