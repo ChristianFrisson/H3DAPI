@@ -621,7 +621,9 @@ H3DViewImage::H3DViewImage ( wxWindow* parent, X3DTextureNode& _texture )
   texture.reset ( &_texture );
   updateImage();
 
-  SetTitle ( "View: " + _texture.getName() );
+  stringstream s;
+  s << "View: " << _texture.getName();
+  SetTitle ( wxString(s.str().c_str(),wxConvUTF8) );
 }
 
 void H3DViewImage::OnSave( wxCommandEvent& event ) {

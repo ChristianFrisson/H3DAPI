@@ -41,8 +41,10 @@
 #if( wxMAJOR_VERSION > 2 || wxMINOR_VERSION >= 9 ) 
 #include "H3DViewer.h"
 #include <H3D/Node.h>
+#include <H3D/X3DTextureNode.h>
 #else
 #include <H3D/Node.h>
+#include <H3D/X3DTextureNode.h>
 #include "H3DViewer.h"
 #endif
 
