@@ -1050,8 +1050,14 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   // initialize the viewport values
   H3DInt32 viewport_width = 0, viewport_height =0;
   configureViewPortsSize( stereo_mode, viewport_width, viewport_height, viewports_size);
-  viewportWidth->setValue(viewport_width,id);
-  viewportHeight->setValue(viewport_height,id);
+  
+  if( viewportWidth->getValue()!=viewport_width ) {
+    viewportWidth->setValue(viewport_width, id);
+  }
+  if( viewportHeight->getValue()!=viewport_height ) {
+    viewportHeight->setValue(viewport_height, id);
+  }
+  
   clipDistances->setValue( Vec2f(clip_near, clip_far), id );
   
 
