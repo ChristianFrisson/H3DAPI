@@ -456,7 +456,8 @@ void ImageTexture::addSharedImage ( std::vector < std::string > _urls ) {
       i->setURLBase ( getURLBase() );
       i->canShare->setValue ( false );
       i->url->setValue ( _urls );
-      i->textureProperties->setValue( this->textureProperties->getValue() );
+      i->textureProperties->setValue( textureProperties->getValue() );
+      i->loadInThread->setValue ( loadInThread->getValue() );
       si.image.reset ( i );
 #ifdef DEBUG_SHARING
       if ( !_urls.empty() ) {
