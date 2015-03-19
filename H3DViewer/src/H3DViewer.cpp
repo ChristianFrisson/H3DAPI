@@ -385,12 +385,13 @@ MenuContainer2::~MenuContainer2()
 ViewImage::ViewImage( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+	this->SetForegroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_BTNTEXT ) );
 	
 	wxBoxSizer* bSizerViewImage;
 	bSizerViewImage = new wxBoxSizer( wxVERTICAL );
 	
 	m_panel4 = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	m_panel4->SetForegroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_WINDOW ) );
+	m_panel4->SetForegroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_BTNTEXT ) );
 	m_panel4->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_WINDOW ) );
 	
 	wxBoxSizer* bSizer12;
@@ -400,7 +401,7 @@ ViewImage::ViewImage( wxWindow* parent, wxWindowID id, const wxString& title, co
 	bSizer10 = new wxBoxSizer( wxHORIZONTAL );
 	
 	m_button5 = new wxButton( m_panel4, wxID_ANY, wxT("Save..."), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer10->Add( m_button5, 0, wxALL, 5 );
+	bSizer10->Add( m_button5, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 	
 	m_button4 = new wxButton( m_panel4, wxID_ANY, wxT("Refresh"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer10->Add( m_button4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
@@ -409,6 +410,36 @@ ViewImage::ViewImage( wxWindow* parent, wxWindowID id, const wxString& title, co
 	m_checkBox4->SetForegroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_BTNTEXT ) );
 	
 	bSizer10->Add( m_checkBox4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+	
+	
+	bSizer10->Add( 0, 0, 1, wxEXPAND, 5 );
+	
+	wxStaticBoxSizer* sbSizer2;
+	sbSizer2 = new wxStaticBoxSizer( new wxStaticBox( m_panel4, wxID_ANY, wxT("Channels") ), wxHORIZONTAL );
+	
+	m_checkBoxChannelRed = new wxCheckBox( m_panel4, wxID_ANY, wxT("Red"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_checkBoxChannelRed->SetValue(true); 
+	m_checkBoxChannelRed->SetForegroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_BTNTEXT ) );
+	m_checkBoxChannelRed->SetMinSize( wxSize( 50,-1 ) );
+	
+	sbSizer2->Add( m_checkBoxChannelRed, 0, wxALL, 5 );
+	
+	m_checkBoxChannelGreen = new wxCheckBox( m_panel4, wxID_ANY, wxT("Green"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_checkBoxChannelGreen->SetValue(true); 
+	m_checkBoxChannelGreen->SetForegroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_BTNTEXT ) );
+	m_checkBoxChannelGreen->SetMinSize( wxSize( 50,-1 ) );
+	
+	sbSizer2->Add( m_checkBoxChannelGreen, 0, wxALL, 5 );
+	
+	m_checkBoxChannelBlue = new wxCheckBox( m_panel4, wxID_ANY, wxT("Blue"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_checkBoxChannelBlue->SetValue(true); 
+	m_checkBoxChannelBlue->SetForegroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_BTNTEXT ) );
+	m_checkBoxChannelBlue->SetMinSize( wxSize( 50,-1 ) );
+	
+	sbSizer2->Add( m_checkBoxChannelBlue, 0, wxALL, 5 );
+	
+	
+	bSizer10->Add( sbSizer2, 1, wxALL|wxEXPAND, 5 );
 	
 	
 	bSizer12->Add( bSizer10, 0, wxEXPAND, 5 );
@@ -441,6 +472,9 @@ ViewImage::ViewImage( wxWindow* parent, wxWindowID id, const wxString& title, co
 	m_button5->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ViewImage::OnSave ), NULL, this );
 	m_button4->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ViewImage::OnRefresh ), NULL, this );
 	m_checkBox4->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ViewImage::OnAutoRefresh ), NULL, this );
+	m_checkBoxChannelRed->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ViewImage::OnRefresh ), NULL, this );
+	m_checkBoxChannelGreen->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ViewImage::OnRefresh ), NULL, this );
+	m_checkBoxChannelBlue->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ViewImage::OnRefresh ), NULL, this );
 	this->Connect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( ViewImage::OnTimer ) );
 }
 
@@ -450,6 +484,9 @@ ViewImage::~ViewImage()
 	m_button5->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ViewImage::OnSave ), NULL, this );
 	m_button4->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ViewImage::OnRefresh ), NULL, this );
 	m_checkBox4->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ViewImage::OnAutoRefresh ), NULL, this );
+	m_checkBoxChannelRed->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ViewImage::OnRefresh ), NULL, this );
+	m_checkBoxChannelGreen->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ViewImage::OnRefresh ), NULL, this );
+	m_checkBoxChannelBlue->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( ViewImage::OnRefresh ), NULL, this );
 	this->Disconnect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( ViewImage::OnTimer ) );
 	
 }

@@ -31,6 +31,7 @@
 #include <wx/image.h>
 #include <wx/icon.h>
 #include <wx/menu.h>
+#include <wx/statbox.h>
 #include <wx/scrolwin.h>
 #include <wx/timer.h>
 
@@ -178,6 +179,9 @@ class ViewImage : public wxFrame
 		wxButton* m_button5;
 		wxButton* m_button4;
 		wxCheckBox* m_checkBox4;
+		wxCheckBox* m_checkBoxChannelRed;
+		wxCheckBox* m_checkBoxChannelGreen;
+		wxCheckBox* m_checkBoxChannelBlue;
 		wxScrolledWindow* m_imagePanel;
 		wxTimer m_timerRefresh;
 		
@@ -190,7 +194,7 @@ class ViewImage : public wxFrame
 	
 	public:
 		
-		ViewImage( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("View Image"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 571,496 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		ViewImage( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("View Image"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 622,496 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
 		
 		~ViewImage();
 	

@@ -693,9 +693,9 @@ void H3DViewImage::updateImage () {
   for ( size_t y= 0; y < image->height(); ++y ) {
     for ( size_t x= 0; x < image->width(); ++x ) {
         RGBA rgba= image->getPixel ( x, image->height()-1-y );
-        rgb[offset++]= (unsigned char)(rgba.r*255);
-        rgb[offset++]= (unsigned char)(rgba.g*255);
-        rgb[offset++]= (unsigned char)(rgba.b*255);
+        rgb[offset++]= m_checkBoxChannelRed->GetValue()   ? (unsigned char)(rgba.r*255) : 0;
+        rgb[offset++]= m_checkBoxChannelGreen->GetValue() ? (unsigned char)(rgba.g*255) : 0;
+        rgb[offset++]= m_checkBoxChannelBlue->GetValue()  ? (unsigned char)(rgba.b*255) : 0;
       }
   }
 
