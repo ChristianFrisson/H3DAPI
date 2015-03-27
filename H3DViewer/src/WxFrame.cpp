@@ -762,7 +762,8 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
       ho->interpolateForceEffects->setValue( event.IsChecked() );
     }
   } else if( id == ID_FOCAL_DISTANCE ||
-             id == ID_INTEROCULAR_DISTANCE ) {
+             id == ID_INTEROCULAR_DISTANCE ||
+             id == ID_SWAP_EYES ) {
     StereoInfo * stereo_info = StereoInfo::getActive();
 
     if( id == ID_FOCAL_DISTANCE ) {
@@ -770,6 +771,8 @@ void SettingsDialog::handleSettingsChange (wxCommandEvent & event) {
     } else if( id == ID_INTEROCULAR_DISTANCE ) {
       stereo_info->interocularDistance->setValue(
         X3D::Convert::atof( event.GetString().mb_str() ) );
+    } else if( id == ID_SWAP_EYES ) {
+      stereo_info->swapEyes->setValue( event.IsChecked() );
     }
   } else if( id == ID_OH_SHAPE_TYPE ||
              id == ID_ADAPTIVE_VIEWPORT ||
@@ -1539,10 +1542,14 @@ bool WxFrame::loadFile( const string &filename) {
     foc_dist  <<  si->focalDistance->getValue();
     settings->focal_distance_text->
       ChangeValue( wxString( foc_dist.str().c_str(), wxConvUTF8 ) );
+    
     stringstream intoc_dist;
     intoc_dist << si->interocularDistance->getValue();
     settings->interocular_distance_text->
       ChangeValue( wxString( intoc_dist.str().c_str(), wxConvUTF8 ) );
+    
+    settings->swap_eyes_checkbox->SetValue( si->swapEyes->getValue() );
+    
     SaveStereoInfo(false);
   } else {
     si = new StereoInfo;
@@ -1551,6 +1558,7 @@ bool WxFrame::loadFile( const string &filename) {
                     toStr( settings->focal_distance_text->GetValue() ) );
     si->interocularDistance->setValueFromString(
                     toStr( settings->interocular_distance_text->GetValue() ) );
+    si->swapEyes->setValue( settings->swap_eyes_checkbox->IsChecked() );
   }
 
   H3DDisplayListObject::DisplayList::rebuildAllDisplayLists();
@@ -2370,14 +2378,17 @@ void WxFrame::SaveStereoInfo( bool to_config ) {
   if( stereo_info.get() ) {
     float focal_distance = stereo_info->focalDistance->getValue();
     float interocular_distance = stereo_info->interocularDistance->getValue();
+    bool swap_eyes = stereo_info->swapEyes->getValue();
     if( to_config ) {
       h3dConfig = wxConfigBase::Get();
       h3dConfig->SetPath( wxT("/Settings/StereoInfo") );
       h3dConfig->Write( wxT("focalDistance"), focal_distance );
       h3dConfig->Write( wxT("interocularDistance"), interocular_distance );
+      h3dConfig->Write( wxT("swapEyes"), swap_eyes );
     } else {
       non_conf_opt.focal_distance = focal_distance;
       non_conf_opt.interocular_distance = interocular_distance;
+      non_conf_opt.swap_eyes = swap_eyes;
     }
   }
 }
@@ -2804,19 +2815,23 @@ void WxFrame::LoadSettings( bool from_config ) {
   if( stereo_info.get() ) {
     double focal_distance;
     double interocular_distance;
+    bool swap_eyes;
     if( from_config ) {
       if( h3dConfig->Exists( wxT("/Settings/StereoInfo") ) ) {
         h3dConfig->SetPath( wxT("/Settings/StereoInfo") );
         h3dConfig->Read( wxT("focalDistance"), &focal_distance );
         h3dConfig->Read( wxT("interocularDistance"), &interocular_distance );
+        h3dConfig->Read( wxT("swapEyes"), &swap_eyes );
       } else {
         // Only do this if there is nothing in the registry yet.
         focal_distance = stereo_info->focalDistance->getValue();
         interocular_distance = stereo_info->interocularDistance->getValue();
+        swap_eyes = stereo_info->swapEyes->getValue();
       }
     } else {
       focal_distance = non_conf_opt.focal_distance;
       interocular_distance = non_conf_opt.interocular_distance;
+      swap_eyes = non_conf_opt.swap_eyes;
     }
 
     stereo_info->focalDistance->setValue( focal_distance );
@@ -2824,11 +2839,15 @@ void WxFrame::LoadSettings( bool from_config ) {
     foc_dist << focal_distance;
     settings->focal_distance_text->
       SetValue( wxString( foc_dist.str().c_str(), wxConvUTF8 ) );
+    
     stereo_info->interocularDistance->setValue( interocular_distance );
     stringstream int_dist;
     int_dist << interocular_distance;
     settings->interocular_distance_text->
       SetValue( wxString( int_dist.str().c_str(), wxConvUTF8 ) );
+
+    stereo_info->swapEyes->setValue( swap_eyes );
+    settings->swap_eyes_checkbox->SetValue( swap_eyes );
   }
 
   // Load proxy radius
@@ -3334,6 +3353,7 @@ BEGIN_EVENT_TABLE(SettingsDialog, wxPropertySheetDialog)
   
   EVT_TEXT( ID_FOCAL_DISTANCE, SettingsDialog::handleSettingsChange )
   EVT_TEXT( ID_INTEROCULAR_DISTANCE, SettingsDialog::handleSettingsChange )
+  EVT_CHECKBOX( ID_SWAP_EYES, SettingsDialog::handleSettingsChange )
 
   EVT_CHOICE( ID_OH_SHAPE_TYPE, SettingsDialog::handleSettingsChange)
   EVT_CHECKBOX( ID_ADAPTIVE_VIEWPORT, SettingsDialog::handleSettingsChange)
@@ -3808,6 +3828,12 @@ wxPanel* SettingsDialog::CreateGeneralSettingsPage(wxWindow* parent ) {
                                    wxALL|wxALIGN_CENTER_VERTICAL, 5);
 
   stereo_info_box_sizer->Add(interocular_distance_sizer, 0, wxGROW|wxALL, 0);
+  swap_eyes_checkbox = new wxCheckBox( panel,
+                                       ID_SWAP_EYES,
+                                       wxT("Swap eyes" ),
+                                       wxDefaultPosition,
+                                       wxDefaultSize );
+  stereo_info_box_sizer->Add(swap_eyes_checkbox, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
 
   item0->Add(stereo_info_box_sizer, 0, wxGROW|wxLEFT|wxRIGHT, 5);
   // End StereoInfo options.

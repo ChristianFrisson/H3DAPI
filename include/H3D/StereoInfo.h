@@ -59,7 +59,8 @@ namespace H3D {
                 Inst< SFFloat    > _focalDistance       = 0,
                 Inst< SFRotation > _headTilt            = 0,
                 Inst< SFFloat > _matrixViewShift        = 0,
-                Inst< SFFloat > _matrixProjShift        = 0 );
+                Inst< SFFloat > _matrixProjShift        = 0,
+                Inst< SFBool  > _swapEyes               = 0 );
     
     /// Convenience function to get the top of the StereoInfo stack.
     static inline StereoInfo *getActive() {
@@ -100,6 +101,14 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0.0 \n
     auto_ptr< SFFloat > matrixProjShift;
+
+    /// The swapEyes field specifies if the eyes should be swapped in the current stereo
+    /// mode. This will make the image for the left eye appear in the place that normally
+    /// used for right eye 
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> false \n
+    auto_ptr< SFBool > swapEyes;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

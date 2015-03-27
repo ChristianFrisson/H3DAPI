@@ -156,6 +156,7 @@ public:
   // StereoInfoGUI
   wxTextCtrl *focal_distance_text;
   wxTextCtrl* interocular_distance_text;
+  wxCheckBox *swap_eyes_checkbox;
 
   // OpenHapticsOptionsGUI
   wxCheckBox *adaptive_viewport;
@@ -207,7 +208,8 @@ protected:
     ID_DRAW_BOUND_TREE,
     ID_DRAW_TREE_DEPTH,
     ID_FOCAL_DISTANCE,
-    ID_INTEROCULAR_DISTANCE
+    ID_INTEROCULAR_DISTANCE,
+    ID_SWAP_EYES
 
   };
 
@@ -395,6 +397,7 @@ private:
     // StereoInfo
     float focal_distance;
     float interocular_distance;
+    bool swap_eyes;
 
     // Proxy radius used by ruspini
     float proxy_radius;

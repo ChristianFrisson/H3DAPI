@@ -1016,8 +1016,10 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   H3DFloat focal_distance = 0.6f;
 
   StereoInfo *stereo_info = StereoInfo::getActive();
+  bool stereo_swap_eyes = false;
   if( stereo_info ) {
     focal_distance = stereo_info->focalDistance->getValue();
+    stereo_swap_eyes = stereo_info->swapEyes->getValue();
   }
 
   bool mirror_in_y = mirrored->getValue();
@@ -1081,7 +1083,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     // eye remain parallel and an the asymmetric view frustum is set up using 
     // glFrustum. This is done by calling the setupProjection function of
     // X3DViewpointNode.
-    eye_mode = X3DViewpointNode::LEFT_EYE;
+    eye_mode = stereo_swap_eyes ? X3DViewpointNode::RIGHT_EYE: X3DViewpointNode::LEFT_EYE;
     vp->setupProjection( eye_mode,
                          (H3DFloat)projectionWidth->getValue(),
                          (H3DFloat)projectionHeight->getValue(),
@@ -1194,7 +1196,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     } else {
       glFrontFace( GL_CCW );
     }
-    eye_mode = X3DViewpointNode::RIGHT_EYE;
+    eye_mode = stereo_swap_eyes ? X3DViewpointNode::LEFT_EYE: X3DViewpointNode::RIGHT_EYE;
     vp->setupProjection( eye_mode,
                          (H3DFloat)projectionWidth->getValue(),
                          (H3DFloat)projectionHeight->getValue(),
@@ -1268,7 +1270,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     }
 
     // add viewmatrix to model view matrix.
-    vp->setupViewMatrix( X3DViewpointNode::RIGHT_EYE,
+    vp->setupViewMatrix( eye_mode,
                          stereo_info );
     
     if( ti ) {

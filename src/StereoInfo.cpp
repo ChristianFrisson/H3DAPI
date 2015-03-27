@@ -45,6 +45,7 @@ namespace StereoInfoInternals {
   FIELDDB_ELEMENT( StereoInfo, headTilt, INPUT_OUTPUT );
   FIELDDB_ELEMENT( StereoInfo, matrixViewShift, INPUT_OUTPUT );
   FIELDDB_ELEMENT( StereoInfo, matrixProjShift, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( StereoInfo, swapEyes, INPUT_OUTPUT );
 }
 
 StereoInfo::StereoInfo( Inst< SFSetBind  > _set_bind,
@@ -55,13 +56,15 @@ StereoInfo::StereoInfo( Inst< SFSetBind  > _set_bind,
                         Inst< SFFloat    > _focalDistance,
                         Inst< SFRotation > _headTilt,
                         Inst< SFFloat > _matrixViewShift,
-                        Inst< SFFloat > _matrixProjShift ):
+                        Inst< SFFloat > _matrixProjShift,
+                        Inst< SFBool  > _swapEyes ):
   X3DBindableNode( "StereoInfo", _set_bind, _metadata, _bindTime, _isBound ),
   interocularDistance( _interocularDistance ),
   focalDistance( _focalDistance  ),
   headTilt( _headTilt ),
   matrixViewShift( _matrixViewShift ),
-  matrixProjShift( _matrixProjShift ) {
+  matrixProjShift( _matrixProjShift ),
+  swapEyes( _swapEyes ) {
   
   type_name = "StereoInfo";
   database.initFields( this );
@@ -71,6 +74,7 @@ StereoInfo::StereoInfo( Inst< SFSetBind  > _set_bind,
   headTilt->setValue( Rotation(1,0,0,0 ) );
   matrixViewShift->setValue( (H3DFloat)0.0 );
   matrixProjShift->setValue( (H3DFloat)0.0 );
+  swapEyes->setValue( false );
 }
 
 
