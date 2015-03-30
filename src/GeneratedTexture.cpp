@@ -92,7 +92,7 @@ void GeneratedTexture::renderTextureProperties(){
 
 bool GeneratedTexture::ensureInitialized( GLenum tex_target ) {
  if( !texture_id_initialized ) {
-    // initialized texture paramters
+    // initialized texture parameters
     glGenTextures( 1, &texture_id );
     texture_id_initialized = true;
     texture_target = tex_target;

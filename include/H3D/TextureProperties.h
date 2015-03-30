@@ -432,7 +432,7 @@ namespace H3D {
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
-    /// The textureType specifies the format of the texture. Can be used to set a
+    /// The textureFormat specifies the format of the texture. Can be used to set a
     /// specific sized internal format and pixel format used by glTexImageXX calls,
     /// This field is ignored if the textureCompression is not DEFAULT.
     /// 
