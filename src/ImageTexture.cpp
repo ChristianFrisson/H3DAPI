@@ -456,8 +456,16 @@ void ImageTexture::addSharedImage ( std::vector < std::string > _urls ) {
       i->setURLBase ( getURLBase() );
       i->canShare->setValue ( false );
       i->url->setValue ( _urls );
-      i->textureProperties->setValue( textureProperties->getValue() );
-      i->loadInThread->setValue ( loadInThread->getValue() );
+
+      // Route all texture properties to the wrapped texture
+      // Limitation: All textures with the same URL will receive the
+      // same properties.
+      textureProperties->route ( i->textureProperties );
+      loadInThread->route ( i->loadInThread );
+      repeatS->route ( i->repeatS );
+      repeatT->route ( i->repeatT );
+      scaleToPowerOfTwo->route ( i->scaleToPowerOfTwo );
+
       si.image.reset ( i );
 #ifdef DEBUG_SHARING
       if ( !_urls.empty() ) {
