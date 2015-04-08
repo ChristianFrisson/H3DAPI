@@ -41,6 +41,7 @@
 #include <H3D/FieldTemplates.h>
 #include <H3D/SFColorRGBA.h>
 #include <H3D/Field.h>
+#include <H3D/MFColorRGBA.h>
 
 namespace H3D {
 
@@ -236,7 +237,8 @@ namespace H3D {
                                  Inst< SFInt32          > _scissorBoxX = 0,
                                  Inst< SFInt32          > _scissorBoxY = 0,
                                  Inst< SFInt32          > _scissorBoxWidth = 0,
-                                 Inst< SFInt32          > _scissorBoxHeight = 0);
+                                 Inst< SFInt32          > _scissorBoxHeight = 0,
+                                 Inst< MFColorRGBA      > _clearColors = 0);
         
     /// Destructor.
     virtual ~FrameBufferTextureGenerator();
@@ -543,6 +545,12 @@ namespace H3D {
 
     /// Specified clearColor used when useSpecifiedClearColor is true
     auto_ptr< SFColorRGBA > clearColor;
+
+    /// Specified clearColors
+    /// when there are more than one color output, use clearColors instead of
+    /// clearColor as the source of clear colors for the frame buffer
+    /// if clearColors is empty, then use clearColor to clear all color attachment
+    auto_ptr< MFColorRGBA > clearColors;
 
     auto_ptr< SFBool > useDSA;
 
