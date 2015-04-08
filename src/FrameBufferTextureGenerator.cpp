@@ -276,8 +276,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
     scissorBoxY->setValue( 0 );
     scissorBoxWidth->setValue( -10000 );
     scissorBoxHeight->setValue( -10000 );
-    clear_color_value.reset(new float[4*colorTextures->size()]);
-    memset(clear_color_value.get(),0, 4*colorTextures->size()*sizeof(float));
+    
 }
 
 void FrameBufferTextureGenerator::initialize()
@@ -359,6 +358,10 @@ void FrameBufferTextureGenerator::initialize()
   // initialize all necessary color buffer init warning message printed flag to false
   for( size_t i = 0, ilen = colorBufferStorages->getValue().size()+1; i < ilen; ++i ) {
     colorInitWarningPrinted->push_back(false);
+  }
+  if( generateColorTextures->size()>0 ) {
+    clear_color_value.reset(new float[4*generateColorTextures->size()]);
+    memset(clear_color_value.get(),0, 4*generateColorTextures->size()*sizeof(float));
   }
 }
 
@@ -707,7 +710,7 @@ void FrameBufferTextureGenerator::render()     {
         if ( bg && bgVP ) {
           RGBA clear_color = bg->glClearColor();
           glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
-          for( int i = 0; i<colorTextures->size(); ++i ) {
+          for( int i = 0; i<generateColorTextures->size(); ++i ) {
             clear_color_value.get()[4*i] = clear_color.r;
             clear_color_value.get()[4*i+1] = clear_color.g;
             clear_color_value.get()[4*i+2] = clear_color.b;
@@ -741,11 +744,11 @@ void FrameBufferTextureGenerator::render()     {
         // need to extract the clear color and set it, then preProcessFBO
         // which will rely on the clear color being set
         RGBA clear_color = clearColor->getValue();
-        if( colorTextures->size()>1&&colorTextures->size()==clearColors->size() ) {
+        if( generateColorTextures->size()>1&&generateColorTextures->size()==clearColors->size() ) {
           // when color texture output is more than one, and have the size as clearColors
           // use clearColors instead
           MFColorRGBA::vector_return_type clear_colors = clearColors->getValue();
-          for(int i = 0; i<clearColors->size(); ++i){
+          for(int i = 0; i<generateColorTextures->size(); ++i){
             clear_color_value.get()[4*i] = clear_colors[i].r;
             clear_color_value.get()[4*i+1] = clear_colors[i].g;
             clear_color_value.get()[4*i+2] = clear_colors[i].b;
@@ -754,7 +757,7 @@ void FrameBufferTextureGenerator::render()     {
         }else{
           // if colorTexutres is size is not more than one, or clearColors size 
           // mismatch colorTextues size, use colorColor instead for all color attachment
-          for( int i = 0; i<colorTextures->size(); ++i ) {
+          for( int i = 0; i<generateColorTextures->size(); ++i ) {
             clear_color_value.get()[4*i] = clear_color.r;
             clear_color_value.get()[4*i+1] = clear_color.g;
             clear_color_value.get()[4*i+2] = clear_color.b;
@@ -1197,7 +1200,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
   if( color_buffer_storages.empty() ) { 
     // no external fbo for color buffers will be used
     // use locally created color buffers, just clear the all color buffers for present
-    for( size_t i = 0; i < colorTextures->size(); ++i ) {
+    for( size_t i = 0; i < color_ids.size(); ++i ) {
       clearColorBuffer( target_fbo, 0, 0, w, h, clear_color_value.get()+4*i, i );
     }
     return;
