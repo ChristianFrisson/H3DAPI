@@ -239,7 +239,8 @@ namespace H3D {
                                  Inst< SFInt32          > _scissorBoxY = 0,
                                  Inst< SFInt32          > _scissorBoxWidth = 0,
                                  Inst< SFInt32          > _scissorBoxHeight = 0,
-                                 Inst< MFColorRGBA      > _clearColors = 0);
+                                 Inst< MFColorRGBA      > _clearColors = 0,
+                                 Inst< SFInt32          > _nrLayers = 0 );
         
     /// Destructor.
     virtual ~FrameBufferTextureGenerator();
@@ -565,6 +566,15 @@ namespace H3D {
     /// likely reject the rendering of later rendered object.
     auto_ptr< SFBool > splitScene;
 
+    /// The number of layers to a 3D texture or texture array output
+    ///
+    /// If <= 0, then each child is rendered to a separate layer, and the number
+    /// of children determines the number of layers. This is the default behaviour.
+    ///
+    /// If > 0, then a texture with nrLayers is created and it is left up to the
+    /// geometry shader(s) to decide which of the layers it writes to using gl_Layer
+    ///
+    auto_ptr < SFInt32 > nrLayers;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

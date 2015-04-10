@@ -88,6 +88,7 @@ namespace FrameBufferTextureGeneratorInternals {
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, scissorBoxWidth, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, scissorBoxHeight, INPUT_OUTPUT );
   FIELDDB_ELEMENT( FrameBufferTextureGenerator, clearColors, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( FrameBufferTextureGenerator, nrLayers, INPUT_OUTPUT );
 }
 
 FrameBufferTextureGenerator::~FrameBufferTextureGenerator() {
@@ -150,7 +151,8 @@ FrameBufferTextureGenerator::FrameBufferTextureGenerator( Inst< AddChildren    >
   Inst< SFInt32         > _scissorBoxY,
   Inst< SFInt32         > _scissorBoxWidth,
   Inst< SFInt32         > _scissorBoxHeight,
-  Inst< MFColorRGBA     > _clearColors ):
+  Inst< MFColorRGBA     > _clearColors,
+  Inst< SFInt32         > _nrLayers ):
 X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound, 
   _bboxCenter, _bboxSize ),
   generateColorTextures( _generateColorTextures ),
@@ -188,6 +190,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   scissorBoxWidth( _scissorBoxWidth ),
   scissorBoxHeight( _scissorBoxHeight ),
   clearColors(_clearColors),
+  nrLayers(_nrLayers ),
   fbo_initialized( false ),
   buffers_width(-1),
   buffers_height(-1),
@@ -223,6 +226,7 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
     useNavigation->setValue( false );
     useSpecifiedClearColor->setValue( false );
     clearColor->setValue(RGBA(0,0,0,0));
+    nrLayers->setValue ( -1 );
 
     depthBufferType->addValidValue( "DEPTH" );
     depthBufferType->addValidValue( "DEPTH16" );
@@ -590,7 +594,13 @@ void FrameBufferTextureGenerator::render()     {
     }
   }
 
-  unsigned int current_depth  = output_texture_type == "2D" || output_texture_type == "2D_RECTANGLE" ? 1: std::max( (int)children->size(), 1 );
+  unsigned int current_depth;
+  if ( output_texture_type == "2D" || output_texture_type == "2D_RECTANGLE" ) {
+    current_depth= 1;
+  } else {
+    H3DInt32 nr_layers= nrLayers->getValue();
+    current_depth= nr_layers > 0 ? nr_layers : std::max( (int)children->size(), 1 );
+  }
 
 
   if( samples->getValue() != last_samples || buffers_width != desired_fbo_width || buffers_height != desired_fbo_heigth || buffers_depth != current_depth ) {
@@ -830,6 +840,7 @@ void FrameBufferTextureGenerator::render()     {
   } else {
     // 3D texture. Each child in the children fields is rendered into a different
     // slice in the 3D texture.
+    H3DInt32 nr_layers= nrLayers->getValue();
 
     const NodeVector &c = children->getValue();
 
@@ -839,15 +850,29 @@ void FrameBufferTextureGenerator::render()     {
 
       // set the render target to the correct slice for depth texture.
       if( output_texture_type == "2D_ARRAY" && generateDepthTexture->getValue() ) {
-        glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0, i );
-        if( using_stencil_buffer )
-          glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, depth_id, 0, i );
+        if ( nr_layers > 0 ) {
+          glFramebufferTexture(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0 );
+        } else {
+          glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0, i );
+        }
+        if( using_stencil_buffer ) {
+          if ( nr_layers > 0 ) {
+            glFramebufferTexture(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, depth_id, 0 );
+          } else {
+            glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, depth_id, 0, i );
+          }
+        }
       }
 
       // set the render target to the correct slice for color textures.
       for( unsigned int j = 0; j < color_ids.size(); ++j ) {
-        glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + j,
-          color_ids[j], 0, i );   
+        if ( nr_layers > 0 ) {
+          glFramebufferTexture(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + j,
+            color_ids[j], 0 );
+        } else {
+          glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + j,
+            color_ids[j], 0, i );
+        }
       }
 
       if( nr_samples > 0 ) {
@@ -1346,9 +1371,15 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
                   texture_type, external_FBO_color_id, 0 );
                 break;
               case GL_TEXTURE_2D_ARRAY_EXT:
-                glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, 
-                  (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ), 
-                  external_FBO_color_id, 0,0 );
+                if ( nrLayers->getValue() > 0 ) {
+                  glFramebufferTexture(GL_FRAMEBUFFER_EXT, 
+                    (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ), 
+                    external_FBO_color_id, 0 );
+                } else {
+                  glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, 
+                    (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ), 
+                    external_FBO_color_id, 0,0 );
+                }
                 break;
               case GL_TEXTURE_3D:
                 glFramebufferTexture3DEXT(GL_FRAMEBUFFER_EXT, 
@@ -1547,9 +1578,17 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 _width, H3DInt32 _heig
         glTexImage3D(GL_TEXTURE_2D_ARRAY_EXT, 0, depth_internal_format, _width, _height, depth, 0,
           depth_format, depth_type, NULL);
 
-        glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0, 0 );
-        if( using_stencil_buffer )
-          glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,depth_id, 0, 0 );
+        if ( nrLayers->getValue() > 0 ) {
+          glFramebufferTexture(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0 );
+          if( using_stencil_buffer ) {
+            glFramebufferTexture(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,depth_id, 0 );
+          }
+        } else {
+          glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0, 0 );
+          if( using_stencil_buffer ) {
+            glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,depth_id, 0, 0 );
+          }
+        }
       }else if (texture_type==GL_TEXTURE_2D_MULTISAMPLE){
         glTexImage2DMultisample( texture_type, nr_samples, depth_internal_format, _width, _height, GL_TRUE );
         glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texture_type, depth_id, 0 );
@@ -1635,8 +1674,13 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 _width, H3DInt32 _heig
     } else if( texture_type == GL_TEXTURE_2D_ARRAY_EXT ) {
       glTexImage3D(GL_TEXTURE_2D_ARRAY_EXT, 0, internal_format, _width, _height, depth, 0,
         GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-      glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ),
-        color_ids[i], 0,0 );        
+      if ( nrLayers->getValue() > 0 ) {
+        glFramebufferTexture(GL_FRAMEBUFFER_EXT, (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ),
+          color_ids[i], 0 );
+      } else {
+        glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ),
+          color_ids[i], 0, 0 );
+      }
     } else if( texture_type == GL_TEXTURE_3D ) {
       glTexImage3D(GL_TEXTURE_3D, 0, internal_format, _width, _height, depth, 0,
         GL_RGBA, GL_UNSIGNED_BYTE, NULL);
