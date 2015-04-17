@@ -465,6 +465,7 @@ void ImageTexture::addSharedImage ( std::vector < std::string > _urls ) {
       repeatS->route ( i->repeatS );
       repeatT->route ( i->repeatT );
       scaleToPowerOfTwo->route ( i->scaleToPowerOfTwo );
+      imageLoader->route ( i->imageLoader );
 
       si.image.reset ( i );
 #ifdef DEBUG_SHARING
