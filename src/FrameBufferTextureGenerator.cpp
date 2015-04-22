@@ -855,69 +855,68 @@ void FrameBufferTextureGenerator::render()     {
     }
   } else {
     // 3D texture. Each child in the children fields is rendered into a different
-    // slice in the 3D texture.
+    // slice in the 3D texture, if it is not layered rendering
     H3DInt32 nr_layers= nrLayers->getValue();
 
     const NodeVector &c = children->getValue();
-    for( unsigned int i = 0; i < c.size(); ++i ) {
-
+    bool use_layered_rendering = false;
+    if( (output_texture_type=="2D_ARRAY"||output_texture_type=="2D_MULTISAMPLE_ARRAY")&&nr_layers>0 ) {
+      use_layered_rendering = true;
+    }
+    if( use_layered_rendering ) {
+      // layered rendering currently do not support fbo blit in the implementation
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
-      // set the render target to the correct slice for depth texture.
-      if( (output_texture_type == "2D_ARRAY"||output_texture_type == "2D_MULTISAMPLE_ARRAY") 
-        && generateDepthTexture->getValue() ) { // for 3D texture , no need to render depth
-        if ( nr_layers > 0 ) {
-          glFramebufferTexture(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0 );
-        } else {
-          glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0, i );
-        }
-        if( using_stencil_buffer ) {
-          if ( nr_layers > 0 ) {
-            glFramebufferTexture(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, depth_id, 0 );
-          } else {
-            glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, depth_id, 0, i );
-          }
-        }
-      }
-      // set the render target to the correct slice for color textures.
-      for( unsigned int j = 0; j < color_ids.size(); ++j ) {
-        if ( nr_layers > 0 ) {
-          glFramebufferTexture(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + j,
-            color_ids[j], 0 );
-        } else {
-          glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + j,
-            color_ids[j], 0, i );
-        }
-      }
-
-      if( needMultiSample->getValue() ) {
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, multi_samples_fbo_id);
-      } 
-
+      glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
       if( !checkFBOCompleteness() ) {
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, previous_fbo_id);
         glPopAttrib();        
         return;
       }
-      // render child
-      if( render_func ) {
-        render_func( this, i, render_func_data );
-      } else {
-        // Clear buffers.
-        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
-
-        if( c[i] ) {
-          H3DDisplayListObject *tmp = dynamic_cast< H3DDisplayListObject* >( c[i]);
-          if( tmp )
-            tmp->displayList->callList();
-          else
-            c[i]->render();
-        }
-      }
+      X3DGroupingNode::render();
       if( current_shadow_caster && !current_shadow_caster->object->empty() ) current_shadow_caster->render();
-
-      // blit multi sample render buffer to output textures if using multi sampling.
-      if( needMultiSample->getValue() ) {
-        blitFBOBuffers(multi_samples_fbo_id, fbo_id, 0, 0, desired_fbo_width, desired_fbo_heigth);
+    }else{ // render every child to its own slice
+      for( unsigned int i = 0; i < c.size(); ++i ) {
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
+        // set the render target to the correct slice for depth texture.
+        if( (output_texture_type == "2D_ARRAY"||output_texture_type == "2D_MULTISAMPLE_ARRAY") 
+          && generateDepthTexture->getValue() ) { // for 3D texture , no need to render depth
+            glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0, i );
+            if( using_stencil_buffer ){
+              glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, depth_id, 0, i );
+            }
+        }
+        // set the render target to the correct slice for color textures.
+        for( unsigned int j = 0; j < color_ids.size(); ++j ) {
+          glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + j,
+            color_ids[j], 0, i );
+        }
+        if( needMultiSample->getValue() ) {
+          glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, multi_samples_fbo_id);
+        } 
+        if( !checkFBOCompleteness() ) {
+          glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, previous_fbo_id);
+          glPopAttrib();        
+          return;
+        }
+        // render child
+        if( render_func ) {
+          render_func( this, i, render_func_data );
+        } else {
+          // Clear buffers.
+          glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+          if( c[i] ) {
+            H3DDisplayListObject *tmp = dynamic_cast< H3DDisplayListObject* >( c[i]);
+            if( tmp )
+              tmp->displayList->callList();
+            else
+              c[i]->render();
+          }
+        }
+        if( current_shadow_caster && !current_shadow_caster->object->empty() ) current_shadow_caster->render();
+        // blit multi sample render buffer to output textures if using multi sampling.
+        if( needMultiSample->getValue() ) {
+          blitFBOBuffers(multi_samples_fbo_id, fbo_id, 0, 0, desired_fbo_width, desired_fbo_heigth);
+        }
       }
     }
   }
