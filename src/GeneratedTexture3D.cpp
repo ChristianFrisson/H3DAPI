@@ -61,8 +61,13 @@ void GeneratedTexture3D::render() {
 
   ensureInitialized();
   glBindTexture(  texture_target, texture_id );
-  renderTextureProperties();
-  enableTexturing();
+  if( texture_target!=GL_TEXTURE_2D_MULTISAMPLE_ARRAY ) {
+    // can not specify texture property for 2d multiple array texture
+    // and enableTexturing is not needed also as it will not be rendered directly
+    // instead it will be accessed only from shader
+    renderTextureProperties();
+    enableTexturing();
+  }
 }
 
 

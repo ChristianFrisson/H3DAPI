@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='FrameBufferTextureGenerator.x3d'/>
+    <meta name='description' content='H3DAPI FrameBufferTextureGenerator example. It shows how to generate a depth buffer texture for a cube and render it to a rectangle. This example uses H3DAPI node(s) and runs on H3DAPI-supported browsers only. Visit http://www.h3d.org for more information and to download an H3DAPI-
+        compatible browser. '/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
+  </head>
+
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+
+    <Group>
+      <FrameBufferTextureGenerator DEF="GEN" outputTextureType="2D" generateColorTextures="RGBA" samples="4" >
+        <!-- Scene to render to texture -->
+        <Inline url= "IndexedTriangleSet.x3d"></Inline>
+        
+      </FrameBufferTextureGenerator>
+
+      <!-- Shape for rendering depth texture on -->
+      <Shape>
+        <Appearance DEF="APP" >
+          <Material/>
+        </Appearance>
+        <FullscreenRectangle screenAligned="true" />
+      </Shape>
+    </Group>
+
+    <ROUTE fromNode="GEN" fromField="colorTexture" toNode="APP" toField="texture" />
+  </Scene>
+</X3D>

@@ -11,9 +11,9 @@
     <Viewpoint position='0 0 0.6' />
 
     <Group>
-      <FrameBufferTextureGenerator DEF="GEN" outputTextureType="2D_ARRAY"  generateColorTextures='"RGBA"' nrLayers='2' samples="0" generateDepthTexture="false" >
-
-        <!-- Scene to render to texture array slice 0 and 1, using gl_Layer = X in geometry shader -->
+      <FrameBufferTextureGenerator DEF="GEN" outputTextureType="2D_MULTISAMPLE_ARRAY"  generateColorTextures='"RGBA"' nrLayers='2' samples="2" generateDepthTexture="false" >
+        <Transform scale="1.5 1.5 1.5">
+          <!-- Scene to render to texture array slice 0 and 1, using gl_Layer = X in geometry shader -->
         <Shape>
           <Appearance>
             <ComposedShader language="GLSL">
@@ -22,42 +22,51 @@
               <ShaderPart type="FRAGMENT" url="shaders/layers.frag" />
             </ComposedShader>
           </Appearance>
-          <Sphere radius="0.1" />
+          <IndexedTriangleSet
+            ccw='true' colorPerVertex='false'
+            normalPerVertex='false' solid='false'
+            index='0 1 2 0 3 1'>
+          <Coordinate DEF='C'
+              point='0 0.1 0.1, 0 -0.1 0.1, -0.1 0 0, 0.1 0 0'/>
+        </IndexedTriangleSet>
         </Shape>
-
+        </Transform>
       </FrameBufferTextureGenerator>
 
       <!-- Shape for rendering texture array slice 0 on -->
-      <Transform translation="-0.2 0 0">
+      <Transform translation="-0.2 0 0" scale="2 2 2">
         <Shape>
           <Appearance>
             <ComposedShader DEF="SHADER0" language="GLSL">
               <field name="texArray" type="MFNode" accessType="inputOutput"/>
+              <field name="nr_samples" type="SFInt32" accessType="inputOutput"/>
               <field name="arrayIndex" type="SFInt32" value="0" accessType="inputOutput" />
               <ShaderPart type="VERTEX" url="shaders/mrt.vert" />
-              <ShaderPart type="FRAGMENT" url="shaders/texarray.frag" />
+              <ShaderPart type="FRAGMENT" url="shaders/texarrayMulitsample.frag" />
             </ComposedShader>
           </Appearance>
-          <Rectangle2D size="0.1 0.1"/>
+          <Rectangle2D size="0.2 0.2"/>
         </Shape>
       </Transform>
 
       <!-- Shape for rendering texture array slice 1 on -->
-      <Transform translation="0.2 0 0">
+      <Transform translation="0.2 0 0" scale="2 2 2">
         <Shape>
           <Appearance>
             <ComposedShader DEF="SHADER1" language="GLSL">
               <field name="texArray" type="MFNode" accessType="inputOutput"/>
+              <field name="nr_samples" type="SFInt32" accessType="inputOutput"/>
               <field name="arrayIndex" type="SFInt32" value="1" accessType="inputOutput" />
               <ShaderPart type="VERTEX" url="shaders/mrt.vert" />
-              <ShaderPart type="FRAGMENT" url="shaders/texarray.frag" />
+              <ShaderPart type="FRAGMENT" url="shaders/texarrayMulitsample.frag" />
             </ComposedShader>
           </Appearance>
-          <Rectangle2D size="0.1 0.1"/>
+          <Rectangle2D size="0.2 0.2"/>
         </Shape>
       </Transform>
     </Group>
-
+    <ROUTE fromNode="GEN" fromField="samples" toNode="SHADER0" toField="nr_samples" />
+    <ROUTE fromNode="GEN" fromField="samples" toNode="SHADER1" toField="nr_samples" />
     <ROUTE fromNode="GEN" fromField="colorTextures" toNode="SHADER0" toField="texArray" />
     <ROUTE fromNode="GEN" fromField="colorTextures" toNode="SHADER1" toField="texArray" />
   </Scene>

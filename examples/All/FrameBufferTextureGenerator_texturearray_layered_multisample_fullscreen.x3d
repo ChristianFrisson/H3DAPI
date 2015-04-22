@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<X3D profile='H3DAPI' version='1.4'>
+  <head>
+    <meta name='title' content='FrameBufferTextureGenerator_texturearray.x3d'/>
+    <meta name='description' content='H3DAPI FrameBufferTextureGenerator example. It shows generate a 2D texture array from the rendering ONE sub-scene (using the geometry shader and gl_Layer index) and display them on to separate rectangles.  This example uses H3DAPI node(s) and runs on H3DAPI-supported browsers only. Visit http://www.h3d.org for more information and to download an H3DAPI-
+      compatible browser. '/>
+    <meta name='author' content='SenseGraphics AB, 2006-2014'/>
+  </head>
+
+  <Scene>
+    <Viewpoint position='0 0 0.6' />
+    <Switch whichChoice="0">
+      <ToggleGroup DEF="TG_2DMULTISAMPLE_ARRAY_LAYERED">
+      <FrameBufferTextureGenerator DEF="GEN" outputTextureType="2D_MULTISAMPLE_ARRAY"  generateColorTextures='"RGBA"' nrLayers='2' samples="8" generateDepthTexture="true" >
+        <Transform scale="1.5 1.5 1.5">
+          <!-- Scene to render to texture array slice 0 and 1, using gl_Layer = X in geometry shader -->
+        <Shape>
+          <Appearance>
+            <ComposedShader language="GLSL">
+              <ShaderPart type="VERTEX" url="shaders/layers.vert" />
+              <ShaderPart type="GEOMETRY" url="shaders/layers.geo" />
+              <ShaderPart type="FRAGMENT" url="shaders/layers.frag" />
+            </ComposedShader>
+          </Appearance>
+          <IndexedTriangleSet
+            ccw='true' colorPerVertex='false'
+            normalPerVertex='false' solid='false'
+            index='0 1 2 0 3 1'>
+          <Coordinate
+              point='0 0.1 0.1, 0 -0.1 0.1, -0.1 0 0, 0.1 0 0'/>
+        </IndexedTriangleSet>
+        </Shape>
+        </Transform>
+      </FrameBufferTextureGenerator>
+
+      <!-- Shape for rendering texture array slice,use texArray to choose different layer -->
+      <Transform translation="-0.2 0 0" scale="2 2 2">
+        <Shape>
+          <Appearance>
+            <ComposedShader DEF="SHADER0" language="GLSL">
+              <field name="texArray" type="MFNode" accessType="inputOutput"/>
+              <field name="nr_samples" type="SFInt32" accessType="inputOutput"/>
+              <field name="arrayIndex" type="SFInt32" value="0" accessType="inputOutput" />
+              <ShaderPart type="VERTEX" url="shaders/mrt.vert" />
+              <ShaderPart type="FRAGMENT" url="shaders/texarrayMulitsample.frag" />
+            </ComposedShader>
+          </Appearance>
+          <FullscreenRectangle screenAligned="true" />
+        </Shape>
+      </Transform>
+
+    </ToggleGroup>
+    <ToggleGroup DEF="TG_2D_ARRAY_LAYERED" >
+      <FrameBufferTextureGenerator DEF="GEN_2D_ARRAY" outputTextureType="2D_ARRAY"  generateColorTextures='"RGBA"' nrLayers='2' samples="0" generateDepthTexture="true" >
+        <Transform scale="1.5 1.5 1.5">
+          <!-- Scene to render to texture array slice 0 and 1, using gl_Layer = X in geometry shader -->
+        <Shape>
+          <Appearance>
+            <ComposedShader language="GLSL">
+              <ShaderPart type="VERTEX" url="shaders/layers.vert" />
+              <ShaderPart type="GEOMETRY" url="shaders/layers.geo" />
+              <ShaderPart type="FRAGMENT" url="shaders/layers.frag" />
+            </ComposedShader>
+          </Appearance>
+          <IndexedTriangleSet
+            ccw='true' colorPerVertex='false'
+            normalPerVertex='false' solid='false'
+            index='0 1 2 0 3 1'>
+          <Coordinate
+              point='0 0.1 0.1, 0 -0.1 0.1, -0.1 0 0, 0.1 0 0'/>
+        </IndexedTriangleSet>
+        </Shape>
+        </Transform>
+      </FrameBufferTextureGenerator>
+
+      <!-- Shape for rendering texture array slice,use texArray to choose different layer -->
+      <Transform translation="-0.2 0 0" scale="2 2 2">
+        <Shape>
+          <Appearance>
+            <ComposedShader DEF="SHADER1" language="GLSL">
+              <field name="texArray" type="MFNode" accessType="inputOutput"/>
+              <field name="arrayIndex" type="SFInt32" value="0" accessType="inputOutput" />
+              <ShaderPart type="VERTEX" url="shaders/mrt.vert" />
+              <ShaderPart type="FRAGMENT" url="shaders/texarray.frag" />
+            </ComposedShader>
+          </Appearance>
+          <FullscreenRectangle screenAligned="true" />
+        </Shape>
+      </Transform>
+    </ToggleGroup>
+    </Switch>
+    
+    <ROUTE fromNode="GEN" fromField="samples" toNode="SHADER0" toField="nr_samples" />
+    <ROUTE fromNode="GEN" fromField="colorTextures" toNode="SHADER0" toField="texArray" />
+    <ROUTE fromNode="GEN_2D_ARRAY" fromField="colorTextures" toNode="SHADER1" toField="texArray" />
+  </Scene>
+</X3D>

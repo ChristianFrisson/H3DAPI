@@ -240,17 +240,37 @@ bool GraphicsHardwareInfo::initializeInfo() {
   info.max_vertex_texture_image_units = v;
   glGetIntegerv( GL_MAX_VERTEX_UNIFORM_COMPONENTS, &v );
   info.max_vertex_uniform_components = v;
+#ifdef GLEW_ARB_framebuffer_object
   if( GLEW_ARB_framebuffer_object ) {
     glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &v);
     info.max_color_attachments = v;
     glGetIntegerv( GL_MAX_SAMPLES, &v );
     info.max_samples = v;
   }
-
+#endif
   GLint vp[2];
   glGetIntegerv( GL_MAX_VIEWPORT_DIMS, vp );
   info.max_viewport_width = vp[0];
   info.max_viewport_height = vp[1];
+
+  info.support_ARB_texture_float = false;
+#ifdef GLEW_ARB_texture_float
+  if( GLEW_ARB_texture_float ) {
+    info.support_ARB_texture_float = true;
+  }
+#endif
+  info.support_ARB_depth_buffer_float = false;
+#ifdef GLEW_ARB_depth_buffer_float
+  if( GLEW_ARB_depth_buffer_float ) {
+    info.support_ARB_depth_buffer_float = true;
+  }
+#endif
+  info.support_EXT_packed_depth_stencil = false;
+#ifdef GLEW_EXT_packed_depth_stencil
+  if( GLEW_EXT_packed_depth_stencil ) {
+    info.support_EXT_packed_depth_stencil = true;
+  }
+#endif
 
   info_initialized = true;
 

@@ -96,12 +96,14 @@ namespace H3D {
   /// textures. Valid values: 
   /// 
   /// "2D"       - normal 2D texture(glsl type sampler2D)
-  /// "2D_MULTISAMPLE" - 2D multiple texure(glsl type sampler2DMS)
+  /// "2D_MULTISAMPLE" - 2D multiple texture(glsl type sampler2DMS)
   /// "2D_RECTANGLE" - 2D rectangle texture(glsl type sampler2DRect)
   /// "3D"       - normal 3D texture. 3D depth textures not supported. (glsl type sampler3D)
   /// "2D_ARRAY" - 2D texture array. Similar to a 3D texture but without interpolation
   /// between depth layers. Can only be used by shaders and not used directly for texturing.
   /// glsl type sampler2DArray
+  /// "2D_MULTISAMPLE_ARRAY"  multi-sampled 2D array. Can only be accessed in shader through
+  /// sampler2DMSArray
   ///
   /// The samples field determines how many samples to use for each pixel value in the
   /// textures. A value of 0 means no multi-sampling, values > 0 means multi-sampling
@@ -393,6 +395,8 @@ namespace H3D {
     /// "2D_ARRAY" - 2D texture array. Similar to a 3D texture but without interpolation
     /// between depth layers. Can only be used by shaders and not used directly for texturing.
     /// glsl type sampler2DArray
+    /// "2D_MULTISAMPLE"        multi-sampled 2D texture(glsl type samper2DMS)
+    /// "2D_MULTISAMPLE_ARRAY"  multi-sampled 2D texture array(glsl type sampler2DMSARRAY)
     ///
     /// <b>Access type:</b> initializeOnly
     /// <b>Default value:</b> "2D"
@@ -726,6 +730,9 @@ namespace H3D {
     /// \param index The extracted index number of the color buffer attachment in the fbo
     bool parseColorBufferStorage( std::string color_buffer_storage, std::string& style, int& index );
 
+    ///  helper function to check Opengl error
+    void _check_gl_error(const char *file, int line);
+
     /// Function which only clear the specified color buffer, will not bind fbo in the function, assume it is
     /// already binded , or no binding needed with direct state access
     /// \param src  The source FBO of which the clear will do
@@ -747,6 +754,18 @@ namespace H3D {
     /// \param height The height of the area to be cleared
     /// \param mask   The mask indicate what buffers in current fbo will be cleared
     void clearBuffers(GLenum src, int x, int y, int _width, int _height, GLbitfield mask);
+
+    class NeedMultiSample: public TypedField<SFBool, SFInt32>
+    {
+    public:
+      virtual void update();
+    };
+    auto_ptr< NeedMultiSample > needMultiSample;
+    class GetNrSamples: public SFInt32{
+    public:
+      virtual void update();
+    };
+    auto_ptr<GetNrSamples> getNrSamples;
 
 
     /// Flag used to determine if initializeFBO has been called or not.
@@ -796,9 +815,6 @@ namespace H3D {
 
     /// True if the last call to resizeBuffers from render() was true.
     bool last_resize_success;
-
-    /// The number of multi samples currently used for rendering.
-    int nr_samples;
 
     /// The render callback function, if any.
     RenderCallbackFunc render_func;

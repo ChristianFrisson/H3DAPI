@@ -137,7 +137,9 @@ namespace H3D {
       H3DInt32 max_viewport_height;
       H3DInt32 max_color_attachments;
       H3DInt32 max_samples;
-      
+      bool     support_ARB_texture_float; 
+      bool     support_ARB_depth_buffer_float;
+      bool     support_EXT_packed_depth_stencil;
     };
 
     /// Inititalize the node. Sets the fields of the node.

@@ -101,7 +101,7 @@ FrameBufferTextureGenerator::~FrameBufferTextureGenerator() {
       glDeleteRenderbuffersEXT(1, &multi_samples_depth_id);      
     }
 
-    glDeleteRenderbuffersEXT(1, &stencil_id);   
+    //glDeleteRenderbuffersEXT(1, &stencil_id);   
 
     for( unsigned int i = 0; i<multi_samples_color_ids.size(); ++i ) {
       glDeleteRenderbuffersEXT(1, &multi_samples_color_ids[i] );
@@ -196,7 +196,6 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
   buffers_height(-1),
   buffers_depth( -1 ),
   last_resize_success( true ),
-  nr_samples( 0 ),
   render_func( NULL ),
   render_func_data( NULL ),
   always_use_existing_viewport( false ),
@@ -215,6 +214,8 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
     outputTextureType->addValidValue( "2D_RECTANGLE" );
     outputTextureType->addValidValue( "3D" );
     outputTextureType->addValidValue( "2D_ARRAY" );
+    outputTextureType->addValidValue( "2D_MULTISAMPLE" );
+    outputTextureType->addValidValue( "2D_MULTISAMPLE_ARRAY" );
     outputTextureType->setValue( "2D" );
     samples->setValue( 0 );
     last_samples = 0;
@@ -280,6 +281,16 @@ X3DGroupingNode( _addChildren, _removeChildren, _children, _metadata, _bound,
     scissorBoxY->setValue( 0 );
     scissorBoxWidth->setValue( -10000 );
     scissorBoxHeight->setValue( -10000 );
+
+    needMultiSample.reset(new NeedMultiSample);
+    needMultiSample->setName("needMultiSample");
+    needMultiSample->setOwner(this);
+    samples->route(needMultiSample);
+
+    getNrSamples.reset(new GetNrSamples);
+    getNrSamples->setName("getNrSamples");
+    getNrSamples->setOwner(this);
+    samples->route(getNrSamples);
     
 }
 
@@ -472,12 +483,19 @@ void FrameBufferTextureGenerator::render()     {
       << "(ARB_texture_rectangle). FrameBufferTextureGenerator nodes with \"2D_RECTANGLE\" will "
       << "not work." << endl;
     return;
+  } else if( (output_texture_type == "2D_MULTISAMPLE_ARRAY" 
+    || output_texture_type == "2D_MULTISAMPLE") && !GLEW_ARB_texture_multisample ) {
+    Console(4) << "Warning: Multi-sampled texture is not supported by your graphics card "
+      << "(ARB_texture_multisample). FrameBufferTextureGenerator nodes with \"2D_MULTISAMPLE\" or \"2D_MULTISAMPLE_ARRAY\" will "
+      << "not work." << endl;
+    return;
   }
 
   if( output_texture_type != "3D" && 
     output_texture_type != "2D_ARRAY" &&
     output_texture_type != "2D_RECTANGLE"&&
-    output_texture_type != "2D_MULTISAMPLE") {
+    output_texture_type != "2D_MULTISAMPLE"&&
+    output_texture_type != "2D_MULTISAMPLE_ARRAY") {
       output_texture_type = "2D";
   }
 
@@ -617,10 +635,10 @@ void FrameBufferTextureGenerator::render()     {
 
   // if use multi-sampled render buffer, render the sub-scene 
   // into multi_samples_fbo_id as an intermediate step.
-  if( nr_samples > 0&&output_texture_type!="2D_MULTISAMPLE" ) {
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, multi_samples_fbo_id);
-  } else {
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
+  if( needMultiSample->getValue() ) {
+    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, multi_samples_fbo_id );
+  }else{
+    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, fbo_id );
   }
   
 
@@ -704,7 +722,12 @@ void FrameBufferTextureGenerator::render()     {
       (H3DFloat) projection_height,
       clip_near, clip_far, stereo_info );
   } 
-
+  if ( desired_fbo_width != widthInUse->getValue() ) {
+    widthInUse->setValue(desired_fbo_width, id);
+  }
+  if ( desired_fbo_heigth != heightInUse->getValue() ) {
+    heightInUse->setValue(desired_fbo_heigth, id);
+  }
   if( output_texture_type == "2D" || output_texture_type == "2D_RECTANGLE" || output_texture_type == "2D_MULTISAMPLE" ) {
     // 2D textures. Render all nodes in children field into the textures.
 
@@ -778,13 +801,6 @@ void FrameBufferTextureGenerator::render()     {
         // Prepare the fbo for rendering, it will clear or copy or share what frame buffer is being specified
         preProcessFBO(buffer_src_x, buffer_src_y, desired_fbo_width,desired_fbo_heigth,current_depth);
       }
-      if ( desired_fbo_width != widthInUse->getValue() ) {
-        widthInUse->setValue(desired_fbo_width, id);
-      }
-      if ( desired_fbo_heigth != heightInUse->getValue() ) {
-        heightInUse->setValue(desired_fbo_heigth, id);
-      }
-      
       if( splitScene->getValue() ) {
         const NodeVector &c = children->getValue();
         for( unsigned int i = 0; i<c.size(); ++i ) {
@@ -834,7 +850,7 @@ void FrameBufferTextureGenerator::render()     {
     }
 #endif
     // blit multi sample render buffer to output textures if using multi sampling.
-    if( nr_samples > 0&&output_texture_type!="2D_MULTISAMPLE" ) {
+    if( needMultiSample->getValue() ) {
       blitFBOBuffers(multi_samples_fbo_id, fbo_id, 0, 0, desired_fbo_width, desired_fbo_heigth);
     }
   } else {
@@ -843,13 +859,12 @@ void FrameBufferTextureGenerator::render()     {
     H3DInt32 nr_layers= nrLayers->getValue();
 
     const NodeVector &c = children->getValue();
-
     for( unsigned int i = 0; i < c.size(); ++i ) {
 
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
-
       // set the render target to the correct slice for depth texture.
-      if( output_texture_type == "2D_ARRAY" && generateDepthTexture->getValue() ) {
+      if( (output_texture_type == "2D_ARRAY"||output_texture_type == "2D_MULTISAMPLE_ARRAY") 
+        && generateDepthTexture->getValue() ) { // for 3D texture , no need to render depth
         if ( nr_layers > 0 ) {
           glFramebufferTexture(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0 );
         } else {
@@ -863,7 +878,6 @@ void FrameBufferTextureGenerator::render()     {
           }
         }
       }
-
       // set the render target to the correct slice for color textures.
       for( unsigned int j = 0; j < color_ids.size(); ++j ) {
         if ( nr_layers > 0 ) {
@@ -875,7 +889,7 @@ void FrameBufferTextureGenerator::render()     {
         }
       }
 
-      if( nr_samples > 0 ) {
+      if( needMultiSample->getValue() ) {
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, multi_samples_fbo_id);
       } 
 
@@ -884,7 +898,6 @@ void FrameBufferTextureGenerator::render()     {
         glPopAttrib();        
         return;
       }
-
       // render child
       if( render_func ) {
         render_func( this, i, render_func_data );
@@ -900,11 +913,10 @@ void FrameBufferTextureGenerator::render()     {
             c[i]->render();
         }
       }
-
       if( current_shadow_caster && !current_shadow_caster->object->empty() ) current_shadow_caster->render();
 
       // blit multi sample render buffer to output textures if using multi sampling.
-      if( nr_samples > 0 ) {
+      if( needMultiSample->getValue() ) {
         blitFBOBuffers(multi_samples_fbo_id, fbo_id, 0, 0, desired_fbo_width, desired_fbo_heigth);
       }
     }
@@ -928,16 +940,17 @@ void FrameBufferTextureGenerator::initializeFBO() {
   if( !fbo_initialized ) {
     glGenFramebuffersEXT(1, &fbo_id); 
     glGenFramebuffersEXT(1, &multi_samples_fbo_id); 
-
+    
     createOutputTextures ();
 
+    // create multi sample color and depth texture/renderbuffer as intermedia result
     // If we are to generate depth texture use that id otherwise
     // create a new render buffer.
     if( !generateDepthTexture->getValue() ) {
       glGenRenderbuffersEXT(1, &depth_id);      
     }
 
-    glGenRenderbuffersEXT(1, &stencil_id);   
+    //glGenRenderbuffersEXT(1, &stencil_id);   
     glGenRenderbuffersEXT(1, &multi_samples_depth_id);
 
     GLint max_draw_buffers, max_color_attachments;
@@ -977,20 +990,20 @@ void FrameBufferTextureGenerator::initializeFBO() {
 }
 
 void FrameBufferTextureGenerator::createOutputTextures () {
-
   color_ids.clear();
   NodeVector color_textures;
   H3DSingleTextureNode* depth_texture= NULL;
 
   bool generate_2d = true;
   const string &output_texture_type = outputTextureType->getValue();
-  if( output_texture_type == "3D" || output_texture_type == "2D_ARRAY" ) {
+  if( output_texture_type == "3D" || output_texture_type == "2D_ARRAY" || output_texture_type == "2D_MULTISAMPLE_ARRAY" ) {
     generate_2d = false;
   } else {
     if( output_texture_type != "2D" && output_texture_type != "2D_RECTANGLE" &&
-        output_texture_type != "2D_MULTISAMPLE") {
+        output_texture_type != "2D_MULTISAMPLE" ) {
       Console(4) << "Warning: Invalid outputTextureType value: \"" << output_texture_type 
-        << "\". Valid values are \"2D\", \"2D_RECTANGLE\", \"2D_MULTISAMPLE\", \"2D_ARRAY\" and \"3D\". "
+        << "\". Valid values are \"2D\", \"2D_RECTANGLE\", \"2D_MULTISAMPLE\"," 
+        << "\"2D_MULTISAMPLE_ARRAY\", \"2D_ARRAY\" and \"3D\". "
         <<"Using 2D instead(in FrameBufferTextureGenerator node). " << endl;
     }
   }
@@ -1009,7 +1022,7 @@ void FrameBufferTextureGenerator::createOutputTextures () {
         tex->ensureInitialized( GL_TEXTURE_2D );
       } else if ( output_texture_type =="2D_MULTISAMPLE" ){
         tex->ensureInitialized( GL_TEXTURE_2D_MULTISAMPLE );
-      }
+      } 
       depthTextureProperties->route( tex->textureProperties );
       depth_texture= tex;
       depth_id = tex->getTextureId();
@@ -1023,13 +1036,20 @@ void FrameBufferTextureGenerator::createOutputTextures () {
         depthTextureProperties->route( tex->textureProperties );
         depth_texture= tex;
         depth_id = tex->getTextureId();
-      } else if( output_texture_type == "3D" ) {
+      } else if( output_texture_type == "2D_MULTISAMPLE_ARRAY" ) {
+        GeneratedTexture3D *tex = new GeneratedTexture3D;
+        tex->setName( getName() + "_depth" );
+        tex->ensureInitialized( GL_TEXTURE_2D_MULTISAMPLE_ARRAY );
+        depthTextureProperties->route( tex->textureProperties );
+        depth_texture= tex;
+        depth_id = tex->getTextureId();
+      }
+      else if( output_texture_type == "3D" ) {
         Console(4) << "Warning: 3D depth textures cannot be generated by "
           <<"FrameBufferTextureGenerator. OpenGL does not support it. Depth texture will be undefined" << endl;
       }
     }
   }
-
   GLint max_draw_buffers, max_color_attachments;
   glGetIntegerv( GL_MAX_DRAW_BUFFERS_ARB, &max_draw_buffers );
   glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS_EXT, &max_color_attachments );
@@ -1045,7 +1065,6 @@ void FrameBufferTextureGenerator::createOutputTextures () {
         << ". Additional textures will be ignored(in FrameBufferTextureGenerator). "
         << endl;
   }
-
   TextureProperties *tp = NULL;
 
   // initialize color textures.
@@ -1080,7 +1099,9 @@ void FrameBufferTextureGenerator::createOutputTextures () {
       // make sure the texture id is initialized.
       if( output_texture_type == "2D_ARRAY" ) {
         tex->ensureInitialized( GL_TEXTURE_2D_ARRAY_EXT );
-      } else {
+      } else if( output_texture_type == "2D_MULTISAMPLE_ARRAY" ) {
+        tex->ensureInitialized( GL_TEXTURE_2D_MULTISAMPLE_ARRAY );
+      }else {
         tex->ensureInitialized( GL_TEXTURE_3D );
       }
       tex->textureProperties->setValue( tp );
@@ -1088,7 +1109,6 @@ void FrameBufferTextureGenerator::createOutputTextures () {
       color_ids.push_back( tex->getTextureId() );
     }
   }
-
   colorTextures->setValue ( color_textures, id );
   depthTexture->setValue ( depth_texture, id );
 
@@ -1103,18 +1123,11 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
   const string &output_texture_type = outputTextureType->getValue();
   // prepare the fbo_id, multi_sample_fbo_id as user specified
   GLuint target_fbo;
-  if( nr_samples > 0&&output_texture_type!="2D_MULTISAMPLE" ) {
-    // the multi_sample_fbo_id will be used as the starting point for rendering.
-    // as multi_sample_fbo_id use render buffer as color buffer and depth buffer
-    // FBO_SHARE option for depth buffer and FBO_SHARE_x for color buffer will
-    // not be valid, they will be copied anyway.
-    target_fbo = multi_samples_fbo_id;
-  } else {
-    target_fbo = fbo_id;
-  }
-  // protect currently bounded fbo.
-  //GLint previous_fbo_id;
-  //glGetIntegerv( GL_DRAW_FRAMEBUFFER_BINDING, &previous_fbo_id );
+  // the multi_sample_fbo_id will be used as the starting point for rendering.
+  // as multi_sample_fbo_id use render buffer as color buffer and depth buffer
+  // FBO_SHARE option for depth buffer and FBO_SHARE_x for color buffer will
+  // not be valid, they will be copied anyway.
+  target_fbo = needMultiSample->getValue()? multi_samples_fbo_id:fbo_id;
 
   const vector< string > &color_texture_types = generateColorTextures->getValue();
   bool using_stencil_buffer = (depthBufferType->getValue() == "DEPTH24_STENCIL8" ||
@@ -1129,6 +1142,8 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
     texture_type = GL_TEXTURE_3D;
   } else if( output_texture_type == "2D_ARRAY" ) {
     texture_type = GL_TEXTURE_2D_ARRAY_EXT;
+  } else if( output_texture_type == "2D_MULTISAMPLE_ARRAY" ) {
+    texture_type = GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
   }
 
   // pre process depth buffer of fbo
@@ -1154,7 +1169,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
         clearBuffers(target_fbo,0,0,w,h, GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
       } else { // bind depth buffer from external fbo to internal fbo
         // update the depth_id and depth tex of internal fbo bounded depth buffer.
-        if( nr_samples>0 ) {
+        if( getNrSamples->getValue()>0 ) {
           if( !depthWarningPrinted->getValue() ) {
             Console(4)<< "Warning: Multi-sampled FBO can not share depth buffer "
               << "will use FBO_COPY instead" <<std::endl;
@@ -1334,7 +1349,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
                 clearColorBuffer(target_fbo, 0, 0, w, h, clear_color_value.get()+4*i, i );
                 continue;
               }
-              if( nr_samples>0 ) {
+              if( getNrSamples->getValue()>0 ) {
                 // use FBO_COPY_x instead, as FBO_SHARE_x will not work
                 GLuint external_FBO_id_color = 
                   static_cast<FrameBufferTextureGenerator*>(
@@ -1462,8 +1477,26 @@ bool FrameBufferTextureGenerator::parseColorBufferStorage(std::string color_buff
   }
 }
 
-bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 _width, H3DInt32 _height, H3DInt32 depth ) {
+void FrameBufferTextureGenerator::_check_gl_error(const char *file, int line) {
+  GLenum err (glGetError());
 
+  while(err!=GL_NO_ERROR) {
+    string error;
+
+    switch(err) {
+    case GL_INVALID_OPERATION:      error="INVALID_OPERATION";      break;
+    case GL_INVALID_ENUM:           error="INVALID_ENUM";           break;
+    case GL_INVALID_VALUE:          error="INVALID_VALUE";          break;
+    case GL_OUT_OF_MEMORY:          error="OUT_OF_MEMORY";          break;
+    case GL_INVALID_FRAMEBUFFER_OPERATION:  error="INVALID_FRAMEBUFFER_OPERATION";  break;
+    }
+
+    Console(4) << "GL_" << error.c_str() <<" - "<<file<<":"<<line<<endl;
+    err=glGetError();
+  }
+}
+
+bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 _width, H3DInt32 _height, H3DInt32 depth ) {
   if ( X3DProgrammableShaderObject::use_bindless_textures ) {
     // Bindless textures are immutable once they are resident, so we need to make
     // new texture ids in order to change size
@@ -1484,7 +1517,6 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 _width, H3DInt32 _heig
       t->reinitialize();
     }
   }
-
   string output_texture_type = outputTextureType->getValue();
   const vector< string > &color_texture_types = generateColorTextures->getValue();
   bool using_stencil_buffer = haveStencilBuffer();
@@ -1498,32 +1530,13 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 _width, H3DInt32 _heig
     texture_type = GL_TEXTURE_2D_ARRAY_EXT;
   } else if ( output_texture_type == "2D_MULTISAMPLE" ){
     texture_type = GL_TEXTURE_2D_MULTISAMPLE;
+  } else if ( output_texture_type == "2D_MULTISAMPLE_ARRAY" ) {
+    texture_type = GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
   }
 
-  // determine nr sample points.
-  nr_samples = 0;
-  if( !GLEW_EXT_framebuffer_blit || !GLEW_EXT_framebuffer_multisample ) {
-    Console(4) << "Warning: Your graphics card does not support multi-sample draw "
-      << "buffers(EXT_framebuffer_multisample). Multi-sampling will be off"
-      << " (in FrameBufferTextureGenerator)." << endl;
-  } else {
-    GLint max_nr_samples;
-    glGetIntegerv( GL_MAX_SAMPLES_EXT, &max_nr_samples );
-    H3DInt32 s = samples->getValue();
-    if( s > max_nr_samples ) {
-      Console(4) << "Warning: Unsupported nr of multi-samples: " << s 
-        << ". Your graphics draw supports a maximum of " << max_nr_samples 
-        << " (in FrameBufferTextureGenerator)." << endl;
-      nr_samples = max_nr_samples;
-    } else {
-      nr_samples = s;
-    }
-  }
-
-  if( output_texture_type=="2D_MULTISAMPLE"&&nr_samples==0  ) {
-    nr_samples = 1;
+  if( (output_texture_type=="2D_MULTISAMPLE"||output_texture_type=="2D_MULTISAMPLE_ARRAY")&&getNrSamples->getValue()==0  ) {
     samples->setValue(1);
-    Console(4)<<"Warning: when 2D_MULTISAMPLE as output, the number of samples"
+    Console(4)<<"Warning: when using 2D_MULTISAMPLE or 2D_MULTISAMPLE_ARRAY  as output, the number of samples"
       <<"specified should not be zero, will set the number of sample to be one"<<endl;
       
   }
@@ -1531,13 +1544,11 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 _width, H3DInt32 _heig
   GLenum depth_internal_format = stringToInternalDepthFormat( depthBufferType->getValue() );
   GLenum depth_format = stringToDepthFormat( depthBufferType->getValue() );
   GLenum depth_type = stringToDepthType( depthBufferType->getValue() );
-
-  if( nr_samples > 0 && output_texture_type!="2D_MULTISAMPLE" ) {
+  if( needMultiSample->getValue() ) { // setup multi sample frame buffer object
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, multi_samples_fbo_id);
-
     // create multi sample render buffers
     glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, multi_samples_depth_id );
-    glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, nr_samples, 
+    glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, getNrSamples->getValue(), 
       depth_internal_format, _width, _height);
     glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, 
       GL_RENDERBUFFER_EXT, multi_samples_depth_id);
@@ -1547,25 +1558,23 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 _width, H3DInt32 _heig
 
     for( unsigned int i = 0; i<multi_samples_color_ids.size(); ++i ) {
       glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, multi_samples_color_ids[i] );
-      glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, nr_samples, 
+      glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, getNrSamples->getValue(), 
         stringToInternalFormat( color_texture_types[i]) ,
         _width, _height);
       glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i, 
         GL_RENDERBUFFER_EXT, multi_samples_color_ids[i]);
     }
-
     if( !checkFBOCompleteness() ) return false;
-
   }
 
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
-
   // set up depth buffer
   if( generateDepthTexture->getValue()  ) {
     if( texture_type != GL_TEXTURE_3D ) {
+      // do not support 3D depth texture
       glBindTexture( texture_type, depth_id );
 
-      if (texture_type!= GL_TEXTURE_2D_MULTISAMPLE){
+      if (texture_type!= GL_TEXTURE_2D_MULTISAMPLE&&texture_type!=GL_TEXTURE_2D_MULTISAMPLE_ARRAY){
         // filter needs to be something else than GL_MIPMAP_LINEAR that is default
         // since that is not supported by FBO.
         glTexParameteri(texture_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -1590,13 +1599,25 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 _width, H3DInt32 _heig
           }
         }
       }else if (texture_type==GL_TEXTURE_2D_MULTISAMPLE){
-        glTexImage2DMultisample( texture_type, nr_samples, depth_internal_format, _width, _height, GL_TRUE );
+        glTexImage2DMultisample( texture_type, getNrSamples->getValue(), depth_internal_format, _width, _height, GL_TRUE );
         glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texture_type, depth_id, 0 );
         if (using_stencil_buffer){
           glFramebufferTexture2D( GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT_EXT, texture_type, depth_id, 0 );
         }
-      }
-      else {
+      }else if( texture_type==GL_TEXTURE_2D_MULTISAMPLE_ARRAY ) {
+        glTexImage3DMultisample( texture_type, getNrSamples->getValue(), depth_internal_format, _width, _height, depth, GL_TRUE );
+        if( nrLayers->getValue() > 0 ) {
+          glFramebufferTexture( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0 );
+          if( using_stencil_buffer ) {
+            glFramebufferTexture( GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, depth_id, 0 );
+          }
+        }else{
+          glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, depth_id, 0, 0);
+          if( using_stencil_buffer ) {
+            glFramebufferTextureLayerEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, depth_id, 0, 0);
+          }
+        }
+      }else {
         glTexImage2D( texture_type, 0, depth_internal_format, _width, _height, 0,
           depth_format, depth_type, NULL);
         glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
@@ -1611,13 +1632,21 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 _width, H3DInt32 _heig
     if (texture_type==GL_TEXTURE_2D_MULTISAMPLE){
       // create multi sample render buffers
       glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depth_id );
-      glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, nr_samples, 
+      glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, getNrSamples->getValue(), 
         depth_internal_format, _width, _height);
       glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, 
         GL_RENDERBUFFER_EXT, depth_id);
       if( using_stencil_buffer )
         glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, 
         GL_RENDERBUFFER_EXT, depth_id);
+    }else if( texture_type==GL_TEXTURE_2D_MULTISAMPLE_ARRAY ) {
+      // currently do not specify depth buffer 
+      // when it is not required as output for 2D_MULTISAMPLE_ARRAY type,
+      // extra renderbuffer here is mostly for depth testing, which seems not 
+      // really necessary for 2D_MULTISAMPLE_ARRAY type as depth 
+      // if renderbuffer is specified, it will have framebuffer completeness issue
+    }else if( texture_type==GL_TEXTURE_2D_ARRAY_EXT ) {
+      // currently do not specify depth buffer with the same reason as above
     }else{
       glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depth_id);
       glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, depth_internal_format,
@@ -1629,7 +1658,6 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 _width, H3DInt32 _heig
         GL_RENDERBUFFER_EXT, depth_id);
     }
   }
-
   // set up stencil buffer
   // NOTE: seems like separate stencil buffers are not supported by current hardware.
   // Instead they use a special format and packs the depth and stencil buffer into
@@ -1645,7 +1673,7 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 _width, H3DInt32 _heig
   // set up color buffers
   for( size_t i = 0; i < color_texture_types.size(); ++i ) {
     glBindTexture( texture_type, color_ids[i] );
-    if (texture_type!=GL_TEXTURE_2D_MULTISAMPLE){
+    if (texture_type!=GL_TEXTURE_2D_MULTISAMPLE&&texture_type!=GL_TEXTURE_2D_MULTISAMPLE_ARRAY){
       // filter needs to be something else than GL_MIPMAP_LINEAR that is default
       // since that is not supported by FBO.
       glTexParameteri(texture_type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -1669,8 +1697,15 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 _width, H3DInt32 _heig
       glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, (GLenum)( GL_COLOR_ATTACHMENT0_EXT + i ),
         GL_TEXTURE_RECTANGLE_ARB, color_ids[i], 0 );        
     } else if ( texture_type == GL_TEXTURE_2D_MULTISAMPLE ){
-      glTexImage2DMultisample( GL_TEXTURE_2D_MULTISAMPLE, nr_samples, internal_format, _width, _height, GL_TRUE );
+      glTexImage2DMultisample( GL_TEXTURE_2D_MULTISAMPLE, getNrSamples->getValue(), internal_format, _width, _height, GL_TRUE );
       glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D_MULTISAMPLE, color_ids.at(i), 0);
+    } else if( texture_type == GL_TEXTURE_2D_MULTISAMPLE_ARRAY ) {
+      glTexImage3DMultisample( GL_TEXTURE_2D_MULTISAMPLE_ARRAY, getNrSamples->getValue(), internal_format, _width, _height, depth, GL_TRUE );
+      if( nrLayers->getValue() > 0 ) {
+        glFramebufferTexture( GL_FRAMEBUFFER_EXT, (GLenum)(GL_COLOR_ATTACHMENT0_EXT + i), color_ids.at(i), 0 );
+      }else{
+        glFramebufferTextureLayerEXT( GL_FRAMEBUFFER_EXT, (GLenum)(GL_COLOR_ATTACHMENT0_EXT + i), color_ids.at(i), 0, 0 );
+      }
     } else if( texture_type == GL_TEXTURE_2D_ARRAY_EXT ) {
       glTexImage3D(GL_TEXTURE_2D_ARRAY_EXT, 0, internal_format, _width, _height, depth, 0,
         GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -1726,6 +1761,18 @@ bool FrameBufferTextureGenerator::checkFBOCompleteness() {
       break;
     case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
       Console(4) << "Unsupported" << endl;
+      break;
+    case GL_FRAMEBUFFER_UNDEFINED:
+      Console(4) << "Target is the default framebuffer, but the default framebuffer does not exist"<<endl;
+      break;
+    case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+      Console(4) << "Read buffer err" << endl;
+      break;
+    case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+      Console(4) << "mutiple sample setup error" <<endl;
+      break;
+    case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+      Console(4) << "layered error" <<endl;
       break;
     default:
       Console(4) << "Unkown error" << endl;
@@ -2095,4 +2142,47 @@ void FrameBufferTextureGenerator::setupScissor( bool needSinglePassStereo,
 #ifdef GL_ARB_viewport_array
   }
 #endif
+}
+
+void FrameBufferTextureGenerator::NeedMultiSample::update()
+{
+  FrameBufferTextureGenerator* fbtg = static_cast< FrameBufferTextureGenerator* >(getOwner());
+  if( !fbtg ) {
+    Console(4)<<"NeedMultiSample field is not initialized with its FBTG owner!"<<endl;
+    return;
+  }
+  string output_texture_type = fbtg->outputTextureType->getValue();
+  int nr_samples = fbtg->getNrSamples->getValue();
+  int nr_layers = fbtg->nrLayers->getValue();
+  if( nr_samples>0&&output_texture_type!="2D_MULTISAMPLE"&&output_texture_type!="2D_MULTISAMPLE_ARRAY" ) {
+    value = true;
+    if( nr_layers>0&&output_texture_type=="2D_ARRAY" ) {
+      value = false;
+      Console(4)<<"Warning: layered 2d array with multiple sample is not supported, "
+        <<"will ignore the samples you just set."
+        <<"Please use 2D_MULTISAMPLE_ARRAY as outputTextureType instead!"<<endl;
+    }
+  }else{
+    value = false;
+  }
+  if( nr_samples ) {
+  }
+}
+
+void H3D::FrameBufferTextureGenerator::GetNrSamples::update()
+{
+  // update number of samples when FBTG samples field is updated
+  SFInt32* samples = static_cast<SFInt32*>( getRoutesIn().at(0) );
+  if( samples ) {
+    int nr_samples = samples->getValue();
+    int max_samples = GraphicsHardwareInfo::getInfo().max_samples;
+    if( nr_samples>max_samples ) {
+      Console(4) << "Warning: Unsupported nr of multi-samples: " << nr_samples 
+        << ". Your graphics draw supports a maximum of " << max_samples 
+        << " (in FrameBufferTextureGenerator)." << endl;
+      value = max_samples;
+    }else{
+      value = nr_samples;
+    }
+  }
 }
