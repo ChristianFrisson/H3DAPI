@@ -59,6 +59,7 @@ H3DDisplayListObject::DisplayList::DisplayList():
   isActive->setValue( true );
   isActive->setName( "H3DDisplayListObject::isActive" );
   Scene::time->routeNoEvent( isActive );
+  break_list_field->setName( "H3DDisplayListObject::break_list_field" );
 
 #ifndef H3D_GENERATE_DOTROUTE_FILES
   break_list_field->route( this );
