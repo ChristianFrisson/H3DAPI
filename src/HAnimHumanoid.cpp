@@ -38,8 +38,10 @@
 #include <H3D/CoordinateDouble.h>
 #include <H3D/Normal.h>
 #include <H3D/HAnimDisplacer.h>
+#include <H3DUtil/DualQuaternion.h>
 
 using namespace H3D;
+typedef H3DUtil::ArithmeticTypes::DualQuaternion DualQuaternion;
 
 H3DNodeDatabase HAnimHumanoid::database( 
         "HAnimHumanoid", 
@@ -48,6 +50,7 @@ H3DNodeDatabase HAnimHumanoid::database(
         &X3DChildNode::database 
         );
 
+        
 namespace HAnimHumanoidInternals {
   FIELDDB_ELEMENT( HAnimHumanoid, bboxCenter, INITIALIZE_ONLY );
   FIELDDB_ELEMENT( HAnimHumanoid, bboxSize, INITIALIZE_ONLY );
@@ -130,17 +133,171 @@ HAnimHumanoid::HAnimHumanoid(  Inst< SFNode         > _metadata    ,
   renderMode->addValidValue( "SKIN" );
   renderMode->addValidValue( "JOINTS" );
   renderMode->addValidValue( "SKELETON" );
+  renderMode->addValidValue( "SKIN_DLB" );
   renderMode->setValue( "SKIN" );
 
   renderMode->route( displayList );
  }
-
 
 template< class VectorType >
 void HAnimHumanoid::updateCoordinates( const VectorType &orig_points,
                                        const vector< Vec3f > &orig_normals,
                                        VectorType &modified_points,
                                        vector< Vec3f > &modified_normals ) {
+  if( renderMode->getValue() == "SKIN_DLB" ) {
+    updateCoordinatesDLB( orig_points, orig_normals, modified_points, modified_normals );
+  } else {
+    updateCoordinatesLBS2( orig_points, orig_normals, modified_points, modified_normals );
+  }
+
+  const NodeVector &jts = joints->getValue();
+  // do displacer movements
+  for( unsigned int i = 0; i < jts.size(); ++i ) {
+    HAnimJoint *joint = static_cast< HAnimJoint* >( jts[i]);
+    if( joint ) {
+      const NodeVector &disp = joint->displacers->getValue();  
+      if( disp.size() > 0 ) {
+        for( unsigned int j = 0; j < disp.size(); ++j ) {
+          HAnimDisplacer *displacer = static_cast< HAnimDisplacer* >( disp[j]);
+          if( displacer ) {
+            displacer->displaceCoordinates(modified_points,
+                                           joint->accumulatedJointMatrix->getValue() );
+          }
+        }
+      }
+    }
+  }
+
+}
+
+template< class VectorType >
+void HAnimHumanoid::updateCoordinatesDLB( const VectorType &orig_points,
+                                         const vector< Vec3f > &orig_normals,
+                                         VectorType &modified_points,
+                                         vector< Vec3f > &modified_normals ) {
+
+  unsigned int p_size = (unsigned int) orig_points.size();
+  unsigned int n_size = (unsigned int) orig_normals.size();
+  unsigned int max_size = H3DMax( p_size, n_size );
+  vector< bool  > point_written( max_size, false ); 
+  vector< DualQuaternion > deform_quat ( max_size, DualQuaternion( Quaternion( 0, 0, 0, 0 ),
+                                                                   Quaternion( 0, 0, 0, 0 ) ) );
+  const NodeVector &jts = joints->getValue();
+  
+  DualQuaternion first_joint_dq;
+
+  // blend dual quaternions
+  for( unsigned int i = 0; i < jts.size(); ++i ) {
+    HAnimJoint *joint = static_cast< HAnimJoint* >( jts[i]);
+    if( joint ) {
+      const vector<int> &indices = joint->skinCoordIndex->getValue();
+      const vector<H3DFloat> &weights = joint->skinCoordWeight->getValue();
+      Matrix4f joint_to_humanoid = joint->accumulatedJointMatrix->getValue();
+      Matrix3f joint_to_humanoid_rot = joint_to_humanoid.getRotationPart();
+
+      // q and -q represents the same rigid transform. For blending we need to choose
+      // the representation with the same signs so we check here and make sure that
+      // they are.
+      DualQuaternion joint_dq( joint_to_humanoid );
+      if( i == 0 ) {
+        first_joint_dq = joint_dq;
+      } else {
+        if( first_joint_dq.q0.dotProduct( joint_dq.q0 ) < 0 ) {
+          joint_dq = -joint_dq;
+        }
+      }
+
+      for( unsigned int j = 0; j < indices.size(); ++j ) {
+        unsigned int index = indices[j];
+
+        if( index < p_size && j < weights.size() ) {
+           deform_quat[index] += weights[j] * joint_dq;
+        }
+
+        if( index < max_size ) {
+          point_written[index] = true;
+        }
+      }
+    }
+  }
+
+  // apply deform transform to all vertices
+  for( unsigned int i = 0; i < max_size; ++i ) {
+    if( point_written[i] ) {
+      //(see "Skinning with Dual Quaternion" paper by Kavan) for details
+      DualQuaternion &b = deform_quat[i];
+      H3DFloat b0_norm = b.q0.norm();
+      Quaternion c0 = b.q0 / b0_norm;
+      Quaternion ce = b.qe / b0_norm;
+
+      H3DFloat t0 = 2 * (-ce.w*c0.v.x + ce.v.x*c0.w   - ce.v.y*c0.v.z + ce.v.z*c0.v.y );
+      H3DFloat t1 = 2 * (-ce.w*c0.v.y + ce.v.x*c0.v.z + ce.v.y*c0.w   - ce.v.z*c0.v.x );
+      H3DFloat t2 = 2 * (-ce.w*c0.v.z - ce.v.x*c0.v.y + ce.v.y*c0.v.x + ce.v.z*c0.w   );
+
+      Matrix4f deform_matrix( 1 - 2*H3DSqr(c0.v.y) - 2*H3DSqr(c0.v.z), 2*c0.v.x*c0.v.y - 2*c0.w*c0.v.z        , 2*c0.v.x*c0.v.z + 2*c0.w*c0.v.y        , t0,
+                              2*c0.v.x*c0.v.y + 2*c0.w*c0.v.z        , 1 - 2*H3DSqr(c0.v.x) - 2*H3DSqr(c0.v.z), 2*c0.v.y*c0.v.z - 2*c0.w*c0.v.x        , t1,
+                              2*c0.v.x*c0.v.z - 2*c0.w*c0.v.y        , 2*c0.v.y*c0.v.z + 2*c0.w*c0.v.x        , 1 - 2*H3DSqr(c0.v.x) - 2*H3DSqr(c0.v.y), t2,
+                              0                                      , 0                                      , 0                                      , 1 );
+    
+      if( i < p_size ) modified_points[i] = deform_matrix * orig_points[i];
+      if( i < n_size ) modified_normals[i] = deform_matrix.getScaleRotationPart() * orig_normals[i];
+    }
+  }
+}
+
+template< class VectorType >
+void HAnimHumanoid::updateCoordinatesLBS2( const VectorType &orig_points,
+                                         const vector< Vec3f > &orig_normals,
+                                         VectorType &modified_points,
+                                         vector< Vec3f > &modified_normals ) {
+
+  unsigned int p_size = (unsigned int) orig_points.size();
+  unsigned int n_size = (unsigned int) orig_normals.size();
+  unsigned int max_size = H3DMax( p_size, n_size );
+  vector< bool  > point_written( max_size, false ); 
+  vector< Matrix4f > deform_matrix ( max_size, Matrix4f( 0, 0, 0, 0,
+                                                         0, 0, 0, 0,
+                                                         0, 0, 0, 0,
+                                                         0, 0, 0, 0 ) );
+  const NodeVector &jts = joints->getValue();
+ 
+  // blend transform matrices
+  for( unsigned int i = 0; i < jts.size(); ++i ) {
+    HAnimJoint *joint = static_cast< HAnimJoint* >( jts[i]);
+    if( joint ) {
+      const vector<int> &indices = joint->skinCoordIndex->getValue();
+      const vector<H3DFloat> &weights = joint->skinCoordWeight->getValue();
+      Matrix4f joint_to_humanoid = joint->accumulatedJointMatrix->getValue();
+      Matrix3f joint_to_humanoid_rot = joint_to_humanoid.getRotationPart();
+
+      for( unsigned int j = 0; j < indices.size(); ++j ) {
+        unsigned int index = indices[j];
+
+        if( index < p_size && j < weights.size() ) {
+            deform_matrix[index] += weights[j] * joint_to_humanoid;
+        }
+
+        if( index < max_size ) {
+          point_written[index] = true;
+        }
+      }
+    }
+  }
+  
+  // apply deform transform to all vertices
+  for( unsigned int i = 0; i < max_size; ++i ) {
+    if( point_written[i] ) {
+      if( i < p_size ) modified_points[i] = deform_matrix[i] * orig_points[i];
+      if( i < n_size ) modified_normals[i] = deform_matrix[i].getScaleRotationPart() * orig_normals[i];
+    }
+  }
+}
+
+template< class VectorType >
+void HAnimHumanoid::updateCoordinatesLBS( const VectorType &orig_points,
+                                         const vector< Vec3f > &orig_normals,
+                                         VectorType &modified_points,
+                                         vector< Vec3f > &modified_normals ) {
 
   unsigned int p_size = (unsigned int) orig_points.size();
   unsigned int n_size = (unsigned int) orig_normals.size();
@@ -155,7 +312,6 @@ void HAnimHumanoid::updateCoordinates( const VectorType &orig_points,
     if( joint ) {
       const vector<int> &indices = joint->skinCoordIndex->getValue();
       const vector<H3DFloat> &weights = joint->skinCoordWeight->getValue();
-      const Matrix4f &joint_to_global = joint->accumulatedForward->getValue();
       Matrix4f joint_to_humanoid = joint->accumulatedJointMatrix->getValue();
       Matrix3f joint_to_humanoid_rot = joint_to_humanoid.getRotationPart();
 
@@ -193,26 +349,7 @@ void HAnimHumanoid::updateCoordinates( const VectorType &orig_points,
         
         if( index < max_size ) {
           point_written[index] = true;
-        }
-
-        
-      }
-    }
-  }
-
-  // do displacer movements
-  for( unsigned int i = 0; i < jts.size(); ++i ) {
-    HAnimJoint *joint = static_cast< HAnimJoint* >( jts[i]);
-    if( joint ) {
-      const NodeVector &disp = joint->displacers->getValue();  
-      if( disp.size() > 0 ) {
-        for( unsigned int j = 0; j < disp.size(); ++j ) {
-          HAnimDisplacer *displacer = static_cast< HAnimDisplacer* >( disp[j]);
-          if( displacer ) {
-            displacer->displaceCoordinates(modified_points,
-                                           joint->accumulatedJointMatrix->getValue() );
-          }
-        }
+        }       
       }
     }
   }

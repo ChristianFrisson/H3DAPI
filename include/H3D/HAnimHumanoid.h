@@ -368,13 +368,15 @@ namespace H3D {
 
     /// The renderMode field defines how the humanoid should be rendered.
     ///
-    /// - "SKIN" - the skin in the skin field is renderes
+    /// - "SKIN" - the skin in the skin field is renderes using linear blend skinning
+    /// - "SKIN_DLB" - the skin in the skin field is renderes using dual quaternion linear blending
+    ///                (see "Skinning with Dual Quaternion" paper by Kavan).
     /// - "JOINTS" - a sphere is rendered for each joint
     /// - "SKELETON" - a sphere is rendered for each joint and a line is
     /// drawn between the connected joints.
     /// 
     /// <b>Access type:</b> inputOutput \n
-    /// <b>Default value:</b> "SKIN", "JOINTS", "SKELETON" \n
+    /// <b>Default value:</b> "SKIN", "SKIN_DLB", "JOINTS", "SKELETON" \n
     /// <b>Default value:</b> "SKIN" \n
     /// 
     /// \dotfile HAnimHumanoid_renderMode.dot
@@ -399,6 +401,49 @@ namespace H3D {
                               const vector< Vec3f > &orig_normals,
                               VectorType &modified_points,
                               vector< Vec3f > &modified_normals );
+
+      /// Function for updating the coordinates using linear blend skinning.
+      ///
+      /// \param orig_points The original points before any deformation.
+      /// \param orig_normals The original normals before any deformation.
+      /// \param modified_points At input a copy of orig_points, at function
+      /// return it will contain the points with the deformations applied.
+      /// \param modified_normals  At input a copy of orig_normals, at function
+      /// return it will contain the normals with the deformations applied.
+      template< class VectorType >
+      void updateCoordinatesLBS( const VectorType &orig_points,
+                                 const vector< Vec3f > &orig_normals,
+                                 VectorType &modified_points,
+                                 vector< Vec3f > &modified_normals );
+
+      /// Function for updating the coordinates using linear blend skinning
+      /// using blending of matrices. Same results as updateCoordinateLBS.
+      ///
+      /// \param orig_points The original points before any deformation.
+      /// \param orig_normals The original normals before any deformation.
+      /// \param modified_points At input a copy of orig_points, at function
+      /// return it will contain the points with the deformations applied.
+      /// \param modified_normals  At input a copy of orig_normals, at function
+      /// return it will contain the normals with the deformations applied.
+      template< class VectorType >
+      void updateCoordinatesLBS2( const VectorType &orig_points,
+                                  const vector< Vec3f > &orig_normals,
+                                  VectorType &modified_points,
+                                  vector< Vec3f > &modified_normals );
+
+      /// Function for updating the coordinates using dual quaternion linear blending.
+      ///
+      /// \param orig_points The original points before any deformation.
+      /// \param orig_normals The original normals before any deformation.
+      /// \param modified_points At input a copy of orig_points, at function
+      /// return it will contain the points with the deformations applied.
+      /// \param modified_normals  At input a copy of orig_normals, at function
+      /// return it will contain the normals with the deformations applied.
+      template< class VectorType >
+      void updateCoordinatesDLB( const VectorType &orig_points,
+                                 const vector< Vec3f > &orig_normals,
+                                 VectorType &modified_points,
+                                 vector< Vec3f > &modified_normals );
 
       /// Transform node that will contain the skin nodes and which values
       /// will be controlled by the transformation fields in the HAnimHumanoid. 
