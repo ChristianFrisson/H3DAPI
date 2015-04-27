@@ -137,6 +137,7 @@ HAnimHumanoid::HAnimHumanoid(  Inst< SFNode         > _metadata    ,
   renderMode->setValue( "SKIN" );
 
   renderMode->route( displayList );
+  renderMode->route( joint_matrix_changed );
  }
 
 template< class VectorType >
@@ -226,6 +227,9 @@ void HAnimHumanoid::updateCoordinatesDLB( const VectorType &orig_points,
     if( point_written[i] ) {
       //(see "Skinning with Dual Quaternion" paper by Kavan) for details
       DualQuaternion &b = deform_quat[i];
+
+      /* This does not work. Don't know why as it is implemented from article. Code example from article is different though and
+      is what is used instead 
       H3DFloat b0_norm = b.q0.norm();
       Quaternion c0 = b.q0 / b0_norm;
       Quaternion ce = b.qe / b0_norm;
@@ -238,9 +242,30 @@ void HAnimHumanoid::updateCoordinatesDLB( const VectorType &orig_points,
                               2*c0.v.x*c0.v.y + 2*c0.w*c0.v.z        , 1 - 2*H3DSqr(c0.v.x) - 2*H3DSqr(c0.v.z), 2*c0.v.y*c0.v.z - 2*c0.w*c0.v.x        , t1,
                               2*c0.v.x*c0.v.z - 2*c0.w*c0.v.y        , 2*c0.v.y*c0.v.z + 2*c0.w*c0.v.x        , 1 - 2*H3DSqr(c0.v.x) - 2*H3DSqr(c0.v.y), t2,
                               0                                      , 0                                      , 0                                      , 1 );
+    */
+
+      Quaternion &c0 = b.q0;
+      Quaternion &ce = b.qe;
+
+      H3DFloat t0 = 2 * (-ce.w*c0.v.x + ce.v.x*c0.w   - ce.v.y*c0.v.z + ce.v.z*c0.v.y );
+      H3DFloat t1 = 2 * (-ce.w*c0.v.y + ce.v.x*c0.v.z + ce.v.y*c0.w   - ce.v.z*c0.v.x );
+      H3DFloat t2 = 2 * (-ce.w*c0.v.z - ce.v.x*c0.v.y + ce.v.y*c0.v.x + ce.v.z*c0.w   );
+
+      H3DFloat w = b.q0.w;
+      H3DFloat x = b.q0.v.x;
+      H3DFloat y = b.q0.v.y;
+      H3DFloat z = b.q0.v.z; 
+
+      Matrix4f deform_matrix( w*w + x*x - y*y - z*z, 2*(x*y - w*z)        , 2*(x*z + w*y)        , t0,
+                              2*(x*y + w*z)        , w*w + y*y - x*x - z*z, 2*(y*z - w*x )       , t1,
+                              2*(x*z - w*y)        , 2*(y*z + w*x)        , w*w + z*z - x*x - y*y, t2,
+                              0                    , 0                    , 0                     , 1 );
     
-      if( i < p_size ) modified_points[i] = deform_matrix * orig_points[i];
-      if( i < n_size ) modified_normals[i] = deform_matrix.getScaleRotationPart() * orig_normals[i];
+      H3DFloat len2 = c0.dotProduct(c0);
+	    if (len2 > 0.0f) len2 = (H3DFloat) 1.0 / len2; 
+
+      if( i < p_size ) modified_points[i] = len2*(deform_matrix * orig_points[i]);
+      if( i < n_size ) modified_normals[i] = len2*(deform_matrix.getScaleRotationPart() * orig_normals[i]); 
     }
   }
 }
