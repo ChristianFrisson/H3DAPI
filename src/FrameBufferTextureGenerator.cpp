@@ -866,6 +866,12 @@ void FrameBufferTextureGenerator::render()     {
     if( use_layered_rendering ) {
       // layered rendering currently do not support fbo blit in the implementation
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo_id);
+
+      if ( useSpecifiedClearColor->getValue() ) {
+        RGBA clear_color = clearColor->getValue();
+        glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
+      }
+
       glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
       if( !checkFBOCompleteness() ) {
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, previous_fbo_id);
