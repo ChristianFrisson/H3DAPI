@@ -2105,7 +2105,12 @@ void FrameBufferTextureGenerator::setupScissor( bool needSinglePassStereo,
     int box_y = scissorBoxY->getValue();
     int box_w = scissorBoxWidth->getValue();
     int box_h = scissorBoxHeight->getValue();
-    for( int i = 0; i<3; ++i ) {
+    scissorBox_size[0] = viewports_size[0];
+    scissorBox_size[1] = viewports_size[1];
+    scissorBox_size[2] = viewports_size[2];
+    scissorBox_size[3] = viewports_size[3];
+    for( int i = 1; i<3; ++i ) { 
+      // only modify the scissor box for the second and third viewport
       scissorBox_size[4*i] = viewports_size[4*i]+box_x;
       scissorBox_size[4*i+1] = viewports_size[4*i+1]+box_y;
       scissorBox_size[4*i+2] = box_w;
