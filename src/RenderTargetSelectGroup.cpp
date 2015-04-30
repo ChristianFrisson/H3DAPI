@@ -55,7 +55,8 @@ RenderTargetSelectGroup::RenderTargetSelectGroup(
   X3DGroupingNode( _addChildren, _removeChildren, _children, 
        _metadata, _bound, _bboxCenter, _bboxSize ),
   renderTargets( _renderTargets ),
-  support_message_displayed( false ) {
+  support_message_displayed( false ),
+  draw_buffers() {
 
   type_name = "RenderTargetSelectGroup";
   database.initFields( this );
@@ -90,20 +91,20 @@ void RenderTargetSelectGroup::render() {
   const vector< H3DInt32 > &render_targets = renderTargets->getValue();
 
   // initialize draw buffers array.
-  if( !draw_buffers.get() ) {
+  if(draw_buffers.empty()) {
     GLint max_draw_buffers, max_color_attachments;
     glGetIntegerv( GL_MAX_DRAW_BUFFERS_ARB, &max_draw_buffers );
     glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS_EXT, &max_color_attachments );
     max_nr_draw_buffers = H3DMin( max_draw_buffers, max_color_attachments );
-    draw_buffers.reset( new GLenum[max_nr_draw_buffers] );
+    draw_buffers.resize(max_nr_draw_buffers);
   }
 
   if( render_targets.size() > 0 ) {
     // construct current draw buffers array
 
     // reset all draw buffers to NONE.
-    for( size_t i = 0; i < (size_t)max_nr_draw_buffers; ++i ) {
-      draw_buffers.get()[i] = GL_NONE;
+    for( size_t i = 0; i < draw_buffers.size(); ++i ) {
+      draw_buffers[i] = GL_NONE;
     }
 
     // set the specified draw buffers to the color attachement specified by renderTargets.
@@ -111,7 +112,7 @@ void RenderTargetSelectGroup::render() {
     for( size_t i = 0; i < render_targets.size(); ++i ) {
       int target = render_targets[i];
       if( target >= 0 && target < max_nr_draw_buffers ) {
-  draw_buffers.get()[target] = GL_COLOR_ATTACHMENT0_EXT + target;
+  draw_buffers[target] = GL_COLOR_ATTACHMENT0_EXT + target;
   if( target >= draw_buffer_size ) draw_buffer_size = target + 1;
       } else {
   Console(4) << "Warning: Invalid render target: " << target 
@@ -122,7 +123,7 @@ void RenderTargetSelectGroup::render() {
     }
 
     // change draw buffers.
-    glDrawBuffersARB( draw_buffer_size, draw_buffers.get() );
+    glDrawBuffersARB( draw_buffer_size, &draw_buffers[0]);
   } else {
     // no targets specified, set to draw to no color buffer.
     glDrawBuffer( GL_NONE );

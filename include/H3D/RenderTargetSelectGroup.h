@@ -79,7 +79,7 @@ namespace H3D {
   protected:
     /// Internal buffer for storing OpenGL enumerators for use with
     /// the glDrawBuffers call.
-    auto_ptr< GLenum > draw_buffers;
+    std::vector< GLenum > draw_buffers;
 
     /// The maximum number of draw buffers supported by the graphics card. 
     int max_nr_draw_buffers;
