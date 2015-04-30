@@ -55,4 +55,7 @@
 /// 3DVision stereo mode.
 #cmakedefine HAVE_DX9
 
+/// Enable/disable the Python console
+#cmakedefine USE_PYTHON_CONSOLE
+
 #endif

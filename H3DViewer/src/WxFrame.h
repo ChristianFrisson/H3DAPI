@@ -307,7 +307,7 @@ public:
   void ShowPluginsDialog( wxCommandEvent & event );
   void ShowFrameRate( wxCommandEvent & event );
   void ShowProgramSettings( wxCommandEvent & event );
-#ifdef HAVE_PYTHON
+#if defined(HAVE_PYTHON) && defined(USE_PYTHON_CONSOLE)
   void ShowPythonConsole( wxCommandEvent & event );
 #endif
   void OnKeepViewpointOnLoadCheck( wxCommandEvent & event );

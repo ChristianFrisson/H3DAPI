@@ -39,6 +39,12 @@ SET(H3DViewer_MINOR_VERSION "3")
 SET(H3DViewer_BUILD_VERSION "1")
 SET( H3DVIEWER_APP_NAME "H3DViewer ${H3DViewer_MAJOR_VERSION}.${H3DViewer_MINOR_VERSION}.${H3DViewer_BUILD_VERSION}" )
 
+# Add a cache variable USE_PYTHON_CONSOLE to have the choice of enabling the
+# interactive Python console in H3DViewer. Default is NO.
+IF( NOT DEFINED USE_PYTHON_CONSOLE )
+  SET( USE_PYTHON_CONSOLE "NO" CACHE BOOL "Decides if the interactive Python console is enabled in H3DViewer." )
+ENDIF( NOT DEFINED USE_PYTHON_CONSOLE )
+
 # Include directories.
 INCLUDE_DIRECTORIES( ../src )
 

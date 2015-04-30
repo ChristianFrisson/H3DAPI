@@ -406,7 +406,7 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
                         wxT("Show the program settings for the current scene."));  
 #endif
   
-#ifdef HAVE_PYTHON
+#if defined(HAVE_PYTHON) && defined(USE_PYTHON_CONSOLE)
   advancedMenu->Append(FRAME_PYTHON_CONSOLE, wxT("Show Python Console\tF6"),
                        wxT("Show the interactive Python console"));
 #endif
@@ -655,7 +655,7 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_PLUGINS, WxFrame::ShowPluginsDialog)
   EVT_MENU (FRAME_FRAMERATE, WxFrame::ShowFrameRate)
   EVT_MENU (FRAME_PROGRAMSETTINGS, WxFrame::ShowProgramSettings)
-#ifdef HAVE_PYTHON
+#if defined(HAVE_PYTHON) && defined(USE_PYTHON_CONSOLE)
   EVT_MENU (FRAME_PYTHON_CONSOLE, WxFrame::ShowPythonConsole)
 #endif
   EVT_MENU (FRAME_KEEPVIEWPOINTONLOAD, WxFrame::OnKeepViewpointOnLoadCheck )
@@ -2027,7 +2027,7 @@ void WxFrame::ShowProgramSettings(wxCommandEvent & event)
 #endif
 }
 
-#ifdef HAVE_PYTHON
+#if defined(HAVE_PYTHON) && defined(USE_PYTHON_CONSOLE)
 void WxFrame::ShowPythonConsole( wxCommandEvent & event ) {
   AutoRefVector < PythonScript > python_nodes;
 
