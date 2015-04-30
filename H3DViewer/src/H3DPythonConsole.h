@@ -32,9 +32,10 @@
 #define __H3DPYTHONCONSOLE__
 
 #include "H3DViewer.h"
+#include "H3DViewerConfig.h"
 #include <H3D/PythonScript.h>
 
-#ifdef HAVE_PYTHON
+#if defined(HAVE_PYTHON) && defined(USE_PYTHON_CONSOLE)
 
 /** Implementing PythonConsole */
 class H3DPythonConsole : public PythonConsole

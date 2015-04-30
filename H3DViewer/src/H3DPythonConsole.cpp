@@ -29,7 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 #include "H3DPythonConsole.h"
 
-#ifdef HAVE_PYTHON
+#if defined(HAVE_PYTHON) && defined(USE_PYTHON_CONSOLE)
 
 using namespace H3D;
 
