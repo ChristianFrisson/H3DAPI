@@ -100,6 +100,10 @@ namespace H3D {
     
     virtual void loadScript( const string &script_filename, const string &script_content= "" );
 
+    /// Execute the specified python code string, returning the stdout, stderr
+    /// or the string representation of the resulting object
+    std::string execute ( const std::string& _command );
+
     static void setargv( int _argc, char *_argv[] );
 
     /// Initialize is called once upon the first reference of the 

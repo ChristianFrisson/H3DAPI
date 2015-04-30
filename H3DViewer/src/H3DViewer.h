@@ -200,4 +200,28 @@ class ViewImage : public wxFrame
 	
 };
 
+///////////////////////////////////////////////////////////////////////////////
+/// Class PythonConsole
+///////////////////////////////////////////////////////////////////////////////
+class PythonConsole : public wxFrame 
+{
+	private:
+	
+	protected:
+		wxTextCtrl* m_textCtrlOutput;
+		wxTextCtrl* m_textCtrlInput;
+		
+		// Virtual event handlers, overide them in your derived class
+		virtual void onKeyDown( wxKeyEvent& event ) { event.Skip(); }
+		virtual void onExecuteCommand( wxCommandEvent& event ) { event.Skip(); }
+		
+	
+	public:
+		
+		PythonConsole( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Python Console"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 500,300 ), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL );
+		
+		~PythonConsole();
+	
+};
+
 #endif //__H3DVIEWER_H__

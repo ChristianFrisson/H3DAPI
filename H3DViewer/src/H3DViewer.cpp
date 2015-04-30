@@ -490,3 +490,43 @@ ViewImage::~ViewImage()
 	this->Disconnect( wxID_ANY, wxEVT_TIMER, wxTimerEventHandler( ViewImage::OnTimer ) );
 	
 }
+
+PythonConsole::PythonConsole( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+	
+	wxBoxSizer* bSizer13;
+	bSizer13 = new wxBoxSizer( wxVERTICAL );
+	
+	m_textCtrlOutput = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY );
+	m_textCtrlOutput->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), 76, 90, 90, false, wxEmptyString ) );
+	m_textCtrlOutput->SetForegroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_INFOBK ) );
+	m_textCtrlOutput->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_3DDKSHADOW ) );
+	
+	bSizer13->Add( m_textCtrlOutput, 1, wxALL|wxEXPAND, 5 );
+	
+	m_textCtrlInput = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER );
+	m_textCtrlInput->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), 76, 90, 90, false, wxEmptyString ) );
+	m_textCtrlInput->SetForegroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_INFOBK ) );
+	m_textCtrlInput->SetBackgroundColour( wxSystemSettings::GetColour( wxSYS_COLOUR_3DDKSHADOW ) );
+	
+	bSizer13->Add( m_textCtrlInput, 0, wxALL|wxEXPAND, 5 );
+	
+	
+	this->SetSizer( bSizer13 );
+	this->Layout();
+	
+	this->Centre( wxBOTH );
+	
+	// Connect Events
+	m_textCtrlInput->Connect( wxEVT_KEY_DOWN, wxKeyEventHandler( PythonConsole::onKeyDown ), NULL, this );
+	m_textCtrlInput->Connect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( PythonConsole::onExecuteCommand ), NULL, this );
+}
+
+PythonConsole::~PythonConsole()
+{
+	// Disconnect Events
+	m_textCtrlInput->Disconnect( wxEVT_KEY_DOWN, wxKeyEventHandler( PythonConsole::onKeyDown ), NULL, this );
+	m_textCtrlInput->Disconnect( wxEVT_COMMAND_TEXT_ENTER, wxCommandEventHandler( PythonConsole::onExecuteCommand ), NULL, this );
+	
+}

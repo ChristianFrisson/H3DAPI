@@ -307,6 +307,9 @@ public:
   void ShowPluginsDialog( wxCommandEvent & event );
   void ShowFrameRate( wxCommandEvent & event );
   void ShowProgramSettings( wxCommandEvent & event );
+#ifdef HAVE_PYTHON
+  void ShowPythonConsole( wxCommandEvent & event );
+#endif
   void OnKeepViewpointOnLoadCheck( wxCommandEvent & event );
   void OnRouteSendsEventsCheck( wxCommandEvent & event );
   void OnLoadTexturesInThreadCheck( wxCommandEvent & event );
@@ -559,6 +562,7 @@ enum
   FRAME_PLUGINS,
   FRAME_FRAMERATE,
   FRAME_PROGRAMSETTINGS,
+  FRAME_PYTHON_CONSOLE,
   FRAME_KEEPVIEWPOINTONLOAD,
   FRAME_ROUTESENDSEVENTS,
   FRAME_LOADTEXTURESINTHREAD,

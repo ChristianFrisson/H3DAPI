@@ -38,6 +38,7 @@
 #include <wx/gbsizer.h>
 #include "WxFrame.h"
 #include "Envini.h"
+#include "H3DPythonConsole.h"
 
 // ---------------------------------------------------------------------------
 //  Includes (to open X3D files)
@@ -404,6 +405,12 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
    advancedMenu->Append(FRAME_PROGRAMSETTINGS, wxT("Show Program Settings\tF7"),
                         wxT("Show the program settings for the current scene."));  
 #endif
+  
+#ifdef HAVE_PYTHON
+  advancedMenu->Append(FRAME_PYTHON_CONSOLE, wxT("Show Python Console\tF6"),
+                       wxT("Show the interactive Python console"));
+#endif
+
   advancedMenu->AppendSeparator();
   advancedMenu->AppendCheckItem( FRAME_KEEPVIEWPOINTONLOAD, wxT("New viewpoint on load file"),
                                  wxT("If checked new viewpoints are loaded when a new file is loaded, otherwise old viewpoint is kept.") );
@@ -648,6 +655,9 @@ BEGIN_EVENT_TABLE(WxFrame, wxFrame)
   EVT_MENU (FRAME_PLUGINS, WxFrame::ShowPluginsDialog)
   EVT_MENU (FRAME_FRAMERATE, WxFrame::ShowFrameRate)
   EVT_MENU (FRAME_PROGRAMSETTINGS, WxFrame::ShowProgramSettings)
+#ifdef HAVE_PYTHON
+  EVT_MENU (FRAME_PYTHON_CONSOLE, WxFrame::ShowPythonConsole)
+#endif
   EVT_MENU (FRAME_KEEPVIEWPOINTONLOAD, WxFrame::OnKeepViewpointOnLoadCheck )
   EVT_MENU (FRAME_ROUTESENDSEVENTS, WxFrame::OnRouteSendsEventsCheck )
   EVT_MENU (FRAME_LOADTEXTURESINTHREAD, WxFrame::OnLoadTexturesInThreadCheck )
@@ -2016,6 +2026,32 @@ void WxFrame::ShowProgramSettings(wxCommandEvent & event)
   program_settings_dialog->displayFieldsFromProgramSettings();
 #endif
 }
+
+#ifdef HAVE_PYTHON
+void WxFrame::ShowPythonConsole( wxCommandEvent & event ) {
+  AutoRefVector < PythonScript > python_nodes;
+
+  // Try to find named PythonScript node intended for console context
+  Scene::findNodes ( *scene, python_nodes, "PS_console" );
+
+  // Fallback 1: Find ANY PythonScript node
+  if ( python_nodes.empty() ) {
+    Scene::findNodes ( *scene, python_nodes );
+  }
+
+  // Fallback 2: Create a new PythonScript node
+  if ( python_nodes.empty() ) {
+    PythonScript* ps= new PythonScript;
+    ps->url->push_back ( "python:pass" ); // Minimal inline script to initialize interpreter
+    ps->setName ( "Injected_" + ps->getName () );
+    python_nodes.push_back ( ps );
+  }
+
+  // Create and show the console
+  H3DPythonConsole* console= new H3DPythonConsole ( this, *python_nodes[0] );
+  console->Show ();
+}
+#endif
 
 // Save option
 void WxFrame::OnKeepViewpointOnLoadCheck(wxCommandEvent & event)

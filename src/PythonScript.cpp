@@ -442,6 +442,112 @@ void PythonScript::loadScript( const string &script_filename, const string &scri
   PyGILState_Release(state);
 }
 
+std::string PythonScript::execute ( const std::string& _command ) {
+  std::string result;
+
+  PyGILState_STATE state = PyGILState_Ensure();
+
+  // Temporary redirect of pyton output
+  std::string stdOutErr =
+"import sys\n\
+class CatchOutErr:\n\
+    def __init__ ( self ):\n\
+        self.value = ''\n\
+        self.stdout = sys.stdout\n\
+        self.stderr = sys.stderr\n\
+        sys.stdout = self\n\
+        sys.stderr = self\n\
+\n\
+    def write(self, txt):\n\
+        self.value += txt\n\
+\n\
+    def restore ( self ):\n\
+        sys.stdout = self.stdout\n\
+        sys.stderr = self.stderr\n\
+\n\
+catchOutErr = CatchOutErr ()\n\
+";
+
+  PyObject* r= PyRun_StringFlags ( 
+    stdOutErr.c_str(),
+    Py_file_input,
+    static_cast< PyObject * >(module_dict), 
+    static_cast< PyObject * >(module_dict), 
+    NULL );
+  if ( r == NULL ) {
+    Console(4) << "Python console error!" << endl;
+    PyErr_Print ();
+    PyGILState_Release(state);
+    return "ERROR: Internal console error!\n";
+  } else {
+    Py_DECREF ( r );
+  }
+
+  // Execute
+  r= PyRun_StringFlags (
+    _command.c_str(), 
+    Py_single_input, 
+    static_cast< PyObject * >(module_dict), 
+    static_cast< PyObject * >(module_dict), 
+    NULL );
+
+  // Format the result/output
+  if ( r ) {
+    PyObject *catcher = PyObject_GetAttrString(static_cast< PyObject * >(module),"catchOutErr");
+    PyObject *output = PyObject_GetAttrString(catcher,"value");
+    result= PyString_AsString(output);
+
+    Py_DECREF ( output );
+    Py_DECREF ( catcher );
+
+    if ( result.empty () ) {
+      if ( r != Py_None ) {
+        PyObject* str= PyObject_Str ( r );
+        if ( str ) {
+          result= PyString_AsString( str );
+        
+          Py_DECREF ( str );
+        }
+      }
+    }
+    Py_DECREF ( r );
+  } else {
+    PyObject *ptype, *pvalue, *ptraceback;
+    PyErr_Fetch(&ptype, &pvalue, &ptraceback);
+    if ( pvalue ) {
+      PyObject* str= PyObject_Str ( pvalue );
+      if ( str ) {
+        result= "ERROR: " + std::string ( PyString_AsString ( str ) ) + "\n";
+
+        Py_DECREF ( str );
+      }
+    }
+
+    Py_XDECREF ( ptype );
+    Py_XDECREF ( pvalue );
+    Py_XDECREF ( ptraceback );
+  }
+
+  // Restore stdout/stderr
+  r= PyRun_StringFlags ( 
+    "catchOutErr.restore ()",
+    Py_file_input,
+    static_cast< PyObject * >(module_dict), 
+    static_cast< PyObject * >(module_dict), 
+    NULL );
+  if ( r == NULL ) {
+    Console(4) << "Python console error!" << endl;
+    PyErr_Print ();
+    PyGILState_Release(state);
+    return "ERROR: Internal console error!\n";
+  } else {
+    Py_DECREF ( r );
+  }
+
+  PyGILState_Release(state);
+
+  return result;
+}
 
 // Traverse the scenegraph. Used in PythonScript to call a function
 // in python once per scene graph loop.
