@@ -41,8 +41,14 @@ command_index ( 0 ) {
   python_node.reset ( &_pythonNode );
 
   std::string welcome_msg=
-    "Python console attached to PythonScript node " + python_node->getName() + "\n\n";
+    "Python console attached to PythonScript node " + python_node->getName() + "\n";
+
+  // Try to get a custome welcome message from the script node
+  welcome_msg+= python_node->execute ( "initConsole() if 'initConsole' in dir() else None" ) + "\n\n";
+
   m_textCtrlOutput->AppendText ( wxString ( welcome_msg.c_str(), wxConvUTF8 ) );
+
+
 
   m_textCtrlInput->SetFocus ();
 }
