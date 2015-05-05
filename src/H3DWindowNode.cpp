@@ -1175,8 +1175,13 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     H3DMultiPassRenderObject::renderPostSceneAll( child_to_render, 
                                                   vp ); 
 
+#ifdef  HAVE_PROFILER
+    H3DUtil::H3DTimer::stepBegin("Stereo_shadows");
+#endif
     if( shadow_caster ) shadow_caster->render();
-
+#ifdef  HAVE_PROFILER
+    H3DUtil::H3DTimer::stepEnd("Stereo_shadows");
+#endif
     if( ti ) {
       for( TraverseInfo::LightVector::const_iterator i = 
                               ti->getActiveLightNodes().begin();
@@ -1291,7 +1296,13 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     H3DMultiPassRenderObject::renderPostSceneAll( child_to_render, 
                                                   vp );
 
+#ifdef  HAVE_PROFILER
+    H3DUtil::H3DTimer::stepBegin("Stereo_shadows");
+#endif
     if( shadow_caster ) shadow_caster->render();
+#ifdef  HAVE_PROFILER
+    H3DUtil::H3DTimer::stepEnd("Stereo_shadows");
+#endif
 
     if( ti ) {
       for( TraverseInfo::LightVector::const_iterator i = 
@@ -1506,8 +1517,13 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
     renderChild( child_to_render );
     H3DMultiPassRenderObject::renderPostSceneAll( child_to_render, 
                                                   vp );
-
+#ifdef  HAVE_PROFILER
+    H3DUtil::H3DTimer::stepBegin("Mono_shadows");
+#endif
     if( shadow_caster ) shadow_caster->render();
+#ifdef  HAVE_PROFILER
+    H3DUtil::H3DTimer::stepEnd("Mono_shadows");
+#endif
 
     if( ti ) {
       for( TraverseInfo::LightVector::const_iterator i = 
