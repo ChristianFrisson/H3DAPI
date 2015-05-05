@@ -119,15 +119,21 @@ namespace H3D {
                                        const Matrix4f &global_to_local,
                                        bool rebuild_triangle_info );
 
-    /// Render a quad using the given points and its projections at 
-    /// infinity assuming a DirectionalLight with direction dir.
-    void renderDirectionalLightQuad( const Vec3d &v1, const Vec3d &v2, 
-                                     const Vec3d& dir );
+    /// Add the points for two triangles forming a quad using the given points 
+    /// and its projections at infinity to the triangle_points vector
+    /// assuming a DirectionalLight with direction dir.
+    void addDirectionalLightQuadPoints( vector< Vec4d > &triangle_points,
+                                        const Vec3d &v1, const Vec3d &v2, 
+                                        const Vec3d& dir );
 
-    /// Render a quad using the given points and its projections at 
-    /// infinity assuming a PointLight with position light_pos.
-    void renderPointLightQuad( const Vec3d &v1, const Vec3d &v2, 
-                               const Vec3d& light_pos );
+    /// Add the points for two triangles forming a quad using the given points 
+    /// and its projections at infinity to the triangle_points vector
+    /// assuming a PointLight with position light_pos.
+    void addPointLightQuadPoints( vector< Vec4d > &triangle_points,
+                                  const Vec3d &v1, const Vec3d &v2, 
+                                  const Vec3d& light_pos );
+
+ 
 
     /// Updates the neighbours array by analysing the triangles from
     /// the node in the geometry field.
@@ -177,10 +183,13 @@ namespace H3D {
     vector< HAPI::Collision::Triangle > triangles;
 
     /// Points to be used for vertex array rendering with adjacency info.
-    vector< Vec3d > triangle_points;
+    vector< Vec3d > triangle_points_geom_shader;
+
+    /// Points to be used for vertex array rendering if CPU based.
+    vector< Vec4d > triangle_points_fallback;
 
     /// Index to be used for vertex array rendering with adjacency info.
-    vector< unsigned int > adjacency_index;
+    vector< unsigned int > index_geom_shader;
 
     /// Shader to use for point lights when using a geometry shader to
     /// draw shader volumes,

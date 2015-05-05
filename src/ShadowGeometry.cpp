@@ -62,35 +62,44 @@ H3DShadowObjectNode( _metadata, _transform, _enabled ),
 }
 
 
+void ShadowGeometry::addDirectionalLightQuadPoints( vector< Vec4d > &triangle_points,
+                                                    const Vec3d &v1, 
+                                                    const Vec3d &v2, 
+                                                    const Vec3d& dir ) {
+  Vec4d ev1(v1, 1);
+  Vec4d ev2(v2, 1);
+  Vec4d inf( dir, 0 );
 
-void ShadowGeometry::renderDirectionalLightQuad( const Vec3d &v1, 
-                                                 const Vec3d &v2, 
-                                                 const Vec3d& dir ) {
-  Vec3d ev1 = v1;
-  Vec3d ev2 = v2;
+  triangle_points.push_back( ev1 );
+  triangle_points.push_back( inf );
+  triangle_points.push_back( inf );
 
-  glVertex3d( ev1.x, ev1.y, ev1.z );
-  glVertex4d( dir.x, dir.y, dir.z, 0 );
-  glVertex4d( dir.x, dir.y, dir.z, 0 );
-  glVertex3d( ev2.x, ev2.y, ev2.z );
+  triangle_points.push_back( ev1 );
+  triangle_points.push_back( inf );
+  triangle_points.push_back( ev2 );
 }
 
-void ShadowGeometry::renderPointLightQuad( const Vec3d &v1, const Vec3d &v2, 
-                                           const Vec3d& light_pos ) {
+void ShadowGeometry::addPointLightQuadPoints( vector< Vec4d > &triangle_points,
+                                             const Vec3d &v1, const Vec3d &v2, 
+                                             const Vec3d& light_pos ) {
   Vec3d dir1 = v1 - light_pos;
   dir1.normalizeSafe();
   
   Vec3d dir2 = v2 - light_pos;
   dir2.normalizeSafe();
   
-  Vec3d ev1 = v1;
-  Vec3d ev2 = v2;
+  Vec4d ev1(v1, 1 );
+  Vec4d ev2(v2, 1 );
+  Vec4d inf1( dir1, 0 );
+  Vec4d inf2( dir2, 0 );
 
-  glVertex3d( ev1.x, ev1.y, ev1.z );
-  glVertex4d( dir1.x, dir1.y, dir1.z, 0 );
-  glVertex4d( dir2.x, dir2.y, dir2.z, 0 );
-  glVertex3d( ev2.x, ev2.y, ev2.z );
- 
+  triangle_points.push_back( ev1 );
+  triangle_points.push_back( inf1 );
+  triangle_points.push_back( inf2 );
+
+  triangle_points.push_back( ev1 );
+  triangle_points.push_back( inf2 );
+  triangle_points.push_back( ev2 );
 }
 
 void ShadowGeometry::renderShadow( X3DLightNode *light, 
@@ -155,7 +164,7 @@ void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
     g->boundTree->getValue()->getAllTriangles( triangles );
     updateNeighbours( triangles );
   }
-
+  
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
 
@@ -167,8 +176,10 @@ void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
 
   glMultMatrixf( mv );
 
+  triangle_points_fallback.clear();
+  triangle_points_fallback.reserve( triangles.size() * 3 *2 );
+
   // draw quads for each silhouette edge and its projection at infinity.
-  glBegin( GL_QUADS );
 
   // directional light
   DirectionalLight *dir_light = dynamic_cast< DirectionalLight * >( light );     
@@ -180,11 +191,11 @@ void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
       // no silhouette edges are on triangles not facing the light
       if( !triangle_facing_light[i] ) continue;
       if( is_silhouette_edge[ i*3 ] ) 
-        renderDirectionalLightQuad( triangles[i].a, triangles[i].b, dir );
+        addDirectionalLightQuadPoints( triangle_points_fallback, triangles[i].a, triangles[i].b, dir );
       if( is_silhouette_edge[ i*3+1 ] ) 
-        renderDirectionalLightQuad( triangles[i].b, triangles[i].c, dir );
+        addDirectionalLightQuadPoints( triangle_points_fallback, triangles[i].b, triangles[i].c, dir );
       if( is_silhouette_edge[ i*3 +2] ) 
-        renderDirectionalLightQuad( triangles[i].c, triangles[i].a, dir );
+        addDirectionalLightQuadPoints( triangle_points_fallback, triangles[i].c, triangles[i].a, dir );
     }
   }
 
@@ -199,18 +210,15 @@ void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
     for( size_t i = 0; i < triangles.size(); ++i ) {
       // no silhouette edges are on triangles not facing the light
       if( !triangle_facing_light[i] ) continue;
-      if( is_silhouette_edge[ i*3 ] ) renderPointLightQuad( triangles[i].a, triangles[i].b, light_pos );
-      if( is_silhouette_edge[ i*3+1 ] ) renderPointLightQuad( triangles[i].b, triangles[i].c, light_pos );
-      if( is_silhouette_edge[ i*3 +2] ) renderPointLightQuad( triangles[i].c, triangles[i].a, light_pos );
+      if( is_silhouette_edge[ i*3 ] ) addPointLightQuadPoints( triangle_points_fallback, triangles[i].a, triangles[i].b, light_pos );
+      if( is_silhouette_edge[ i*3+1 ] ) addPointLightQuadPoints( triangle_points_fallback, triangles[i].b, triangles[i].c, light_pos );
+      if( is_silhouette_edge[ i*3 +2] ) addPointLightQuadPoints( triangle_points_fallback, triangles[i].c, triangles[i].a, light_pos );
     }
   }
-
-  glEnd();
 
   if( draw_caps ) {
     // draw all triangles facing the light as a near cap and all others
     // at infinity.
-    glBegin(GL_TRIANGLES);
     
     if( dir_light ) {
       Vec3d dir = dir_light->direction->getValue();
@@ -218,12 +226,9 @@ void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
       
       for( size_t i = 0; i < triangles.size(); ++i ) {
         if( triangle_facing_light[i] ) {
-          Vec3d v1 = triangles[i].a;
-          Vec3d v2 = triangles[i].b;
-          Vec3d v3 = triangles[i].c;
-          glVertex3d( v1.x, v1.y, v1.z);
-          glVertex3d( v2.x, v2.y, v2.z );
-          glVertex3d( v3.x, v3.y, v3.z );
+          triangle_points_fallback.push_back( Vec4d( triangles[i].a, 1 ) );
+          triangle_points_fallback.push_back( Vec4d( triangles[i].b, 1 ) );
+          triangle_points_fallback.push_back( Vec4d( triangles[i].c, 1 ) );
         }
         // directional lights do not need a far cap since the shadow volume
         // converge to the same point at infinity.
@@ -231,29 +236,35 @@ void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
     } else if( point_light ) {
       for( size_t i = 0; i < triangles.size(); ++i ) {
         if( triangle_facing_light[i] ) {
-          Vec3d v1 = triangles[i].a;
-          Vec3d v2 = triangles[i].b;
-          Vec3d v3 = triangles[i].c;
-          
-          glVertex3d( v1.x, v1.y, v1.z);
-          glVertex3d( v2.x, v2.y, v2.z );
-          glVertex3d( v3.x, v3.y, v3.z );
+          triangle_points_fallback.push_back( Vec4d( triangles[i].a, 1 ) );
+          triangle_points_fallback.push_back( Vec4d( triangles[i].b, 1 ) );
+          triangle_points_fallback.push_back( Vec4d( triangles[i].c, 1 ) );
         } else {
           const Vec3f &p = light_pos;
           Vec3d v1 = triangles[i].a - p;
           Vec3d v2 = triangles[i].b - p;
           Vec3d v3 = triangles[i].c - p;
           
-          glVertex4d(   v1.x, v1.y, v1.z, 0 );
-          glVertex4d(   v2.x, v2.y, v2.z, 0 );
-          glVertex4d(   v3.x, v3.y, v3.z, 0 );
+          //triangle_points_fallback.push_back( Vec4d( triangles[i].a+ v1, 1 ) );
+          //triangle_points_fallback.push_back( Vec4d( triangles[i].b +v2, 1 ) );
+          //triangle_points_fallback.push_back( Vec4d( triangles[i].c +v3, 1 ) );
+          triangle_points_fallback.push_back( Vec4d( v1, 0 ) );
+          triangle_points_fallback.push_back( Vec4d( v2, 0 ) );
+          triangle_points_fallback.push_back( Vec4d( v3, 0 ) );
         }
       }
     }
-    glEnd();
   }
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glVertexPointer(4, GL_DOUBLE, 0,
+                  &(*triangle_points_fallback.begin()) );
+  glDrawArrays( GL_TRIANGLES, 0, triangle_points_fallback.size() );
+  glDisableClientState(GL_VERTEX_ARRAY);
+
   glPopMatrix();
 }
+
 
 void ShadowGeometry::updateSilhouetteEdgesDirectionalLight( const vector< HAPI::Collision::Triangle > &_triangles,
                                                             const vector<int> &_neighbours,
@@ -511,7 +522,7 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
   if( rebuild_triangle_info) {
     triangles.clear();
     g->boundTree->getValue()->getAllTriangles( triangles );
-    updateAdjacenctVertexArray( triangles, triangle_points, adjacency_index );
+    updateAdjacenctVertexArray( triangles, triangle_points_geom_shader, index_geom_shader );
   }
 
   modelMatrix->setValue( m );
@@ -525,17 +536,17 @@ void ShadowGeometry::renderShadowGeometryShader( X3DGeometryNode *g,
   } else if( dir_light ) {
     lightParam->setValue( dir_light->direction->getValue() );
     dir_light_shader->preRender();
-    dir_light_shader->displayList->callList();
+    dir_light_shader->displayList ->callList();
   }
 
   // draw shadow geometry using vertex arrays
   glEnableClientState(GL_VERTEX_ARRAY);
   glVertexPointer(3, GL_DOUBLE, 0,
-                  &(*triangle_points.begin()) );
+                  &(*triangle_points_geom_shader.begin()) );
   glDrawElements( GL_TRIANGLES_ADJACENCY_EXT,
-                  (unsigned int)adjacency_index.size(),
+                  (unsigned int)index_geom_shader.size(),
                   GL_UNSIGNED_INT,
-                  &(*(adjacency_index.begin()) ) );
+                  &(*(index_geom_shader.begin()) ) );
   
   glDisableClientState(GL_VERTEX_ARRAY);
   
