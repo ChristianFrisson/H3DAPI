@@ -176,81 +176,87 @@ void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
 
   glMultMatrixf( mv );
 
-  triangle_points_fallback.clear();
-  triangle_points_fallback.reserve( triangles.size() * 3 *2 );
+  // only update triangles once per scene loop
+  pair< H3DTime, vector< Vec4d > > & point_pair = triangle_points_fallback[light];
+  H3DTime &last_update_time = point_pair.first;
+  vector< Vec4d > &triangle_points = point_pair.second;
+  
+  H3DTime frame_time = Scene::time->getValue();
+  if( frame_time != last_update_time ) {
+    last_update_time = frame_time;
+    triangle_points.clear();
+    triangle_points.reserve( triangles.size() * 3 *2 );
 
-  // draw quads for each silhouette edge and its projection at infinity.
+    // draw quads for each silhouette edge and its projection at infinity.
 
-  // directional light
-  DirectionalLight *dir_light = dynamic_cast< DirectionalLight * >( light );     
-  if( dir_light ) {
-    Vec3f dir = dir_light->direction->getValue();
-    dir = m_inv.getRotationPart() * dir;
-    updateSilhouetteEdgesDirectionalLight( triangles, neighbours, dir );
-    for( size_t i = 0; i < triangles.size(); ++i ) {
-      // no silhouette edges are on triangles not facing the light
-      if( !triangle_facing_light[i] ) continue;
-      if( is_silhouette_edge[ i*3 ] ) 
-        addDirectionalLightQuadPoints( triangle_points_fallback, triangles[i].a, triangles[i].b, dir );
-      if( is_silhouette_edge[ i*3+1 ] ) 
-        addDirectionalLightQuadPoints( triangle_points_fallback, triangles[i].b, triangles[i].c, dir );
-      if( is_silhouette_edge[ i*3 +2] ) 
-        addDirectionalLightQuadPoints( triangle_points_fallback, triangles[i].c, triangles[i].a, dir );
-    }
-  }
-
-  // point light
-  PointLight *point_light = dynamic_cast< PointLight * >( light );
-  Vec3f light_pos;
-
-  if( point_light ) {
-    light_pos = point_light->location->getValue();
-    light_pos = m_inv * light_pos;
-    updateSilhouetteEdgesPointLight( triangles, neighbours, light_pos );
-    for( size_t i = 0; i < triangles.size(); ++i ) {
-      // no silhouette edges are on triangles not facing the light
-      if( !triangle_facing_light[i] ) continue;
-      if( is_silhouette_edge[ i*3 ] ) addPointLightQuadPoints( triangle_points_fallback, triangles[i].a, triangles[i].b, light_pos );
-      if( is_silhouette_edge[ i*3+1 ] ) addPointLightQuadPoints( triangle_points_fallback, triangles[i].b, triangles[i].c, light_pos );
-      if( is_silhouette_edge[ i*3 +2] ) addPointLightQuadPoints( triangle_points_fallback, triangles[i].c, triangles[i].a, light_pos );
-    }
-  }
-
-  if( draw_caps ) {
-    // draw all triangles facing the light as a near cap and all others
-    // at infinity.
-    
+    // directional light
+    DirectionalLight *dir_light = dynamic_cast< DirectionalLight * >( light );     
     if( dir_light ) {
-      Vec3d dir = dir_light->direction->getValue();
+      Vec3f dir = dir_light->direction->getValue();
       dir = m_inv.getRotationPart() * dir;
-      
+      updateSilhouetteEdgesDirectionalLight( triangles, neighbours, dir );
       for( size_t i = 0; i < triangles.size(); ++i ) {
-        if( triangle_facing_light[i] ) {
-          triangle_points_fallback.push_back( Vec4d( triangles[i].a, 1 ) );
-          triangle_points_fallback.push_back( Vec4d( triangles[i].b, 1 ) );
-          triangle_points_fallback.push_back( Vec4d( triangles[i].c, 1 ) );
-        }
-        // directional lights do not need a far cap since the shadow volume
-        // converge to the same point at infinity.
+        // no silhouette edges are on triangles not facing the light
+        if( !triangle_facing_light[i] ) continue;
+        if( is_silhouette_edge[ i*3 ] ) 
+          addDirectionalLightQuadPoints( triangle_points, triangles[i].a, triangles[i].b, dir );
+        if( is_silhouette_edge[ i*3+1 ] ) 
+          addDirectionalLightQuadPoints( triangle_points, triangles[i].b, triangles[i].c, dir );
+        if( is_silhouette_edge[ i*3 +2] ) 
+          addDirectionalLightQuadPoints( triangle_points, triangles[i].c, triangles[i].a, dir );
       }
-    } else if( point_light ) {
+    }
+
+    // point light
+    PointLight *point_light = dynamic_cast< PointLight * >( light );
+    Vec3f light_pos;
+
+    if( point_light ) {
+      light_pos = point_light->location->getValue();
+      light_pos = m_inv * light_pos;
+      updateSilhouetteEdgesPointLight( triangles, neighbours, light_pos );
       for( size_t i = 0; i < triangles.size(); ++i ) {
-        if( triangle_facing_light[i] ) {
-          triangle_points_fallback.push_back( Vec4d( triangles[i].a, 1 ) );
-          triangle_points_fallback.push_back( Vec4d( triangles[i].b, 1 ) );
-          triangle_points_fallback.push_back( Vec4d( triangles[i].c, 1 ) );
-        } else {
-          const Vec3f &p = light_pos;
-          Vec3d v1 = triangles[i].a - p;
-          Vec3d v2 = triangles[i].b - p;
-          Vec3d v3 = triangles[i].c - p;
+        // no silhouette edges are on triangles not facing the light
+        if( !triangle_facing_light[i] ) continue;
+        if( is_silhouette_edge[ i*3 ] ) addPointLightQuadPoints( triangle_points, triangles[i].a, triangles[i].b, light_pos );
+        if( is_silhouette_edge[ i*3+1 ] ) addPointLightQuadPoints( triangle_points, triangles[i].b, triangles[i].c, light_pos );
+        if( is_silhouette_edge[ i*3 +2] ) addPointLightQuadPoints( triangle_points, triangles[i].c, triangles[i].a, light_pos );
+      }
+    }
+
+    if( draw_caps ) {
+      // draw all triangles facing the light as a near cap and all others
+      // at infinity.
+    
+      if( dir_light ) {
+        Vec3d dir = dir_light->direction->getValue();
+        dir = m_inv.getRotationPart() * dir;
+      
+        for( size_t i = 0; i < triangles.size(); ++i ) {
+          if( triangle_facing_light[i] ) {
+            triangle_points.push_back( Vec4d( triangles[i].a, 1 ) );
+            triangle_points.push_back( Vec4d( triangles[i].b, 1 ) );
+            triangle_points.push_back( Vec4d( triangles[i].c, 1 ) );
+          }
+          // directional lights do not need a far cap since the shadow volume
+          // converge to the same point at infinity.
+        }
+      } else if( point_light ) {
+        for( size_t i = 0; i < triangles.size(); ++i ) {
+          if( triangle_facing_light[i] ) {
+            triangle_points.push_back( Vec4d( triangles[i].a, 1 ) );
+            triangle_points.push_back( Vec4d( triangles[i].b, 1 ) );
+            triangle_points.push_back( Vec4d( triangles[i].c, 1 ) );
+          } else {
+            const Vec3f &p = light_pos;
+            Vec3d v1 = triangles[i].a - p;
+            Vec3d v2 = triangles[i].b - p;
+            Vec3d v3 = triangles[i].c - p;
           
-          //triangle_points_fallback.push_back( Vec4d( triangles[i].a+ v1, 1 ) );
-          //triangle_points_fallback.push_back( Vec4d( triangles[i].b +v2, 1 ) );
-          //triangle_points_fallback.push_back( Vec4d( triangles[i].c +v3, 1 ) );
-          triangle_points_fallback.push_back( Vec4d( v1, 0 ) );
-          triangle_points_fallback.push_back( Vec4d( v2, 0 ) );
-          triangle_points_fallback.push_back( Vec4d( v3, 0 ) );
+            triangle_points.push_back( Vec4d( v1, 0 ) );
+            triangle_points.push_back( Vec4d( v2, 0 ) );
+            triangle_points.push_back( Vec4d( v3, 0 ) );
+          }
         }
       }
     }
@@ -258,8 +264,8 @@ void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
 
   glEnableClientState(GL_VERTEX_ARRAY);
   glVertexPointer(4, GL_DOUBLE, 0,
-                  &(*triangle_points_fallback.begin()) );
-  glDrawArrays( GL_TRIANGLES, 0, triangle_points_fallback.size() );
+                  &(*triangle_points.begin()) );
+  glDrawArrays( GL_TRIANGLES, 0, triangle_points.size() );
   glDisableClientState(GL_VERTEX_ARRAY);
 
   glPopMatrix();

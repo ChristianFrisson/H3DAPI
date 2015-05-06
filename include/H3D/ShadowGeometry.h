@@ -183,10 +183,11 @@ namespace H3D {
     vector< HAPI::Collision::Triangle > triangles;
 
     /// Points to be used for vertex array rendering with adjacency info.
-    vector< Vec3d > triangle_points_geom_shader;
+    vector< Vec3d >triangle_points_geom_shader;
 
-    /// Points to be used for vertex array rendering if CPU based.
-    vector< Vec4d > triangle_points_fallback;
+    /// Points to be used for each light vertex array rendering if CPU based. The pair
+    /// contains the scene time at last update and the coordinates from that update.
+    std::map< X3DLightNode *, pair< H3DTime, vector< Vec4d > > > triangle_points_fallback;
 
     /// Index to be used for vertex array rendering with adjacency info.
     vector< unsigned int > index_geom_shader;
