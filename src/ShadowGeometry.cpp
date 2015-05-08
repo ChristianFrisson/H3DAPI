@@ -160,9 +160,11 @@ void ShadowGeometry::renderShadowFallback( X3DGeometryNode *g,
 
 
   if( rebuild_triangle_info ) {
+    ShadowCasterShaders::shaderToggle( false );
     triangles.clear();
     g->boundTree->getValue()->getAllTriangles( triangles );
     updateNeighbours( triangles );
+    ShadowCasterShaders::shaderToggle( true );
   }
   
   // only update triangles once per scene loop
