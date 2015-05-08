@@ -140,7 +140,7 @@ Image* ImageTexture::SFImage::loadImage( ImageTexture *texture,
     // Otherwise fallback on using temp files
     string url_contents= ResourceResolver::resolveURLAsString ( *i );
     if ( url_contents != "" ) {
-      istringstream iss ( url_contents, ios_base::binary );
+      istringstream iss ( url_contents );
       auto_ptr< H3DImageLoaderNode > 
         il( H3DImageLoaderNode::getSupportedFileReader( iss ) );
 
