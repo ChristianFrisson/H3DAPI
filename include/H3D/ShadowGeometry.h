@@ -166,14 +166,6 @@ namespace H3D {
     int getMissingPointIndex( const HAPI::Collision::Triangle &t,
                               const Vec3d &p0, const Vec3d &p1 );
 
-    /// Returns the string to use as geometry shader for a PointLight
-    /// source.
-    virtual string getPointLightGeometryShaderString();
-
-    /// Returns the string to use as geometry shader for a DirectionalLight
-    /// source.
-    virtual string getDirLightGeometryShaderString();
-
     /// Array of 3*nr_triangles triangle indices specifying for each triangle
     /// edge which triangle is its neighbour. 
     vector< int > neighbours;
@@ -191,21 +183,6 @@ namespace H3D {
 
     /// Index to be used for vertex array rendering with adjacency info.
     vector< unsigned int > index_geom_shader;
-
-    /// Shader to use for point lights when using a geometry shader to
-    /// draw shader volumes,
-    AutoRef< ComposedShader > point_light_shader;
-    
-    /// Fields used for uniform variables in point_light_shader. The 
-    /// point_light_shader node owns the pointer so it should not be
-    /// removed by the ShadowGeometry node.
-    auto_ptr< SFMatrix4f > modelMatrix;
-    auto_ptr< SFVec3f > lightParam;
-    auto_ptr< SFBool > drawCaps;
-    
-    /// Shader to use for directional lights when using a geometry shader to
-    /// draw shader volumes,
-    AutoRef< ComposedShader > dir_light_shader;
 
     /// Array of 3*nr_triangles values, one for each triangle edge. The value
     /// specifies if the edge is a silhouette edge or not, i.e. if the edge

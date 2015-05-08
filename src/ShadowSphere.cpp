@@ -67,6 +67,9 @@ void ShadowSphere::renderShadow( X3DLightNode *light,
                                  const Matrix4f &local_to_global ) {
   
   if( !enabled->getValue() ) return;
+
+  ShadowCasterShaders::shaderToggle( false );
+
   H3DFloat r = radius->getValue();
   Vec3f pos = position->getValue();
   
@@ -96,7 +99,10 @@ void ShadowSphere::renderShadow( X3DLightNode *light,
     light_pos = m_inv * point_light->location->getValue();
     Vec3f dir = pos - light_pos;
     // if lightsource is inside sphere, we skip the shadow volume.
-    if( dir * dir <= r * r ) return;
+    if( dir * dir <= r * r ) {
+      ShadowCasterShaders::shaderToggle( true );
+      return;
+    }
     H3DFloat d = dir.length();
     if( d > Constants::f_epsilon ) {
       dir.normalizeSafe();
@@ -104,6 +110,7 @@ void ShadowSphere::renderShadow( X3DLightNode *light,
     }
     light_pos = -rot * light_pos;
   } else {
+    ShadowCasterShaders::shaderToggle( true );
     return;
   }
   glMatrixMode( GL_MODELVIEW );
@@ -173,5 +180,7 @@ void ShadowSphere::renderShadow( X3DLightNode *light,
     glEnd();
   }
   glPopMatrix();
+
+  ShadowCasterShaders::shaderToggle( true );
 }
 

@@ -36,6 +36,9 @@
 #include <H3D/RenderTargetTexture.h>
 #include <H3D/X3D.h>
 #include <H3D/Appearance.h>
+#include <H3D/ShadowCasterShaders.h>
+#include <H3D/PointLight.h>
+#include <H3D/GlobalSettings.h>
 
 using namespace H3D;
 
@@ -200,6 +203,18 @@ void ShadowCaster::renderShadows( FrameBufferTextureGenerator *fbo, int i, void 
   // Basically the solution to (1-x)^nr_lights = (1-shadowDarkness)
   H3DFloat darkness = 1 - H3DPow( 1.f - shadow_caster->shadowDarkness->getValue(),
                                   1.f / shadow_caster->light->size() );
+
+  GraphicsOptions *graphics_options = NULL;
+  GlobalSettings *default_settings = GlobalSettings::getActive();
+  if( default_settings ) {
+    default_settings->getOptionNode( graphics_options );
+  }
+  bool use_geometry_shader = 
+    GLEW_EXT_geometry_shader4 && 
+    ( !graphics_options || 
+      (graphics_options && 
+       graphics_options->defaultShadowGeometryAlgorithm->getValue() == "GEOMETRY_SHADER" ) );
+
   
   for( MFLightNode::const_iterator l = shadow_caster->light->begin(); 
        l != shadow_caster->light->end(); l++ ) {
@@ -250,6 +265,20 @@ void ShadowCaster::renderShadows( FrameBufferTextureGenerator *fbo, int i, void 
     glPolygonOffset( 0, shadow_caster->shadowDepthOffset->getValue() );
     glEnable( GL_POLYGON_OFFSET_FILL );
 
+
+    DirectionalLight *dir_light = dynamic_cast< DirectionalLight * >( *l );
+    PointLight *point_light = dynamic_cast< PointLight * >( *l );
+    // set up shader for shadow geometries
+    ShadowCasterShaders::shaderInit( !use_geometry_shader,
+                                    alg == "ZFAIL",
+                                    dir_light != NULL,
+                                    false );
+          
+    if( use_geometry_shader ) {
+      if( dir_light ) ShadowCasterShaders::setDirectionalLightDir( dir_light->direction->getValue() );
+      else ShadowCasterShaders::setPointLightPosition( point_light->location->getValue() );
+    }
+
     // First Pass. Increase Stencil Value In The Shadow 
     for( MFShadowObjectNode::const_iterator o = shadow_caster->object->begin(); 
          o != shadow_caster->object->end(); o++ ) {
@@ -290,6 +319,9 @@ void ShadowCaster::renderShadows( FrameBufferTextureGenerator *fbo, int i, void 
     glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
     glDisable( GL_DEPTH_TEST );
     glDisable( GL_CULL_FACE );
+
+    ShadowCasterShaders::shaderClean();
+
     glMatrixMode (GL_MODELVIEW);
     glPushMatrix ();
     glLoadIdentity ();
