@@ -147,7 +147,7 @@ void X3DTexture2DNode::glTexImage( Image *i, GLenum _texture_target,
   glGetIntegerv( GL_UNPACK_ALIGNMENT, &byte_alignment );
   glPixelStorei( GL_UNPACK_ALIGNMENT, i->byteAlignment() );
 
-  if(!GLEW_ARB_texture_non_power_of_two || scale_to_power_of_two) {
+  if( scale_to_power_of_two && !GLEW_ARB_texture_non_power_of_two ) {
     // check if any scaling is required and if so scale the image.
     bool needs_scaling = false;
     unsigned int new_width  = i->width();
