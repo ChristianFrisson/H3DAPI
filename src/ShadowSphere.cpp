@@ -29,6 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/ShadowSphere.h>
+#include <H3D/ShadowCasterShaders.h>
 
 using namespace H3D;
 
