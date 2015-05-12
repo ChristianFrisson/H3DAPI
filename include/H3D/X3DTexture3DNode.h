@@ -181,6 +181,9 @@ namespace H3D {
     /// and might cause some unwanted strething effects on the texture. The
     /// new texture values will be linearly interpolated from the original 
     /// ones.
+    ///
+    /// If the graphics card supports non-power of two textures, then no
+    /// scaling is performed, regardless of this option.
     /// 
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> FALSE \n
