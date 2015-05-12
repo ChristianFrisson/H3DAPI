@@ -645,7 +645,7 @@ void FrameBufferTextureGenerator::render()     {
 
   // set up to render to all color buffers
   if( GLEW_ARB_draw_buffers ) {
-    glDrawBuffers( H3DMax( (int)color_ids.size(), 1 ), draw_buffers.get() );
+    glDrawBuffers( H3DMax( (int)color_ids.size(), 1 ), &draw_buffers[0]);
   } else {
     Console(4) << "Warning: Your graphics card does not support multiple "
       << "render targets(ARB_draw_buffers). Only one color texture will"
@@ -976,10 +976,10 @@ void FrameBufferTextureGenerator::initializeFBO() {
 
     // generate glDrawBuffers input array
     if( nr_color_textures == 0 ) {
-      draw_buffers.reset( (GLenum *)malloc( sizeof( GLenum ) ) );
-      draw_buffers.get()[0] = GL_NONE;
+      draw_buffers.resize(1);
+      draw_buffers[0] = GL_NONE;
     } else {
-      draw_buffers.reset( (GLenum *)malloc( color_texture_types.size() * sizeof( GLenum ) ) ); 
+      draw_buffers.resize(color_texture_types.size()); 
     }
 
     // initialize color textures.
@@ -987,7 +987,7 @@ void FrameBufferTextureGenerator::initializeFBO() {
       GLuint ms_id;
       glGenRenderbuffersEXT( 1, &ms_id );
       multi_samples_color_ids.push_back( ms_id );
-      draw_buffers.get()[i] = (GLenum) (GL_COLOR_ATTACHMENT0_EXT+i);
+      draw_buffers[i] = (GLenum)(GL_COLOR_ATTACHMENT0_EXT+i);
     }
 
     fbo_initialized = true;
@@ -1442,7 +1442,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
   }
   // set the draw buffer back to original draw_buffers
   if( GLEW_ARB_draw_buffers ) {
-    glDrawBuffers( H3DMax( (int)color_ids.size(), 1 ), draw_buffers.get() );
+    glDrawBuffers( H3DMax( (int)color_ids.size(), 1 ), &draw_buffers[0]);
   } else {
     Console(4) << "ERROR: Your graphics card does not support multiple "
       << "render targets(ARB_draw_buffers). Only one color texture will"

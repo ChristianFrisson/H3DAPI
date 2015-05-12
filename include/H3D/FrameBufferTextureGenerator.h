@@ -811,7 +811,7 @@ namespace H3D {
 
     /// Array containing [GL_COLOR_ATTACHMENT0_EXT, GL_COLOR_ATTACHMENT1_EXT .. ]
     /// with one entry for each texture in colorTextures. Used with glDrawBuffers.
-    auto_ptr< GLenum > draw_buffers;
+    std::vector< GLenum > draw_buffers;
 
     /// True if the last call to resizeBuffers from render() was true.
     bool last_resize_success;
