@@ -5,31 +5,21 @@
 #  V8_LIBRARIES    - List of libraries when using V8.
 #  V8_FOUND        - True if V8 found.
 
-GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
-
-IF( CMAKE_CL_64 )
-  SET( LIB "lib64" )
-ELSE( CMAKE_CL_64 )
-  SET( LIB "lib32" )
-ENDIF( CMAKE_CL_64 )
+include( H3DExternalSearchPath )
+GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "pthread" )
 
 # Look for the header file.
 FIND_PATH( V8_INCLUDE_DIR NAMES v8.h
            PATHS /usr/local/include
-                 $ENV{H3D_EXTERNAL_ROOT}/include  
-                 $ENV{H3D_ROOT}/../External/include  
-                 ../../External/include
-                 ${module_file_path}/../../../External/include
+                 ${module_include_search_paths}
            DOC "Path in which the file v8.h is located." )
 MARK_AS_ADVANCED(V8_INCLUDE_DIR)
 
 # Look for the library.
 # Does this work on UNIX systems? (LINUX)
 FIND_LIBRARY( V8_LIBRARY NAMES v8
-              PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                    $ENV{H3D_ROOT}/../External/${LIB}
-                    ../../External/${LIB}
-                    ${module_file_path}/../../../External/${LIB}
+              PATHS ${module_lib_search_paths}
               DOC "Path to v8 library." )
 MARK_AS_ADVANCED(V8_LIBRARY)
 

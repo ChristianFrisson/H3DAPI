@@ -5,35 +5,21 @@
 #  AUDIOFILE_LIBRARIES    - List of libraries when using AUDIOFILE.
 #  AUDIOFILE_FOUND        - True if AUDIOFILE found.
 
-GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
-
-IF( CMAKE_CL_64 )
-  SET( LIB "lib64" )
-ELSE( CMAKE_CL_64 )
-  SET( LIB "lib32" )
-ENDIF( CMAKE_CL_64 )
+include( H3DExternalSearchPath )
+GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "libaudiofile" )
 
 # Look for the header file.
 FIND_PATH( AUDIOFILE_INCLUDE_DIR NAMES audiofile.h
            PATHS /usr/local/include
-                 $ENV{H3D_EXTERNAL_ROOT}/include  
-                 $ENV{H3D_EXTERNAL_ROOT}/include/libaudiofile
-                 $ENV{H3D_ROOT}/../External/include  
-                 $ENV{H3D_ROOT}/../External/include/libaudiofile
-                 ../../External/include
-                 ../../External/include/libaudiofile
-                 ${module_file_path}/../../../External/include
-                 ${module_file_path}/../../../External/include/libaudiofile
+                 ${module_include_search_paths}
            DOC "Path in which the file audiofile.h is located." )
 MARK_AS_ADVANCED(AUDIOFILE_INCLUDE_DIR)
 
 # Look for the library.
 # Does this work on UNIX systems? (LINUX)
 FIND_LIBRARY( AUDIOFILE_LIBRARY NAMES audiofile
-              PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                    $ENV{H3D_ROOT}/../External/${LIB}
-                    ../../External/${LIB}
-                    ${module_file_path}/../../../External/${LIB}
+              PATHS ${module_lib_search_paths}
               DOC "Path to audiofile library." )
 MARK_AS_ADVANCED(AUDIOFILE_LIBRARY)
 

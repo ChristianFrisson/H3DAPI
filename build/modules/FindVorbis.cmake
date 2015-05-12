@@ -5,69 +5,48 @@
 #  VORBIS_LIBRARIES    - List of libraries when using VORBIS.
 #  VORBIS_FOUND        - True if VORBIS found.
 
-GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
-
-IF( CMAKE_CL_64 )
-  SET( LIB "lib64" )
-ELSE( CMAKE_CL_64 )
-  SET( LIB "lib32" )
-ENDIF( CMAKE_CL_64 )
+include( H3DExternalSearchPath )
+GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} )
 
 # Look for the header file.
 FIND_PATH(VORBIS_INCLUDE_DIR NAMES vorbis/vorbisfile.h
-                             PATHS $ENV{H3D_EXTERNAL_ROOT}/include
-                                   $ENV{H3D_ROOT}/../External/include
-                                   ../../External/include
-                                   ${module_file_path}/../../../External/include
+                             PATHS ${module_include_search_paths}
                              DOC "Path in which the file vorbis/vorbisfile.h is located." )
 MARK_AS_ADVANCED(VORBIS_INCLUDE_DIR)
 
 FIND_PATH(VORBIS_OGG_INCLUDE_DIR NAMES ogg/ogg.h
-                          PATHS $ENV{H3D_EXTERNAL_ROOT}/include
-                                $ENV{H3D_ROOT}/../External/include
-                                ../../External/include
-                                ${module_file_path}/../../../External/include
+                          PATHS ${module_include_search_paths}
                           DOC "Path in which the file ogg/ogg.h is located." )
 MARK_AS_ADVANCED(VORBIS_OGG_INCLUDE_DIR)
 
 # Look for the library.
 FIND_LIBRARY(VORBIS_VORBISFILE_LIBRARY NAMES libvorbisfile vorbisfile
-                            PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                  ../../External/${LIB}
-                                  ${module_file_path}/../../../External/${LIB}
+                            PATHS ${module_lib_search_paths}
                             DOC "Path to vorbisfile library." )
 MARK_AS_ADVANCED(VORBIS_VORBISFILE_LIBRARY)
 
 FIND_LIBRARY(VORBIS_LIBRARY NAMES libvorbis vorbis
-                            PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                  $ENV{H3D_ROOT}/../External/${LIB}
-                                  ../../External/${LIB}
-                                  ${module_file_path}/../../../External/${LIB}
+                            PATHS ${module_lib_search_paths}
                             DOC "Path to vorbis library." )
 MARK_AS_ADVANCED(VORBIS_LIBRARY)
 
 FIND_LIBRARY(VORBIS_OGG_LIBRARY NAMES libogg ogg 
-                         PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                               $ENV{H3D_ROOT}/../External/${LIB}
-                               ../../External/${LIB}
-                               ${module_file_path}/../../../External/${LIB}
+                         PATHS PATHS ${module_lib_search_paths}
                          DOC "Path to ogg library." )
 MARK_AS_ADVANCED(VORBIS_OGG_LIBRARY)
 
 IF( WIN32 AND PREFER_STATIC_LIBRARIES )
+  set( module_include_search_paths "" )
+  set( module_lib_search_paths "" )
+  get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "static" )
   FIND_LIBRARY( VORBIS_VORBISFILE_STATIC_LIBRARY NAMES libvorbisfile_static vorbisfile_static
-                                         PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                                               $ENV{H3D_ROOT}/../External/${LIB}/static
-                                               ../../External/${LIB}/static
-                                               ${module_file_path}/../../../External/${LIB}/static
+                                         PATHS PATHS ${module_lib_search_paths}
                                          DOC "Path to vorbisfile static library." )
   MARK_AS_ADVANCED(VORBIS_VORBISFILE_STATIC_LIBRARY)
   
   FIND_LIBRARY( VORBIS_OGG_STATIC_LIBRARY NAMES libogg_static ogg_static
-                                         PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                                               $ENV{H3D_ROOT}/../External/${LIB}/static
-                                               ../../External/${LIB}/static
-                                               ${module_file_path}/../../../External/${LIB}/static
+                                         PATHS PATHS ${module_lib_search_paths}
                                          DOC "Path to ogg static library." )
   MARK_AS_ADVANCED(VORBIS_OGG_STATIC_LIBRARY)
 ENDIF( WIN32 AND PREFER_STATIC_LIBRARIES )

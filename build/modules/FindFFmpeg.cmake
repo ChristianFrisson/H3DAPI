@@ -21,6 +21,9 @@ SET( PKG_CONFIG_FOUND False )
 IF( PKG_CONFIG_FOUND )
   PKG_CHECK_MODULES(FFMPEGMODULES libavcodec libavformat libswscale)
 ELSE( PKG_CONFIG_FOUND )
+  include( H3DExternalSearchPath )
+  GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+  get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "ffmpeg/include" )
 
   # Look for the header file.
   FIND_PATH(FFMPEG_AVCODEC_INCLUDE_DIR NAMES avcodec.h
@@ -28,10 +31,7 @@ ELSE( PKG_CONFIG_FOUND )
                                      /usr/include/libavcodec
                                      /usr/local/include/ffmpeg
                                      /usr/include/ffmpeg
-                                     $ENV{H3D_EXTERNAL_ROOT}/include  
-                                     $ENV{H3D_EXTERNAL_ROOT}/include/ffmpeg/include
-                                     ../../External/include    
-                                     ../../External/include/ffmpeg/include
+                                     ${module_include_search_paths}
                                DOC "Path in which the file avcodec.h is located." )
   MARK_AS_ADVANCED(FFMPEG_AVCODEC_INCLUDE_DIR)
 
@@ -41,10 +41,7 @@ ELSE( PKG_CONFIG_FOUND )
                                   /usr/local/include/ffmpeg
                                   /usr/include/ffmpeg
                                   /usr/include/libavformat
-                                  $ENV{H3D_EXTERNAL_ROOT}/include  
-                                  $ENV{H3D_EXTERNAL_ROOT}/include/ffmpeg/include
-                                  ../../External/include    
-                                  ../../External/include/ffmpeg/include
+                                  ${module_include_search_paths}
                             DOC "Path in which the file avformat.h is located." )
   MARK_AS_ADVANCED(FFMPEG_AVFORMAT_INCLUDE_DIR)
 
@@ -54,29 +51,23 @@ ELSE( PKG_CONFIG_FOUND )
                                   /usr/local/include/ffmpeg
                                   /usr/include/ffmpeg
                                   /usr/include/libavformat
-                                  $ENV{H3D_EXTERNAL_ROOT}/include  
-                                  $ENV{H3D_EXTERNAL_ROOT}/include/ffmpeg/include
-                                  ../../External/include    
-                                  ../../External/include/ffmpeg/include
+                                  ${module_include_search_paths}
                             DOC "Path in which the file swscale.h is located." )
   MARK_AS_ADVANCED(FFMPEG_SWSCALE_INCLUDE_DIR)
 
   # Look for the libraries.
   FIND_LIBRARY(FFMPEG_AVCODEC_LIBRARY NAMES avcodec 
-                           PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                 ../../External/lib
+                           PATHS ${module_lib_search_paths}
                            DOC "Path to avcodec library." )
   MARK_AS_ADVANCED(FFMPEG_AVCODEC_LIBRARY)
 
   FIND_LIBRARY(FFMPEG_AVFORMAT_LIBRARY NAMES avformat
-                              PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                    ../../External/lib
+                              PATHS ${module_lib_search_paths}
                               DOC "Path to avformat library." )
   MARK_AS_ADVANCED(FFMPEG_AVFORMAT_LIBRARY)
 
   FIND_LIBRARY(FFMPEG_SWSCALE_LIBRARY NAMES swscale 
-                           PATHS $ENV{H3D_EXTERNAL_ROOT}/lib
-                                 ../../External/lib
+                           PATHS ${module_lib_search_paths}
                            DOC "Path to swscale library." )
   MARK_AS_ADVANCED(FFMPEG_SWSCALE_LIBRARY)
 

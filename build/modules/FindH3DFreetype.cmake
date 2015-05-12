@@ -25,11 +25,6 @@ ELSE(H3DFreetype_FIND_REQUIRED)
 ENDIF(H3DFreetype_FIND_REQUIRED)
 
 IF( NOT FREETYPE_FOUND )
-  IF( CMAKE_CL_64 )
-    SET( LIB "lib64" )
-  ELSE( CMAKE_CL_64 )
-    SET( LIB "lib32" )
-  ENDIF( CMAKE_CL_64 )
 
   IF(FREETYPE_CONFIG_EXECUTABLE)
 
@@ -66,29 +61,21 @@ IF( NOT FREETYPE_FOUND )
 
   ENDIF(FREETYPE_CONFIG_EXECUTABLE)
 
-  GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+  include( H3DExternalSearchPath )
+  GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+  get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "freetype/include" "static" )
 
   IF( NOT FREETYPE_INCLUDE_DIR_ft2build )
     # Look for the header file.
     FIND_PATH(FREETYPE_INCLUDE_DIR_ft2build NAMES freetype/freetype.h
-                                PATHS $ENV{H3D_EXTERNAL_ROOT}/include  
-                                      $ENV{H3D_EXTERNAL_ROOT}/include/freetype/include
-                                      $ENV{H3D_ROOT}/../External/include  
-                                      $ENV{H3D_ROOT}/../External/include/freetype/include
-                                      ../../External/include
-                                      ../../External/include/freetype/include
-                                      ${module_file_path}/../../../External/include
-                                      ${module_file_path}/../../../External/include/freetype/include
+                                PATHS ${module_include_search_paths}
                                 DOC "Path in which the file freetype/freetype.h is located." )
     MARK_AS_ADVANCED(FREETYPE_INCLUDE_DIR_ft2build)
   ENDIF( NOT FREETYPE_INCLUDE_DIR_ft2build)
 
   # Look for the library.
   FIND_LIBRARY(FREETYPE_LIBRARY NAMES freetype freetype2311 freetype2312MT freetype2312 freetype235
-                                PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                                      $ENV{H3D_ROOT}/../External/${LIB}/static
-                                      ../../External/${LIB}/static
-                                      ${module_file_path}/../../../External/${LIB}/static
+                                PATHS ${module_lib_search_paths}
                                 DOC "Path to freetype library." )
   MARK_AS_ADVANCED(FREETYPE_LIBRARY)
 

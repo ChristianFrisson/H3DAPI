@@ -16,7 +16,9 @@
 SET( DCMTK_DIR "" CACHE PATH "Set this to the root of the installed dcmtk files to find include files and libraries." )
 MARK_AS_ADVANCED(DCMTK_DIR)
 
-GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+include( H3DExternalSearchPath )
+GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "static" )
 
 IF( MSVC )
   SET( H3D_MSVC_VERSION 6 )
@@ -28,12 +30,6 @@ IF( MSVC )
   SET( DCMTK_LIBRARY_POSTFIX "_vc${H3D_MSVC_VERSION}" )
 ENDIF( MSVC )
 
-IF( CMAKE_CL_64 )
-  SET( LIB "lib64" )
-ELSE( CMAKE_CL_64 )
-  SET( LIB "lib32" )
-ENDIF( CMAKE_CL_64 )
-
 IF( NOT WIN32 )
 SET( DCMTK_HAVE_CONFIG_H "NO" CACHE BOOL "On some systems the compile flag -DHAVE_CONFIG_H needs to be defined because of DCMTK. If DCMTK headers are causing problem turn this flag on." )
 IF( DCMTK_HAVE_CONFIG_H )
@@ -44,10 +40,7 @@ ENDIF( NOT WIN32 )
 FIND_PATH( DCMTK_config_INCLUDE_DIR NAMES dcmtk/config/osconfig.h
            PATHS ${DCMTK_DIR}/config/include 
                  ${DCMTK_DIR}/include 
-                 $ENV{H3D_EXTERNAL_ROOT}/include
-                 $ENV{H3D_ROOT}/../External/include
-                 ../../External/include
-                 ${module_file_path}/../../../External/include
+                 ${module_include_search_paths}
                  ${module_file_path}/../../dcmtk/include
                  /usr/local/dicom/include
            DOC "Path in which the file dcmtk/config/osconfig.h is located." )
@@ -57,10 +50,7 @@ FIND_PATH( DCMTK_ofstd_INCLUDE_DIR NAMES dcmtk/ofstd/ofstdinc.h
            PATHS ${DCMTK_DIR}/ofstd/include 
                  ${DCMTK_DIR}/include/ofstd
                  ${DCMTK_DIR}/include
-                 $ENV{H3D_EXTERNAL_ROOT}/include
-                 $ENV{H3D_ROOT}/../External/include
-                 ../../External/include
-                 ${module_file_path}/../../../External/include
+                 ${module_include_search_paths}
                  ${module_file_path}/../../dcmtk/include
                  /usr/local/dicom/include
            DOC "Path in which the file dcmtk/ofstd/ofstdinc.h is located." )
@@ -73,10 +63,7 @@ FIND_LIBRARY( DCMTK_ofstd_LIBRARY "ofstd${DCMTK_LIBRARY_POSTFIX}"
                     ${DCMTK_DIR}/ofstd/Release
                     ${DCMTK_DIR}/ofstd/Debug
                     ${DCMTK_DIR}/lib
-                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                    $ENV{H3D_ROOT}/../External/${LIB}/static
-                    ../../External/${LIB}/static
-                    ${module_file_path}/../../../External/${LIB}/static
+                    ${module_lib_search_paths}
                     ${module_file_path}/../../dcmtk/lib
                     /usr/local/dicom/lib
               DOC "Path to ofstd${DCMTK_LIBRARY_POSTFIX} library." )
@@ -86,10 +73,7 @@ FIND_PATH( DCMTK_oflog_INCLUDE_DIR NAMES dcmtk/oflog/oflog.h
            PATHS ${DCMTK_DIR}/oflog/include 
                  ${DCMTK_DIR}/include/oflog
                  ${DCMTK_DIR}/include
-                 $ENV{H3D_EXTERNAL_ROOT}/include
-                 $ENV{H3D_ROOT}/../External/include
-                 ../../External/include
-                 ${module_file_path}/../../../External/include
+                 ${module_include_search_paths}
                  ${module_file_path}/../../dcmtk/include
                  /usr/local/dicom/include
            DOC "Path in which the file dcmtk/oflog/oflog.h is located." )
@@ -102,10 +86,7 @@ FIND_LIBRARY( DCMTK_oflog_LIBRARY "oflog${DCMTK_LIBRARY_POSTFIX}"
                     ${DCMTK_DIR}/oflog/Release
                     ${DCMTK_DIR}/oflog/Debug
                     ${DCMTK_DIR}/lib
-                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                    $ENV{H3D_ROOT}/../External/${LIB}/static
-                    ../../External/${LIB}/static
-                    ${module_file_path}/../../../External/${LIB}/static
+                    ${module_lib_search_paths}
                     ${module_file_path}/../../dcmtk/lib
                     /usr/local/dicom/lib
               DOC "Path to oflog${DCMTK_LIBRARY_POSTFIX} library." )
@@ -115,10 +96,7 @@ FIND_PATH( DCMTK_dcmjpeg_INCLUDE_DIR NAMES dcmtk/dcmjpeg/djdecode.h
            PATHS ${DCMTK_DIR}/dcmjpeg/include 
                  ${DCMTK_DIR}/include/dcmjpeg
                  ${DCMTK_DIR}/include
-                 $ENV{H3D_EXTERNAL_ROOT}/include
-                 $ENV{H3D_ROOT}/../External/include
-                 ../../External/include
-                 ${module_file_path}/../../../External/include
+                 ${module_include_search_paths}
                  ${module_file_path}/../../dcmtk/include
                  /usr/local/dicom/include
            DOC "Path in which the file dcmtk/dcmjpeg/djdecode.h is located." )
@@ -131,10 +109,7 @@ FIND_LIBRARY( DCMTK_dcmjpeg_LIBRARY dcmjpeg${DCMTK_LIBRARY_POSTFIX}
                     ${DCMTK_DIR}/dcmjpeg/Release
                     ${DCMTK_DIR}/dcmjpeg/Debug
                     ${DCMTK_DIR}/lib
-                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                    $ENV{H3D_ROOT}/../External/${LIB}/static
-                    ../../External/${LIB}/static
-                    ${module_file_path}/../../../External/${LIB}/static
+                    ${module_lib_search_paths}
                     ${module_file_path}/../../dcmtk/lib
                     /usr/local/dicom/lib
               DOC "Path to dcmjpeg${DCMTK_LIBRARY_POSTFIX} library." )
@@ -148,10 +123,7 @@ FIND_LIBRARY( DCMTK_ijg8_LIBRARY ijg8${DCMTK_LIBRARY_POSTFIX}
                     ${DCMTK_DIR}/dcmjpeg/libijg8/Release
                     ${DCMTK_DIR}/dcmjpeg/libijg8/Debug
                     ${DCMTK_DIR}/lib
-                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                    $ENV{H3D_ROOT}/../External/${LIB}/static
-                    ../../External/${LIB}/static
-                    ${module_file_path}/../../../External/${LIB}/static
+                    ${module_lib_search_paths}
                     ${module_file_path}/../../dcmtk/lib
                     /usr/local/dicom/lib
               DOC "Path to ijg8${DCMTK_LIBRARY_POSTFIX} library." )
@@ -164,10 +136,7 @@ FIND_LIBRARY( DCMTK_ijg12_LIBRARY ijg12${DCMTK_LIBRARY_POSTFIX}
                     ${DCMTK_DIR}/dcmjpeg/libijg12/Release
                     ${DCMTK_DIR}/dcmjpeg/libijg12/Debug
                     ${DCMTK_DIR}/lib
-                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                    $ENV{H3D_ROOT}/../External/${LIB}/static
-                    ../../External/${LIB}/static
-                    ${module_file_path}/../../../External/${LIB}/static
+                    ${module_lib_search_paths}
                     ${module_file_path}/../../dcmtk/lib 
                     /usr/local/dicom/lib
               DOC "Path to ijg12${DCMTK_LIBRARY_POSTFIX} library." )
@@ -180,10 +149,7 @@ FIND_LIBRARY( DCMTK_ijg16_LIBRARY ijg16${DCMTK_LIBRARY_POSTFIX}
                     ${DCMTK_DIR}/dcmjpeg/libijg16/Release
                     ${DCMTK_DIR}/dcmjpeg/libijg16/Debug
                     ${DCMTK_DIR}/lib
-                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                    $ENV{H3D_ROOT}/../External/${LIB}/static
-                    ../../External/${LIB}/static
-                    ${module_file_path}/../../../External/${LIB}/static
+                    ${module_lib_search_paths}
                     ${module_file_path}/../../dcmtk/lib 
                     /usr/local/dicom/lib
               DOC "Path to ijg16${DCMTK_LIBRARY_POSTFIX} library." )
@@ -193,10 +159,7 @@ FIND_PATH( DCMTK_dcmdata_INCLUDE_DIR dcmtk/dcmdata/dctypes.h
            PATHS ${DCMTK_DIR}/dcmdata/include
                  ${DCMTK_DIR}/include/dcmdata
                  ${DCMTK_DIR}/include
-                 $ENV{H3D_EXTERNAL_ROOT}/include
-                 $ENV{H3D_ROOT}/../External/include
-                 ../../External/include
-                 ${module_file_path}/../../../External/include
+                 ${module_include_search_paths}
                  ${module_file_path}/../../dcmtk/include
                  /usr/local/dicom/include
            DOC "Path in which the file dcmtk/dcmdata/dctypes.h is located." )
@@ -209,10 +172,7 @@ FIND_LIBRARY( DCMTK_dcmdata_LIBRARY dcmdata${DCMTK_LIBRARY_POSTFIX}
                     ${DCMTK_DIR}/dcmdata/Release
                     ${DCMTK_DIR}/dcmdata/Debug
                     ${DCMTK_DIR}/lib
-                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                    $ENV{H3D_ROOT}/../External/${LIB}/static
-                    ../../External/${LIB}/static
-                    ${module_file_path}/../../../External/${LIB}/static
+                    ${module_lib_search_paths}
                     ${module_file_path}/../../dcmtk/lib 
                     /usr/local/dicom/lib
               DOC "Path to dcmdata${DCMTK_LIBRARY_POSTFIX} library." )
@@ -223,10 +183,7 @@ FIND_PATH( DCMTK_dcmimgle_INCLUDE_DIR dcmtk/dcmimgle/dcmimage.h
            PATHS ${DCMTK_DIR}/dcmimgle/include
                  ${DCMTK_DIR}/include/dcmimgle
                  ${DCMTK_DIR}/include
-                 $ENV{H3D_EXTERNAL_ROOT}/include
-                 $ENV{H3D_ROOT}/../External/include
-                 ../../External/include
-                 ${module_file_path}/../../../External/include
+                 ${module_include_search_paths}
                  ${module_file_path}/../../dcmtk/include 
                  /usr/local/dicom/include
            DOC "Path in which the file dcmtk/dcmimgle/dcmimage.h is located." )
@@ -239,10 +196,7 @@ FIND_LIBRARY( DCMTK_dcmimgle_LIBRARY dcmimgle${DCMTK_LIBRARY_POSTFIX}
                     ${DCMTK_DIR}/dcmimgle/Release
                     ${DCMTK_DIR}/dcmimgle/Debug
                     ${DCMTK_DIR}/lib
-                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                    $ENV{H3D_ROOT}/../External/${LIB}/static
-                    ../../External/${LIB}/static
-                    ${module_file_path}/../../../External/${LIB}/static
+                    ${module_lib_search_paths}
                     ${module_file_path}/../../dcmtk/lib
                     /usr/local/dicom/lib
               DOC "Path to dcmimgle${DCMTK_LIBRARY_POSTFIX} library." )
@@ -255,10 +209,7 @@ FIND_LIBRARY( DCMTK_dcmimage_LIBRARY dcmimage${DCMTK_LIBRARY_POSTFIX}
                     ${DCMTK_DIR}/dcmimage/Release
                     ${DCMTK_DIR}/dcmimage/Debug
                     ${DCMTK_DIR}/lib
-                    $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                    $ENV{H3D_ROOT}/../External/${LIB}/static
-                    ../../External/${LIB}/static
-                    ${module_file_path}/../../../External/${LIB}/static
+                    ${module_lib_search_paths}
                     ${module_file_path}/../../dcmtk/lib
                     /usr/local/dicom/lib
               DOC "Path to dcmimage${DCMTK_LIBRARY_POSTFIX} library." )
@@ -273,10 +224,7 @@ IF( MSVC10 )
                       ${DCMTK_DIR}/ofstd/Release
                       ${DCMTK_DIR}/ofstd/Debug
                       ${DCMTK_DIR}/lib
-                      $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                      $ENV{H3D_ROOT}/../External/${LIB}/static
-                      ../../External/${LIB}/static
-                      ${module_file_path}/../../../External/${LIB}/static
+                      ${module_lib_search_paths}
                       ${module_file_path}/../../dcmtk/lib
                       /usr/local/dicom/lib
                 DOC "Path to ofstd${DCMTK_LIBRARY_POSTFIX}_d library." )
@@ -289,10 +237,7 @@ IF( MSVC10 )
                       ${DCMTK_DIR}/dcmjpeg/Release
                       ${DCMTK_DIR}/dcmjpeg/Debug
                       ${DCMTK_DIR}/lib
-                      $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                      $ENV{H3D_ROOT}/../External/${LIB}/static
-                      ../../External/${LIB}/static
-                      ${module_file_path}/../../../External/${LIB}/static
+                      ${module_lib_search_paths}
                       ${module_file_path}/../../dcmtk/lib
                       /usr/local/dicom/lib
                 DOC "Path to dcmjpeg${DCMTK_LIBRARY_POSTFIX}_d library." )
@@ -306,10 +251,7 @@ IF( MSVC10 )
                       ${DCMTK_DIR}/dcmjpeg/libijg8/Release
                       ${DCMTK_DIR}/dcmjpeg/libijg8/Debug
                       ${DCMTK_DIR}/lib
-                      $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                      $ENV{H3D_ROOT}/../External/${LIB}/static
-                      ../../External/${LIB}/static
-                      ${module_file_path}/../../../External/${LIB}/static
+                      ${module_lib_search_paths}
                       ${module_file_path}/../../dcmtk/lib
                       /usr/local/dicom/lib
                 DOC "Path to ijg8${DCMTK_LIBRARY_POSTFIX}_d library." )
@@ -322,10 +264,7 @@ IF( MSVC10 )
                       ${DCMTK_DIR}/dcmjpeg/libijg12/Release
                       ${DCMTK_DIR}/dcmjpeg/libijg12/Debug
                       ${DCMTK_DIR}/lib
-                      $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                      $ENV{H3D_ROOT}/../External/${LIB}/static
-                      ../../External/${LIB}/static
-                      ${module_file_path}/../../../External/${LIB}/static
+                      ${module_lib_search_paths}
                       ${module_file_path}/../../dcmtk/lib
                       /usr/local/dicom/lib
                 DOC "Path to ijg12${DCMTK_LIBRARY_POSTFIX}_d library." )
@@ -338,10 +277,7 @@ IF( MSVC10 )
                       ${DCMTK_DIR}/dcmjpeg/libijg16/Release
                       ${DCMTK_DIR}/dcmjpeg/libijg16/Debug
                       ${DCMTK_DIR}/lib
-                      $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                      $ENV{H3D_ROOT}/../External/${LIB}/static
-                      ../../External/${LIB}/static
-                      ${module_file_path}/../../../External/${LIB}/static
+                      ${module_lib_search_paths}
                       ${module_file_path}/../../dcmtk/lib 
                       /usr/local/dicom/lib
                 DOC "Path to ijg16${DCMTK_LIBRARY_POSTFIX}_d library." )
@@ -354,10 +290,7 @@ IF( MSVC10 )
                       ${DCMTK_DIR}/dcmdata/Release
                       ${DCMTK_DIR}/dcmdata/Debug
                       ${DCMTK_DIR}/lib
-                      $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                      $ENV{H3D_ROOT}/../External/${LIB}/static
-                      ../../External/${LIB}/static
-                      ${module_file_path}/../../../External/${LIB}/static
+                      ${module_lib_search_paths}
                       ${module_file_path}/../../dcmtk/lib 
                       /usr/local/dicom/lib
                 DOC "Path to dcmdata${DCMTK_LIBRARY_POSTFIX}_d library." )
@@ -370,10 +303,7 @@ IF( MSVC10 )
                       ${DCMTK_DIR}/dcmimgle/Release
                       ${DCMTK_DIR}/dcmimgle/Debug
                       ${DCMTK_DIR}/lib
-                      $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                      $ENV{H3D_ROOT}/../External/${LIB}/static
-                      ../../External/${LIB}/static
-                      ${module_file_path}/../../../External/${LIB}/static
+                      ${module_lib_search_paths}
                       ${module_file_path}/../../dcmtk/lib
                       /usr/local/dicom/lib
                 DOC "Path to dcmimgle${DCMTK_LIBRARY_POSTFIX}_d library." )
@@ -386,10 +316,7 @@ IF( MSVC10 )
                       ${DCMTK_DIR}/dcmimage/Release
                       ${DCMTK_DIR}/dcmimage/Debug
                       ${DCMTK_DIR}/lib
-                      $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                      $ENV{H3D_ROOT}/../External/${LIB}/static
-                      ../../External/${LIB}/static
-                      ${module_file_path}/../../../External/${LIB}/static
+                      ${module_lib_search_paths}
                       ${module_file_path}/../../dcmtk/lib
                       /usr/local/dicom/lib
                 DOC "Path to dcmimage${DCMTK_LIBRARY_POSTFIX}_d library." )

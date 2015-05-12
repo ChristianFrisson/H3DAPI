@@ -46,33 +46,21 @@ ELSE( Teem_FOUND AND Teem_USE_FILE )
   MARK_AS_ADVANCED( Teem_PNG )
   MARK_AS_ADVANCED( Teem_ZLIB )
 
-  GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
-
-  IF( CMAKE_CL_64 )
-    SET( LIB "lib64" )
-  ELSE( CMAKE_CL_64 )
-    SET( LIB "lib32" )
-  ENDIF( CMAKE_CL_64 )
+  include( H3DExternalSearchPath )
+  GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+  get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "teem" )
 
   # Look for the header file.
   FIND_PATH(Teem_INCLUDE_DIR NAMES teem/nrrd.h
-                             PATHS $ENV{H3D_EXTERNAL_ROOT}/include
-                                   $ENV{H3D_ROOT}/../External/include
-                                   ../../External/include
-                                   /usr/local/include
-                                   ${module_file_path}/../../../External/include
-                                   ${module_file_path}/../../teem/include
+                             PATHS /usr/local/include
+                                   ${module_include_search_paths}
                              DOC "Path in which the file teem/nrrd.h is located." )
   MARK_AS_ADVANCED(Teem_INCLUDE_DIR)
 
   # Look for the library.
   FIND_LIBRARY(Teem_LIBRARY NAMES teem 
-                            PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                  $ENV{H3D_ROOT}/../External/${LIB}
-                                  ../../External/${LIB}
-                                  /usr/local/lib
-                                  ${module_file_path}/../../../External/${LIB}
-                                  ${module_file_path}/../../teem/lib
+                            PATHS /usr/local/lib
+                                  ${module_lib_search_paths}
                             DOC "Path to teem library." )
   MARK_AS_ADVANCED(Teem_LIBRARY)
 

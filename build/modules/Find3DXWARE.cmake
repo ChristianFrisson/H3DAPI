@@ -4,45 +4,28 @@
 #  3DXWARE_LIBRARIES    - List of libraries when using 3dxware.
 #  3DXWARE_FOUND        - True if 3dxware is found.
 
-GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
-
-IF( CMAKE_CL_64 )
-  SET( LIB "lib64" )
-ELSE( CMAKE_CL_64 )
-  SET( LIB "lib32" )
-ENDIF( CMAKE_CL_64 )
+include( H3DExternalSearchPath )
+GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "3dconnexion/inc" )
 
 # Look for the header file.
 FIND_PATH( 3DXWARE_INCLUDE_DIR NAMES si.h siapp.h H3D/xdrvlib.h X11/Xlib.h X11/Xutil.h X11/Xos.h X11/Xatom.h X11/keysym.h
            PATHS  /usr/local/include 
-                 $ENV{H3D_EXTERNAL_ROOT}/include  
-                 $ENV{H3D_EXTERNAL_ROOT}/include/3dconnexion/inc
-                 $ENV{H3D_ROOT}/../External/include  
-                 $ENV{H3D_ROOT}/../External/include/3dconnexion/inc
-                 ../../External/include
-                 ../../External/include/3dconnexion/inc
-                 ${module_file_path}/../../../External/include
-                 ${module_file_path}/../../../External/include/3dconnexion/inc
+                 ${module_include_search_paths}
            DOC "Path in which the files si.h, siapp.h, H3D/xdrvlib.h, X11/Xlib.h, X11/Xutil.h, X11/Xos.h, X11/Xatom.h and X11/keysym.h are located." )
 MARK_AS_ADVANCED(3DXWARE_INCLUDE_DIR)
 
 # Look for the library siapp.
 # TODO: Does this work on UNIX systems? (LINUX) I strongly doubt it. What are the libraries to find on linux?
 FIND_LIBRARY( 3DXWARE_SIAPP_LIBRARY NAMES siapp
-              PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                    $ENV{H3D_ROOT}/../External/${LIB}
-                    ../../External/${LIB}
-                    ${module_file_path}/../../../External/${LIB}
+              PATHS ${module_lib_search_paths}
               DOC "Path to siapp library." )
 MARK_AS_ADVANCED(3DXWARE_SIAPP_LIBRARY)
 
 # Look for the library spwmath.
 # Does this work on UNIX systems? (LINUX)
 FIND_LIBRARY( 3DXWARE_SPWMATH_LIBRARY NAMES spwmath
-              PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                    $ENV{H3D_ROOT}/../External/${LIB}
-                    ../../External/${LIB}
-                    ${module_file_path}/../../../External/${LIB}
+              PATHS ${module_lib_search_paths}
               DOC "Path to spwmath library." )
 MARK_AS_ADVANCED(3DXWARE_SPWMATH_LIBRARY)
 

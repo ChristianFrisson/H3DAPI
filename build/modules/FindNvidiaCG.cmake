@@ -4,49 +4,28 @@
 #  NVIDIACG_LIBRARIES    - List of libraries when using NVIDIA CG Toolkit.
 #  NVIDIACG_FOUND        - True if the NVIDIA CG Toolkit is found.
 
-GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
-
-IF( CMAKE_CL_64 )
-  SET( LIB "lib64" )
-ELSE( CMAKE_CL_64 )
-  SET( LIB "lib32" )
-ENDIF( CMAKE_CL_64 )
+include( H3DExternalSearchPath )
+GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "Cg" "cg" )
 
 # Look for the header file.
 FIND_PATH( NVIDIACG_INCLUDE_DIR NAMES cg.h cgGL.h
            PATHS /usr/local/include
-                 $ENV{H3D_EXTERNAL_ROOT}/include  
-                 $ENV{H3D_EXTERNAL_ROOT}/include/Cg
-                 $ENV{H3D_EXTERNAL_ROOT}/include/cg
-                 $ENV{H3D_ROOT}/../External/include  
-                 $ENV{H3D_ROOT}/../External/include/Cg
-                 $ENV{H3D_ROOT}/../External/include/cg
-                 ../../External/include
-                 ../../External/include/Cg
-                 ../../External/include/cg
-                 ${module_file_path}/../../../External/include
-                 ${module_file_path}/../../../External/include/Cg
-                 ${module_file_path}/../../../External/include/cg
+                 ${module_include_search_paths}
            DOC "Path in which the file cg.h and cgGL.h are located." )
 MARK_AS_ADVANCED(NVIDIACG_INCLUDE_DIR)
 
 # Look for the library cg.
 # Does this work on UNIX systems? (LINUX)
 FIND_LIBRARY( NVIDIACG_LIBRARY NAMES cg Cg
-              PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                    $ENV{H3D_ROOT}/../External/${LIB}
-                    ../../External/${LIB}
-                    ${module_file_path}/../../../External/${LIB}
+              PATHS ${module_lib_search_paths}
               DOC "Path to cg library." )
 MARK_AS_ADVANCED(NVIDIACG_LIBRARY)
 
 # Look for the library cg.
 # Does this work on UNIX systems? (LINUX)
 FIND_LIBRARY( NVIDIACG_CGGL_LIBRARY NAMES cgGL CgGL
-              PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                    $ENV{H3D_ROOT}/../External/${LIB}
-                    ../../External/${LIB}
-                    ${module_file_path}/../../../External/${LIB}
+              PATHS ${module_lib_search_paths}
               DOC "Path to cgGL library." )
 MARK_AS_ADVANCED(NVIDIACG_CGGL_LIBRARY)
 

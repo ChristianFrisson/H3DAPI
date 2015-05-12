@@ -6,27 +6,15 @@
 #  OpenEXR_FOUND        - True if OpenEXR found.
 
 
-IF( CMAKE_CL_64 )
-  SET( LIB "lib64" )
-ELSE( CMAKE_CL_64 )
-  SET( LIB "lib32" )
-ENDIF( CMAKE_CL_64 )
-GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
-
 #OpenEXR requires zlib.
 FIND_PACKAGE(H3DZLIB)
 
 SET( OpenEXRIncludeSearchPath "" )
 SET( OpenEXRLibrarySearchPath "" )
 IF( MSVC10 )
-  SET( OpenEXRIncludeSearchPath $ENV{H3D_EXTERNAL_ROOT}/include
-                                $ENV{H3D_ROOT}/../External/include
-                                ../../External/include
-                                ${module_file_path}/../../../External/include )
-  SET( OpenEXRLibrarySearchPath $ENV{H3D_EXTERNAL_ROOT}/${LIB}
-                                $ENV{H3D_ROOT}/../External/${LIB}
-                                ../../External/${LIB}
-                                ${module_file_path}/../../../External/${LIB} )
+  include( H3DExternalSearchPath )
+  GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+  get_external_search_paths_h3d( OpenEXRIncludeSearchPath OpenEXRLibrarySearchPath ${module_file_path} )
 ENDIF()
 
 # Look for the header file.

@@ -7,11 +7,9 @@
 INCLUDE( TestIfVCExpress )
 TestIfVCExpress()
 
-IF( CMAKE_CL_64 )
-  SET( LIB "lib64" )
-ELSE( CMAKE_CL_64 )
-  SET( LIB "lib32" )
-ENDIF( CMAKE_CL_64 )
+include( H3DExternalSearchPath )
+GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "DirectShow/BaseClasses" "static" )
 
 IF(CMake_HAVE_MFC)
 # Look for the header file.
@@ -29,14 +27,7 @@ ENDIF(MSVC70 OR MSVC71)
 GET_FILENAME_COMPONENT(module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 
 FIND_PATH( DIRECTSHOW_INCLUDE_DIR_STREAMS_H NAMES streams.h
-           PATHS $ENV{H3D_EXTERNAL_ROOT}/include  
-                 $ENV{H3D_EXTERNAL_ROOT}/include/DirectShow/BaseClasses
-                 $ENV{H3D_ROOT}/../External/include  
-                 $ENV{H3D_ROOT}/../External/include/DirectShow/BaseClasses
-                 ../../External/include
-                 ../../External/include/DirectShow/BaseClasses
-                 ${module_file_path}/../../../External/include
-                 ${module_file_path}/../../../External/include/DirectShow/BaseClasses
+           PATHS ${module_include_search_paths}
            DOC "Path in which the file streams.h is located." )
 MARK_AS_ADVANCED(DIRECTSHOW_INCLUDE_DIR_STREAMS_H)
 
@@ -63,10 +54,7 @@ FIND_PATH( DIRECTSHOW_INCLUDE_DIR_INTSAFE_H NAMES intsafe.h
 MARK_AS_ADVANCED(DIRECTSHOW_INCLUDE_DIR_INTSAFE_H)
 
 FIND_LIBRARY( DIRECTSHOW_LIBRARY NAMES strmbase
-              PATHS $ENV{H3D_EXTERNAL_ROOT}/${LIB}/static
-                    $ENV{H3D_ROOT}/../External/${LIB}/static
-                    ../../External/${LIB}/static
-                    ${module_file_path}/../../../External/${LIB}/static
+              PATHS ${module_lib_search_paths}
               DOC "Path to strmbase library." )
 MARK_AS_ADVANCED(DIRECTSHOW_LIBRARY)
 
