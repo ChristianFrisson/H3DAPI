@@ -92,10 +92,9 @@ void VisibilitySensor::traverseSG( TraverseInfo &ti ) {
     if( prev_travinfoadr != &ti)
     {
       // First Instance DEF/USE of traveseSG
-      prev_maxnoinstances = no_instance;
       vector<int>::iterator p;
       for( p = list.begin(); p != list.end(); ++p ) {
-        if( *p > no_instance)
+        if( *p > no_instance )
           p=list.erase( p );
       }
       no_instance = 0;
@@ -111,6 +110,7 @@ void VisibilitySensor::traverseSG( TraverseInfo &ti ) {
     H3DFloat zmin = center->getValue().z - size->getValue().z / 2.0f;
     H3DFloat zmax = center->getValue().z + size->getValue().z / 2.0f;
     
+    // Global coordinates of the corners of visibilitySensor    
     Vec3f loc0(xmin, ymin, zmax);
     Vec3f loc1(xmax, ymin, zmax);
     Vec3f loc2(xmax, ymax, zmax);
@@ -121,136 +121,184 @@ void VisibilitySensor::traverseSG( TraverseInfo &ti ) {
     Vec3f loc7(xmin, ymax, zmin);
 
     // Global coordinates of the corners of visibilitySensor
-
-    Vec3f g0 = vs_frw_m * loc0;
-    Vec3f g1 = vs_frw_m * loc1;
-    Vec3f g2 = vs_frw_m * loc2;
-    Vec3f g3 = vs_frw_m * loc3;
-    Vec3f g4 = vs_frw_m * loc4;
-    Vec3f g5 = vs_frw_m * loc5;
-    Vec3f g6 = vs_frw_m * loc6;
-    Vec3f g7 = vs_frw_m * loc7;
-
-    GLuint sampleCount;
-    GLint available;
-    GLint bitsSupported;
-
-    // check to make sure functionality is supported
-    glGetQueryiv(GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS_ARB, 
-      &bitsSupported);
-    if (bitsSupported == 0) {
-         cout<<"query check is not supported"<<endl;
-      
-    }
-
-    if ( !glIsQuery( queryId ) )
-      glGenQueriesARB(1, &queryId );
-      
-    // before this point, render major occluders
-    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-    glDepthMask(GL_FALSE);
-
-  bool depthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
-  if( viewFrustumMode->getValue() )
-    glDisable(GL_DEPTH_TEST);
-  
-  // also disable texturing and any fancy shaders
-    glBeginQueryARB(GL_SAMPLES_PASSED_ARB, queryId );
-    // render bounding box for object i
-    glBegin( GL_QUADS );
-  
-    // +z
-    //glNormal3f  ( 0, 0, 1 );
-
-    glVertex3f  (g2.x, g2.y,g2.z);
-    glVertex3f  (g3.x, g3.y,g3.z);
-    glVertex3f  (g0.x, g0.y,g0.z);
-    glVertex3f  (g1.x, g1.y,g1.z);
-
-
-    // -z
-    //glNormal3f  ( 0, 0, -1 );
-
-    glVertex3f  (g5.x, g5.y,g5.z);
-    glVertex3f  (g4.x, g4.y,g4.z);
-    glVertex3f  (g7.x, g7.y,g7.z);
-    glVertex3f  (g6.x, g6.y,g6.z);
-
-    // +y
-    //glNormal3f  ( 0, 1, 0 );
-
-    glVertex3f  (g2.x, g2.y,g2.z);
-    glVertex3f  (g6.x, g6.y,g6.z);
-    glVertex3f  (g7.x, g7.y,g7.z);
-    glVertex3f  (g3.x, g3.y,g3.z);
-
-    // -y
-    //glNormal3f  ( 0, -1, 0 );
-
-    glVertex3f  (g0.x, g0.y,g0.z);
-    glVertex3f  (g4.x, g4.y,g4.z);
-    glVertex3f  (g5.x, g5.y,g5.z);
-    glVertex3f  (g1.x, g1.y,g1.z);
-
-    // +x
-    //glNormal3f  ( 1, 0, 0 );
-
-    glVertex3f  (g2.x, g2.y,g2.z);
-    glVertex3f  (g1.x, g1.y,g1.z);
-    glVertex3f  (g5.x, g5.y,g5.z);
-    glVertex3f  (g6.x, g6.y,g6.z);
-
-    // -x
-    //glNormal3f  ( -1, 0, 0 );
-
-    glVertex3f  (g7.x, g7.y,g7.z);
-    glVertex3f  (g4.x, g4.y,g4.z);
-    glVertex3f  (g0.x, g0.y,g0.z);
-    glVertex3f  (g3.x, g3.y,g4.z);
-
-
-    glEnd();
+    vector< Vec3f > pnts; 
+    pnts.push_back( vs_frw_m * loc0 );
+    pnts.push_back( vs_frw_m * loc1 );
+    pnts.push_back( vs_frw_m * loc2 );
+    pnts.push_back( vs_frw_m * loc3 );
+    pnts.push_back( vs_frw_m * loc4 );
+    pnts.push_back( vs_frw_m * loc5 );
+    pnts.push_back( vs_frw_m * loc6 );
+    pnts.push_back( vs_frw_m * loc7 );
     
-    glEndQueryARB(GL_SAMPLES_PASSED_ARB);
-      
-    glFlush();
+    
 
-    do {
-      glGetQueryObjectivARB(queryId,
-                GL_QUERY_RESULT_AVAILABLE_ARB,
-                &available);
-    } while (!available);
-
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-    glDepthMask(GL_TRUE);
-
-  if( viewFrustumMode->getValue() && depthTestEnabled )
-    glEnable(GL_DEPTH_TEST);
-      
-    glGetQueryObjectuivARB(queryId, GL_QUERY_RESULT_ARB,
-                &sampleCount);
-
-  
-    if( (int)sampleCount > visib_pix_no_threshold )
-    {
-      vector<int>::iterator p = find(list.begin(), list.end(), 
-        no_instance );
-      if ( p == list.end() ) {
-        if( list.size() == 0 ) isActive->setValue( true, id );
-            list.push_back( no_instance );
-      }
-    }
+    bool is_visible = false;
+    if ( viewFrustumMode->getValue() )
+      is_visible = queryViewFrustum( pnts );
     else
-    {
-      vector<int>::iterator p = find(list.begin(), list.end(), 
-        no_instance );
-      if ( p != list.end() ) {
-            list.erase( p );
-          if( list.size() == 0 ) isActive->setValue( false, id );
-      }
+      is_visible = queryNoViewFrustum( pnts );
+  
+    if( is_visible ) {
+      
+      if( list.size() == 0 )
+        isActive->setValue( true, id );
+      
+      vector<int>::iterator p = find(list.begin(), list.end(), no_instance );
+      if ( p == list.end() )
+        list.push_back( no_instance );
+    }
+    else {
+      vector<int>::iterator p = find(list.begin(), list.end(), no_instance );
+      if ( p != list.end() )
+        list.erase( p );
+      
+      if( list.size() == 0 )
+        isActive->setValue( false, id );      
     }
 
     prev_travinfoadr = &ti;
   
   }
+}
+
+bool VisibilitySensor::queryNoViewFrustum( std::vector<Vec3f> &global_points  ) {
+  if ( global_points.size() != 8 )
+    return false;
+  
+  // Global coordinates of the corners of visibilitySensor
+  Vec3f g0 = global_points[0];
+  Vec3f g1 = global_points[1];
+  Vec3f g2 = global_points[2];
+  Vec3f g3 = global_points[3];
+  Vec3f g4 = global_points[4];
+  Vec3f g5 = global_points[5];
+  Vec3f g6 = global_points[6];
+  Vec3f g7 = global_points[7];
+  
+  GLuint queries[1];
+  GLuint sampleCount;
+  GLint available;
+  GLint bitsSupported;
+  
+  // check to make sure functionality is supported
+  glGetQueryiv(GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS_ARB, 
+    &bitsSupported);
+  if (bitsSupported == 0) {
+       cout<<"query check is not supported"<<endl;
+    
+  }
+  
+  if ( !glIsQuery( queryId ) )
+    glGenQueriesARB(1, &queryId );
+    
+  // before this point, render major occluders
+  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+  glDepthMask(GL_FALSE);
+  
+  // also disable texturing and any fancy shaders
+  glBeginQueryARB(GL_SAMPLES_PASSED_ARB, queryId );
+  // render bounding box for object i
+  glBegin( GL_QUADS );
+  
+  // +z
+  //glNormal3f  ( 0, 0, 1 );
+  
+  glVertex3f  (g2.x, g2.y,g2.z);
+  glVertex3f  (g3.x, g3.y,g3.z);
+  glVertex3f  (g0.x, g0.y,g0.z);
+  glVertex3f  (g1.x, g1.y,g1.z);
+  
+  // -z
+  //glNormal3f  ( 0, 0, -1 );
+  
+  glVertex3f  (g5.x, g5.y,g5.z);
+  glVertex3f  (g4.x, g4.y,g4.z);
+  glVertex3f  (g7.x, g7.y,g7.z);
+  glVertex3f  (g6.x, g6.y,g6.z);
+  
+  // +y
+  //glNormal3f  ( 0, 1, 0 );
+  
+  glVertex3f  (g2.x, g2.y,g2.z);
+  glVertex3f  (g6.x, g6.y,g6.z);
+  glVertex3f  (g7.x, g7.y,g7.z);
+  glVertex3f  (g3.x, g3.y,g3.z);
+  
+  // -y
+  //glNormal3f  ( 0, -1, 0 );
+  
+  glVertex3f  (g0.x, g0.y,g0.z);
+  glVertex3f  (g4.x, g4.y,g4.z);
+  glVertex3f  (g5.x, g5.y,g5.z);
+  glVertex3f  (g1.x, g1.y,g1.z);
+  
+  // +x
+  //glNormal3f  ( 1, 0, 0 );
+  
+  glVertex3f  (g2.x, g2.y,g2.z);
+  glVertex3f  (g1.x, g1.y,g1.z);
+  glVertex3f  (g5.x, g5.y,g5.z);
+  glVertex3f  (g6.x, g6.y,g6.z);
+  
+  // -x
+  //glNormal3f  ( -1, 0, 0 );
+  
+  glVertex3f  (g7.x, g7.y,g7.z);
+  glVertex3f  (g4.x, g4.y,g4.z);
+  glVertex3f  (g0.x, g0.y,g0.z);
+  glVertex3f  (g3.x, g3.y,g4.z);
+  
+  
+  glEnd();
+  
+  glEndQueryARB(GL_SAMPLES_PASSED_ARB);
+    
+  glFlush();
+  
+  do {
+    glGetQueryObjectivARB(queryId,
+              GL_QUERY_RESULT_AVAILABLE_ARB,
+              &available);
+  } while (!available);
+  
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+  glDepthMask(GL_TRUE);
+  
+  glGetQueryObjectuivARB(queryId, GL_QUERY_RESULT_ARB,
+              &sampleCount);
+  
+  
+  return (int)sampleCount > visib_pix_no_threshold;
+
+}
+
+bool VisibilitySensor::queryViewFrustum( std::vector<Vec3f> &global_points ) {
+  if ( global_points.size() != 8 )
+    return false;
+ 
+  // View matrix
+  Matrix4f vm =  Viewpoint::getActive()->getViewMatrix( X3DViewpointNode::EyeMode::MONO );
+  
+  // Projection matrix
+  set< Scene* >::iterator si = Scene::scenes.begin();
+  const NodeVector& wind_vect = (*si)->window->getValue();
+  H3DWindowNode* curr_wind = static_cast<H3DWindowNode*>( wind_vect[0] );
+  // TODO: For this to work in all stereo modes, the width/height values
+  // should be projection width/height instead.
+  Matrix4f pm = Viewpoint::getActive()->getProjectionMatrix( X3DViewpointNode::EyeMode::MONO,
+                                               curr_wind->width->getValue(),
+                                               curr_wind->height->getValue(),
+                                               curr_wind->clipDistances->getValue()[0],
+                                               curr_wind->clipDistances->getValue()[1],
+                                               NULL,
+                                               curr_wind->mirrored->getValue());
+  
+  for( size_t i=0; i<8; i++ ){
+    Vec4f p_p = pm*vm*global_points[i];
+    p_p = p_p / p_p.w;
+    if( p_p.x > -1.0 && p_p.x < 1.0 && p_p.y > -1.0 && p_p.y < 1.0 )
+      return true;
+  }
+  return false;
 }

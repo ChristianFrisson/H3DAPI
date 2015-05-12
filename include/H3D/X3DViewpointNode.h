@@ -467,6 +467,14 @@ namespace H3D {
     {}
 #endif
 
+    /// Gets the projectionMatrix for this viewpoint, i.e. the transformation
+    /// matrix from view coordinates to orthogonal projection
+    virtual Matrix4f getProjectionMatrix( EyeMode eye_mode,
+                                  H3DFloat width, H3DFloat height,
+                                  H3DFloat clip_near, H3DFloat clip_far,
+                                  StereoInfo * stereo_info = 0,
+                                  bool mirrored_in_y = false );
+
     /// Adds a view matrix to the current OpenGL matrix to transform from
     /// view coordinates (camera/viewpoint space) to world space. This means
     /// e.g. setting up position and orientation of the viewpoint.

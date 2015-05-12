@@ -377,7 +377,7 @@ namespace H3D {
     auto_ptr< SFNavigationInfo > navigationInfo;
 
     /// The distance (in meters) used for the far and near clip
-    /// plane. Far plane is x, near plane is y. A value
+    /// plane. Near plane is x, far plane is y. A value
     /// of -1 for far plane means that far plane is at infinity. 
     ///
     /// <b>Access type:</b> outputOnly \n

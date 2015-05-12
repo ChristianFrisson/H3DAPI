@@ -454,3 +454,30 @@ Matrix4f X3DViewpointNode::getViewMatrix( EyeMode eye_mode,
   glPopMatrix();
   return m;
 }
+
+Matrix4f X3DViewpointNode::getProjectionMatrix( EyeMode eye_mode,
+                                          H3DFloat width, H3DFloat height,
+                                          H3DFloat clip_near, H3DFloat clip_far,
+                                          StereoInfo* stereo_info,
+                                          bool mirrored_in_y ) {
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+  glLoadIdentity();
+
+  if( mirrored_in_y ) {
+    glScalef( 1, -1, 1 );
+    glFrontFace( GL_CW );
+  } else {
+    glFrontFace( GL_CCW );
+  }
+  setupProjection( eye_mode, width, height, clip_near, clip_far, stereo_info );
+  
+  GLfloat pm[16];
+  glGetFloatv( GL_PROJECTION_MATRIX, pm );
+  H3D::Matrix4f m( pm[0], pm[4], pm[8],  pm[12],
+                   pm[1], pm[5], pm[9],  pm[13],
+                   pm[2], pm[6], pm[10], pm[14],
+                   pm[3], pm[7], pm[11], pm[15] );
+  glPopMatrix();
+  return m;
+}

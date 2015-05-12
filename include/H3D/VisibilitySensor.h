@@ -159,8 +159,6 @@ namespace H3D {
     /// only interested in adress, what it points to will be invalid
     TraverseInfo *prev_travinfoadr;
 
-    //  Number of Instances(DEF/USE) cases in the previous traverseSG
-    int prev_maxnoinstances;
     //  The variable keeping the instance no in a traverseSG
     int no_instance;
 
@@ -180,6 +178,10 @@ namespace H3D {
   
   protected:
     GLuint queryId;
+
+    bool queryNoViewFrustum( std::vector<Vec3f> &global_points );
+
+    bool queryViewFrustum( std::vector<Vec3f> &global_points );
   
   };
 }
