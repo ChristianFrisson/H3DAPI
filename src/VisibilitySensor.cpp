@@ -29,6 +29,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <H3D/VisibilitySensor.h>
+#include <H3D/X3DViewpointNode.h>
+#include <H3D/Scene.h>
 
 #include <GL/glew.h>
 
@@ -176,7 +178,6 @@ bool VisibilitySensor::queryNoViewFrustum( std::vector<Vec3f> &global_points  ) 
   Vec3f g6 = global_points[6];
   Vec3f g7 = global_points[7];
   
-  GLuint queries[1];
   GLuint sampleCount;
   GLint available;
   GLint bitsSupported;
@@ -278,7 +279,7 @@ bool VisibilitySensor::queryViewFrustum( std::vector<Vec3f> &global_points ) {
     return false;
  
   // View matrix
-  Matrix4f vm =  Viewpoint::getActive()->getViewMatrix( X3DViewpointNode::EyeMode::MONO );
+  Matrix4f vm =  X3DViewpointNode::getActive()->getViewMatrix( X3DViewpointNode::MONO );
   
   // Projection matrix
   set< Scene* >::iterator si = Scene::scenes.begin();
@@ -286,9 +287,9 @@ bool VisibilitySensor::queryViewFrustum( std::vector<Vec3f> &global_points ) {
   H3DWindowNode* curr_wind = static_cast<H3DWindowNode*>( wind_vect[0] );
   // TODO: For this to work in all stereo modes, the width/height values
   // should be projection width/height instead.
-  Matrix4f pm = Viewpoint::getActive()->getProjectionMatrix( X3DViewpointNode::EyeMode::MONO,
-                                               curr_wind->width->getValue(),
-                                               curr_wind->height->getValue(),
+  Matrix4f pm = X3DViewpointNode::getActive()->getProjectionMatrix( X3DViewpointNode::MONO,
+                                               H3DFloat( curr_wind->width->getValue() ),
+                                               H3DFloat( curr_wind->height->getValue() ),
                                                curr_wind->clipDistances->getValue()[0],
                                                curr_wind->clipDistances->getValue()[1],
                                                NULL,
