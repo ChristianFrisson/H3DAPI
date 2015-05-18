@@ -62,6 +62,7 @@ const char* vertex_shader_local_string =
 
 
 
+
 const char *fragment_shader_string = 
   "glsl:\n"
   "void main() {\n"
@@ -73,6 +74,53 @@ const char *shader_extension_string =
 const char *shader_extension_string_430 = 
   "#version 430 compatibility\n"
   "#extension GL_EXT_geometry_shader4 : enable\n";
+
+const char *geometry_shader_function_cpu = 
+  "                                                                                    \n"
+  "float stereo_dx_mv = matrixViewShift;                                               \n"
+  "float stereo_dx_mvp = gl_ProjectionMatrix[0][0] * stereo_dx_mv;                     \n"
+  "vec4 mvz = vec4(gl_ModelViewMatrix[0].z, gl_ModelViewMatrix[1].z,                   \n"
+  "gl_ModelViewMatrix[2].z, gl_ModelViewMatrix[3].z);                                  \n"
+  "void main(){                                                                        \n"
+  "  int nr_vertices = gl_in.length();                                                  \n"
+  "  int nr_triangle = nr_vertices/3;                                                  \n"
+  "  for(int k = 0; k<2; ++k){                                                         \n"
+  "    int eye_index = k+1;                                                            \n"
+  "    int offset_sign = k *(-2)+1;                                                    \n"
+  "    for(int i = 0; i<nr_triangle; i++){                                             \n"
+  "      vec4 p0 = gl_in[i*3+0].gl_Position;                                           \n"
+  "      vec4 p1 = gl_in[i*3+1].gl_Position;                                           \n"
+  "      vec4 p2 = gl_in[i*3+2].gl_Position;                                           \n"
+  "      gl_Position = gl_ModelViewProjectionMatrix*p0;                                \n"
+  "      if(p0.w==0){                                                                  \n"
+  "        gl_Position.x += dot(mvz,p0)*matrixProjShift*offset_sign;                   \n"
+  "      }else{                                                                        \n"
+  "        gl_Position.x += (stereo_dx_mvp + dot(mvz,p0)*matrixProjShift)*offset_sign; \n"
+  "      }                                                                             \n"
+  "      gl_ViewportIndex = eye_index;                                                 \n"
+  "      EmitVertex();                                                                 \n"
+  "                                                                                    \n"
+  "      gl_Position = gl_ModelViewProjectionMatrix*p1;                                \n"
+  "      if(p1.w==0){                                                                  \n"
+  "        gl_Position.x += dot(mvz,p1)*matrixProjShift*offset_sign;                   \n"
+  "      }else{                                                                        \n"
+  "        gl_Position.x += (stereo_dx_mvp + dot(mvz,p1)*matrixProjShift)*offset_sign; \n"
+  "      }                                                                             \n"
+  "      gl_ViewportIndex = eye_index;                                                 \n"
+  "      EmitVertex();                                                                 \n"
+  "                                                                                    \n"
+  "      gl_Position = gl_ModelViewProjectionMatrix*p2;                                \n"
+  "      if(p2.w==0){                                                                  \n"
+  "        gl_Position.x += dot(mvz,p2)*matrixProjShift*offset_sign;                   \n"
+  "      }else{                                                                        \n"
+  "        gl_Position.x += (stereo_dx_mvp + dot(mvz,p2)*matrixProjShift)*offset_sign; \n"
+  "      }                                                                             \n"
+  "      gl_ViewportIndex = eye_index;                                                 \n"
+  "      EmitVertex();                                                                 \n"
+  "      EndPrimitive();                                                               \n"
+  "    }                                                                               \n"
+  "  }                                                                                 \n"
+  "}                                                                                   \n";
 
 const char *geometry_shader_functions_string_sps = 
   "\n"
@@ -578,7 +626,11 @@ const char *geometry_shader_functions_string =
 
   string getVertexShaderString( bool cpu_shadows, bool draw_caps, bool dir_light, bool single_pass_stereo ) {
     if( cpu_shadows ) {
-      return vertex_shader_passthrough_string;
+      if (single_pass_stereo){
+        return vertex_shader_local_string;
+      }else{
+        return vertex_shader_passthrough_string;
+      }
     } else {
       if( single_pass_stereo ) {
         return vertex_shader_local_string;
@@ -597,7 +649,16 @@ const char *geometry_shader_functions_string =
       if( dir_light ) return getDirLightGeometryShaderString( draw_caps, single_pass_stereo, matrixViewShift, matrixProjShift );
       else return getPointLightGeometryShaderString( draw_caps, single_pass_stereo, matrixViewShift, matrixProjShift );
     } else {
-      return "";
+      stringstream s;
+      s << 
+        "glsl:\n"
+        "#version 430 compatibility                                                          \n"
+        "  layout(triangles) in;                                                             \n"
+        "layout(triangle_strip, max_vertices = 255) out;                                      \n";
+      s <<"const float matrixProjShift = " << matrixProjShift<<";"<<endl;
+      s <<"const float matrixViewShift = " << matrixViewShift<<";"<<endl;
+      s << geometry_shader_function_cpu;
+      return s.str();
     }
   }
   
@@ -673,6 +734,13 @@ void H3D::ShadowCasterShaders::shaderInit( bool cpu_shadows, bool draw_caps,
       current_geometry_shader = getGeometryShaderString( cpu_shadows, draw_caps, dir_light, single_pass_stereo, matrixViewShift, matrixProjShift );
       geom_shader->url->push_back( current_geometry_shader );
       shader_node->parts->push_back( geom_shader );
+    }else{
+      if (single_pass_stereo){
+        ShaderPart *geom_shader = new ShaderPart;
+        geom_shader->type->setValue( "GEOMETRY" );
+        current_geometry_shader = getGeometryShaderString( cpu_shadows, draw_caps, dir_light, single_pass_stereo, matrixViewShift, matrixProjShift );
+        geom_shader->url->push_back( current_geometry_shader );
+      }
     }
 
     // fragment shader
