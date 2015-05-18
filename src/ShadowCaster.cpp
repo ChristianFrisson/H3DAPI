@@ -160,6 +160,14 @@ void ShadowCaster::render() {
     dn.getNode( "TEXTURE", texture );
     texture->generator->setValue( gen );
     generator.reset( gen );
+    Scene *scene = Scene::scenes.size ( ) > 0 ? *Scene::scenes.begin ( ) : NULL;
+    if( !scene ) {
+      Console(4)<<"ShadowCaster has to be within scenes"<<endl;
+    }
+    H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue ( )[0]);
+    if( window ) {
+      window->singlePassStereo->route(gen->useStereo);
+    }
   }
 
   X3DShaderNode *shader = shadowShader->getValue();
