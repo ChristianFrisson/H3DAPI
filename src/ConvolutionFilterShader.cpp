@@ -102,7 +102,6 @@ void ConvolutionFilterShader::traverseSG( TraverseInfo &ti ) {
   Image *image = NULL;
   if( t ){
   image = t->image->getValue();
-
   }
   if( image ) {
     if( width->getValue()==-1 ) {
@@ -163,6 +162,12 @@ void ConvolutionFilterShader::traverseSG( TraverseInfo &ti ) {
       heightInUse->setValue(heightInUse->getValue(),id);
     }
   }
+  // widthInUse and heightInUse is OUTPUT_ONLY and their value are not
+  // obtained anywhere other than getFragmentShaderString() function.
+  // so have to call upToDate here to make sure shader is rebuild when texture
+  // dimension is changed.
+  widthInUse->upToDate();
+  heightInUse->upToDate();
 }
 
 bool ConvolutionFilterShader::canBuildShader() {
