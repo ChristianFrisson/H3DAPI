@@ -39,6 +39,9 @@
 #include <H3D/ShadowCasterShaders.h>
 #include <H3D/PointLight.h>
 #include <H3D/GlobalSettings.h>
+#include <H3D/H3DWindowNode.h>
+#include <H3D/Scene.h>
+#include <H3D/StereoInfo.h>
 
 using namespace H3D;
 
@@ -269,10 +272,21 @@ void ShadowCaster::renderShadows( FrameBufferTextureGenerator *fbo, int i, void 
     DirectionalLight *dir_light = dynamic_cast< DirectionalLight * >( *l );
     PointLight *point_light = dynamic_cast< PointLight * >( *l );
     // set up shader for shadow geometries
+    Scene *scene = Scene::scenes.size ( ) > 0 ? *Scene::scenes.begin ( ) : NULL;
+    if( !scene ) {
+      Console(4)<<"ShadowCaster has to be within scenes"<<endl;
+    }
+    H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue ( )[0]);
+    bool use_sps = window==NULL? false:window->singlePassStereo->getValue();
+    StereoInfo* stereo_info = StereoInfo::getActive();
+    float view_shift = stereo_info==NULL? 0 : stereo_info->matrixViewShift->getValue();
+    float proj_shift = stereo_info==NULL? 0 : stereo_info->matrixProjShift->getValue();
     ShadowCasterShaders::shaderInit( !use_geometry_shader,
                                     alg == "ZFAIL",
                                     dir_light != NULL,
-                                    false );
+                                    use_sps,
+                                    view_shift,
+                                    proj_shift);
           
     if( use_geometry_shader ) {
       if( dir_light ) ShadowCasterShaders::setDirectionalLightDir( dir_light->direction->getValue() );

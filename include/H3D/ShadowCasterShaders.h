@@ -44,7 +44,9 @@ namespace H3D {
     void shaderInit( bool cpu_shadows,     
                      bool draw_caps, 
                      bool is_dir_light, 
-                     bool single_pass_stereo );
+                     bool single_pass_stereo,
+                     float matrixViewShift,
+                     float matrixProjShift);
 
     /// Enable/disable the shader currently in use.
     void shaderToggle( bool on );
