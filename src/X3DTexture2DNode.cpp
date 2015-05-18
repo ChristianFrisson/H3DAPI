@@ -444,7 +444,9 @@ GLenum X3DTexture2DNode::glPixelFormat( Image *i ) {
 }
 
 Image* X3DTexture2DNode::renderToImage( H3DInt32 _width, H3DInt32 _height, bool output_float_texture /* = false */ ){
-
+  // for the moment glGetTexImage based solution does not works well for depth texture, as there is no 
+  // proper way for the moment to actually get the pixel format of a generatedTexture when it contains depth texture.
+  // so that solution is by passed for now.
   return X3DTextureNode::renderToImage( _width, _height, output_float_texture );
   GLuint t_id = getTextureId();
   if( glIsTexture(t_id) ) {
