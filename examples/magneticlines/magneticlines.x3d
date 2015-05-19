@@ -6,6 +6,23 @@
     <meta name='editors' content='SenseGraphics AB, 2006-2014'/>
   </head>
   <Scene>
+    <Viewpoint position="0 0 0.6">
+    </Viewpoint>
+    <DeviceInfo>
+      <AnyDevice positionCalibration="1 0 0 0
+        0 2 0 0
+        0 0 1 0
+        0 0 0 1
+        ">
+        <Shape containerField='stylus'>
+          <Appearance>
+            <Material/>
+          </Appearance>
+          <Sphere radius='0.0025'/>
+        </Shape>
+        <OpenHapticsRenderer />
+      </AnyDevice>
+    </DeviceInfo>    
     <Shape>
       <Appearance>
         <Material emissiveColor="1 0 0"/>
