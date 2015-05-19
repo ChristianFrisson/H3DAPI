@@ -740,6 +740,7 @@ void H3D::ShadowCasterShaders::shaderInit( bool cpu_shadows, bool draw_caps,
         geom_shader->type->setValue( "GEOMETRY" );
         current_geometry_shader = getGeometryShaderString( cpu_shadows, draw_caps, dir_light, single_pass_stereo, matrixViewShift, matrixProjShift );
         geom_shader->url->push_back( current_geometry_shader );
+        shader_node->parts->push_back( geom_shader );
       }
     }
 
