@@ -97,6 +97,9 @@ namespace H3DWindowNodeInternals {
   FIELDDB_ELEMENT( H3DWindowNode, projectionWidth, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DWindowNode, projectionHeight, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DWindowNode, singlePassStereo, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( H3DWindowNode, pointingDeviceRefreshMode, INPUT_OUTPUT );
+
+  
 }
 
 bool H3DWindowNode::GLEW_init = false;
@@ -117,7 +120,8 @@ H3DWindowNode::H3DWindowNode(
                    Inst< SFNavigationInfo > _navigationInfo,
                    Inst< SFBool > _useFullscreenAntiAliasing,
                    Inst< SFVec2f > _clipDistances,
-                   Inst< SFBool      > _singlePassStereo) :
+                   Inst< SFBool      > _singlePassStereo,
+                   Inst< SFString > _pointingDeviceRefreshMode ) :
 #ifdef WIN32
   rendering_context( NULL ),
 #endif
@@ -141,6 +145,7 @@ H3DWindowNode::H3DWindowNode(
   projectionHeight( new SFInt32 ),
   fbo_current_x(0),
   fbo_current_y(0),
+  pointingDeviceRefreshMode( _pointingDeviceRefreshMode ),
   last_render_child( NULL ),
   window_id( 0 ),
   rebuild_stencil_mask( false ),
@@ -201,6 +206,10 @@ H3DWindowNode::H3DWindowNode(
 
   cursorType->addValidValue( "DEFAULT" );
   cursorType->setValue( "DEFAULT" ); 
+
+  pointingDeviceRefreshMode->addValidValue( "MOUSE_MOVE" );
+  pointingDeviceRefreshMode->addValidValue( "MOUSE_CLICK" );
+  pointingDeviceRefreshMode->setValue( "MOUSE_MOVE" );  
 
   useFullscreenAntiAliasing->setValue( true );
   manualCursorControl->setValue( false );
@@ -1572,9 +1581,20 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   // TODO: This should only be done once per scene.
   // two windows in the same scene will probably
   // give some strange results.
+  bool has_mouse_button_pressed = false;
+  if( pointingDeviceRefreshMode->getValue() == "MOUSE_CLICK" ){
+    for( unsigned int i = 0; i < left_mouse_button.size(); ++i ) {
+      if ( left_mouse_button[i] ){
+        has_mouse_button_pressed = true;
+        break;
+      }
+    }
+  }
+
   if( any_pointing_device_sensors &&
       ( mouse_position[0]- previous_mouse_position[0] != 0 ||
-        mouse_position[1]- previous_mouse_position[1] != 0 ) ) {
+        mouse_position[1]- previous_mouse_position[1] != 0 ||
+        has_mouse_button_pressed ) ) {
     // If mouse moved the transform mouse to world coordinate space and send
     // to updateX3DPointingDeviceSensors function.
     GLint mono_viewport[4] = { 0, 0, width->getValue(), height->getValue() };

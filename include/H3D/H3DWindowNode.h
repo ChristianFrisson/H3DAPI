@@ -194,7 +194,8 @@ namespace H3D {
                    Inst< SFNavigationInfo > _navigationInfo = 0,
                    Inst< SFBool      > _useFullscreenAntiAliasing = 0,
                    Inst< SFVec2f     > _clipDistances = 0,
-                   Inst< SFBool      > _singlePassStereo = 0);
+                   Inst< SFBool      > _singlePassStereo = 0,
+                   Inst< SFString    > _pointingDeviceRefreshMode = 0 );
 
     /// Destructor.
     ~H3DWindowNode();
@@ -412,6 +413,17 @@ namespace H3D {
     auto_ptr< SFInt32 > projectionHeight;
     
     auto_ptr< SFBool > singlePassStereo;
+    
+    /// Determines how often the X3DPointingDeviceSensorNode's in the scene
+    /// will be checked for intersection.
+    ///
+    /// - MOUSE_MOVE : The check is performed when the mouse is moved.
+    /// - MOUSE_CLICK: The check is performed when the mouse is moved
+    ///                or the mouse button is pressed.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> "MOUSE_MOVE" \n
+    auto_ptr< SFString > pointingDeviceRefreshMode;
 
     static set< H3DWindowNode* > windows;
 
