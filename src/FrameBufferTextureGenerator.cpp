@@ -697,7 +697,7 @@ void FrameBufferTextureGenerator::render()     {
     } else { // calculate far and near plane based on the children to be rendered
       H3DWindowNode::calculateFarAndNearPlane( clip_far, clip_near, child_to_render.get(), vp, false );
     }
-    if( &shadow_caster &&
+    if(shadow_caster.get() &&
       !shadow_caster->object->empty()&&
       shadow_caster->algorithm->getValue() == "ZFAIL" ) {
         clip_far = -1;
