@@ -70,6 +70,7 @@ namespace H3D {
                         Inst< SFVec3f > _hitNormal_changed = 0,
                         Inst< SFVec3f > _hitPoint_changed = 0,
                         Inst< SFVec2f > _hitTexCoord_changed = 0,
+                        Inst< SFString > _hitObject_changed = 0,
                         Inst< SFBool >  _isActive = 0,
                         Inst< SFBool > _isOver = 0,
                         Inst< SFTime > _touchTime = 0 );
@@ -94,14 +95,21 @@ namespace H3D {
     /// <b>Access type:</b> outputOnly \n
     auto_ptr< SFVec2f > hitTexCoord_changed;
 
+    /// hitObject_changed events contain the name of the object at
+    /// the hitPoint.
+    /// 
+    /// <b>Access type:</b> outputOnly \n
+    auto_ptr< SFString > hitObject_changed;
+
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
 
   protected:
     // Called to generate isOver events and other events which dependens on
     // isOver.
-    virtual void onIsOver( IntersectionInfo *result = 0,
-                           Matrix4f *global_to_local = 0 );
+    virtual void onIsOver( NodeIntersectResult *result = 0, unsigned int closest_index = 0,
+                           Matrix4f *global_to_local = 0 );    
+    
   };
 }
 #endif

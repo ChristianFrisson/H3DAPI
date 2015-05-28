@@ -221,7 +221,7 @@ namespace H3D {
 
     // Called to generate isOver events if they should be
     // generated.
-    virtual void onIsOver( IntersectionInfo *result = 0,
+    virtual void onIsOver( NodeIntersectResult *result = 0, unsigned int closest_index = 0,
                            Matrix4f *global_to_local = 0 ) {
       if( is_enabled && ( isActive->getValue() || number_of_active == 0 ) ) {
         if( new_value != isOver->getValue() )

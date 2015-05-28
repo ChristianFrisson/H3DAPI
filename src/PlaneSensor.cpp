@@ -82,15 +82,15 @@ PlaneSensor::PlaneSensor( Inst< SFBool >  _autoOffset,
 PlaneSensor::~PlaneSensor() {
 }
 
-void PlaneSensor::onIsOver( IntersectionInfo *result,
+void PlaneSensor::onIsOver( NodeIntersectResult *result, unsigned int closest_index,
                             Matrix4f *global_to_local ) {
   if( is_enabled && ( isActive->getValue() || number_of_active == 0 ) ) {
-    X3DPointingDeviceSensorNode::onIsOver( result,
+    X3DPointingDeviceSensorNode::onIsOver( result, closest_index,
                                            global_to_local );
     if( new_value ) {
       geometry_global_to_local = *global_to_local;
       geometry_intersection =
-        geometry_global_to_local * Vec3f( result->point );
+        geometry_global_to_local * Vec3f( result->result[closest_index].point );
     }
   }
 }

@@ -168,9 +168,10 @@ void X3DPointingDeviceSensorNode::updateX3DPointingDeviceSensors(
         }
       }
 
+      //&result.result[ closest ],
       for( unsigned int i = 0; i < instances.size(); ++i ) {
         if( instances[i]->new_value )
-          instances[i]->onIsOver( &result.result[ closest ],
+          instances[i]->onIsOver( &result, closest,
             &(*found_ptds).second.global_to_local );
         else
           instances[i]->onIsOver();

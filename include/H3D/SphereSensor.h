@@ -143,9 +143,9 @@ namespace H3D {
 
     // Called to generate isOver events and other events which dependens on
     // isOver.
-    virtual void onIsOver( IntersectionInfo *result = 0,
+    virtual void onIsOver( NodeIntersectResult *result = 0, unsigned int closest_index = 0,
                            Matrix4f *global_to_local = 0 );
-
+    
     // Stores points of intersection with any of the geometry which causes this
     // sensor to generate isOver events.
     Vec3f geometry_intersection;

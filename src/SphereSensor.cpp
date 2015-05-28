@@ -68,15 +68,15 @@ SphereSensor::SphereSensor(
   offset->setValue( Rotation( 0, 1, 0, 0 ) );
 }
 
-void SphereSensor::onIsOver( IntersectionInfo *result,
-                             Matrix4f *global_to_local ) {
+void SphereSensor::onIsOver( NodeIntersectResult *result, unsigned int closest_index,
+                               Matrix4f *global_to_local ) {
   if( is_enabled && ( isActive->getValue() || number_of_active == 0 ) ) {
-    X3DPointingDeviceSensorNode::onIsOver( result,
+    X3DPointingDeviceSensorNode::onIsOver( result, closest_index,
                                            global_to_local );
     if( new_value ) {
       geometry_global_to_local = *global_to_local;
       geometry_intersection =
-        geometry_global_to_local * Vec3f( result->point );
+        geometry_global_to_local * Vec3f( result->result[closest_index].point );
     }
   }
 }

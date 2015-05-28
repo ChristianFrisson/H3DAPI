@@ -44,6 +44,7 @@ namespace TouchSensorInternals {
   FIELDDB_ELEMENT( TouchSensor, hitNormal_changed, OUTPUT_ONLY );
   FIELDDB_ELEMENT( TouchSensor, hitPoint_changed, OUTPUT_ONLY );
   FIELDDB_ELEMENT( TouchSensor, hitTexCoord_changed, OUTPUT_ONLY );
+  FIELDDB_ELEMENT( TouchSensor, hitObject_changed, OUTPUT_ONLY );  
 }
 
 TouchSensor::TouchSensor( 
@@ -53,6 +54,7 @@ TouchSensor::TouchSensor(
                          Inst< SFVec3f > _hitNormal_changed,
                          Inst< SFVec3f > _hitPoint_changed,
                          Inst< SFVec2f > _hitTexCoord_changed,
+                         Inst< SFString > _hitObject_changed,
                          Inst< SFBool >  _isActive,
                          Inst< SFBool >  _isOver,
                          Inst< SFTime > _touchTime ) :
@@ -60,29 +62,31 @@ TouchSensor::TouchSensor(
                       _metadata, _isActive, _isOver, _touchTime ),
   hitNormal_changed( _hitNormal_changed ),
   hitPoint_changed( _hitPoint_changed ),
-  hitTexCoord_changed( _hitTexCoord_changed ) {
+  hitTexCoord_changed( _hitTexCoord_changed ),
+  hitObject_changed ( _hitObject_changed ) {
 
   type_name = "TouchSensor";
   database.initFields( this );
 }
 
-void TouchSensor::onIsOver( IntersectionInfo *result,
-                            Matrix4f *global_to_local ) {
+void TouchSensor::onIsOver( NodeIntersectResult *result, unsigned int closest_index,
+                               Matrix4f *global_to_local ) {
   if( is_enabled && ( isActive->getValue() || number_of_active == 0 ) ) {
-    X3DPointingDeviceSensorNode::onIsOver( result,
+    X3DPointingDeviceSensorNode::onIsOver( result, closest_index,
                                            global_to_local );
     if( new_value ) {
       Vec3f newNormalPoint = *global_to_local
-      * Vec3f( result->point + result->normal );
-      Vec3f newPoint = *global_to_local * Vec3f( result->point );
+      * Vec3f( result->result[closest_index].point + result->result[closest_index].normal );
+      Vec3f newPoint = *global_to_local * Vec3f( result->result[closest_index].point );
       newNormalPoint = newNormalPoint - newPoint;
       newNormalPoint.normalize();
 
       hitPoint_changed->setValue( Vec3f( newPoint ), id );
       hitNormal_changed->setValue( Vec3f( newNormalPoint ), id );
-      hitTexCoord_changed->setValue( Vec2f( (H3DFloat)result->tex_coord.x,
-        (H3DFloat)result->tex_coord.y ),
+      hitTexCoord_changed->setValue( Vec2f( (H3DFloat)result->result[closest_index].tex_coord.x,
+        (H3DFloat)result->result[closest_index].tex_coord.y ),
         id );
+      hitObject_changed->setValue( result->theNodes[closest_index]->getName(), id );
     }
   }
 }
