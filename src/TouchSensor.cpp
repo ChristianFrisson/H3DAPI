@@ -44,7 +44,7 @@ namespace TouchSensorInternals {
   FIELDDB_ELEMENT( TouchSensor, hitNormal_changed, OUTPUT_ONLY );
   FIELDDB_ELEMENT( TouchSensor, hitPoint_changed, OUTPUT_ONLY );
   FIELDDB_ELEMENT( TouchSensor, hitTexCoord_changed, OUTPUT_ONLY );
-  FIELDDB_ELEMENT( TouchSensor, hitObject_changed, OUTPUT_ONLY );  
+  FIELDDB_ELEMENT( TouchSensor, hitObject_changed, OUTPUT_ONLY  );  
 }
 
 TouchSensor::TouchSensor( 
