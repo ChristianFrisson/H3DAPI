@@ -100,7 +100,7 @@ namespace H3D {
     typedef NodeType * typed_value_type;
 
     /// We check that the type of the Node is of the correct type.
-    void onAdd( Node *n) {
+    virtual void onAdd( Node *n) {
       if( !dynamic_cast< NodeType * >( n ) ) {
         Node *pi = getPrototypeNode( n );
         if( !dynamic_cast< NodeType * >( pi ) ) {
