@@ -1809,19 +1809,22 @@ GLenum FrameBufferTextureGenerator::stringToInternalFormat( const string &s ) {
     if( GLEW_ARB_texture_float ) {
       internal_format = GL_RGB32F_ARB;
     } else {
+      internal_format = GL_RGB;
       Console(4) << "Warning: Your graphics card does not support floating point textures (ARB_texture_float). Using RGB instead(in FrameBufferTextureGenerator node). " << endl;
     }
   } else if( s == "RGB16F" ) { 
     if( GLEW_ARB_texture_float ) {
       internal_format = GL_RGB16F_ARB;
     } else {
+      internal_format = GL_RGB;
       Console(4) << "Warning: Your graphics card does not support floating point textures (ARB_texture_float). Using RGB instead(in FrameBufferTextureGenerator node). " << endl;
     }
   } else if( s == "R32F" ) {
     if( GLEW_ARB_texture_rg ) {
       internal_format = GL_R32F;
     }else{
-      Console(4)<< "Warning: Your graphics card does not support floating point RED. "<<endl;
+      internal_format = GL_R8;
+      Console(4)<< "Warning: Your graphics card does not support floating point RED. Using R8 (8bit red channel) format instead(in FrameBufferTextureGenerator node). " << endl;
     }
   }
   else if( s == "RGB" ) { 
