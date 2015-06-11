@@ -81,7 +81,9 @@ namespace H3D {
                             Inst< SFFloat > _speed       = 0,
                             Inst< SFFloat > _variation   = 0,
                             Inst< SFFloat > _mass        = 0,
-                            Inst< SFFloat > _surfaceArea = 0 );
+                            Inst< SFFloat > _surfaceArea  = 0,
+                            Inst< SFFloat > _angularSpeed = 0 );
+                            
 
     class H3DAPI_API Particle {
     public:
@@ -102,11 +104,17 @@ namespace H3D {
                 const Vec3f &_velocity = Vec3f( 0, 0, 0 ),
                 const Vec2f &_size     = Vec2f( 0, 0 ),
                 H3DFloat _mass         = 0,
-                H3DFloat _surface_area = 0 ):
+                H3DFloat _surface_area = 0,
+                const Vec3f &_rotation_axis = Vec3f( 0, 0, 1 ),
+                H3DFloat _rotation_angle = 0,
+                H3DFloat _angular_speed = 0 ):
         mass( _mass ),
         surface_area( _surface_area ),
         position( _position ),
         velocity( _velocity ),
+        rotation_axis( _rotation_axis ),
+        rotation_angle( _rotation_angle ),
+        angular_speed( _angular_speed ),
         time_lived( 0 ),
         size( _size ),
         geometry( NULL ),
@@ -121,6 +129,8 @@ namespace H3D {
                                   H3DTime dt ) {
         global_to_local = _global_to_local;
         position += velocity * dt;
+        rotation_angle += angular_speed * dt;
+        //if ( rotation_angle > 2*Constants::pi ) rotation_angle -= 2*Constants::pi;
         time_lived += dt;
         distance_from_viewer = vp_look_at_local * ( position - vp_pos_local );
         //distance_from_viewer = ( position - vp_pos_local ).lengthSqr();
@@ -179,6 +189,10 @@ namespace H3D {
       H3DFloat surface_area;
       Vec3f position;
       Vec3f velocity;
+      Vec3f rotation_axis;
+      H3DFloat rotation_angle;
+      H3DFloat angular_speed;
+
 
       bool new_particle;
 
@@ -244,6 +258,18 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 0 \n
     auto_ptr< SFFloat > surfaceArea;
+
+    /// The angularSpeed field specifies an initial rotational speed that will be
+    /// imparted to all particles. It does not signify the rotation axis of
+    /// the particles. The directional component of the rotation depends on
+    /// the particle's geometryType. The rotation is ignored for "POINT" and
+    /// "LINE". For "TRIANGLE/QUAD", "GEOMETRY" the rotation axis is local
+    /// z axis of the particle system, for "SPRITE" the rotation axis is the
+    /// axis between the view point and the particle.
+    ///
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> 0 \n
+    auto_ptr< SFFloat > angularSpeed;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

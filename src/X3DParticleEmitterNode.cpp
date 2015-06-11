@@ -51,6 +51,7 @@ namespace X3DParticleEmitterNodeInternals {
   FIELDDB_ELEMENT( X3DParticleEmitterNode, variation, INPUT_OUTPUT );
   FIELDDB_ELEMENT( X3DParticleEmitterNode, mass, INPUT_OUTPUT );
   FIELDDB_ELEMENT( X3DParticleEmitterNode, surfaceArea, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( X3DParticleEmitterNode, angularSpeed, INPUT_OUTPUT );
 }
 
 X3DParticleEmitterNode::X3DParticleEmitterNode( 
@@ -58,12 +59,14 @@ X3DParticleEmitterNode::X3DParticleEmitterNode(
                       Inst< SFFloat > _speed,
                       Inst< SFFloat > _variation,
                       Inst< SFFloat > _mass,
-                      Inst< SFFloat > _surfaceArea  ):
+                      Inst< SFFloat > _surfaceArea,
+                      Inst< SFFloat > _angularSpeed ):
   X3DNode( _metadata ),
   speed( _speed ),
   variation( _variation ),
   mass( _mass ),
-  surfaceArea( _surfaceArea ) {
+  surfaceArea( _surfaceArea ),
+  angularSpeed( _angularSpeed ){
 
   type_name = "X3DParticleEmitterNode";
   database.initFields( this );
@@ -72,6 +75,7 @@ X3DParticleEmitterNode::X3DParticleEmitterNode(
   variation->setValue( 0.25 );
   mass->setValue( 0 );
   surfaceArea->setValue( 0 );
+  angularSpeed->setValue( 0.0 );
 }
 
 void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
@@ -238,10 +242,13 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
       }
     }
   
-    Vec3f t = Vec3f( size.x / 2, size.y/2, 0 );
-    Vec3f max_corner = position + t; 
-    Vec3f min_corner = position - t;
+    Rotation pr( rotation_axis, rotation_angle );
+    Vec3f p0 = position + pr * Vec3f( -size.x / 2, -size.y/2, 0 );
+    Vec3f p1 = position + pr * Vec3f(  size.x / 2, -size.y/2, 0 );
+    Vec3f p2 = position + pr * Vec3f(  size.x / 2,  size.y/2, 0 );
+    Vec3f p3 = position + pr * Vec3f( -size.x / 2,  size.y/2, 0 );
     glNormal3f( 0, 0, 1 );
+
     
     // if material node is specified, use properties from there
     // otherwise, use colorRamp if specified
@@ -253,19 +260,19 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
     glBegin( GL_QUADS );
     if( specify_tex_coord ) renderTexCoord( tex_coord_index * 4, tex_coord_ramp );
     else renderTexCoord( Vec3f( 0, 0, 0 ) );
-    glVertex3f  ( min_corner.x, min_corner.y, max_corner.z );
+    glVertex3f  ( p0.x, p0.y, p0.z );
 
     if( specify_tex_coord ) renderTexCoord( tex_coord_index * 4 + 1, tex_coord_ramp );
     else renderTexCoord( Vec3f( 1, 0, 0 ) );
-    glVertex3f  ( max_corner.x, min_corner.y, max_corner.z );
+    glVertex3f  ( p1.x, p1.y, p1.z );
 
     if( specify_tex_coord ) renderTexCoord( tex_coord_index * 4 + 2, tex_coord_ramp );
     else renderTexCoord( Vec3f( 1, 1, 0 ) );
-    glVertex3f  ( max_corner.x, max_corner.y, max_corner.z );
+    glVertex3f  ( p2.x, p2.y, p2.z );
 
     if( specify_tex_coord ) renderTexCoord( tex_coord_index * 4 + 3, tex_coord_ramp );
     else renderTexCoord( Vec3f( 0, 1, 0 ) );
-    glVertex3f  ( min_corner.x, max_corner.y, max_corner.z );
+    glVertex3f  ( p3.x, p3.y, p3.z );
 
     glEnd();
   } else if( type == SPRITE ) {
@@ -294,14 +301,10 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
                     particle_to_viewer.x, particle_to_viewer.y, particle_to_viewer.z, 0,
                     0, 0, 0, 1 };
 
-    Matrix3f r = Matrix3f( X.x, X.y, X.z,
-                           vp_y_axis.x, vp_y_axis.y, vp_y_axis.z,
-                           particle_to_viewer.x, particle_to_viewer.y, particle_to_viewer.z).transpose();
-    Rotation rr( r );
     //glTranslatef( 0.2, 0, 0 );
     glTranslatef( position.x, position.y, position.z );
     glMultMatrixf( m );
-
+    glRotatef( rotation_angle, rotation_axis.x, rotation_axis.y, rotation_axis.z );    
 
     Vec3f t = Vec3f( size.x / 2, size.y/2, 0 );
     Vec3f max_corner = t; 
@@ -331,6 +334,7 @@ void X3DParticleEmitterNode::Particle::render( ParticleSystem *ps ) {
       glMatrixMode( GL_MODELVIEW );
       glPushMatrix();
       glTranslatef( position.x, position.y, position.z );
+      glRotatef( rotation_angle, rotation_axis.x, rotation_axis.y, rotation_axis.z );
       geometry->displayList->callList();
       glPopMatrix();
     }
@@ -382,5 +386,6 @@ X3DParticleEmitterNode::newParticle( ParticleSystem *ps,
                                        ps->lifetimeVariation->getValue() );
   p.geometry.reset( ps->geometry->getValue() );
   p.mass = mass->getValue();
+  p.angular_speed = angularSpeed->getValue();
   return p;
 }
