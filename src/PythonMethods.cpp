@@ -2922,8 +2922,14 @@ call the base class __init__ function." );
       return PyString_FromString( resolved_url.c_str() );
     }
 
-    PyObject *throwQuitAPIException( PyObject *self, PyObject *args ) {
+    Scene::CallbackCode exitLater ( void* data ) {
       throw Exception::QuitAPI();
+      return Scene::CALLBACK_DONE;
+    }
+
+    PyObject *throwQuitAPIException( PyObject *self, PyObject *args ) {
+      // Throw the exception later, after scene traversal to avoid memory leaks
+      Scene::addCallback ( exitLater, NULL );
       Py_INCREF(Py_None);
       return Py_None; 
     }
