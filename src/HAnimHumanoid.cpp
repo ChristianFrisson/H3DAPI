@@ -194,7 +194,7 @@ void HAnimHumanoid::updateCoordinatesDLB( const VectorType &orig_points,
       const vector<int> &indices = joint->skinCoordIndex->getValue();
       const vector<H3DFloat> &weights = joint->skinCoordWeight->getValue();
       Matrix4f joint_to_humanoid = joint->accumulatedJointMatrix->getValue();
-      Matrix3f joint_to_humanoid_rot = joint_to_humanoid.getRotationPart();
+      //Matrix3f joint_to_humanoid_rot = joint_to_humanoid.getRotationPart();
 
       // q and -q represents the same rigid transform. For blending we need to choose
       // the representation with the same signs so we check here and make sure that
@@ -293,7 +293,7 @@ void HAnimHumanoid::updateCoordinatesLBS2( const VectorType &orig_points,
       const vector<int> &indices = joint->skinCoordIndex->getValue();
       const vector<H3DFloat> &weights = joint->skinCoordWeight->getValue();
       Matrix4f joint_to_humanoid = joint->accumulatedJointMatrix->getValue();
-      Matrix3f joint_to_humanoid_rot = joint_to_humanoid.getRotationPart();
+      //Matrix3f joint_to_humanoid_rot = joint_to_humanoid.getRotationPart();
 
       for( unsigned int j = 0; j < indices.size(); ++j ) {
         unsigned int index = indices[j];
