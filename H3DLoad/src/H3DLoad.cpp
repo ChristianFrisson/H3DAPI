@@ -341,7 +341,7 @@ int main(int argc, char* argv[]) {
   help_message += "    --deviceinfo=<file> Use <file> as device info\n";
   help_message += "    --stylus=<file>     Use <file> as stylus model\n";
   help_message += "    --viewpoint=<file>  Use <file> as viewpoint\n";
-  help_message += "    --rendermode=<mode> Use render mode <mode>\n";
+  help_message += "    --rendermode=<mode> Use stereo render mode <mode>\n";
   help_message += " -s --spacemouse        Use 3DConnexion space mouse to\n";
   help_message += "                        navigate scene.\n";
   help_message += "\n";
