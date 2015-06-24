@@ -177,7 +177,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
                         const wxSize& _size, long _style,
                         const wxString& _name,
                         bool cmd_line_filename,
-                        bool disable_plugin_dialog ):
+                        bool disable_plugin_dialog,
+                        bool _cmd_line_fullscreen):
   wxFrame(_parent, _id, _title, _pos, _size, _style, _name ),
   navTypeCount(0),
   deviceCount(0),
@@ -191,7 +192,8 @@ WxFrame::WxFrame( wxWindow *_parent, wxWindowID _id,
   check_dialogs_position_because_of_fullscreen_and_not_quadro( false ),
   glwindow( NULL ),
   updateStereoModeMenu( new UpdateStereoModeMenu ),
-  a_file_is_loaded( false )
+  a_file_is_loaded( false ),
+  cmd_line_fullscreen( _cmd_line_fullscreen )
 {
   lastOpenedFilepath = "";
   wxAcceleratorEntry entries[1];
@@ -950,8 +952,7 @@ bool WxFrame::loadIniFile() {
       << "variable H3D_MANUALCURSORCONTROL. Must be TRUE or FALSE. "
       << endl;
   }
-
-  ini_fullscreen    = GET_BOOL("graphical", "fullscreen", false);
+  ini_fullscreen    = GET_BOOL("graphical", "fullscreen", false)||cmd_line_fullscreen;
   if( char *buffer = getenv("H3D_FULLSCREEN") ) {
     if (strcmp( buffer, "TRUE" ) == 0 ){
     ini_fullscreen = true; }

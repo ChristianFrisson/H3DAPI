@@ -62,16 +62,50 @@ inline string toStr( const wxString &s ) {
 #endif
 }  
 
+#if (defined( wxUSE_UNICODE ) && wxMAJOR_VERSION == 2 && wxMINOR_VERSION <= 8)
+#define CMDLINEDESC(SHORTNAME,LONGNAME,DESCRIPTION)  wxT(SHORTNAME),wxT(LONGNAME),wxT(DESCRIPTION) 
+#else
+#define CMDLINEDESC(SHORTNAME,LONGNAME,DESCRIPTION)  SHORTNAME,LONGNAME,DESCRIPTION 
+#endif
+
 const wxCmdLineEntryDesc gCmdLineDesc[] = 
   {
-    { wxCMD_LINE_SWITCH,
-#if( defined( wxUSE_UNICODE ) && wxMAJOR_VERSION == 2 && wxMINOR_VERSION <= 8 )
-      wxT("dp"), wxT("disable_plugins"),
-      wxT("No registered plugins are loaded on startup. They are however still listed in the plugins dialog and can be enabled if desired.")
-#else
-      "dp", "disable_plugins",
-      "No registered plugins are loaded on startup. They are however still listed in the plugins dialog and can be enabled if desired."
-#endif
+    { 
+      wxCMD_LINE_SWITCH,
+      CMDLINEDESC("dp","disable_plugins", "No registered plugins are loaded on startup. They are however still listed in the plugins dialog and can be enabled if desired")
+    },
+    {
+      wxCMD_LINE_OPTION,
+      CMDLINEDESC("w","window_width","Specify window width"),
+      wxCMD_LINE_VAL_NUMBER
+    },
+    {
+      wxCMD_LINE_OPTION,
+      CMDLINEDESC("h","window_height","Specify window height"),
+      wxCMD_LINE_VAL_NUMBER
+    },
+    {
+      wxCMD_LINE_OPTION,
+        CMDLINEDESC("x","window_position_x","Specify window origin x value"),
+        wxCMD_LINE_VAL_NUMBER
+    },
+    {
+      wxCMD_LINE_OPTION,
+        CMDLINEDESC("y","window_position_y","Specify window origin y value"),
+        wxCMD_LINE_VAL_NUMBER
+    },
+    {
+      wxCMD_LINE_OPTION,
+      CMDLINEDESC("stereomode","stereomode","specify the window stereo mode"),
+      wxCMD_LINE_VAL_STRING
+    },
+    {
+      wxCMD_LINE_SWITCH,
+      CMDLINEDESC("f","fullscreen","enable fullscreen")
+    },
+    {
+      wxCMD_LINE_SWITCH,
+      CMDLINEDESC("silent","silent","run h3dviewer without displaying window")
     },
     { wxCMD_LINE_PARAM, NULL, NULL, 
 #if( defined( wxUSE_UNICODE ) && wxMAJOR_VERSION == 2 && wxMINOR_VERSION <= 8 )
@@ -88,8 +122,14 @@ class MyApp: public wxApp
 {
 public:
   MyApp():
-    theWxFrame( NULL ) {
-
+    theWxFrame( NULL ){
+      window_height = -1;
+      window_width = -1;
+      window_pos_x = -1;
+      window_pos_y = -1;
+      fullscreen = false;
+      stereo_mode = "MONO";
+      silent = false;
   }
   virtual bool OnInit();
   virtual void MacOpenFile(const wxString &fileName) {
@@ -108,6 +148,13 @@ public:
 
   virtual bool OnCmdLineParsed(wxCmdLineParser& parser) {
     disable_plugin_dialog = parser.Found( wxString( "dp", wxConvUTF8 ) );
+    parser.Found( wxString( "w",wxConvUTF8 ), (long*)&window_width );
+    parser.Found( wxString( "h",wxConvUTF8 ), (long*)&window_height );
+    parser.Found( wxString( "x",wxConvUTF8 ), (long*)&window_pos_x );
+    parser.Found( wxString( "y",wxConvUTF8 ), (long*)&window_pos_y );
+    parser.Found( wxString( "stereomode",wxConvUTF8 ), &stereo_mode );
+    silent = parser.Found(wxString("silent", wxConvUTF8));
+    fullscreen = parser.Found( wxString( "f", wxConvUTF8 ));
     for (int i = 0; i < (int)parser.GetParamCount(); ++i) {
       cmd_line_filename = parser.GetParam(i);
     }
@@ -116,6 +163,13 @@ public:
   }
 protected:
   wxString cmd_line_filename;
+  wxString stereo_mode;
+  int window_width;
+  int window_height;
+  int window_pos_x;
+  int window_pos_y;
+  bool fullscreen;
+  bool silent;
   bool disable_plugin_dialog;
   WxFrame *theWxFrame;
   DECLARE_EVENT_TABLE()
@@ -197,17 +251,50 @@ bool MyApp::OnInit()
     }
     PythonScript::setargv( wxApp::argc, argv );
 #endif
-    
+    int window_height_to_use = 600;
+    int window_width_to_use = 800;
+    if(window_width!=-1&&window_height!=-1){
+      // use specified window size only when both specified width and height
+      // are not -1
+      window_height_to_use = window_height;
+      window_width_to_use = window_width;
+    }
+    wxPoint window_position = wxDefaultPosition;
+    if( window_pos_x!=-1 && window_pos_y!=-1 ) {
+      window_position = wxPoint(window_pos_x,window_pos_y);
+    }
+    long window_style = wxDEFAULT_FRAME_STYLE;
+    if( silent ) {
+      // when silent mode is required, disable caption and also
+      // force the width, height to be zero to make sure noting will
+      // be able to be displayed, also disalbe fullscreen
+      window_style = wxDEFAULT_FRAME_STYLE&~(wxCAPTION);
+      window_width_to_use = 0;
+      window_height_to_use = 0;
+      fullscreen = false;
+    }
     // create a window to display
     theWxFrame = new WxFrame(NULL, wxID_ANY, wxT("H3DViewer"),
-           wxDefaultPosition, wxSize(800, 600), wxDEFAULT_FRAME_STYLE, wxT("H3D Player"), !cmd_line_filename.IsEmpty(), disable_plugin_dialog );
-    
-    theWxFrame->Show(true);
-    
-  if( !cmd_line_filename.IsEmpty() ) {
-      theWxFrame->clearData();
-      theWxFrame->loadFile(toStr(cmd_line_filename));
+           window_position, wxSize(window_width_to_use, window_height_to_use), window_style, wxT("H3D Player"), !cmd_line_filename.IsEmpty(), disable_plugin_dialog, fullscreen );
+    if( silent ) {
+      theWxFrame->Hide();
+    }else{
+      theWxFrame->Show(true);
     }
+    theWxFrame->glwindow->fullscreen->setValue(fullscreen);
+    theWxFrame->glwindow->renderMode->setValue(toStr(stereo_mode));
+    if( fullscreen&&window_width!=-1&&window_height!=-1 ) {
+      // resize window size to required value, after fullscreen is applied
+      theWxFrame->SetSize(window_width_to_use, window_height_to_use);
+      theWxFrame->SetClientSize(window_width_to_use, window_height);
+    }
+    
+    if( !cmd_line_filename.IsEmpty() ) 
+    {
+        theWxFrame->clearData();
+        theWxFrame->loadFile(toStr(cmd_line_filename));
+    }
+  
 
     //This next line is used to set the icon file h3d.ico, when created.
     //theWxframe->SetIcon(wxIcon(_T("h3d_icn")));

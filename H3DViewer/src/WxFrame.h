@@ -252,7 +252,8 @@ public:
               long _style = wxDEFAULT_FRAME_STYLE,
               const wxString& name = wxT("H3D Player"),
               bool cmd_line_filename = false,
-              bool disable_plugin_dialog = false );
+              bool disable_plugin_dialog = false,
+              bool _cmd_line_fullscreen = false);
 
   ~WxFrame() {
     if( recentFiles )
@@ -451,6 +452,7 @@ private:
 
   // Used in updating viewpoint menu
   TimeStamp last_viewmenu_update;
+  bool cmd_line_fullscreen;
 
 public:
 
