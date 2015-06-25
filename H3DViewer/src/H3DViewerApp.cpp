@@ -38,6 +38,8 @@
 #include <H3D/PythonScript.h>
 
 #include <wx/cmdline.h>
+#include <H3DUtil/TimeStamp.h>
+#include <fstream>
 
 // ---------------------------------------------------------------------------
 //  Required classes and definitions
@@ -105,6 +107,10 @@ const wxCmdLineEntryDesc gCmdLineDesc[] =
     },
     {
       wxCMD_LINE_SWITCH,
+      CMDLINEDESC("logInitTime","logInitTime","log the time used for viewer initialization")
+    },
+    {
+      wxCMD_LINE_SWITCH,
       CMDLINEDESC("silent","silent","run h3dviewer without displaying window")
     },
     { wxCMD_LINE_PARAM, NULL, NULL, 
@@ -122,7 +128,8 @@ class MyApp: public wxApp
 {
 public:
   MyApp():
-    theWxFrame( NULL ){
+    theWxFrame( NULL ),
+    startupTime(TimeStamp()){
       window_height = -1;
       window_width = -1;
       window_pos_x = -1;
@@ -130,6 +137,7 @@ public:
       fullscreen = false;
       stereo_mode = "MONO";
       silent = false;
+      logInitTime = false;
   }
   virtual bool OnInit();
   virtual void MacOpenFile(const wxString &fileName) {
@@ -153,6 +161,7 @@ public:
     parser.Found( wxString( "x",wxConvUTF8 ), (long*)&window_pos_x );
     parser.Found( wxString( "y",wxConvUTF8 ), (long*)&window_pos_y );
     parser.Found( wxString( "stereomode",wxConvUTF8 ), &stereo_mode );
+    logInitTime = parser.Found(wxString("logInitTime",wxConvUTF8));
     silent = parser.Found(wxString("silent", wxConvUTF8));
     fullscreen = parser.Found( wxString( "f", wxConvUTF8 ));
     for (int i = 0; i < (int)parser.GetParamCount(); ++i) {
@@ -170,6 +179,8 @@ protected:
   int window_pos_y;
   bool fullscreen;
   bool silent;
+  bool logInitTime;
+  TimeStamp startupTime;
   bool disable_plugin_dialog;
   WxFrame *theWxFrame;
   DECLARE_EVENT_TABLE()
@@ -310,6 +321,12 @@ bool MyApp::OnInit()
     return false;
   }
 
+  if( logInitTime ) {
+    float init_time = TimeStamp()-startupTime;
+    ofstream logFile("H3DViewerLog.txt");
+    logFile<<"init_time:"<<init_time<<endl;
+    logFile.close();
+  }
   return true;
 }
 
