@@ -292,10 +292,16 @@ bool MyApp::OnInit()
     }else{
       theWxFrame->Show(true);
     }
+    // swtich to fullscreen right now, and also change the window fullscreen value
     theWxFrame->glwindow->fullscreen->setValue(fullscreen);
+    theWxFrame->glwindow->setFullscreen(fullscreen);
     theWxFrame->glwindow->renderMode->setValue(toStr(stereo_mode));
     if( fullscreen&&window_width!=-1&&window_height!=-1 ) {
       // resize window size to required value, after fullscreen is applied
+      // only do this when no default windows size is used
+      // also reset the position of the window as go to fullsceen may modified
+      // the starting position as well
+      theWxFrame->SetPosition(window_position);
       theWxFrame->SetSize(window_width_to_use, window_height_to_use);
       theWxFrame->SetClientSize(window_width_to_use, window_height);
     }
