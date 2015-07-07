@@ -280,9 +280,6 @@ bool MyApp::OnInit()
       // force the width, height to be zero to make sure noting will
       // be able to be displayed, also disalbe fullscreen
       window_style = wxDEFAULT_FRAME_STYLE&~(wxCAPTION);
-      window_width_to_use = 0;
-      window_height_to_use = 0;
-      fullscreen = false;
     }
     // create a window to display
     theWxFrame = new WxFrame(NULL, wxID_ANY, wxT("H3DViewer"),
