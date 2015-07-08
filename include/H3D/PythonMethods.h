@@ -96,6 +96,10 @@ namespace H3D {
     
     PyObject *pythonFieldUnrouteAll( PyObject *self, PyObject *arg );
 
+    PyObject *pythonSFStringIsValidValue( PyObject *self, PyObject *args );
+
+    PyObject *pythonSFStringGetValidValues( PyObject *self, PyObject *args );
+
     PyObject *pythonGetCPtr( PyObject *self, PyObject *arg  );
 
     PyObject* pythonCreateX3DFromURL( PyObject *self, PyObject *arg );

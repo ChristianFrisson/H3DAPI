@@ -491,6 +491,17 @@ def PeriodicUpdate( base_class ):
 ## \class H3DInterface.SFString
 ## \extends SField
 ## \brief SField type containing a string value.
+class SFString( SField ):
+  type = SFSTRING
+
+  ## Get a list of valid values for this field if specified.
+  def getValidValues( self ):
+    return SFStringGetValidValues( self )
+
+  ## Check if a string is a valid value to use in the field.
+  ## \param value The string value to check.
+  def isValidValue( self, value ):
+    return SFStringIsValidValue( self, value )
 
 ## \namespace H3DInterface
 ## \class H3DInterface.SFColor

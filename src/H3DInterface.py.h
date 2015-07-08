@@ -197,7 +197,6 @@ sfield_types = [ \n\
   ( SFVEC4F,    \"SFVec4f\" ),\n\
   ( SFVEC4D,    \"SFVec4d\" ),\n\
   ( SFBOOL,     \"SFBool\"  ),\n\
-  ( SFSTRING,   \"SFString\" ),\n\
   ( SFCOLOR,    \"SFColor\" ),\n\
   ( SFCOLORRGBA,\"SFColorRGBA\" ),\n\
   ( SFROTATION, \"SFRotation\" ),\n\
@@ -244,6 +243,15 @@ class %s( MField ):\n\
   type = %s\n\
 \"\"\" % (t[1], t[0] )\n\
 \n\
+\n\
+class SFString( SField ): \n\
+  type = SFSTRING\n\
+\n\
+  def getValidValues( self ):\n\
+    return SFStringGetValidValues( self )\n\
+\n\
+  def isValidValue( self, value ):\n\
+    return SFStringIsValidValue( self, value )\n\
 \n\
 typed_field_classes = {}\n\
 \n\

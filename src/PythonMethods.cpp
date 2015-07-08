@@ -681,6 +681,8 @@ if( check_func( value ) ) { \
       { "findNodes", pythonFindNodes, 0 },
       { "takeScreenshot", pythonTakeScreenshot, 0 },
       { "addURNResolveRule", pythonAddURNResolveRule, 0 },
+      { "SFStringIsValidValue", pythonSFStringIsValidValue, 0 },
+      { "SFStringGetValidValues", pythonSFStringGetValidValues, 0 },
       { NULL, NULL }      
     };
     
@@ -3351,6 +3353,105 @@ call the base class __init__ function." );
       Py_INCREF(Py_None);
       return Py_None; 
 
+    }
+
+    PyObject *pythonSFStringGetValidValues( PyObject *self, PyObject *args ) {
+
+      // if 0 or >=2 args
+      if( !args || PyTuple_Check( args ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+       "Invalid argument(s) to function H3D.SFStringGetValidValues( self )" );  
+        return 0;
+      }
+
+      PyObject *field =  args;
+      if( ! PyInstance_Check( field ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+ "Invalid Field type given as argument to H3D.SFStringGetValidValues( self ). Expecting SFString." );
+        return 0;
+      }
+
+      PyObject *py_field_ptr = PyObject_GetAttrString( field, "__fieldptr__" );
+      if( !py_field_ptr ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Python object not a Field type. Make sure that if you \
+have defined an __init__ function in a specialized field class, you \
+call the base class __init__ function." );
+        return 0;
+      }
+      
+      SFString *field_ptr = dynamic_cast< SFString * >
+        ( ( Field *) PyCObject_AsVoidPtr( py_field_ptr ) );
+
+      Py_DECREF( py_field_ptr );
+      const set< string > &values = field_ptr->getValidValues();
+          
+       // return value is [(found_node,(parent0,parent1,...))]
+       PyObject* py_result= PyList_New(values.size()); // New ref that is returned (no need to decr)
+
+       size_t pos = 0;
+       for ( set< string >::const_iterator i = values.begin(); i != values.end(); ++i, ++pos ) {
+         // New ref that is stolen by PyList_SetItem() (no need to decr)
+         PyObject* py_result_item= PyString_FromString( (*i).c_str() );
+         PyList_SetItem ( py_result, pos, py_result_item );
+       }
+
+       return py_result; 
+    }
+
+    PyObject *pythonSFStringIsValidValue( PyObject *self, PyObject *args ) {
+      if( !args || ! PyTuple_Check( args ) || PyTuple_Size( args ) != 2  ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Invalid argument(s) to function H3D.SFStringIsValidValue( self, value )" );  
+        return 0;
+      }
+
+      PyObject *py_field_obj = PyTuple_GetItem( args, 0 );
+      if( ! PyInstance_Check( py_field_obj ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+ "Invalid Field type given as argument to H3D.SFStringIsValidValue( self, value )" );
+        return 0;
+      }
+
+      PyObject *py_field_ptr = PyObject_GetAttrString( py_field_obj, "__fieldptr__" );
+      if( !py_field_ptr ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Python object not a Field type. Make sure that if you \
+have defined an __init__ function in a specialized field class, you \
+call the base class __init__ function." );
+        return 0;
+      }
+
+      PyObject *py_value_string = PyTuple_GetItem( args, 1 );
+      if( !PyString_Check( py_value_string ) ) {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Invalid argument type. Expecting string" );
+        return 0;
+      }
+
+      Field *field_ptr = static_cast< Field * >
+        ( PyCObject_AsVoidPtr( py_field_ptr ) );
+      string value_str( PyString_AsString( py_value_string ) );
+      Py_DECREF( py_field_ptr );
+      
+      if( field_ptr ) {
+        SFString *sfstring = dynamic_cast< SFString *>( field_ptr );
+        if( sfstring ) {
+          if( sfstring->isValidValue( value_str ) ) {
+            Py_RETURN_TRUE;
+          } else {
+            Py_RETURN_FALSE;
+          }
+        } else {
+          PyErr_SetString( PyExc_ValueError, 
+                          "Error: Not a SFString field" );
+          return 0;
+        }
+      } else {
+        PyErr_SetString( PyExc_ValueError, 
+                         "Error: Field NULL pointer" );
+        return 0;
+      }
     }
   }
 }
