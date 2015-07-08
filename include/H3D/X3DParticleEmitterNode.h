@@ -129,7 +129,7 @@ namespace H3D {
                                   H3DTime dt ) {
         global_to_local = _global_to_local;
         position += velocity * dt;
-        rotation_angle += angular_speed * dt;
+        rotation_angle += angular_speed * H3DFloat(dt);
         //if ( rotation_angle > 2*Constants::pi ) rotation_angle -= 2*Constants::pi;
         time_lived += dt;
         distance_from_viewer = vp_look_at_local * ( position - vp_pos_local );
