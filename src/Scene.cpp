@@ -355,7 +355,7 @@ void Scene::idle() {
       
     }
     // traverse the scene graph to collect the HapticObject instances to render.
-    TraverseInfo *ti = new TraverseInfo( hds );
+    auto_ptr<TraverseInfo> ti(new TraverseInfo(hds));
 
     ti->setUserData( "ShadowCaster", shadow_caster.get() );
 
@@ -422,13 +422,13 @@ void Scene::idle() {
     // one scenegraph loop.
     if( last_traverseinfo )
       delete last_traverseinfo;
-    last_traverseinfo = ti;
+    last_traverseinfo = ti.release();
 
 
   } else {
     // no HapticDevices exist, but we still have to traverse the scene-graph.
     // Haptics is disabled though to avoid unnecessary calculations.
-    TraverseInfo *ti = new TraverseInfo( vector< H3DHapticsDevice * >() );
+    auto_ptr<TraverseInfo> ti(new TraverseInfo( vector< H3DHapticsDevice * >()));
     ti->setUserData( "ShadowCaster", shadow_caster.get() );
     ti->disableHaptics();
 #ifdef HAVE_PROFILER
@@ -446,7 +446,7 @@ void Scene::idle() {
     // one scenegraph loop.
     if( last_traverseinfo )
       delete last_traverseinfo;
-    last_traverseinfo = ti;
+    last_traverseinfo = ti.release();
   }
   
   // call the callback functions added during callback.
@@ -470,9 +470,9 @@ void Scene::idle() {
           vp->accForwardMatrix->getValue().getRotationPart() * 
           (vp->totalOrientation->getValue() * Vec3f( 0, 0, -1 ));
       }
-      DirectionalLight *light = new DirectionalLight();
+      auto_ptr<DirectionalLight> light(new DirectionalLight());
       light->direction->setValue( direction );
-      shadow_caster->light->push_back( light );
+      shadow_caster->light->push_back( light.release() );
     }
   }
 #ifdef HAVE_PROFILER
