@@ -482,7 +482,7 @@ void X3DTextureNode::UpdateSaveToURL::onNewValue( const std::string &v ) {
 
   if ( v.empty() ) return;
 
-  float need_exr_format = false;
+  bool need_exr_format = false;
 
   if( v.find(".exr")!=string::npos ) {
     need_exr_format = true;
