@@ -1413,7 +1413,7 @@ void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
   } else {
     // Using texture binding
     GLint nr_textures_supported;
-    glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
+    glGetIntegerv( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
     X3DTextureNode *active_texture = X3DTextureNode::getActiveTexture();
     unsigned int nr_textures = 0; 
     Node* n;
@@ -1525,7 +1525,7 @@ void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
   if ( X3DProgrammableShaderObject::use_bindless_textures ) return;
 
   GLint nr_textures_supported;
-  glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
+  glGetIntegerv( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
 
   unsigned int nr_textures = 0; 
   Node *n;
@@ -1580,7 +1580,7 @@ void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
   if ( X3DProgrammableShaderObject::use_bindless_textures ) return;
 
   GLint nr_textures_supported;
-  glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
+  glGetIntegerv( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
   unsigned int nr_textures = 0; 
   Node* n;
   MFNode* mfnode;
