@@ -136,6 +136,19 @@ GLint X3DTextureNode::glInternalFormat( Image *i ) {
       default: return GL_RGBA;
       }
     }
+  case Image::R:
+    if( GLEW_ARB_texture_float && 
+      i->pixelComponentType() == Image::RATIONAL ) {
+        if( i->bitsPerPixel() == 16 ) return GL_R16F;
+        else return GL_R32F;
+    }else{
+      switch (i->bitsPerPixel())
+      {
+      case 8: return GL_R8;
+      case 16: return GL_R16;
+      default: return GL_R;
+      }
+    }
   default:
     throw UnsupportedPixelType( i->pixelType() );
   }
@@ -150,7 +163,9 @@ GLenum X3DTextureNode::glPixelFormat( Image *i ) {
   case Image::BGR:             return GL_BGR;
   case Image::RGBA:            return GL_RGBA;
   case Image::BGRA:            return GL_BGRA;
-  default: throw UnsupportedPixelType( i->pixelType() ); 
+  case Image::R:               return GL_RED;
+  default: 
+    throw UnsupportedPixelType( i->pixelType() );
   }
 }
 
@@ -308,6 +323,45 @@ GLenum X3DTextureNode::glPixelComponentType( Image *i ) {
         s << "Cannot find OpenGL type for "
           << i->bitsPerPixel() 
           << " bit RATIONAL RGBA value.";
+        throw UnsupportedPixelComponentType( s.str(), H3D_FULL_LOCATION );
+      }
+    }
+  case Image::R:
+    switch( i->pixelComponentType() ){
+    case Image::UNSIGNED:
+      switch( i->bitsPerPixel() ){
+      case 8: return GL_UNSIGNED_BYTE;
+      case 16: return GL_UNSIGNED_SHORT;
+      case 32: return GL_UNSIGNED_INT;
+      default:
+        stringstream s;
+        s << "Cannot find OpenGL type for"
+          << i->bitsPerPixel()
+          << " bit UNSIGNED R value.";
+        throw UnsupportedPixelComponentType( s.str(), H3D_FULL_LOCATION );
+      }
+    case Image::SIGNED:
+      switch(i->bitsPerPixel()){
+      case 8: return GL_BYTE;
+      case 16: return GL_SHORT;
+      case 32: return GL_INT;
+      default:
+        stringstream s;
+        s << "Cannot find OpenGL type for "
+          << i->bitsPerPixel()
+          << " bit SIGNED R value.";
+        throw UnsupportedPixelComponentType( s.str(), H3D_FULL_LOCATION );
+      }
+    case Image::RATIONAL:
+      switch ( i->bitsPerPixel() )
+      {
+      case 16: return GL_HALF_FLOAT;
+      case 32: return GL_FLOAT;
+      default:
+        stringstream s;
+        s << "Cannot find OpenGL type for "
+          << i->bitsPerPixel()
+          << " bit float R value.";
         throw UnsupportedPixelComponentType( s.str(), H3D_FULL_LOCATION );
       }
     }
