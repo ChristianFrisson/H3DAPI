@@ -63,7 +63,8 @@ namespace H3D {
                      Inst< SFShadowCaster > _defaultShadowCaster = 0,
                      Inst< SFBool > _bindlessTextures = 0,
                      Inst< SFTime > _bindlessTexturesUnusedTime = 0,
-                     Inst< SFBool > _shareTextures = 0 );
+                     Inst< SFBool > _shareTextures = 0,
+                     Inst< SFInt32 > _maxTextureDimension = 0 );
     
     bool cacheNode( Node *n ) {
       if( !useCaching->getValue() ) return false;
@@ -197,6 +198,15 @@ namespace H3D {
     /// <b>Default value: </b> false \n
     /// <b>Access type: </b> inputOutput \n
     auto_ptr < SFBool > shareTextures;
+
+    /// A maximum size for a texture dimension
+    ///
+    /// If <= 0 then no maximum limit is enforced. Otherwise, if a texture
+    /// dimension exceeds the limit it is resized to the limit.
+    ///
+    /// <b>Default value: </b> -1 \n
+    /// <b>Access type: </b> inputOutput \n
+    auto_ptr < SFInt32 > maxTextureDimension;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

@@ -147,11 +147,32 @@ void X3DTexture2DNode::glTexImage( Image *i, GLenum _texture_target,
   glGetIntegerv( GL_UNPACK_ALIGNMENT, &byte_alignment );
   glPixelStorei( GL_UNPACK_ALIGNMENT, i->byteAlignment() );
 
-  if( scale_to_power_of_two && !GLEW_ARB_texture_non_power_of_two ) {
+  // Get global max texture dimension
+  H3DInt32 max_dimension= -1;
+  GlobalSettings*  gs = GlobalSettings::getActive();
+  if( gs ) {
+    GraphicsOptions* go = NULL;
+    gs->getOptionNode( go );
+    if ( go ) {
+      max_dimension= go->maxTextureDimension->getValue();
+    }
+  }
+
+  if( scale_to_power_of_two && !GLEW_ARB_texture_non_power_of_two || max_dimension > 0 ) {
     // check if any scaling is required and if so scale the image.
     bool needs_scaling = false;
     unsigned int new_width  = i->width();
     unsigned int new_height = i->height(); 
+
+    // Enforce global maximum texture dimension
+    if ( max_dimension > 0 && new_width > max_dimension ) {
+      new_width= max_dimension;
+      needs_scaling= true;
+    }
+    if ( max_dimension > 0 && new_height > max_dimension ) {
+      new_height= max_dimension;
+      needs_scaling= true;
+    }
 
     if( !isPowerOfTwo( new_width ) ) {
       new_width = nextPowerOfTwo( new_width );
