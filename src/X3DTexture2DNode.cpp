@@ -30,6 +30,7 @@
 
 #include <H3D/X3DTexture2DNode.h>
 #include <H3DUtil/Image.h>
+#include <H3D/GlobalSettings.h>
 
 using namespace H3D;
 
