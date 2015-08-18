@@ -135,7 +135,7 @@ public:
       window_pos_x = -1;
       window_pos_y = -1;
       fullscreen = false;
-      stereo_mode = "MONO";
+      stereo_mode = wxString("MONO");
       silent = false;
       logInitTime = false;
   }
