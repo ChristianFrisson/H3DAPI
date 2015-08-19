@@ -9,7 +9,8 @@ SET( H3DViewer_SRCS "${H3DViewer_SOURCE_DIR}/../src/H3DViewerApp.cpp"
 					"${H3DViewer_SOURCE_DIR}/../src/WxProfiledResultDialog.cpp"
                     "${H3DViewer_SOURCE_DIR}/../src/H3DViewerPopupMenus.cpp"
                     "${H3DViewer_SOURCE_DIR}/../src/H3DPythonConsole.cpp"
-                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewer.cpp")
+                    "${H3DViewer_SOURCE_DIR}/../src/H3DViewer.cpp"
+                    "${H3DViewer_SOURCE_DIR}/../src/MiniDump.cpp")
 
 SET ( H3DViewer_HEADERS "${H3DViewer_SOURCE_DIR}/../src/Envini.h"
                        "${H3DViewer_SOURCE_DIR}/../src/WxConsoleDialog.h"
@@ -23,4 +24,5 @@ SET ( H3DViewer_HEADERS "${H3DViewer_SOURCE_DIR}/../src/Envini.h"
                        "${H3DViewer_SOURCE_DIR}/../src/H3DViewerPluginsDialog.h"
                        "${H3DViewer_SOURCE_DIR}/../src/H3DViewerPopupMenus.h"
                        "${H3DViewer_SOURCE_DIR}/../src/H3DPythonConsole.h"
-                       "${H3DViewer_SOURCE_DIR}/../src/H3DViewer.h" )
+                       "${H3DViewer_SOURCE_DIR}/../src/H3DViewer.h"
+                       "${H3DViewer_SOURCE_DIR}/../src/MiniDump.h" )

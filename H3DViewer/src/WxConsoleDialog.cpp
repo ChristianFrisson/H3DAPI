@@ -145,8 +145,33 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
   }
 
   if (filelog_enabled) {
-    filelog_cout.open("console_cout_and_cerr_log.txt", std::ofstream::out);
-    filelog_console.open("console_main_log.txt", std::ofstream::out);
+    time_t t = time(0);   // get time now
+    struct tm * now = localtime( & t );
+    stringstream timestamp;
+
+    timestamp << (now->tm_year + 1900)
+      << (now->tm_mon + 1)
+      << std::setw( 2 ) << std::setfill( '0' )
+      <<  now->tm_mday << '_'
+      << std::setw( 2 ) << std::setfill( '0' )
+      <<  now->tm_hour
+      << std::setw( 2 ) << std::setfill( '0' )
+      <<  now->tm_min
+      << std::setw( 2 ) << std::setfill( '0' )
+      <<  now->tm_sec;
+
+    string subdirectory;
+    #ifdef WIN32
+      //TCHAR currentworkingdir[256];
+      //GetCurrentDirectory(256, currentworkingdir);
+      subdirectory = "log\\";
+    #else
+      //subdirectory = "log/";
+      subdirectory = "";
+    #endif
+
+    filelog_cout.open(subdirectory+timestamp.str()+"_console_cout_and_cerr_log.txt", std::ofstream::out);
+    filelog_console.open(subdirectory+timestamp.str()+"_console_main_log.txt", std::ofstream::out);
   }
 }
 

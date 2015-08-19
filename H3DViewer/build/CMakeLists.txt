@@ -162,10 +162,10 @@ ENDIF(wxWidgets_FOUND )
 
 IF(wxWidgets_FOUND)
   SET( HAVE_WXPROPGRID 1 )
-  SET(wxWidgets_USE_LIBS base core gl adv richtext html propgrid)  
+  SET(wxWidgets_USE_LIBS base core gl adv richtext html propgrid qa)  
 ELSE(wxWidgets_FOUND )
   MESSAGE( STATUS "wxWidgets propgrid not found. Needed for better tree view and program setting choice in H3DViewer. Part of wxWidgets 2.9." )
-  SET(wxWidgets_USE_LIBS base core gl adv richtext html)
+  SET(wxWidgets_USE_LIBS base core gl adv richtext html qa)
 ENDIF(wxWidgets_FOUND )
 
 # reset the wxWidgets_FOUND variable before running FIND_PACKAGE again.

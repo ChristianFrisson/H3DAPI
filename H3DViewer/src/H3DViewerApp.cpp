@@ -40,6 +40,11 @@
 #include <wx/cmdline.h>
 #include <H3DUtil/TimeStamp.h>
 #include <fstream>
+#include <wx/debugrpt.h>
+#if defined( H3D_WINDOWS )
+#include "MiniDump.h"
+#endif
+
 
 // ---------------------------------------------------------------------------
 //  Required classes and definitions
@@ -123,6 +128,68 @@ wxCMD_LINE_VAL_STRING,
       wxCMD_LINE_PARAM_OPTIONAL }, 
     { wxCMD_LINE_NONE, NULL, NULL, NULL, wxCMD_LINE_VAL_NONE, 0} };
 
+
+#if defined( H3D_WINDOWS )
+
+bool WriteCrashDump()
+{
+  time_t t = time(0);   // get time now
+  struct tm * now = localtime( & t );
+  stringstream timestamp;
+
+  timestamp << (now->tm_year + 1900)
+    << (now->tm_mon + 1)
+    << std::setw( 2 ) << std::setfill( '0' )
+    <<  now->tm_mday << '_'
+    << std::setw( 2 ) << std::setfill( '0' )
+    <<  now->tm_hour
+    << std::setw( 2 ) << std::setfill( '0' )
+    <<  now->tm_min
+    << std::setw( 2 ) << std::setfill( '0' )
+    <<  now->tm_sec;
+
+  string threadcrashFilename = "ThreadCrash_"+timestamp.str();
+
+  ofstream logFile((threadcrashFilename+".log").c_str());
+  logFile << "Trying to save dump..." << endl;
+
+  std::wstring sPathFilename(threadcrashFilename.size(), L' '); // Overestimate number of code points.
+  sPathFilename.resize(std::mbstowcs(&sPathFilename[0], threadcrashFilename.c_str(), threadcrashFilename.size())); // Shrink to fit.
+  sPathFilename += L".dmp";
+  MiniDump *mndmp = new MiniDump();
+  if(mndmp->Create(sPathFilename.c_str(),MiniDump::kInfoLevelLarge,false))
+  {
+    logFile<<"...done."<<endl;
+    delete mndmp;
+    logFile.close();
+    return true;
+  }
+  else {
+    logFile<<"...failed."<<endl;
+    delete mndmp;
+    logFile.close();
+    return false;
+  }
+
+}
+
+LONG WINAPI VectoredExceptionHandler(PEXCEPTION_POINTERS pExceptionInfo)
+{
+  WriteCrashDump();
+
+  return EXCEPTION_CONTINUE_SEARCH;
+}
+
+LONG WINAPI MyUnhandledExceptionFilter(PEXCEPTION_POINTERS pExceptionPtrs)
+{
+  WriteCrashDump();
+
+  // Execute default exception handler next
+  return EXCEPTION_EXECUTE_HANDLER; 
+}
+
+#endif
+
 // Define a new application type
 class MyApp: public wxApp
 {
@@ -138,6 +205,11 @@ public:
       stereo_mode = wxString( "MONO", wxConvUTF8 );
       silent = false;
       logInitTime = false;
+      wxHandleFatalExceptions();
+#if defined( H3D_WINDOWS )
+      //AddVectoredExceptionHandler(1, VectoredExceptionHandler);
+      SetUnhandledExceptionFilter(MyUnhandledExceptionFilter);
+#endif
   }
   virtual bool OnInit();
   virtual void MacOpenFile(const wxString &fileName) {
@@ -150,6 +222,8 @@ public:
   }
   virtual void OnIdle(wxIdleEvent& event);
   virtual bool OnExceptionInMainLoop();
+  virtual void OnFatalException();
+  void GenerateReport(wxDebugReport::Context ctx);
   virtual void OnInitCmdLine(wxCmdLineParser& parser) {
     parser.SetDesc (gCmdLineDesc); 
   }
@@ -186,6 +260,26 @@ protected:
   DECLARE_EVENT_TABLE()
 };
 
+void MyApp::GenerateReport(wxDebugReport::Context ctx)
+{
+  wxDebugReportCompress *report = new wxDebugReportCompress;
+  wxString dumpPath = wxGetCwd();
+  wxDateTime dt = wxDateTime::Now();
+  wxString datepart = dt.FormatISODate();
+  datepart.Replace(wxString("-"),wxString(""));
+  wxString timepart = dt.FormatISOTime();
+  timepart.Replace(wxString(":"),wxString(""));
+  wxString dumpFilename = wxString("wxDbgDump_") + datepart + wxString("_") + timepart;
+  report->SetCompressedFileDirectory(dumpPath);
+  report->SetCompressedFileBaseName(dumpFilename);
+
+  // this will add the minidump and an xml file with the loaded DLLs
+  report->AddAll(wxDebugReport::Context_Exception);
+
+  report->Process();
+  delete report;
+}
+
 BEGIN_EVENT_TABLE(MyApp, wxApp)
   EVT_IDLE(MyApp::OnIdle)
 END_EVENT_TABLE()
@@ -213,6 +307,7 @@ bool MyApp::OnExceptionInMainLoop() {
     // Ensure we exit cleanly even on QuitAPI exception
     wxCommandEvent fake_event;
     theWxFrame->OnExit ( fake_event );
+    GenerateReport(wxDebugReport::Context_Exception);
     return false;
   }
   catch (const Exception::H3DException &e) {
@@ -220,9 +315,17 @@ bool MyApp::OnExceptionInMainLoop() {
    s << e;
      wxMessageBox( wxString(s.str().c_str(),wxConvLibc),
                    wxT("Error"), wxOK | wxICON_EXCLAMATION);
-    return false;
+     GenerateReport(wxDebugReport::Context_Exception);
+     return false;
   }
+
+  GenerateReport(wxDebugReport::Context_Exception);
   wxApp::OnExceptionInMainLoop();  
+}
+
+void MyApp::OnFatalException()
+{
+  GenerateReport(wxDebugReport::Context_Exception);
 }
 
 bool MyApp::OnInit()
@@ -278,7 +381,7 @@ bool MyApp::OnInit()
     if( silent ) {
       // when silent mode is required, disable caption and also
       // force the width, height to be zero to make sure noting will
-      // be able to be displayed, also disalbe fullscreen
+      // be able to be displayed, also disable fullscreen
       window_style = wxDEFAULT_FRAME_STYLE&~(wxCAPTION);
     }
     // create a window to display
@@ -289,14 +392,14 @@ bool MyApp::OnInit()
     }else{
       theWxFrame->Show(true);
     }
-    // swtich to fullscreen right now, and also change the window fullscreen value
+    // switch to fullscreen right now, and also change the window fullscreen value
     theWxFrame->glwindow->fullscreen->setValue(fullscreen);
     theWxFrame->glwindow->setFullscreen(fullscreen);
     theWxFrame->glwindow->renderMode->setValue(toStr(stereo_mode));
     if( fullscreen&&window_width!=-1&&window_height!=-1 ) {
       // resize window size to required value, after fullscreen is applied
       // only do this when no default windows size is used
-      // also reset the position of the window as go to fullsceen may modified
+      // also reset the position of the window as go to fullscreen may modified
       // the starting position as well
       theWxFrame->SetPosition(window_position);
       theWxFrame->SetSize(window_width_to_use, window_height_to_use);
@@ -323,6 +426,7 @@ bool MyApp::OnInit()
     cerr << e << endl;
     return false;
   }
+
 
   if( logInitTime ) {
     float init_time = TimeStamp()-startupTime;
