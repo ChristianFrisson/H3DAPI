@@ -170,8 +170,8 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
       subdirectory = "";
     #endif
 
-    filelog_cout.open(subdirectory+timestamp.str()+"_console_cout_and_cerr_log.txt", std::ofstream::out);
-    filelog_console.open(subdirectory+timestamp.str()+"_console_main_log.txt", std::ofstream::out);
+    filelog_cout.open((subdirectory+timestamp.str()+"_console_cout_and_cerr_log.txt" ).c_str(), std::ofstream::out);
+    filelog_console.open((subdirectory+timestamp.str()+"_console_main_log.txt").c_str(), std::ofstream::out);
   }
 }
 

@@ -266,12 +266,14 @@ void MyApp::GenerateReport(wxDebugReport::Context ctx)
   wxString dumpPath = wxGetCwd();
   wxDateTime dt = wxDateTime::Now();
   wxString datepart = dt.FormatISODate();
-  datepart.Replace(wxString("-"),wxString(""));
+  datepart.Replace(wxString("-", wxConvUTF8),wxString("", wxConvUTF8));
   wxString timepart = dt.FormatISOTime();
-  timepart.Replace(wxString(":"),wxString(""));
-  wxString dumpFilename = wxString("wxDbgDump_") + datepart + wxString("_") + timepart;
+  timepart.Replace(wxString(":", wxConvUTF8),wxString("", wxConvUTF8));
+  wxString dumpFilename = wxString("wxDbgDump_", wxConvUTF8) + datepart + wxString("_", wxConvUTF8) + timepart;
+#if wxMAJOR_VERSION >= 2 && wxMINOR_VERSION > 8
   report->SetCompressedFileDirectory(dumpPath);
   report->SetCompressedFileBaseName(dumpFilename);
+#endif
 
   // this will add the minidump and an xml file with the loaded DLLs
   report->AddAll(wxDebugReport::Context_Exception);
