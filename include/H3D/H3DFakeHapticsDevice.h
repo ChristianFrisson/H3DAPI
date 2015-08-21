@@ -146,7 +146,8 @@ namespace H3D {
         Inst< SFBool          > _followViewpoint        = 0,
         Inst< GetValueSafeField< SFVec3f > > _set_devicePosition     = 0,
         Inst< GetValueSafeField< SFRotation > > _set_deviceOrientation  = 0,
-        Inst< GetValueSafeField< SFBool > > _set_mainButton         = 0 );
+        Inst< GetValueSafeField< SFBool > > _set_mainButton         = 0,
+        Inst< GetValueSafeField< SFBool > > _set_pauseDevice        = 0 );
 
     /// Destructor.
     ~H3DFakeHapticsDevice() {
@@ -174,6 +175,16 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOnly \n
     auto_ptr< GetValueSafeField<SFBool> > set_mainButton;
+
+    /// The set_pauseDeviceTransform field can be used to pause 
+    /// the transform of the haptics device.
+    ///
+    /// <b>Access type:</b> inputOnly \n
+    auto_ptr< GetValueSafeField<SFBool> > set_pauseDeviceTransform;
+
+    bool pauseDeviceTransform;
+
+    HAPI::HAPIHapticsDevice::DeviceValues pauseDeviceTransformDV;
   };
 }
 

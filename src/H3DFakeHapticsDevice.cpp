@@ -63,7 +63,8 @@ H3DFakeHapticsDevice::H3DFakeHapticsDevice(
           Inst< SFBool          > _followViewpoint        ,
           Inst< GetValueSafeField< SFVec3f > > _set_devicePosition,
           Inst< GetValueSafeField< SFRotation > > _set_deviceOrientation,
-          Inst< GetValueSafeField< SFBool > > _set_mainButton          ):
+          Inst< GetValueSafeField< SFBool > > _set_mainButton,
+          Inst< GetValueSafeField< SFBool > > _set_pauseDevice          ):
   H3DHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
         _trackerOrientation, _positionCalibration, 
         _orientationCalibration, _proxyPosition,
@@ -74,7 +75,8 @@ H3DFakeHapticsDevice::H3DFakeHapticsDevice(
         _stylus, _hapticsRenderer, _proxyPositions, _followViewpoint ),
   set_devicePosition( _set_devicePosition ),
   set_deviceOrientation( _set_deviceOrientation ),
-  set_mainButton( _set_mainButton ) {
+  set_mainButton( _set_mainButton ),
+  set_pauseDeviceTransform( _set_pauseDevice ) {
 
   type_name = "H3DFakeHapticsDevice";
   database.initFields( this );
@@ -88,6 +90,9 @@ H3DFakeHapticsDevice::H3DFakeHapticsDevice(
   // set_mainButton have to be set to false because the value of this
   // field is used to set the buttons variable.
   set_mainButton->setValue( false );
+  set_pauseDeviceTransform->setOwner( this );
+  set_pauseDeviceTransform->setName( "set_pauseDeviceTransform" );
+  set_pauseDeviceTransform->setValue( false );
 
   H3DFakeHapticsDevice::FakeHapticsDevice *fd = 
     new H3DFakeHapticsDevice::FakeHapticsDevice;
@@ -98,19 +103,36 @@ H3DFakeHapticsDevice::H3DFakeHapticsDevice(
 
   inputDOF->setValue( 6, id );
   outputDOF->setValue( 0, id );
+
+  pauseDeviceTransform= false;
 }
 
 void H3DFakeHapticsDevice::FakeHapticsDevice::updateDeviceValues( 
                 DeviceValues &dv, HAPI::HAPITime dt ) {
-  HAPIHapticsDevice::updateDeviceValues( dv, dt );
-  dv.position = owner->set_devicePosition->getValue();
-  dv.orientation = owner->set_deviceOrientation->getValue();
-  // Button status is an int, if we want to make sure that the mainButton
-  // bit is set then the integer have to be 1 and nothing else.
-  if( owner->set_mainButton->getValue() )
-    dv.button_status = 1;
-  else
-    dv.button_status = 0;
+  if( device_state == ENABLED ) {
+    HAPIHapticsDevice::updateDeviceValues( dv, dt );
+    if( !owner->set_pauseDeviceTransform->getValue() ) {
+      dv.position = owner->set_devicePosition->getValue();
+      dv.orientation = owner->set_deviceOrientation->getValue();
+      owner->pauseDeviceTransform = false;
+    }
+    else {
+      if (!owner->pauseDeviceTransform) {
+        dv.position = owner->set_devicePosition->getValue();
+        dv.orientation = owner->set_deviceOrientation->getValue();
+        owner->pauseDeviceTransformDV = dv;
+        owner->pauseDeviceTransform = true;
+      } else {
+        dv = owner->pauseDeviceTransformDV;
+      }
+    }
+    // Button status is an int, if we want to make sure that the mainButton
+    // bit is set then the integer have to be 1 and nothing else.
+    if( owner->set_mainButton->getValue() )
+      dv.button_status = 1;
+    else
+      dv.button_status = 0;
+  }
 }
 
 
