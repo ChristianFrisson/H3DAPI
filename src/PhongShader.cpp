@@ -626,8 +626,7 @@ string PhongShader::getFragmentShaderString() {
 
   s <<
     "  vec4 final_color = vec4( 0.0, 0.0, 0.0, 1.0 );\n"
-    "  bool is_back_face = (dot(orig_normal, view_dir) < 0.0);\n"
-    "  if( is_back_face ) { " << endl;
+    "  if( !gl_FrontFacing ) { " << endl;
 
   unsigned int light_index = 0;
 
