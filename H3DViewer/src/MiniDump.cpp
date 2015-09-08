@@ -118,6 +118,7 @@ struct MiniDumpParams {
 	const wchar_t *path;
 	MiniDump::InfoLevel level;
 	const MiniDump *dump;
+	MINIDUMP_EXCEPTION_INFORMATION minidumpExcInfo;
 };
 
 DWORD CALLBACK MiniDump::MinidumpWriter( LPVOID inParam )
@@ -165,7 +166,7 @@ DWORD CALLBACK MiniDump::MinidumpWriter( LPVOID inParam )
 
 		// After all that, we can write out the minidump
 		BOOL bRet = ::MiniDumpWriteDump( ::GetCurrentProcess(), ::GetCurrentProcessId(), hFile,
-				(MINIDUMP_TYPE)type, NULL, NULL, &callback );
+			(MINIDUMP_TYPE)type, &p->minidumpExcInfo , NULL, &callback );
 		::CloseHandle( hFile );
 
 		return bRet ? 1 : 0;
@@ -218,12 +219,18 @@ MiniDump::~MiniDump()
 {
 }
 
-bool MiniDump::Create( const wchar_t *inPath, InfoLevel inLevel, bool inSuspendOtherThreads ) const {
+bool MiniDump::Create( const wchar_t *inPath, InfoLevel inLevel, PEXCEPTION_POINTERS pExceptionPtrs, bool inSuspendOtherThreads ) const {
 	if (!inPath)	return false;
+
+	MINIDUMP_EXCEPTION_INFORMATION minidumpExcInfo;
+
+    minidumpExcInfo.ThreadId = ::GetCurrentThreadId();
+    minidumpExcInfo.ExceptionPointers = pExceptionPtrs;
+    minidumpExcInfo.ClientPointers = true; // in our own address space
 
 	// Set up the list of parameters we want to pass to the newly-created thread.  Note
 	// that we create the thread in a suspended state!
-	struct MiniDumpParams param = { inPath, inLevel, this };
+	struct MiniDumpParams param = { inPath, inLevel, this, minidumpExcInfo };
 	DWORD threadId = 0;
 	HANDLE hThread = ::CreateThread( NULL, 0, MinidumpWriter, &param, CREATE_SUSPENDED, &threadId );
 

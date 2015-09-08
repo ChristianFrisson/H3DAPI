@@ -44,6 +44,7 @@ public:
 
 	bool Create( const wchar_t *inPath,
 				InfoLevel inLevel = kInfoLevelMedium,
+				PEXCEPTION_POINTERS pExceptionPtrs = NULL,
 				bool inSuspendOtherThreads = false ) const;
 
 private:
