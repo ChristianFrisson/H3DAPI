@@ -41,27 +41,15 @@ unsigned int ShaderImageNode::max_image_unit;
 ShaderImageNode::ShaderImageNode( 
                                 Inst< DisplayList > _displayList,
                                 Inst< SFNode>  _metadata ) :
-  ShaderChildNode(_displayList,_metadata) {
+  H3DSingleTextureNode(_displayList,_metadata) {
   type_name = "ShaderImageNode";
   displayList->setName( "displayList" );
   displayList->setOwner( this );
-  texture_id = 0;
-  texture_unit = GL_TEXTURE0;
   image_unit = -1;
   glGetIntegerv ( GL_MAX_IMAGE_SAMPLES_EXT, (GLint*)&max_image_unit );
 
 }
 
-void ShaderImageNode::preRender( GLenum texture_unit_id )
-{
-  // set the actual texture_unit will be used for this node
-  texture_unit = texture_unit_id;
-}
-
-void ShaderImageNode::postRender()
-{
-  texture_unit = GL_TEXTURE0;
-}
 
 
 ShaderImageNode::~ShaderImageNode ( ){

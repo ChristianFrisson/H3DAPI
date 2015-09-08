@@ -183,6 +183,16 @@ namespace H3D {
 
     /// Overridden virtual function to perform the same function on the correct 
     /// shared texture from the database.
+    virtual void setTextureId( GLuint id );
+    /// Overridden virtual function to perform the same function on the correct 
+    /// shared texture from the database.
+    virtual void setTextureUnit( GLint unit );
+    /// Overridden virtual function to perform the same function on the correct 
+    /// shared texture from the database.
+    virtual void setTextureTarget( GLenum target );
+
+    /// Overridden virtual function to perform the same function on the correct 
+    /// shared texture from the database.
     virtual bool makeResident ();
 
     /// Overridden virtual function to perform the same function on the correct 

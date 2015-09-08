@@ -62,12 +62,12 @@ X3DTexture2DNode::X3DTexture2DNode(
   repeatT ( _repeatT  ),
   scaleToPowerOfTwo( _scaleToP2 ),
   textureProperties( _textureProperties ),
-  texture_id( 0 ),
-  texture_unit( GL_TEXTURE0_ARB ),
-  texture_target( 0 ),
-  imageNeedsUpdate ( new Field ){
+  imageNeedsUpdate ( new Field ),
+  updateTextureProperties( new UpdateTextureProperties ){
 
   type_name = "X3DTexture2DNode";
+  texture_unit = GL_TEXTURE0_ARB ;
+  texture_target = GL_TEXTURE_2D ;
 
   database.initFields( this );
   image->setName( "image" );
@@ -86,6 +86,10 @@ X3DTexture2DNode::X3DTexture2DNode(
   imageNeedsUpdate->setName( "ImageNeedsUpdate" );
   imageNeedsUpdate->setOwner( this );
   image->route( imageNeedsUpdate );
+
+  updateTextureProperties->setName( "UpdateTextureProperties" );
+  updateTextureProperties->setOwner(this);
+  textureProperties->route(updateTextureProperties);
 }
 
 void X3DTexture2DNode::SFImage::setValueFromString( const string& s ) {
@@ -274,19 +278,15 @@ void X3DTexture2DNode::glTexImage( Image *i, GLenum _texture_target,
 }
 
 void X3DTexture2DNode::render()     {
-  glGetIntegerv( GL_ACTIVE_TEXTURE_ARB, &texture_unit );
-
-  GLenum target = getTextureTarget();
+  updateTextureProperties->upToDate();
 
   Image * i = static_cast< Image * >(image->getValue());
-  if( displayList->hasCausedEvent( image ) || texture_target != target ) {
-    
-    if( !image->imageChanged() || texture_id == 0 || texture_target != target ) {
+  if( displayList->hasCausedEvent( image ) ) {
+    if( !image->imageChanged() || texture_id == 0 ) {
       // the image has changed so remove the old texture and install 
       // the new
       glDeleteTextures( 1, &texture_id );
       texture_id = 0;
-      texture_target = target;
       if( i ) {
         texture_id = renderImage( i, 
                                   texture_target, 
@@ -419,23 +419,6 @@ void X3DTexture2DNode::disableTexturing() {
 }
 
 
-GLenum X3DTexture2DNode::getTextureTarget() {
-  TextureProperties *texture_properties = textureProperties->getValue();
-  if( texture_properties ) {
-    const string &target_type = texture_properties->textureType->getValue();
-    if( target_type == "RECTANGLE" ) return GL_TEXTURE_RECTANGLE_ARB;
-    else if( target_type == "2DARRAY" ) {
-      Console(3) << "Warning: Invalid textureType \"2DARRAY\" in TextureProperties for "
-     << "X3DTexture2DNode. \"2DARRAY\" can only be used for 3D textures" << endl;
-    } else if( target_type != "NORMAL" ) {
-      Console(3) << "Warning: Invalid textureType: \"" << target_type << "\" in TextureProperties for "
-     << "X3DTexture2DNode. " << endl;
-    }
-  }
-  return GL_TEXTURE_2D;
-}
-
-
 GLuint64 X3DTexture2DNode::getTextureHandle() {
   // When the image is used as a bindless texture in a shader
   // then it is possible that the image is never rendered. So we take
@@ -492,12 +475,29 @@ Image* X3DTexture2DNode::renderToImage( H3DInt32 _width, H3DInt32 _height, bool 
     }
     GLint active_texture_bind = 0;
     glGetIntegerv( GL_TEXTURE_BINDING_2D, &active_texture_bind );
-    glBindTexture( getTextureTarget(), t_id );
-    glGetTexImage( getTextureTarget(), 0, glPixelFormat( _image ), glPixelComponentType(_image), _image->getImageData() );
-    glBindTexture( getTextureTarget(), active_texture_bind );
+    glBindTexture( texture_target, t_id );
+    glGetTexImage( texture_target, 0, glPixelFormat( _image ), glPixelComponentType(_image), _image->getImageData() );
+    glBindTexture( texture_target, active_texture_bind );
     return _image;
   }
 
   Console(4) << "ERROR: Texture ID: "<< t_id << " is not valid. Can not save texture!"<<endl;
   return NULL;
+}
+
+void X3DTexture2DNode::UpdateTextureProperties::update(){
+  X3DTexture2DNode* t = static_cast<X3DTexture2DNode*>( getOwner() );
+  TextureProperties *texture_properties = t->textureProperties->getValue();
+  string target_type;
+  if( texture_properties ) {
+    target_type = texture_properties->textureType->getValue();
+    if( target_type == "RECTANGLE" )  t->setTextureTarget(GL_TEXTURE_RECTANGLE_ARB);
+    else if( target_type == "2DARRAY" ) {
+      Console(3) << "Warning: Invalid textureType \"2DARRAY\" in TextureProperties for "
+        << "X3DTexture2DNode. \"2DARRAY\" can only be used for 3D textures" << endl;
+    } else if( target_type != "NORMAL" ) {
+      Console(3) << "Warning: Invalid textureType: \"" << target_type << "\" in TextureProperties for "
+        << "X3DTexture2DNode. " << endl;
+    }
+  }
 }

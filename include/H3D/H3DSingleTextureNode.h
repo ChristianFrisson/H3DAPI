@@ -53,13 +53,22 @@ namespace H3D {
     virtual ~H3DSingleTextureNode ();
 
     /// Get the OpenGL texture id that is used for this texture.
-    virtual GLuint getTextureId() = 0;
+    virtual GLuint getTextureId() { return texture_id; }
 
     /// Get the OpenGL texture unit that is used for this texture.
-    virtual GLuint getTextureUnit() = 0;
+    virtual GLuint getTextureUnit() {return texture_unit;}
 
     /// Get the OpenGL texture target that is used for this texture.
-    virtual GLenum getTextureTarget() = 0;
+    virtual GLenum getTextureTarget() {return texture_target;}
+
+    /// Set the OpenGL texture id that is used for this texture.
+    virtual void setTextureId( GLuint id ) { texture_id=id; }
+
+    /// Set the OpenGL texture unit that is used for this texture.
+    virtual void setTextureUnit( GLint unit ) {texture_unit=unit;}
+
+    /// Set the OpenGL texture target that is used for this texture.
+    virtual void setTextureTarget( GLenum target ) {texture_target = target;}
 
     ///{
     /// Bindless texturing functions
@@ -123,6 +132,15 @@ namespace H3D {
 
     /// The texture handle (GPU)
     GLuint64 texture_handle;
+
+    /// The OpenGL texture id of the installed texture, 0 if not installed.
+    GLuint texture_id;
+    /// The OpenGL texture unit that is used to render this texture.
+    /// The value will be mostly specified when textures are rendered in shader and used
+    /// while connect the texture unit with sampler location in shader code.
+    GLint texture_unit;
+    /// The OpenGL texture target that is used to render this texture.
+    GLenum texture_target; 
 
     /// Shader fields which contain this texture
     Field::FieldVector shader_fields;

@@ -122,6 +122,8 @@ namespace H3D {
     /// \dotfile ShaderPart_shaderString.dot
     auto_ptr< SFShaderString > shaderString;
 
+    auto_ptr< SFInt32 > ShaderHandle;
+
     /// The forceReload field is used to force the reloading of this shaderPart
     /// and also cause the composed shader recompile and relink.
     /// Directly change its value from tree view of h3dviewer, or route someother

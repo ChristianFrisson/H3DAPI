@@ -65,12 +65,13 @@ X3DTexture3DNode::X3DTexture3DNode(
   repeatR ( _repeatR  ),
   scaleToPowerOfTwo( _scaleToP2 ),
   textureProperties( _textureProp ),
-  texture_id( 0 ),
-  texture_unit( GL_TEXTURE0_ARB ),
-  texture_target( 0 ),
-  imageNeedsUpdate( new Field ){
+  imageNeedsUpdate( new Field ),
+  updateTextureProperties( new UpdateTextureProperties ){
 
   type_name = "X3DTexture3DNode";
+  
+  texture_unit = GL_TEXTURE0_ARB ;
+  texture_target = GL_TEXTURE_3D ;
 
   database.initFields( this );
   image->setName( "image" );
@@ -91,6 +92,10 @@ X3DTexture3DNode::X3DTexture3DNode(
   imageNeedsUpdate->setName( "ImageNeedsUpdate" );
   imageNeedsUpdate->setOwner( this );
   image->route( imageNeedsUpdate );
+
+  updateTextureProperties->setName( "UpdateTextureProperties" );
+  updateTextureProperties->setOwner(this);
+  textureProperties->route(updateTextureProperties);
 }
 
 string X3DTexture3DNode::SFImage::getValueAsString( const string& separator) {
@@ -270,19 +275,15 @@ void X3DTexture3DNode::glTexImage( Image *i, GLenum _texture_target,
 }
 
 void X3DTexture3DNode::render()     {
-  glGetIntegerv( GL_ACTIVE_TEXTURE_ARB, &texture_unit );
-
-  GLenum target = getTextureTarget();
-
+  updateTextureProperties->upToDate();
   Image * i = static_cast< Image * >(image->getValue());
-  if( displayList->hasCausedEvent( image ) || texture_target != target ) {
+  if( displayList->hasCausedEvent( image ) ) {
 
-    if( !image->imageChanged() || texture_id == 0 || texture_target != target ) {
+    if( !image->imageChanged() || texture_id == 0 ) {
       // the image has changed so remove the old texture and install 
       // the new
       glDeleteTextures( 1, &texture_id );
       texture_id = 0;
-      texture_target = target;
       if( i ) {
         texture_id = renderImage( i, 
                                   texture_target, 
@@ -403,7 +404,7 @@ void X3DTexture3DNode::renderSubImage( Image *_image,
 
 void X3DTexture3DNode::enableTexturing() {
  // texture 2d arrays cannot be enabled, only be used with shaders.
-  if( texture_target != GL_TEXTURE_2D_ARRAY_EXT ) 
+  if( texture_target != GL_TEXTURE_2D_ARRAY_EXT&&texture_target!=GL_TEXTURE_2D_MULTISAMPLE_ARRAY ) 
     glEnable( texture_target );
   Image * i = static_cast< Image * >(image->getValue());
   if( i ) {
@@ -435,21 +436,20 @@ void X3DTexture3DNode::disableTexturing() {
   }
 }
 
-
-GLenum X3DTexture3DNode::getTextureTarget() {
-  TextureProperties *texture_properties = textureProperties->getValue();
+void X3DTexture3DNode::UpdateTextureProperties::update(){
+  X3DTexture3DNode* t = static_cast<X3DTexture3DNode*>(getOwner());
+  TextureProperties *texture_properties = t->textureProperties->getValue();
   if( texture_properties ) {
-    const string &target_type = texture_properties->textureType->getValue();
-    if( target_type == "2D_ARRAY" ) return GL_TEXTURE_2D_ARRAY_EXT;
+    string target_type = texture_properties->textureType->getValue();
+    if( target_type == "2D_ARRAY" ) {t->setTextureTarget(GL_TEXTURE_2D_ARRAY_EXT);} 
     else if( target_type == "2D_RECTANGLE" ) {
       Console(3) << "Warning: Invalid textureType \"2D_RECTANGLE\" in TextureProperties for "
-     << "X3DTexture2DNode. \"2D_RECTANGLE\" can only be used for 2D textures" << endl;
+        << "X3DTexture2DNode. \"2D_RECTANGLE\" can only be used for 2D textures" << endl;
     } else if( target_type != "NORMAL" ) {
       Console(3) << "Warning: Invalid textureType: \"" << target_type << "\" in TextureProperties for "
-     << "X3DTexture3DNode. " << endl;
+        << "X3DTexture3DNode. " << endl;
     }
   }
-  return GL_TEXTURE_3D;
 }
 
 GLuint64 X3DTexture3DNode::getTextureHandle() {

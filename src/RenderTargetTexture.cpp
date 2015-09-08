@@ -116,6 +116,30 @@ GLenum RenderTargetTexture::getTextureTarget() {
   return GL_TEXTURE_2D;
 }
 
+void RenderTargetTexture::setTextureId( GLuint id ){
+  FrameBufferTextureGenerator *gen = generator->getValue();
+  H3DInt32 target_index = index->getValue();
+  if( gen && target_index < (H3DInt32)gen->colorTextures->size() ) {
+    gen->colorTextures->getValueByIndex( target_index )->setTextureId(id);
+  }
+}
+
+void RenderTargetTexture::setTextureUnit( GLint unit ){
+  FrameBufferTextureGenerator *gen = generator->getValue();
+  H3DInt32 target_index = index->getValue();
+  if( gen && target_index < (H3DInt32)gen->colorTextures->size() ) {
+    gen->colorTextures->getValueByIndex( target_index )->setTextureUnit(unit);
+  }
+}
+
+void RenderTargetTexture::setTextureTarget( GLenum target ){
+  FrameBufferTextureGenerator *gen = generator->getValue();
+  H3DInt32 target_index = index->getValue();
+  if( gen && target_index < (H3DInt32)gen->colorTextures->size() ) {
+    gen->colorTextures->getValueByIndex( target_index )->setTextureTarget(target);
+  }
+}
+
 bool RenderTargetTexture::makeResident () {
   FrameBufferTextureGenerator *gen = generator->getValue();
   H3DInt32 target_index = index->getValue();

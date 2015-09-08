@@ -33,6 +33,7 @@
 #include <H3D/X3DTexture3DNode.h>
 #include <H3D/ShaderAtomicCounter.h>
 #include <H3D/GlobalSettings.h>
+#include <H3D/GraphicsHardwareInfo.h>
 
 #include<fstream>
 #include<sstream>
@@ -258,7 +259,8 @@ GLbitfield ComposedShader::getAffectedGLAttribs() {
 void ComposedShader::preRender() {
   if( GLEW_ARB_shader_objects ) {
     glUseProgramObjectARB( program_handle );
-    Shaders::preRenderTextures( this );
+    //Shaders::preRenderTextures( this );
+    Shaders::preRenderTextures( &shader_textures, &max_texture_in_shader );
     Shaders::preRenderShaderResources( this, program_handle );
     X3DShaderNode::preRender();
   }
@@ -270,7 +272,8 @@ void ComposedShader::preRender() {
 void ComposedShader::postRender() {
   if( GLEW_ARB_shader_objects ) {
     glUseProgramObjectARB( 0 );
-    Shaders::postRenderTextures( this );
+    //Shaders::postRenderTextures( this );
+    Shaders::postRenderTextures(&shader_textures, &max_texture_in_shader);
     X3DShaderNode::postRender();
   }
 }
@@ -440,13 +443,18 @@ void ComposedShader::render() {
     }
 
     if( program_handle ) {
-      Shaders::renderTextures( this );
+      //Shaders::renderTextures( this );
+      Shaders::renderTextures( &shader_textures, &max_texture_in_shader );
+
       Shaders::renderShaderResources( this );
+
 //#ifdef HAVE_PROFILER
 //      H3DTimer::stepBegin("updateUniform");
 //#endif
       // Lazily update uniform values, i.e., only those that have changed
+
       updateUniforms->upToDate();
+
 //#ifdef HAVE_PROFILER
 //      H3DTimer::stepEnd("updateUniform");
 //#endif
@@ -630,8 +638,15 @@ void ComposedShader::SetupDynamicRoutes::update() {
     for( unsigned int i = 0; i < node_vector.size(); ++i ) {
       H3DDisplayListObject *hdln =
         dynamic_cast< H3DDisplayListObject * >( node_vector[i] );
-      if( hdln )
+      if( hdln ){
         hdln->displayList->unroute( cs->displayList );
+      }
+        
+      
+      H3DSingleTextureNode *tex = dynamic_cast< H3DSingleTextureNode* >(node_vector[i]);
+      if( tex ) {
+        cs->shader_textures.remove(tex);
+      }
     }
     fields_to_nodes.erase( in_map );
   }
@@ -648,6 +663,10 @@ void ComposedShader::SetupDynamicRoutes::update() {
       NodeVector tmp_node_vector;
       tmp_node_vector.push_back( n );
       fields_to_nodes[ event.ptr ] = tmp_node_vector;
+      H3DSingleTextureNode *tex = dynamic_cast< H3DSingleTextureNode* >(n);
+      if( tex ) {
+        cs->shader_textures.push_back(tex);
+      }
     }
   } else if( mf_node_field ) {
     // Setup routes for all nodes contained in mf_node_field.
@@ -661,6 +680,10 @@ void ComposedShader::SetupDynamicRoutes::update() {
         hdln->displayList->route( cs->displayList, cs->id );
         cs->activate->setValue( true );
         tmp_node_vector.push_back( node_vector[i] );
+        H3DSingleTextureNode *tex = dynamic_cast< H3DSingleTextureNode* >(node_vector[i]);
+        if( tex ) {
+          cs->shader_textures.push_back(tex);
+        }
       }
     }
     if( !tmp_node_vector.empty() )
@@ -837,6 +860,11 @@ bool ComposedShader::printShaderLog() {
 
 void ComposedShader::initialize() {
   X3DShaderNode::initialize();
+  if( GraphicsHardwareInfo::infoIsInitialized() ) {
+    max_texture_in_shader = GraphicsHardwareInfo::getInfo().max_combined_texture_image_units;
+  }else{
+    glGetIntegerv( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, &max_texture_in_shader );
+  }
   GlobalSettings *default_settings = GlobalSettings::getActive();
   GraphicsOptions *graphic_options = NULL;
   if( default_settings ) 

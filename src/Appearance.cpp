@@ -104,57 +104,64 @@ void Appearance::render()     {
   
   X3DMaterialNode *m = material->getValue();
   if ( m ) m->displayList->callList();
-  else glColor4f( 1, 1, 1, 1 );
+  else{
+    if( shaders->empty() ) {
+      glColor4f( 1, 1, 1, 1 );
+    }
+  } 
 
-  /// If an RGB, BGR, RGBA or BGRA texture the texture values should not be
-  /// modulated with diffuseColor according to the X3D spec. So we set the 
-  /// diffuse color to 1 1 1 in order to show the texture values as they are.
-  /// The alpha value should be the one from material if 3 component texture
-  /// and the one from the texture if 4-component texture.
-  X3DTextureNode *texture_pt = X3DTextureNode::getActiveTexture();
-  X3DTexture2DNode *texture2d = dynamic_cast< X3DTexture2DNode * >( texture_pt );
-  X3DTexture3DNode *texture3d = dynamic_cast< X3DTexture3DNode * >( texture_pt );
+  if( shaders->empty() ) {
+    /// If an RGB, BGR, RGBA or BGRA texture the texture values should not be
+    /// modulated with diffuseColor according to the X3D spec. So we set the 
+    /// diffuse color to 1 1 1 in order to show the texture values as they are.
+    /// The alpha value should be the one from material if 3 component texture
+    /// and the one from the texture if 4-component texture.
+    X3DTextureNode *texture_pt = X3DTextureNode::getActiveTexture();
+    X3DTexture2DNode *texture2d = dynamic_cast< X3DTexture2DNode * >( texture_pt );
+    X3DTexture3DNode *texture3d = dynamic_cast< X3DTexture3DNode * >( texture_pt );
 
-  Image *image = NULL;
-  if( texture2d ) {
-    image = texture2d->image->getValue();
-  } else if( texture3d ) {
-    image = texture3d->image->getValue();
-  }
+    Image *image = NULL;
+    if( texture2d ) {
+      image = texture2d->image->getValue();
+    } else if( texture3d ) {
+      image = texture3d->image->getValue();
+    }
 
-  // in order to comply with X3D spec we need to set the material
-  // diffuse color to 1 1 1 when RGB or RGBA texture in order to 
-  // modulate it.
-  if( image && shaders->empty() ) {
-    Image::PixelType pixel_type = image->pixelType();
-    if( pixel_type == Image::RGB ||
+    // in order to comply with X3D spec we need to set the material
+    // diffuse color to 1 1 1 when RGB or RGBA texture in order to 
+    // modulate it.
+    if( image ) {
+      Image::PixelType pixel_type = image->pixelType();
+      if( pixel_type == Image::RGB ||
         pixel_type == Image::BGR ) {
-      GLfloat _gl_material[4];
-      glGetMaterialfv( GL_BACK, GL_DIFFUSE, _gl_material);
+          GLfloat _gl_material[4];
+          glGetMaterialfv( GL_BACK, GL_DIFFUSE, _gl_material);
 
-      _gl_material[0] = 1;
-      _gl_material[1] = 1;
-      _gl_material[2] = 1;
+          _gl_material[0] = 1;
+          _gl_material[1] = 1;
+          _gl_material[2] = 1;
 
-      glMaterialfv( GL_BACK, GL_DIFFUSE, _gl_material);
+          glMaterialfv( GL_BACK, GL_DIFFUSE, _gl_material);
 
-      glGetMaterialfv( GL_FRONT, GL_DIFFUSE, _gl_material);
-      
-      _gl_material[0] = 1;
-      _gl_material[1] = 1;
-      _gl_material[2] = 1;
-      
-      glMaterialfv( GL_FRONT, GL_DIFFUSE, _gl_material);
-    } else if( pixel_type == Image::RGBA ||
-               pixel_type == Image::BGRA ) {
-      GLfloat _gl_material[4];
-      _gl_material[0] = 1;
-      _gl_material[1] = 1;
-      _gl_material[2] = 1;
-      _gl_material[3] = 1;
-      glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, _gl_material );
+          glGetMaterialfv( GL_FRONT, GL_DIFFUSE, _gl_material);
+
+          _gl_material[0] = 1;
+          _gl_material[1] = 1;
+          _gl_material[2] = 1;
+
+          glMaterialfv( GL_FRONT, GL_DIFFUSE, _gl_material);
+      } else if( pixel_type == Image::RGBA ||
+        pixel_type == Image::BGRA ) {
+          GLfloat _gl_material[4];
+          _gl_material[0] = 1;
+          _gl_material[1] = 1;
+          _gl_material[2] = 1;
+          _gl_material[3] = 1;
+          glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, _gl_material );
+      }
     }
   }
+ 
 
   X3DTextureNode *t = texture->getValue();
   if ( t ) t->displayList->callList();

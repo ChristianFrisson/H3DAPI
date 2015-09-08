@@ -82,6 +82,16 @@ namespace H3D {
     /// texture from the generator.
     virtual GLenum getTextureTarget();
 
+    /// Overridden virtual function to perform the same function on the correct 
+    /// texture from the generator.
+    virtual void setTextureId( GLuint id );
+    /// Overridden virtual function to perform the same function on the correct 
+    /// texture from the generator.
+    virtual void setTextureUnit( GLint unit );
+    /// Overridden virtual function to perform the same function on the correct 
+    /// texture from the generator.
+    virtual void setTextureTarget( GLenum target );
+
     /// Make the texture resident as a bindless texture
     virtual bool makeResident ();
 

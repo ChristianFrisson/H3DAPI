@@ -56,6 +56,11 @@ namespace H3D {
 
       virtual X3DTypes::X3DType getX3DType() { return X3DTypes::SFIMAGE; }
      };
+
+    class UpdateTextureProperties : public Field{
+    public: 
+      virtual void update();
+    };
         
     /// The SFTextureProperties is dependent on the propertyChanged field of
     /// the contained TextureProperties.
@@ -100,19 +105,6 @@ namespace H3D {
     ///
     virtual void disableTexturing();
 
-    /// Get the OpenGL texture id that is used for this texture.
-    virtual GLuint getTextureId() {
-      return texture_id;
-    }
-
-    /// Get the OpenGL texture unit that is used for this texture.
-    virtual GLuint getTextureUnit() {
-      return texture_unit;
-    }
-
-    /// Get the OpenGL texture target that is used for this texture.
-    virtual GLenum getTextureTarget();
-
     /// Get the bindless texture handle
     virtual GLuint64 getTextureHandle();
 
@@ -138,11 +130,11 @@ namespace H3D {
     /// glPixelComponentType () functions to get the arguments to the
     /// glTexImage3D call.
     ///
-    virtual void glTexImage( Image *_image, GLenum texture_target, 
+    virtual void glTexImage( Image *_image, GLenum _texture_target, 
                              bool scale_to_power_of_two );
       
     /// Replaces part of the current texture from an image. 
-    virtual void renderSubImage( Image *_image, GLenum texture_target, 
+    virtual void renderSubImage( Image *_image, GLenum _texture_target, 
                                  int xoffset, int yoffset, int z_offset,
                                  int width, int height, int depth );
 
@@ -209,15 +201,10 @@ namespace H3D {
     ///
     virtual std::pair<H3DInt32,H3DInt32> getDefaultSaveDimensions ();
 
-    /// The OpenGL texture id of the installed texture, 0 if not installed.
-    GLuint texture_id;
-    /// The OpenGL texture unit that is used to render this texture.
-    GLint texture_unit;
-    /// The OpenGL texture target that is used to render this texture.
-    GLenum texture_target; 
-
     /// Field to indicate image will change
     auto_ptr< Field > imageNeedsUpdate;
+
+    auto_ptr< UpdateTextureProperties > updateTextureProperties;
   public:
     /// Returns the OpenGL pixel format to use given an Image, e.g. 
     virtual GLenum glPixelFormat( Image *_image );

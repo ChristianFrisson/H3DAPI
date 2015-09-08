@@ -37,6 +37,7 @@
 #include <H3D/SField.h>
 #include <string>
 #include <H3D/ShaderFunctions.h>
+#include <H3D/H3DSingleTextureNode.h>
 
 namespace H3D {
 
@@ -307,6 +308,9 @@ namespace H3D {
     /// C++ fields only. Contains instance of SetupDynamicRoutes.
     auto_ptr< SetupDynamicRoutes > setupDynamicRoutes;
 
+    /// list of textures to be used by the composedshader
+    list<H3DSingleTextureNode*> shader_textures;
+
     /// A field used to update any uniforms from their corresponding fields
     auto_ptr<UpdateUniforms> updateUniforms;
 
@@ -319,6 +323,8 @@ namespace H3D {
     // this field will be used to react to global caching changing, this will
     // be used to control whether to route uniform field to displayList
     auto_ptr<UpdateCache> updateCache;
+
+    H3DInt32 max_texture_in_shader;
     
     bool printShaderLog();
     DebugOptions *debug_options_previous;

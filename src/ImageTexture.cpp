@@ -295,7 +295,7 @@ void ImageTexture::render() {
       throw e;
     }
   } else {
-    texture_target = getTextureTarget();
+    //texture_target = getTextureTarget();
     disableTexturing();
   }
 }
@@ -309,6 +309,7 @@ void ImageTexture::postRender() {
 }
 
 void ImageTexture::preRender() {
+  image->upToDate();
   if ( wrapped_image ) {
     wrapped_image->preRender ();
   } else {
@@ -353,6 +354,30 @@ GLenum ImageTexture::getTextureTarget() {
     return wrapped_image->getTextureTarget ();
   } else {
     return X3DTexture2DNode::getTextureTarget ();
+  }
+}
+
+void ImageTexture::setTextureId( GLuint id ){
+  if (wrapped_image){
+    wrapped_image->setTextureId(id);
+  }else{
+    X3DTexture2DNode::setTextureId(id);
+  }
+}
+
+void ImageTexture::setTextureUnit( GLint unit ){
+  if (wrapped_image){
+    wrapped_image->setTextureUnit(unit);
+  }else{
+    X3DTexture2DNode::setTextureUnit(unit);
+  }
+}
+
+void ImageTexture::setTextureTarget( GLenum target ){
+  if (wrapped_image){
+    wrapped_image->setTextureTarget(target);
+  }else{
+    X3DTexture2DNode::setTextureTarget(target);
   }
 }
 

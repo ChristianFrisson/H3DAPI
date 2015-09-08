@@ -31,6 +31,7 @@
 
 #include <H3D/H3DDynamicFieldsObject.h>
 #include <GL/glew.h>
+#include <H3D/H3DSingleTextureNode.h>
 
 #ifdef HAVE_CG
 #include <Cg/cg.h>
@@ -99,10 +100,16 @@ namespace H3D {
     bool H3DAPI_API setGLSLUniformVariableValue( GLhandleARB program_handle,
                                                  Field *field, UniformInfo* ui = NULL, bool force= false );
 
+    /// \deprecated will be removed, use renderTextures( list<H3DSingleTextureNode*>*, H3DInt32* )
     void H3DAPI_API renderTextures( H3DDynamicFieldsObject * );
+    void H3DAPI_API renderTextures( list<H3DSingleTextureNode*>*, H3DInt32* );
     void H3DAPI_API renderShaderResources( H3DDynamicFieldsObject * );
+    /// \deprecated will be removed, use postRenderTextures( list<H3DSingleTextureNode*>* , H3DInt32*) instead
     void H3DAPI_API postRenderTextures( H3DDynamicFieldsObject * );
+    void H3DAPI_API postRenderTextures( list<H3DSingleTextureNode*>* , H3DInt32*);
+    /// \deprecated will be removed, use preRenderTextures( list<H3DSingleTextureNode*>*, H3DInt32* ) instead
     void H3DAPI_API preRenderTextures( H3DDynamicFieldsObject * );
+    void H3DAPI_API preRenderTextures( list<H3DSingleTextureNode*>*, H3DInt32* );
     void H3DAPI_API preRenderShaderResources( H3DDynamicFieldsObject *, const GLhandleARB program );
     void H3DAPI_API postRenderShaderResources( H3DDynamicFieldsObject*, const GLhandleARB program );
     GLbitfield H3DAPI_API getAffectedGLAttribs( H3DDynamicFieldsObject * );

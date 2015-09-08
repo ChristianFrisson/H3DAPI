@@ -44,7 +44,10 @@ H3DSingleTextureNode::H3DSingleTextureNode(
   X3DTextureNode( _displayList, _metadata ),
   texture_handle ( 0 ),
   last_used ( 0 ),
-  is_resident ( false ) {
+  is_resident ( false ),
+  texture_id(0),
+  texture_unit(0),
+  texture_target(0){
 }
 
 H3DSingleTextureNode::~H3DSingleTextureNode () {

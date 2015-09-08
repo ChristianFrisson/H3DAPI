@@ -119,7 +119,8 @@ void ShaderImage2D::prepareShaderImage ( ){
   glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
   glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
-  // texture creation 
+  // texture creation , as no pixel data will be assigned, the pixel type and format 
+  // does not need to be correct
   glTexImage2D ( GL_TEXTURE_2D, 0, stringImageFormat_map[format->getValue ( )], 
     width->getValue ( ), height->getValue ( ), 0, GL_RED, GL_UNSIGNED_INT, 0 );
 #endif
@@ -130,7 +131,7 @@ std::map<string, GLenum> ShaderImage2D::initStringImageFormat_map ( ){
   // there is a bug currently, GL_R32UI seems not correctly working
   // so use GL_R32F  as temp workaround, need to try test and fix later 
   m["GL_RGBA32F"] = GL_RGBA32F; m["GL_RGBA16F"] = GL_RGBA16F; 
-  m["GL_R32F"] = GL_R32F; m["GL_R16F"] = GL_R16F;
+  m["GL_R32F"] = GL_R32F; m["GL_R16F"] = GL_R16F; m["GL_RG16F"] = GL_RG16F;
   m["GL_RGBA32UI"] = GL_RGBA32UI; m["GL_RGBA16UI"] = GL_RGBA16UI; m["GL_RGBA8UI"] = GL_RGBA8UI;
   m["GL_R32UI"] = GL_R32F; m["GL_R16UI"] = GL_R16UI; m["GL_R8UI"] = GL_R8UI;
   m["GL_RGBA32I"] = GL_RGBA32I; m["GL_RGBA16I"] = GL_RGBA16I; m["GL_RGBA8I"] = GL_RGBA8I;
@@ -138,8 +139,9 @@ std::map<string, GLenum> ShaderImage2D::initStringImageFormat_map ( ){
   return m;
 }
 
+
 std::vector<string> ShaderImage2D::initImage_formats ( ){
-  string vs[16] = { "GL_RGBA32F", "GL_RGBA16F", "GL_R32F", "GL_R16F",
+  string vs[16] = { "GL_RGBA32F", "GL_RGBA16F", "GL_R32F", "GL_R16F", "GL_RG16F",
     "GL_RGBA32UI", "GL_RGBA16UI", "GL_RGBA8UI", "GL_R32UI", "GL_R16UI", "GL_R8UI"
     "GL_RGBA32I", "GL_RGBA16I", "GL_RGBA8I", "GL_R32I", "GL_R16I", "GL_R8I" };
   vector<string> v ( &vs[0], &vs[0] + 16 );
@@ -149,7 +151,7 @@ std::vector<string> ShaderImage2D::initImage_formats ( ){
 std::map<string, string> ShaderImage2D::initImageFormatQualifier_map(){
   map<string, string> m;
   m["GL_RGBA32F"] = "rgba32f"; m["GL_RGBA16F"] = "rgba16f"; 
-  m["GL_R32F"] = "r32f"; m["GL_R16F"] = "r16f";
+  m["GL_R32F"] = "r32f"; m["GL_R16F"] = "r16f"; m["GL_RG16F"] = "rg16f";
   m["GL_RGBA32UI"] = "rgba32ui"; m["GL_RGBA16UI"] = "rgba16ui"; m["GL_RGBA8UI"] = "rgba8ui";
   m["GL_R32UI"] = "r32ui"; m["GL_R16UI"] = "r16ui"; m["GL_R8UI"] = "r8ui";
   m["GL_RGBA32I"] = "rgba32i"; m["GL_RGBA16I"] = "rgba16i"; m["GL_RGBA8I"] = "rgba8i";

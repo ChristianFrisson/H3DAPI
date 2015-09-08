@@ -60,29 +60,23 @@ namespace H3D {
     X3DEnvironmentTextureNode( Inst< DisplayList > _displayList = 0,
                                Inst< SFNode>  _metadata = 0 ) :
       H3DSingleTextureNode( _displayList, _metadata ),
-      cube_map_id( 0 ),
-      texture_unit( GL_TEXTURE0_ARB ) {}
+      cube_map_id( 0 ) {
+        texture_unit = GL_TEXTURE0_ARB;
+        texture_target = GL_TEXTURE_CUBE_MAP_ARB;
+      }
 
     /// Get the OpenGL texture id that is used for this texture.
     virtual GLuint getTextureId() {
       return cube_map_id;
     }
 
-    /// Get the OpenGL texture unit that is used for this texture.
-    virtual GLuint getTextureUnit() {
-      return texture_unit;
-    }
-
-    /// Get the OpenGL texture target that is used for this texture.
-    virtual GLenum getTextureTarget() {
-      return GL_TEXTURE_CUBE_MAP_ARB;
+    virtual void setTextureId(GLuint id){
+      cube_map_id = id;
     }
 
   protected:
+    //TODO: maybe use texture_id from H3DSingleTextureNode instead of a separate id 
     GLenum cube_map_id;
-    
-    /// The OpenGL texture unit that is used to render this texture.
-    GLint texture_unit;
   };
 }
 
