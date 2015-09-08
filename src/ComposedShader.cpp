@@ -519,17 +519,16 @@ GLhandleARB ComposedShader::createHandle(ComposedShader* shader) {
       GLcharARB *log = new GLcharARB[nr_characters];
       glGetInfoLogARB( program_handle, nr_characters, NULL, log );
 
-      /* Global debug options has declared we print all the warnings/errors. */
-      if( print_error == 2) {
-       Console(4) << "Warning: Error while linking shader parts in \""
+	 if(print_error == 2) {
+        Console(4) << "Warning: Error while linking shader parts in \""
           << const_cast<ComposedShader&>(*shader).getName() << "\" node. "
-          << std::endl << log << std::endl;
+          << endl << log << endl;
       } else {
         Console(3) << "Warning: While linking shader parts in \""
           << const_cast<ComposedShader&>(*shader).getName() << "\" node. "
-          << std::endl << log << std::endl;
+          << endl << log << endl;
       }
-
+	  
       if( print_error == 1 ) {
         glDeleteObjectARB( program_handle );
         program_handle = 0;
