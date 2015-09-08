@@ -131,7 +131,7 @@ wxCMD_LINE_VAL_STRING,
 
 #if defined( H3D_WINDOWS )
 
-bool WriteCrashDump()
+bool WriteCrashDump(PEXCEPTION_POINTERS pExceptionPtrs)
 {
   time_t t = time(0);   // get time now
   struct tm * now = localtime( & t );
@@ -148,44 +148,34 @@ bool WriteCrashDump()
     << std::setw( 2 ) << std::setfill( '0' )
     <<  now->tm_sec;
 
-  string threadcrashFilename = "ThreadCrash_"+timestamp.str();
-
-  ofstream logFile((threadcrashFilename+".log").c_str());
-  logFile << "Trying to save dump..." << endl;
+  string threadcrashFilename = "log\\ThreadCrash_"+timestamp.str();
 
   std::wstring sPathFilename(threadcrashFilename.size(), L' '); // Overestimate number of code points.
   sPathFilename.resize(std::mbstowcs(&sPathFilename[0], threadcrashFilename.c_str(), threadcrashFilename.size())); // Shrink to fit.
   sPathFilename += L".dmp";
-  MiniDump *mndmp = new MiniDump();
-  if(mndmp->Create(sPathFilename.c_str(),MiniDump::kInfoLevelLarge,false))
+  MiniDump mndmp;
+  if(mndmp.Create(sPathFilename.c_str(),MiniDump::kInfoLevelSmall,pExceptionPtrs,false))
   {
-    logFile<<"...done."<<endl;
-    delete mndmp;
-    logFile.close();
     return true;
   }
   else {
-    logFile<<"...failed."<<endl;
-    delete mndmp;
-    logFile.close();
     return false;
   }
-
 }
 
 LONG WINAPI VectoredExceptionHandler(PEXCEPTION_POINTERS pExceptionInfo)
 {
-  WriteCrashDump();
+  WriteCrashDump(pExceptionInfo);
 
   return EXCEPTION_CONTINUE_SEARCH;
 }
 
 LONG WINAPI MyUnhandledExceptionFilter(PEXCEPTION_POINTERS pExceptionPtrs)
 {
-  WriteCrashDump();
+  WriteCrashDump(pExceptionPtrs);
 
   // Execute default exception handler next
-  return EXCEPTION_EXECUTE_HANDLER; 
+  return EXCEPTION_EXECUTE_HANDLER;
 }
 
 #endif
@@ -254,6 +244,7 @@ protected:
   bool fullscreen;
   bool silent;
   bool logInitTime;
+
   TimeStamp startupTime;
   bool disable_plugin_dialog;
   WxFrame *theWxFrame;
@@ -263,14 +254,15 @@ protected:
 void MyApp::GenerateReport(wxDebugReport::Context ctx)
 {
   wxDebugReportCompress *report = new wxDebugReportCompress;
-  wxString dumpPath = wxGetCwd();
+  wxString dumpPath = wxGetCwd() + wxString("\\log");
   wxDateTime dt = wxDateTime::Now();
   wxString datepart = dt.FormatISODate();
   datepart.Replace(wxString("-", wxConvUTF8),wxString("", wxConvUTF8));
   wxString timepart = dt.FormatISOTime();
   timepart.Replace(wxString(":", wxConvUTF8),wxString("", wxConvUTF8));
   wxString dumpFilename = wxString("wxDbgDump_", wxConvUTF8) + datepart + wxString("_", wxConvUTF8) + timepart;
-#if wxMAJOR_VERSION >= 2 && wxMINOR_VERSION > 8
+
+#if wxMAJOR_VERSION > 2 || (wxMAJOR_VERSION == 2 && wxMINOR_VERSION > 8)
   report->SetCompressedFileDirectory(dumpPath);
   report->SetCompressedFileBaseName(dumpFilename);
 #endif
@@ -309,7 +301,6 @@ bool MyApp::OnExceptionInMainLoop() {
     // Ensure we exit cleanly even on QuitAPI exception
     wxCommandEvent fake_event;
     theWxFrame->OnExit ( fake_event );
-    GenerateReport(wxDebugReport::Context_Exception);
     return false;
   }
   catch (const Exception::H3DException &e) {
