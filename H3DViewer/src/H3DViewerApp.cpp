@@ -254,7 +254,7 @@ protected:
 void MyApp::GenerateReport(wxDebugReport::Context ctx)
 {
   wxDebugReportCompress *report = new wxDebugReportCompress;
-  wxString dumpPath = wxGetCwd() + wxString("\\log");
+  wxString dumpPath = wxGetCwd() + wxString("\\log", wxConvUTF8);
   wxDateTime dt = wxDateTime::Now();
   wxString datepart = dt.FormatISODate();
   datepart.Replace(wxString("-", wxConvUTF8),wxString("", wxConvUTF8));
