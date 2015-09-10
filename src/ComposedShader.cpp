@@ -238,7 +238,10 @@ bool ComposedShader::removeField ( const string& _name ) {
       }
       setupDynamicRoutes->fields_to_nodes.erase( in_map );
     }
-
+    H3DSingleTextureNode *tex = dynamic_cast< H3DSingleTextureNode* >(f);
+    if( tex ) {
+      shader_textures.remove(tex);
+    }
   } else {
     f->unroute( displayList );
   }
@@ -259,8 +262,8 @@ GLbitfield ComposedShader::getAffectedGLAttribs() {
 void ComposedShader::preRender() {
   if( GLEW_ARB_shader_objects ) {
     glUseProgramObjectARB( program_handle );
-    //Shaders::preRenderTextures( this );
-    Shaders::preRenderTextures( &shader_textures, &max_texture_in_shader );
+    Shaders::preRenderTextures( this );
+    //Shaders::preRenderTextures( &shader_textures, &max_texture_in_shader );
     Shaders::preRenderShaderResources( this, program_handle );
     X3DShaderNode::preRender();
   }
@@ -272,8 +275,8 @@ void ComposedShader::preRender() {
 void ComposedShader::postRender() {
   if( GLEW_ARB_shader_objects ) {
     glUseProgramObjectARB( 0 );
-    //Shaders::postRenderTextures( this );
-    Shaders::postRenderTextures(&shader_textures, &max_texture_in_shader);
+    Shaders::postRenderTextures( this );
+    //Shaders::postRenderTextures(&shader_textures, &max_texture_in_shader);
     X3DShaderNode::postRender();
   }
 }
@@ -443,8 +446,8 @@ void ComposedShader::render() {
     }
 
     if( program_handle ) {
-      //Shaders::renderTextures( this );
-      Shaders::renderTextures( &shader_textures, &max_texture_in_shader );
+      Shaders::renderTextures( this );
+      //Shaders::renderTextures( &shader_textures, &max_texture_in_shader );
 
       Shaders::renderShaderResources( this );
 
