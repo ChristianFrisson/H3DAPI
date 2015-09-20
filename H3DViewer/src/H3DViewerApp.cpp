@@ -148,7 +148,18 @@ bool WriteCrashDump(PEXCEPTION_POINTERS pExceptionPtrs)
     << std::setw( 2 ) << std::setfill( '0' )
     <<  now->tm_sec;
 
-  string threadcrashFilename = "log\\ThreadCrash_"+timestamp.str();
+  string session_uuid;
+  ifstream fh;
+  fh.open("session_uuid", std::ofstream::in);
+  if (fh.fail()) {
+    session_uuid = "";
+  }
+  else {
+    fh >> session_uuid;
+    session_uuid = "_" + session_uuid;
+  }
+
+  string threadcrashFilename = "log\\" + timestamp.str() + session_uuid + "_ThreadCrashDump";
 
   std::wstring sPathFilename(threadcrashFilename.size(), L' '); // Overestimate number of code points.
   sPathFilename.resize(std::mbstowcs(&sPathFilename[0], threadcrashFilename.c_str(), threadcrashFilename.size())); // Shrink to fit.
@@ -255,12 +266,24 @@ void MyApp::GenerateReport(wxDebugReport::Context ctx)
 {
   wxDebugReportCompress *report = new wxDebugReportCompress;
   wxString dumpPath = wxGetCwd() + wxString("\\log", wxConvUTF8);
+
+  string session_uuid;
+  ifstream fh;
+  fh.open("session_uuid", std::ofstream::in);
+  if (fh.fail()) {
+    session_uuid = "";
+  }
+  else {
+    fh >> session_uuid;
+    session_uuid = "_" + session_uuid;
+  }
+
   wxDateTime dt = wxDateTime::Now();
   wxString datepart = dt.FormatISODate();
   datepart.Replace(wxString("-", wxConvUTF8),wxString("", wxConvUTF8));
   wxString timepart = dt.FormatISOTime();
   timepart.Replace(wxString(":", wxConvUTF8),wxString("", wxConvUTF8));
-  wxString dumpFilename = wxString("wxDbgDump_", wxConvUTF8) + datepart + wxString("_", wxConvUTF8) + timepart;
+  wxString dumpFilename = datepart + wxString("_", wxConvUTF8) + timepart + wxString(session_uuid.c_str(), wxConvUTF8) +  wxString("_wxCrashDump", wxConvUTF8);
 
 #if wxMAJOR_VERSION > 2 || (wxMAJOR_VERSION == 2 && wxMINOR_VERSION > 8)
   report->SetCompressedFileDirectory(dumpPath);

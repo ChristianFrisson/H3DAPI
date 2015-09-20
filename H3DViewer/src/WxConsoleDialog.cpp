@@ -164,14 +164,27 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
     #ifdef WIN32
       //TCHAR currentworkingdir[256];
       //GetCurrentDirectory(256, currentworkingdir);
+      //wxString plugin_dir = executable_dir + wxT("\\..\\plugins");
+      //wxDirExists(plugin_dir)
       subdirectory = "log\\";
     #else
       //subdirectory = "log/";
       subdirectory = "";
     #endif
 
-    filelog_cout.open((subdirectory+timestamp.str()+"_console_cout_and_cerr_log.txt" ).c_str(), std::ofstream::out);
-    filelog_console.open((subdirectory+timestamp.str()+"_console_main_log.txt").c_str(), std::ofstream::out);
+    string session_uuid;
+    ifstream fh;
+    fh.open("session_uuid", std::ofstream::in);
+    if(fh.fail()){
+      session_uuid = "";
+    }
+    else {
+      fh >> session_uuid;
+      session_uuid = "_" + session_uuid;
+    }
+
+    filelog_cout.open((subdirectory+timestamp.str() + session_uuid + "_console_cout_and_cerr_log.txt" ).c_str(), std::ofstream::out);
+    filelog_console.open((subdirectory+timestamp.str() + session_uuid + "_console_main_log.txt").c_str(), std::ofstream::out);
   }
 }
 
