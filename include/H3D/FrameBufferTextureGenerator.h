@@ -90,6 +90,8 @@ namespace H3D {
   /// "DEPTH24" - 24 bit depth buffer.
   /// "DEPTH32" - 32 bit depth buffer.
   /// "DEPTH32F" - 32 bit floating point depth buffer.
+  /// "DEPTH_STENCIL" - default depth buffer type for combined depth stencil buffer
+  /// "DEPTH24_STENCIL8" - 24 bit depth buffer and 8 bit stencil buffer
   ///
   ///
   /// The outputTextureType field determines the output type of the generated
@@ -382,7 +384,7 @@ namespace H3D {
     /// "DEPTH24_STENCIL8" - 24 bit depth buffer, 8 bit stencil buffer.
     ///
     /// <b>Access type:</b> initializeOnly
-    /// <b>Default value:</b> "DEPTH"
+    /// <b>Default value:</b> "DEPTH24_STENCIL8"
     /// <b>Valid values:</b> "DEPTH", "DEPTH16", "DEPTH24", "DEPTH32", "DEPTH32F", "DEPTH_STENCIL", "DEPTH24_STENCIL8"
     auto_ptr< SFString > depthBufferType;
 
