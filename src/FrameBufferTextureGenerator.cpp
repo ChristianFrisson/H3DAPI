@@ -585,6 +585,29 @@ void FrameBufferTextureGenerator::render()     {
     for( int i = 0; i<12; ++i ) {
       viewports_size[i] = window->viewports_size[i];
     }
+
+    // If an explicit size for the FBO is provided, then use this when defining
+    // the viewports instead of that defined by the window
+    H3DFloat w = (H3DFloat)width->getValue();
+    H3DFloat h = (H3DFloat)height->getValue();
+    if( w >= 0 && h >= 0 ) {
+      H3DFloat scaleX = w / viewports_size[2];
+      H3DFloat scaleY = h / viewports_size[3];
+
+      viewports_size[2] = w;
+      viewports_size[3] = h;
+
+      viewports_size[4] *= scaleX;
+      viewports_size[5] *= scaleY;
+      viewports_size[6] *= scaleX;
+      viewports_size[7] *= scaleY;
+
+      viewports_size[8] *= scaleX;
+      viewports_size[9] *= scaleY;
+      viewports_size[10]*= scaleX;
+      viewports_size[11]*= scaleY;
+    }
+
     buffer_src_x = 0;
     buffer_src_y = 0;
 #ifdef GLEW_ARB_viewport_array
