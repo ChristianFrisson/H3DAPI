@@ -98,6 +98,7 @@ namespace H3DWindowNodeInternals {
   FIELDDB_ELEMENT( H3DWindowNode, projectionHeight, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DWindowNode, singlePassStereo, OUTPUT_ONLY );
   FIELDDB_ELEMENT( H3DWindowNode, pointingDeviceRefreshMode, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( H3DWindowNode, resetViewPoint, INPUT_OUTPUT );
 
   
 }
@@ -121,7 +122,8 @@ H3DWindowNode::H3DWindowNode(
                    Inst< SFBool > _useFullscreenAntiAliasing,
                    Inst< SFVec2f > _clipDistances,
                    Inst< SFBool      > _singlePassStereo,
-                   Inst< SFString > _pointingDeviceRefreshMode ) :
+                   Inst< SFString > _pointingDeviceRefreshMode,
+                   Inst< SFBool   > _resetViewPoint ) :
 #ifdef WIN32
   rendering_context( NULL ),
 #endif
@@ -146,6 +148,7 @@ H3DWindowNode::H3DWindowNode(
   fbo_current_x(0),
   fbo_current_y(0),
   pointingDeviceRefreshMode( _pointingDeviceRefreshMode ),
+  resetViewPoint(_resetViewPoint),
   last_render_child( NULL ),
   window_id( 0 ),
   rebuild_stencil_mask( false ),
@@ -210,6 +213,8 @@ H3DWindowNode::H3DWindowNode(
   pointingDeviceRefreshMode->addValidValue( "MOUSE_MOVE" );
   pointingDeviceRefreshMode->addValidValue( "MOUSE_CLICK" );
   pointingDeviceRefreshMode->setValue( "MOUSE_MOVE" );  
+
+  resetViewPoint->setValue(false);
 
   useFullscreenAntiAliasing->setValue( true );
   manualCursorControl->setValue( false );
@@ -939,6 +944,11 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   }
 
   X3DViewpointNode *navigation_vp = vp;
+  if( resetViewPoint->getValue() ) {
+    vp->relOrn->setValue( Rotation() );
+    vp->relPos->setValue( Vec3f() );
+    resetViewPoint->setValue(false);
+  }
   vp = h3d_navigation->viewpointToUse( vp );
 
   const Rotation &vp_orientation = vp->totalOrientation->getValue();

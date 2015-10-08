@@ -195,7 +195,8 @@ namespace H3D {
                    Inst< SFBool      > _useFullscreenAntiAliasing = 0,
                    Inst< SFVec2f     > _clipDistances = 0,
                    Inst< SFBool      > _singlePassStereo = 0,
-                   Inst< SFString    > _pointingDeviceRefreshMode = 0 );
+                   Inst< SFString    > _pointingDeviceRefreshMode = 0,
+                   Inst< SFBool      > _resetViewPoint = 0);
 
     /// Destructor.
     ~H3DWindowNode();
@@ -424,6 +425,11 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> "MOUSE_MOVE" \n
     auto_ptr< SFString > pointingDeviceRefreshMode;
+
+    /// Reset viewpoint 
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> false
+    auto_ptr< SFBool > resetViewPoint;
 
     static set< H3DWindowNode* > windows;
 
