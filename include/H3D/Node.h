@@ -355,6 +355,20 @@ namespace H3D {
     /// Returns 0 on success, -1 if the callback does not exist.
     int removeDestructCallback( void (*func)( Node *, void * ), void *args );
 
+    static int getClosestPointIndex( NodeIntersectResult* result, Vec3f& point ){
+     H3DDouble dist = 10000.0;
+     unsigned int index = 0;
+     for( unsigned int i = 0; i < result->result.size(); ++i ) {
+        H3DDouble d = (result->result[i].point - point).length();
+        if( d < dist ){
+          dist = d;
+          index = i;          
+        }          
+      }
+      return index;
+    };
+
+
     friend class Field;
     template <class Type>
     friend class SField;
