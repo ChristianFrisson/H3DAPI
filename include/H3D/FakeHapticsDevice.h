@@ -74,6 +74,7 @@ namespace H3D {
            Inst< GetValueSafeField< SFVec3f > > _set_devicePosition     = 0,
            Inst< GetValueSafeField< SFRotation > > _set_deviceOrientation  = 0,
            Inst< GetValueSafeField< SFBool > > _set_mainButton         = 0,
+           Inst< GetValueSafeField< SFBool > > _set_secondaryButton         = 0,
            Inst< GetValueSafeField< SFBool > > _set_pauseDeviceTransform   = 0,
            Inst< SFString           > _deviceName             = 0 
            );

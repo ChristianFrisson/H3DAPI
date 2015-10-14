@@ -147,6 +147,7 @@ namespace H3D {
         Inst< GetValueSafeField< SFVec3f > > _set_devicePosition     = 0,
         Inst< GetValueSafeField< SFRotation > > _set_deviceOrientation  = 0,
         Inst< GetValueSafeField< SFBool > > _set_mainButton         = 0,
+        Inst< GetValueSafeField< SFBool > > _set_secondaryButton    = 0,
         Inst< GetValueSafeField< SFBool > > _set_pauseDevice        = 0 );
 
     /// Destructor.
@@ -175,6 +176,12 @@ namespace H3D {
     ///
     /// <b>Access type:</b> inputOnly \n
     auto_ptr< GetValueSafeField<SFBool> > set_mainButton;
+
+    /// The set_secondaryButton field can be used to set the 
+    /// secondaryButton field of the haptics device.
+    ///
+    /// <b>Access type:</b> inputOnly \n
+    auto_ptr< GetValueSafeField<SFBool> > set_secondaryButton;
 
     /// The set_pauseDeviceTransform field can be used to pause 
     /// the transform of the haptics device.

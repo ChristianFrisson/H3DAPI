@@ -42,6 +42,7 @@ namespace FakeHapticsDeviceInternals {
   FIELDDB_ELEMENT( FakeHapticsDevice, set_devicePosition, INPUT_ONLY );
   FIELDDB_ELEMENT( FakeHapticsDevice, set_deviceOrientation, INPUT_ONLY );
   FIELDDB_ELEMENT( FakeHapticsDevice, set_mainButton, INPUT_ONLY );
+  FIELDDB_ELEMENT( FakeHapticsDevice, set_secondaryButton, INPUT_ONLY );
   FIELDDB_ELEMENT( FakeHapticsDevice, set_pauseDeviceTransform, INPUT_ONLY );
 }
 
@@ -72,6 +73,7 @@ FakeHapticsDevice::FakeHapticsDevice(
     Inst< GetValueSafeField< SFVec3f > > _set_devicePosition     ,
     Inst< GetValueSafeField< SFRotation > > _set_deviceOrientation  ,
     Inst< GetValueSafeField< SFBool > > _set_mainButton,
+    Inst< GetValueSafeField< SFBool > > _set_secondaryButton,
     Inst< GetValueSafeField< SFBool > > _set_pauseDeviceTransform,
     Inst< SFString        > _deviceName          ) :
   H3DFakeHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
@@ -82,7 +84,8 @@ FakeHapticsDevice::FakeHapticsDevice(
       _force, _torque, _inputDOF, _outputDOF, _hapticsRate,
       _desiredHapticsRate, _stylus, _hapticsRenderer, _proxyPositions,
       _followViewpoint,
-      _set_devicePosition, _set_deviceOrientation, _set_mainButton, _set_pauseDeviceTransform),
+      _set_devicePosition, _set_deviceOrientation, _set_mainButton, _set_secondaryButton,
+      _set_pauseDeviceTransform),
   deviceName( _deviceName ) {
 
   type_name = "FakeHapticsDevice";  

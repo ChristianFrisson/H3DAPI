@@ -64,6 +64,7 @@ H3DFakeHapticsDevice::H3DFakeHapticsDevice(
           Inst< GetValueSafeField< SFVec3f > > _set_devicePosition,
           Inst< GetValueSafeField< SFRotation > > _set_deviceOrientation,
           Inst< GetValueSafeField< SFBool > > _set_mainButton,
+          Inst< GetValueSafeField< SFBool > > _set_secondaryButton,
           Inst< GetValueSafeField< SFBool > > _set_pauseDevice          ):
   H3DHapticsDevice( _devicePosition, _deviceOrientation, _trackerPosition,
         _trackerOrientation, _positionCalibration, 
@@ -76,6 +77,7 @@ H3DFakeHapticsDevice::H3DFakeHapticsDevice(
   set_devicePosition( _set_devicePosition ),
   set_deviceOrientation( _set_deviceOrientation ),
   set_mainButton( _set_mainButton ),
+  set_secondaryButton( _set_secondaryButton ),
   set_pauseDeviceTransform( _set_pauseDevice ) {
 
   type_name = "H3DFakeHapticsDevice";
@@ -90,6 +92,11 @@ H3DFakeHapticsDevice::H3DFakeHapticsDevice(
   // set_mainButton have to be set to false because the value of this
   // field is used to set the buttons variable.
   set_mainButton->setValue( false );
+  set_secondaryButton->setOwner( this );
+  set_secondaryButton->setName( "set_secondaryButton" );
+  // set_secondaryButton have to be set to false because the value of this
+  // field is used to set the buttons variable.
+  set_secondaryButton->setValue( false );
   set_pauseDeviceTransform->setOwner( this );
   set_pauseDeviceTransform->setName( "set_pauseDeviceTransform" );
   set_pauseDeviceTransform->setValue( false );
@@ -130,6 +137,8 @@ void H3DFakeHapticsDevice::FakeHapticsDevice::updateDeviceValues(
     // bit is set then the integer have to be 1 and nothing else.
     if( owner->set_mainButton->getValue() )
       dv.button_status = 1;
+    else if( owner->set_secondaryButton->getValue() )
+      dv.button_status = 2;
     else
       dv.button_status = 0;
   }

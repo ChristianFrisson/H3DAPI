@@ -393,6 +393,9 @@ void H3DHapticsDevice::updateDeviceValues() {
     if( temp_value != secondaryButton->getValue() )
       secondaryButton->setValue( temp_value, id );
 
+    if (deadmansSwitch->getValue() && !mainButton->getValue())
+      return;
+
     vector< Vec3f > proxies;
 
     for( unsigned int layer = 0; layer < hapi_device->nrLayers(); ++layer ) {
