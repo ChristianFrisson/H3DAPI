@@ -62,6 +62,7 @@ namespace ComposedShaderInternals {
   FIELDDB_ELEMENT( ComposedShader, geometryVerticesOut, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ComposedShader, transparencyDetectMode, INPUT_OUTPUT );
   FIELDDB_ELEMENT( ComposedShader, transformFeedbackVaryings, INPUT_OUTPUT );
+  FIELDDB_ELEMENT( ComposedShader, printShaderWarnings, INPUT_OUTPUT );
 #ifdef EXPORT_SHADER
   FIELDDB_ELEMENT( ComposedShader, saveShadersToUrl, INPUT_OUTPUT );
 #endif
@@ -79,7 +80,8 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
                                 Inst< SFString     > _geometryOutputType,
                                 Inst< SFInt32      > _geometryVerticesOut,
                                 Inst< SFString     > _transparencyDetectMode,
-                                Inst< MFString     > _transformFeedbackVaryings
+                                Inst< MFString     > _transformFeedbackVaryings,
+                                Inst< SFBool       > _printShaderWarnings
 #ifdef EXPORT_SHADER
                                 ,
                                 Inst< UpdateSaveShadersToUrl > _saveShadersToUrl
@@ -95,6 +97,7 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
   geometryVerticesOut( _geometryVerticesOut ),
   transparencyDetectMode( _transparencyDetectMode ),
   transformFeedbackVaryings ( _transformFeedbackVaryings ),
+  printShaderWarnings ( _printShaderWarnings ),
 #ifdef EXPORT_SHADER
   saveShadersToUrl( _saveShadersToUrl ),
 #endif
@@ -107,6 +110,7 @@ ComposedShader::ComposedShader( Inst< DisplayList  > _displayList,
   database.initFields( this );
 
   suppressUniformWarnings->setValue( false );
+  printShaderWarnings->setValue( false );
 
   geometryInputType->addValidValue( "POINTS");
   geometryInputType->addValidValue( "LINES");
@@ -834,6 +838,10 @@ void ComposedShader::UpdateSaveShadersToUrl::onNewValue( const std::string &v ){
 #endif
 
 bool ComposedShader::printShaderLog() {
+  if( printShaderWarnings->getValue() ) {
+    return true;
+  }
+
   DebugOptions *debug_options = NULL;
   GlobalSettings *default_settings = GlobalSettings::getActive();
   if( default_settings&&default_settings->optionNodesUpdated() ) {

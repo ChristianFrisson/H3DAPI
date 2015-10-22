@@ -113,7 +113,8 @@ namespace H3D {
                     Inst< SFString     > _geometryOutputType = 0,
                     Inst< SFInt32      > _geometryVerticesOut = 0,
                     Inst< SFString     > _transparencyDetectMode = 0,
-                    Inst< MFString     > _transformFeedbackVaryings = 0
+                    Inst< MFString     > _transformFeedbackVaryings = 0,
+                    Inst< SFBool       > _printShaderWarnings = 0
 #ifdef EXPORT_SHADER
                     ,
                     Inst< UpdateSaveShadersToUrl > _saveShadersToUrl = 0
@@ -255,6 +256,14 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> [] \n
     auto_ptr< MFString > transformFeedbackVaryings;
+
+    /// Always print shader warnings to console
+    ///
+    /// If true, this overrides the equivalent setting in any global DebugOptions node setting
+    /// 
+    /// <b>Access type:</b> inputOutput \n
+    /// <b>Default value:</b> false \n
+    auto_ptr< SFBool > printShaderWarnings;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
