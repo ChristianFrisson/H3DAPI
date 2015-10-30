@@ -17,15 +17,17 @@ SET( DCMTK_DIR "" CACHE PATH "Set this to the root of the installed dcmtk files 
 MARK_AS_ADVANCED(DCMTK_DIR)
 
 include( H3DExternalSearchPath )
-GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
-get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "static" )
-
 SET( MSVC_BEFORE_VS2010 OFF )
 if( MSVC )
   if( ${MSVC_VERSION} LESS 1600 )
     SET( MSVC_BEFORE_VS2010 ON )
+  else()
+    SET( CHECK_IF_H3D_EXTERNAL_MATCHES_VS_VERSION ON )
   endif()
 endif()
+
+GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
+get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "static" )
 
 IF( MSVC_BEFORE_VS2010 )
   SET( H3D_MSVC_VERSION 6 )
