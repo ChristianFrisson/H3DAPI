@@ -20,7 +20,14 @@ include( H3DExternalSearchPath )
 GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "static" )
 
-IF( MSVC AND ${MSVC_VERSION} LESS 1600 )
+SET( MSVC_BEFORE_VS2010 OFF )
+if( MSVC )
+  if( ${MSVC_VERSION} LESS 1600 )
+    SET( MSVC_BEFORE_VS2010 ON )
+  endif()
+endif()
+
+IF( MSVC_BEFORE_VS2010 )
   SET( H3D_MSVC_VERSION 6 )
   SET( TEMP_MSVC_VERSION 1299 )
   WHILE( ${MSVC_VERSION} GREATER ${TEMP_MSVC_VERSION} )
@@ -81,7 +88,7 @@ foreach( dcmtk_lib_name ${DCMTK_lib_names_internal} )
                 DOC "Path to ${dcmtk_lib_name}${DCMTK_LIBRARY_POSTFIX} library." )
   MARK_AS_ADVANCED(DCMTK_${dcmtk_lib_name}_LIBRARY)
   
-  IF( MSVC AND ${MSVC_VERSION} GREATER 1599 )
+  IF( NOT MSVC_BEFORE_VS2010 )
     # Visual Studio versions later than 2008 needs debug versions to compile in debug
     FIND_LIBRARY( DCMTK_${dcmtk_lib_name}_DEBUG_LIBRARY "${dcmtk_lib_name}${DCMTK_LIBRARY_POSTFIX}_d"
                   PATHS ${DCMTK_DIR}/${dcmtk_lib_name}/libsrc
@@ -112,7 +119,7 @@ foreach( dcmtk_lib_ijg_name ${DCMTK_lib_ijg_names_internal} )
               DOC "Path to ${dcmtk_lib_ijg_name}${DCMTK_LIBRARY_POSTFIX} library." )
   MARK_AS_ADVANCED(DCMTK_${dcmtk_lib_ijg_name}_LIBRARY)
   
-  IF( MSVC AND ${MSVC_VERSION} GREATER 1599 )
+  IF( NOT MSVC_BEFORE_VS2010 )
     FIND_LIBRARY( DCMTK_${dcmtk_lib_ijg_name}_DEBUG_LIBRARY ${dcmtk_lib_ijg_name}${DCMTK_LIBRARY_POSTFIX}_d
                   PATHS ${DCMTK_DIR}/dcmjpeg/lib${dcmtk_lib_ijg_name}/libsrc
                         ${DCMTK_DIR}/dcmjpeg/lib${dcmtk_lib_ijg_name}/libsrc/Release
@@ -194,7 +201,7 @@ IF( HAVE_INCLUDE_DIRS AND HAVE_RELEASE_LIBS AND HAVE_TIFF_OR_NO_TIFF_NEEDED )
     SET( DCMTK_INCLUDE_DIR ${DCMTK_INCLUDE_DIR} ${DCMTK_${dcmtk_lib_name}_INCLUDE_DIR} )
   endforeach( dcmtk_lib_name )
 
-  IF( MSVC AND ${MSVC_VERSION} GREATER 1599 )
+  IF( NOT MSVC_BEFORE_VS2010 )
     # MSVC after version 10(2010) needs debug libraries since it cannot compile with
     # the release versions
     foreach( dcmtk_lib_name ${DCMTK_lib_names_internal} )
@@ -205,7 +212,7 @@ IF( HAVE_INCLUDE_DIRS AND HAVE_RELEASE_LIBS AND HAVE_TIFF_OR_NO_TIFF_NEEDED )
     endforeach( DCMTK_lib_ijg_name )
   ELSE()
     
-    IF( MSVC AND ${MSVC_VERSION} GREATER 1599 )
+    IF( NOT MSVC_BEFORE_VS2010 )
       MESSAGE( STATUS "DCMTK debug libraries not found. Debug compilation might not work with DCMTK." )
     ENDIF()
 
