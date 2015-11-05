@@ -50,6 +50,7 @@ int WxConsoleDialog::ConsoleStreamBuf::overflow( int c ) {
   if ( ch == '\n' || buffer.size() >= buffer_size ) { 
 
     if( wxIsMainThread() ) {
+      text_ctrl->SetDefaultStyle( text_style );
       text_ctrl->AppendText( wxString( buffer.c_str(), wxConvUTF8) );
       text_lock.lock();
       mainthread_text_copy.Append( wxString( buffer.c_str(), wxConvUTF8) );
@@ -66,7 +67,38 @@ int WxConsoleDialog::ConsoleStreamBuf::overflow( int c ) {
   return c;
 }
 
+void WxConsoleDialog::ConsoleStreamBuf::onIdle( WxConsoleDialog& _owner ) {
+  wxString output, output2;
 
+  // transfer text output to console from other threads than
+  // main thread to the output variable and reset the console.
+  text_lock.lock();
+  if( !other_threads_text.IsEmpty() ) {
+    output.Alloc( 1000 );
+    output.swap( other_threads_text );
+  }
+  text_lock.unlock();
+
+  // Send available text to wxTextCtrl.
+  if( !output.IsEmpty() ) {
+    text_ctrl->SetDefaultStyle( text_style );
+    text_ctrl->AppendText( output );
+    if ( _owner.filelog_enabled)
+      _owner.filelog_cout << output;
+    _owner.filelog_cout.flush();
+  }
+
+  if ( _owner.filelog_enabled) {
+    text_lock.lock();
+    if( !mainthread_text_copy.IsEmpty() ) {
+      output2.Alloc( 1000 );
+      output2.swap( mainthread_text_copy );
+      _owner.filelog_console << output2;
+      _owner.filelog_console.flush();
+    }
+    text_lock.unlock();
+  }
+}
 
 WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
   wxWindowID id,
@@ -79,10 +111,12 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
   wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
 
   // create text ctrl with minimal size 400x200
-  logText = (wxTextCtrl *) NULL;
   logText = new wxTextCtrl ( this, -1, wxT(""),
-    wxDefaultPosition, wxSize(400, 200),
-    wxTE_MULTILINE | wxTE_READONLY );
+    wxDefaultPosition, wxSize( 750, 450 ),
+    wxTE_MULTILINE | wxTE_READONLY | wxTE_RICH );
+
+  logText->SetFont( wxFont( 10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL ) );
+  logText->SetBackgroundColour( wxColour( 50,50,50 ) );
 
   clip_board = new wxClipboard();
 
@@ -127,15 +161,29 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
   topsizer->SetSizeHints( this );   // set size hints to honor minimum size
 
   // redirect the console to logText wxTextCtrl.
-  console_stream_buf = new ConsoleStreamBuf( logText );
+
+  // Default
+  console_stream_buf = new ConsoleStreamBuf( logText, wxTextAttr( *wxGREEN ) );
   console_stream.reset( new ostream( console_stream_buf ) );
   H3DUtil::Console.setOutputStream( *console_stream );
+
+  // Warnings
+  console_stream_buf_w = new ConsoleStreamBuf( logText, wxTextAttr ( *wxYELLOW ) );
+  console_stream_w.reset( new ostream( console_stream_buf_w ) );
+  H3DUtil::Console.setOutputStream( *console_stream_w, H3DUtil::LogLevel::Warning );
+
+  // Errors
+  console_stream_buf_e = new ConsoleStreamBuf( logText, wxTextAttr( *wxRED ) );
+  console_stream_e.reset( new ostream( console_stream_buf_e ) );
+  H3DUtil::Console.setOutputStream( *console_stream_e, H3DUtil::LogLevel::Error );
+
+  H3DUtil::Console.setShowLevel( true );
 
   // redirect the cout, cerr to logText wxTextCtrl so sofa output can be redirected to wxDialog
   orig_cout_buf = cout.rdbuf(); 
   orig_cerr_buf = cerr.rdbuf();
   cout.rdbuf(console_stream_buf);
-  cerr.rdbuf(console_stream_buf);
+  cerr.rdbuf(console_stream_buf_e);
 
   if( char *buffer = getenv("H3D_CONSOLE_LOGFILE") ) {
     if (strcmp( buffer, "TRUE" ) == 0 ){
@@ -243,33 +291,7 @@ void WxConsoleDialog::OnCopyToClipboard(wxCommandEvent &event){
 }
 
 void WxConsoleDialog::OnIdle(wxIdleEvent &event) {
-  wxString output, output2;
-
-  // transfer text output to console from other threads than
-  // main thread to the output variable and reset the console.
-  console_stream_buf->text_lock.lock();
-  if( !console_stream_buf->other_threads_text.IsEmpty() ) {
-    output.Alloc( 1000 );
-    output.swap( console_stream_buf->other_threads_text );
-  }
-  console_stream_buf->text_lock.unlock();
-
-  // Send available text to wxTextCtrl.
-  if( !output.IsEmpty() ) {
-    logText->AppendText( output );
-    if (filelog_enabled)
-      filelog_cout << output;
-      filelog_cout.flush();
-  }
-
-  if (filelog_enabled) {
-    console_stream_buf->text_lock.lock();
-    if( !console_stream_buf->mainthread_text_copy.IsEmpty() ) {
-      output2.Alloc( 1000 );
-      output2.swap( console_stream_buf->mainthread_text_copy );
-      filelog_console << output2;
-      filelog_console.flush();
-    }
-    console_stream_buf->text_lock.unlock();
-  }
+  console_stream_buf->onIdle( *this );
+  console_stream_buf_w->onIdle( *this );
+  console_stream_buf_e->onIdle( *this );
 }

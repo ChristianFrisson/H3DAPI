@@ -87,15 +87,19 @@ protected:
     static const size_t buffer_size= 1000;
 
     /// Constructor.
-    ConsoleStreamBuf( wxTextCtrl *text ):
-    text_ctrl( text ) {
+    ConsoleStreamBuf( wxTextCtrl *_text, const wxTextAttr& _textStyle = wxTextAttr() ) :
+      text_ctrl( _text ),
+      text_style( _textStyle ) {
       // reserve memory for the string to avoid having to reallocate.
-      other_threads_text.Alloc(1000);
-      buffer.reserve ( buffer_size );
+      other_threads_text.Alloc( 1000 );
+      buffer.reserve( buffer_size );
     }
 
     /// Write messages to the console text control
     int overflow( int ch );
+
+    /// Called on idle from main thread to transfer threaded output
+    void onIdle( WxConsoleDialog& _owner );
 
     /// Lock to be used for accessing the other_threads_text member.
     H3DUtil::MutexLock text_lock;
@@ -108,6 +112,9 @@ protected:
     /// The wxTextCtrl to output text to.
     wxTextCtrl *text_ctrl;
 
+    /// Text/font style to use for output
+    wxTextAttr text_style;
+
     wxString mainthread_text_copy;
 
     /// A string buffer is used to avoid spamming the text control with single
@@ -117,14 +124,18 @@ protected:
 
   // the buffer object for console_stream. Pointer is owned by
   // the console_stream object.
-  ConsoleStreamBuf *console_stream_buf;
+  ConsoleStreamBuf *console_stream_buf;   // Info
+  ConsoleStreamBuf *console_stream_buf_w; // Warnings
+  ConsoleStreamBuf *console_stream_buf_e; // Errors
 
   // the streambuf of cerr and cout that was used when this WxConsoleDialog was created.
   std::streambuf *orig_cerr_buf, *orig_cout_buf;
 
   // The console stream. The contents of other_thread_output is eventually
   // transferred to this stream.
-  std::auto_ptr< std::ostream >console_stream;
+  std::auto_ptr< std::ostream >console_stream;   // Info
+  std::auto_ptr< std::ostream >console_stream_w; // Warnings
+  std::auto_ptr< std::ostream >console_stream_e; // Errors
   // Called when console is closed.
   void OnConsoleClose (wxCommandEvent & event);
   // Called when clear button is pressed.
