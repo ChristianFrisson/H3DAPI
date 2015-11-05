@@ -345,7 +345,7 @@ void Text::render() {
   try {
     font->buildFonts();
   } catch( const Exception::H3DException &e ) {
-    Console(3) << "Warning: Text node " << getName() << " will not be rendered. "
+    Console(LogLevel::Warning) << "Warning: Text node " << getName() << " will not be rendered. "
                << "FontStyle::buildFonts message is: " << e.message << endl;
   }
 

@@ -78,7 +78,7 @@ ComposedCubeMapTexture::ComposedCubeMapTexture(
 
 void ComposedCubeMapTexture::render() {
   if( !GLEW_ARB_texture_cube_map ) {
-    Console(4) << "Warning: ARB_texture_cube_map extension not supported "
+    Console(LogLevel::Error) << "Warning: ARB_texture_cube_map extension not supported "
                << "by your graphics card. ComposedCubeMapTexture node cannot "
                << "be used." << endl; 
   } else {
@@ -213,12 +213,12 @@ void ComposedCubeMapTexture::render() {
         } 
       } else {
         glBindTexture( GL_TEXTURE_CUBE_MAP_ARB, 0 );
-        Console(3) << "Warning: Invalid cube map textures in \"" << getName()
+        Console(LogLevel::Warning) << "Warning: Invalid cube map textures in \"" << getName()
                    << "\" node. All images must have the same square dimensions."
                    << endl;
       }
     } else {
-      Console(3) << "Warning: All cube sides not specified in \"" 
+      Console(LogLevel::Warning) << "Warning: All cube sides not specified in \"" 
                  << getName() << "\" node. Node will be disabled. " << endl;
     }
   }

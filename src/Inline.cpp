@@ -181,7 +181,7 @@ void Inline::LoadedScene::update() {
 #ifdef HAVE_XERCES
         catch( const X3D::XMLParseError &e ) {
           ResourceResolver::setBaseURL( old_url_base );
-          Console(3) << "Warning: Error when parsing \"" << *i << "\" in \"" 
+          Console(LogLevel::Warning) << "Warning: Error when parsing \"" << *i << "\" in \"" 
                      << getOwner()->getName() << "\" (" << e << ")." << endl;
         } 
 #endif
@@ -190,11 +190,11 @@ void Inline::LoadedScene::update() {
       }
     }
 
-    Console(4) << "Warning: None of the urls in Inline node with url [";
+    Console(LogLevel::Error) << "Warning: None of the urls in Inline node with url [";
     for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {  
-      Console(4) << " \"" << *i << "\"";
+      Console(LogLevel::Error) << " \"" << *i << "\"";
     }
-    Console(4) << "] could be loaded. "
+    Console(LogLevel::Error) << "] could be loaded. "
          << "(in " << getOwner()->getName() << ")" << endl;
     inline_node->setURLUsed( "" );
   }

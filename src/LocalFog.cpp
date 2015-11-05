@@ -81,7 +81,7 @@ void LocalFog::enableGraphicsState() {
       glFogf( GL_FOG_DENSITY, 2 / visibilityRange->getValue() );
       glFogi( GL_FOG_MODE, GL_EXP );
     } else {
-      Console(3) << "Invalid fogType \"" << type << "\". Must be one of \"LINEAR\""
+      Console(LogLevel::Warning) << "Invalid fogType \"" << type << "\". Must be one of \"LINEAR\""
                  << " or \"EXPONENTIAL\" (in \"" << getName() << "\" node )" << endl;
     }
     

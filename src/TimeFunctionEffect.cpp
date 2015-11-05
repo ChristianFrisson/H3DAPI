@@ -115,7 +115,7 @@ void TimeFunctionEffect::traverseSG( TraverseInfo &ti ) {
       }
     }
   } else {
-    Console(3) << "Warning: One or more of the H3DFunctionNodes in node "
+    Console(LogLevel::Warning) << "Warning: One or more of the H3DFunctionNodes in node "
                << getName() << " is either missing or has the wrong number "
                << "of input values to work with TimeFunctionEffect nodes."
                << "The number of input values to the functions should be 1."

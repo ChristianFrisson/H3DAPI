@@ -435,7 +435,7 @@ FontStyle::FontStyle(
   renderType->setValue( "TEXTURE" );
 
 #if !( defined( HAVE_FREETYPE ) && defined( HAVE_FTGL ) )
-  Console(4) << "Warning: H3D API compiled withour FTGL or FreeType. FontStyle"
+  Console(LogLevel::Error) << "Warning: H3D API compiled withour FTGL or FreeType. FontStyle"
              << " nodes will be unusable." << endl;
 #endif
 }
@@ -470,7 +470,7 @@ void FontStyle::buildFonts() {
     italic = true;
     bold = true;
   } else {
-    Console(4) << "Invalid FontStyle style: \"" << font_style 
+    Console(LogLevel::Error) << "Invalid FontStyle style: \"" << font_style 
                      << "\" in " << style->getFullName() 
                      << ". Valid values are \"PLAIN\", \"BOLD\", \"ITALIC\" and \"BOLDITALIC\"";
   }
@@ -502,14 +502,14 @@ void FontStyle::buildFonts() {
   // no font was found use default font and print a warning message.
   if( !font ) {
     if( family->size() != 0 ) {
-      Console(4) << "Warning: None of the fonts [";
+      Console(LogLevel::Error) << "Warning: None of the fonts [";
       for( MFString::const_iterator n = family->begin();
            n != family->end();
            ++n ) {
-        Console(4) << " \"" << *n << "\""; 
+        Console(LogLevel::Error) << " \"" << *n << "\""; 
       }
 
-      Console(4) << " ] could be found. Using \"" << DEFAULT_SERIF_FONT 
+      Console(LogLevel::Error) << " ] could be found. Using \"" << DEFAULT_SERIF_FONT 
            << "\" instead. " << endl;
     }
 

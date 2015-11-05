@@ -876,7 +876,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
       }
 
       if ( v && b ) {
-        Console(4) << "ERROR: You cannot mix H3DSingleTextureNode and ShaderImageNode in the "
+        Console(LogLevel::Error) << "ERROR: You cannot mix H3DSingleTextureNode and ShaderImageNode in the "
           "same MFNode shader field when using bindless textures!" << endl;
         return false;
       } else if ( v ) {
@@ -1152,7 +1152,7 @@ CGprofile H3D::Shaders::cgProfileFromString( const string &profile,
     } 
   } else {
     if( profile != "CG" ) {
-      Console(3) << "Warning: Invalid profile name" << endl;
+      Console(LogLevel::Warning) << "Warning: Invalid profile name" << endl;
     }
     if( type == "VERTEX" )
       cg_profile = cgGLGetLatestProfile( CG_GL_VERTEX );
@@ -1321,7 +1321,7 @@ bool H3D::Shaders::setCGUniformVariableValue( CGprogram program_handle,
   // ignore any errors that occurs when setting uniform variables.
   CGerror err = cgGetError();
   if( err != CG_NO_ERROR )
-    Console(3) << cgGetErrorString( err ) << endl;
+    Console(LogLevel::Warning) << cgGetErrorString( err ) << endl;
   return err == GL_NO_ERROR;
  }
 
@@ -1380,7 +1380,7 @@ void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
             if ( t->getTextureId() != 0 ) {
 
               if ( !t->makeResident () ) {
-                Console(4) << "ERROR: Cannot make texture resident " << (*f)->getFullName () << ": " << t->getName() << endl;
+                Console(LogLevel::Error) << "ERROR: Cannot make texture resident " << (*f)->getFullName () << ": " << t->getName() << endl;
               }
 
             }
@@ -1401,7 +1401,7 @@ void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
               if ( t->getTextureId() != 0 ) {
 
                 if ( !t->makeResident () ) {
-                  Console(4) << "ERROR: Cannot make texture resident " << (*f)->getFullName () << ": " << t->getName() << endl;
+                  Console(LogLevel::Error) << "ERROR: Cannot make texture resident " << (*f)->getFullName () << ": " << t->getName() << endl;
                 }
 
               }
@@ -1446,7 +1446,7 @@ void H3D::Shaders::preRenderTextures( H3DDynamicFieldsObject *dfo ) {
         }
       }
       if( nr_textures > (unsigned int)nr_textures_supported ) {
-        Console(4) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
+        Console(LogLevel::Error) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
         break;
       }
     }
@@ -1464,7 +1464,7 @@ void H3D::Shaders::preRenderTextures( list<H3DSingleTextureNode*>* shader_textur
         (*it)->displayList->callList();
         if ( (*it)->getTextureId() != 0 ) {
           if ( !(*it)->makeResident () ) {
-            Console(4) << "ERROR: Cannot make texture resident: " << (*it)->getName() << endl;
+            Console(LogLevel::Error) << "ERROR: Cannot make texture resident: " << (*it)->getName() << endl;
           }
         }
       }
@@ -1478,7 +1478,7 @@ void H3D::Shaders::preRenderTextures( list<H3DSingleTextureNode*>* shader_textur
       (*it)->preRender();
       ++nr_textures;
       if( nr_textures>(unsigned int)*nr_textures_supported ) {
-        Console(4) << "Warning: Number of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
+        Console(LogLevel::Error) << "Warning: Number of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
         break;
       }
     }
@@ -1579,7 +1579,7 @@ void H3D::Shaders::postRenderTextures( H3DDynamicFieldsObject *dfo ) {
       }
     }
     if( nr_textures > (unsigned int)nr_textures_supported ) {
-      Console(4) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
+      Console(LogLevel::Error) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
       break;
     }
   }
@@ -1597,7 +1597,7 @@ void H3D::Shaders::postRenderTextures( list<H3DSingleTextureNode*>* shader_textu
     (*it)->postRender();
     ++nr_textures;
     if( nr_textures > (unsigned int)*nr_textures_supported ) {
-      Console(4) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
+      Console(LogLevel::Error) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
       break;
     }
   }
@@ -1654,7 +1654,7 @@ void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
         }
     }
     if( nr_textures > (unsigned int)nr_textures_supported ) {
-      Console(4) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
+      Console(LogLevel::Error) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
       break;
     }
   }
@@ -1672,7 +1672,7 @@ void H3D::Shaders::renderTextures( list<H3DSingleTextureNode*>* shader_textures,
     (*it)->displayList->callList();
     ++nr_textures;
     if( nr_textures > (unsigned int)*nr_textures_supported ) {
-      Console(4) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
+      Console(LogLevel::Error) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
       break;
     }
   }

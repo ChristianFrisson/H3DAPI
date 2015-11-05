@@ -266,7 +266,7 @@ HapticDeviceNavigation::HapticDeviceNavigation(
     hd->devicePosition->route( calculateHapticDeviceMoveInfo );
     calculateHapticDeviceMoveInfo->route( shouldGetInfo );
   } else {
-    Console(4) << "No haptics devices in the scene. "
+    Console(LogLevel::Error) << "No haptics devices in the scene. "
                << "Navigation with haptics device will not be used." << endl;
   }
   calculate_center = false;

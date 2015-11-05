@@ -248,7 +248,7 @@ void ElevationGrid::render() {
 
   const vector< H3DFloat > &heights = height->getValue();
   if( heights.size() < (unsigned long) xdim * zdim ) {
-    Console(3) << "Warning: Not enough height values in ElevationGrid node( "
+    Console(LogLevel::Warning) << "Warning: Not enough height values in ElevationGrid node( "
                << getName() << "). Node will not be rendered. " << endl;
     return;
   }

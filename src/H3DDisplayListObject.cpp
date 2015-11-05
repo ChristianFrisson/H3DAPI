@@ -92,7 +92,7 @@ bool H3DDisplayListObject::DisplayList::tryBuildDisplayList( bool cache_broken )
       glNewList( display_list, GL_COMPILE_AND_EXECUTE );
       GLuint err = glGetError();
       if( err != GL_NO_ERROR ) {
-        Console(4) << "OpenGL error in glNewList() Error: \"" << gluErrorString( err ) 
+        Console(LogLevel::Error) << "OpenGL error in glNewList() Error: \"" << gluErrorString( err ) 
                    << "\" when rendering " << getFullName() << endl;
         return false;
       }
@@ -100,7 +100,7 @@ bool H3DDisplayListObject::DisplayList::tryBuildDisplayList( bool cache_broken )
       glEndList();
       err = glGetError();
       if( err != GL_NO_ERROR ) {
-        Console(4) << "OpenGL error in glEndList() Error: \"" << gluErrorString( err ) 
+        Console(LogLevel::Error) << "OpenGL error in glEndList() Error: \"" << gluErrorString( err ) 
                    << "\" when rendering " << getFullName() << endl;
         return false;
       }
@@ -121,7 +121,7 @@ void H3DDisplayListObject::DisplayList::propagateEvent( Event e ) {
   have_valid_display_list = false;
   reset_delay_cache_counter = true;
   event_fields.insert( e.ptr );
-  /*Console(4)<<"display list object have a event from :"<<e.ptr->getFullName()<<endl;*/
+  /*Console(LogLevel::Error)<<"display list object have a event from :"<<e.ptr->getFullName()<<endl;*/
 }
 
 void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
@@ -130,7 +130,7 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
 
   GLuint err = glGetError();
   if( err != GL_NO_ERROR ) {
-    Console(4) << "OpenGL error before H3DDisplayListObject::DisplayList::callList() Error: \"" << gluErrorString( err ) 
+    Console(LogLevel::Error) << "OpenGL error before H3DDisplayListObject::DisplayList::callList() Error: \"" << gluErrorString( err ) 
                << "\" when rendering parent of " << getFullName() << endl;
   }
 
@@ -168,7 +168,7 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
     glCallList( display_list );
     err = glGetError();
     if( err != GL_NO_ERROR ) {
-      Console(4) << "OpenGL error in glCallList() Error: \"" << gluErrorString( err ) 
+      Console(LogLevel::Error) << "OpenGL error in glCallList() Error: \"" << gluErrorString( err ) 
                  << "\" when rendering " << getFullName() << endl;
       have_valid_display_list = false;
     }
@@ -177,7 +177,7 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
     event_fields.clear();
     err = glGetError();
     if( err != GL_NO_ERROR ) {
-      Console(4) << "OpenGL error in render() Error: \"" << gluErrorString( err ) 
+      Console(LogLevel::Error) << "OpenGL error in render() Error: \"" << gluErrorString( err ) 
                  << "\" when rendering " << getFullName() << endl;
     } else {
       if( delay_cache_counter > 0 ) 
@@ -441,7 +441,7 @@ bool H3DDisplayListObject::DisplayList::isOutsideViewFrustum() {
       }
     }
     if( all_behind ) {
-      //Console(4) << "Culled " << plane << endl;
+      //Console(LogLevel::Error) << "Culled " << plane << endl;
       return true;
     }
   }
@@ -470,7 +470,7 @@ bool H3DDisplayListObject::DisplayList::usingCaching() {
   if( default_settings&&default_settings->optionNodesUpdated() ) {
     default_settings->getOptionNode( options );
     if( options ) {
-      //Console(4)<<"global setting update, update graphic option"<<endl;
+      //Console(LogLevel::Error)<<"global setting update, update graphic option"<<endl;
       // options exist in global setting and gs is updated
       // need to update graphic option
       graphic_options_previous = options;

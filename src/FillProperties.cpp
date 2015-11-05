@@ -84,7 +84,7 @@ void FillProperties::render() {
  
     int hatch_style = hatchStyle->getValue();
     if( hatch_style < 1 || hatch_style > 6 ) {
-      Console(3) << "Warning: hatchStyle " << hatch_style 
+      Console(LogLevel::Warning) << "Warning: hatchStyle " << hatch_style 
                  << " not supported. Skipping hatches (in " 
                  << getName() << "). "<< endl;
     } else {

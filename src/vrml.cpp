@@ -498,10 +498,10 @@ namespace yy {
     if ( driver.DEF_export )
       driver.DEF_export->addNode( (yysemantic_stack_[(4) - (4)]), node );
     else
-      Console(3) << "Warning: EXPORT error. No export DEF map provided!"
+      Console(LogLevel::Warning) << "Warning: EXPORT error. No export DEF map provided!"
                  << driver.getLocationString() << endl;
   } else {
-    Console(3) << "Warning: EXPORT error. Node named \"" 
+    Console(LogLevel::Warning) << "Warning: EXPORT error. Node named \"" 
                << (yysemantic_stack_[(4) - (2)]) << "\" does not exist."
                << driver.getLocationString() << endl;
   }
@@ -520,7 +520,7 @@ if( !driver.insideProtoDeclaration() ) {
     if( import_node ) {
       driver.DEF_map->addNode( (yysemantic_stack_[(6) - (6)]), import_node ); 
     } else {
-      Console(3) << "Warning: IMPORT error. H3D_EXPORTS " 
+      Console(LogLevel::Warning) << "Warning: IMPORT error. H3D_EXPORTS " 
                  << "does not include \""
                  << (yysemantic_stack_[(6) - (4)]) << "\"" 
                  << driver.getLocationString() << endl;
@@ -535,18 +535,18 @@ if( !driver.insideProtoDeclaration() ) {
         driver.DEF_map->addNode( (yysemantic_stack_[(6) - (6)]), 
                           import_node ); 
       } else {
-        Console(3) << "Warning: IMPORT error. Inline node \"" 
+        Console(LogLevel::Warning) << "Warning: IMPORT error. Inline node \"" 
                    << (yysemantic_stack_[(6) - (2)]) << "\" does not EXPORT \""
                    << (yysemantic_stack_[(6) - (4)]) << "\"" 
                    << driver.getLocationString() << endl;
       }
     } else {
       if( n ) {
-        Console(3) << "Warning: IMPORT error. Node \"" 
+        Console(LogLevel::Warning) << "Warning: IMPORT error. Node \"" 
                    << (yysemantic_stack_[(6) - (2)]) << "\" is not an Inline node "
                    << driver.getLocationString() << endl;
       } else {
-        Console(3) << "Warning: IMPORT error. Node named \"" 
+        Console(LogLevel::Warning) << "Warning: IMPORT error. Node named \"" 
                    << (yysemantic_stack_[(6) - (2)]) << "\" does not exist."
                    << driver.getLocationString() << endl;
       }
@@ -700,25 +700,25 @@ if ( !driver.insideProtoDeclaration() ) {
            else frf->routeNoEvent( tof );
   }
         else {
-          Console(3) << "Warning: Route error. Could not find field named \"" 
+          Console(LogLevel::Warning) << "Warning: Route error. Could not find field named \"" 
                      <<  (yysemantic_stack_[(8) - (8)])
                      << "\" in \"" << (yysemantic_stack_[(8) - (6)]) << "\" Node " 
                      << driver.getLocationString() << endl;
         }
       } else {
-        Console(3) << "Warning: Route error. Could not find destination Node named \"" 
+        Console(LogLevel::Warning) << "Warning: Route error. Could not find destination Node named \"" 
                    << (yysemantic_stack_[(8) - (6)])
                    << "\" " 
                    << driver.getLocationString() << endl;
       }
     } else {
-      Console(3) << "Warning: Route error. Could not find field named \"" 
+      Console(LogLevel::Warning) << "Warning: Route error. Could not find field named \"" 
                  << (yysemantic_stack_[(8) - (4)])
                  << "\" in \"" << (yysemantic_stack_[(8) - (2)]) << "\" Node " 
                  << driver.getLocationString() << endl;
     }  
   } else {
-    Console(3) << "Warning: Route error. Could not find source Node named \"" 
+    Console(LogLevel::Warning) << "Warning: Route error. Could not find source Node named \"" 
                << (yysemantic_stack_[(8) - (2)])
                << "\" " 
                << driver.getLocationString() << endl;
@@ -745,7 +745,7 @@ if ( !driver.insideProtoDeclaration() ) {
          new_node = proto->newProtoInstance();
       }
       if ( !new_node )
-        Console(3) << "Warning: Could not create node \"" << yylval << 
+        Console(LogLevel::Warning) << "Warning: Could not create node \"" << yylval << 
           "\" - name not found in the node database and is not a proto name ( " <<
           driver.getLocationString() << " )." << endl;
     } else {

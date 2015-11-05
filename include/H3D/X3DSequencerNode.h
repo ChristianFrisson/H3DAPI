@@ -124,21 +124,21 @@ namespace H3D {
           const vector< H3DFloat > &keys = sn->key->getValue();
 
           if( keys.empty() ) {
-            Console(3) << "Warning: The key array is empty in " <<
+            Console(LogLevel::Warning) << "Warning: The key array is empty in " <<
               "X3DSequencerNode ( " << sn->getName() << 
               " ). Node will not be used. " << endl;
             return;
           }
 
           if( key_value.empty() ) {
-            Console(3) << "Warning: The keyValue array is empty in " <<
+            Console(LogLevel::Warning) << "Warning: The keyValue array is empty in " <<
               "X3DSequencerNode ( " << sn->getName() << 
               " ). Node will not be used. " << endl;
             return;
           }
 
           if( keys.size() != key_value.size() ) {
-            Console(3) << "Warning: The key and keyValue arrays mismatch in " <<
+            Console(LogLevel::Warning) << "Warning: The key and keyValue arrays mismatch in " <<
               "X3DSequencerNode ( " << sn->getName() << 
               " ). Node will not be used. " << endl;
             return;
@@ -152,7 +152,7 @@ namespace H3D {
           }
 
           if( notMonotonically ) {
-            Console(3) << "Warning: The key array is not monotonically " <<
+            Console(LogLevel::Warning) << "Warning: The key array is not monotonically " <<
               "non-decreasing in X3DSequencerNode ( " << sn->getName() << 
               " ). Node will not be used. " << endl;
             return;

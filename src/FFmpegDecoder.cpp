@@ -64,13 +64,13 @@ bool FFmpegDecoder::theTimeIsRight(void)
 void FFmpegDecoder::cleanupFFmpeg(void)
 {
 #ifdef FFMPEG_DEBUG 
-  Console(4) << "cleanupFFmpeg()" << endl;
+  Console(LogLevel::Error) << "cleanupFFmpeg()" << endl;
 #endif
 
   if (!just_a_test) {
 
 #ifdef FFMPEG_DEBUG 
-    Console(4) << "cleanupFFmpeg() - full" << endl;
+    Console(LogLevel::Error) << "cleanupFFmpeg() - full" << endl;
 #endif
 
     have_new_frame = false;
@@ -287,7 +287,7 @@ bool FFmpegDecoder::loadClip( const string &url ) {
   if (video_fps < 15 || video_fps > 30) {
     video_fps = 25;
   }
-  Console(4) << "playing@" << video_fps << "fps" << endl;
+  Console(LogLevel::Error) << "playing@" << video_fps << "fps" << endl;
 
   frame_height = pCodecCtx->height;
   frame_width  = pCodecCtx->width;
@@ -307,7 +307,7 @@ bool FFmpegDecoder::loadClip( const string &url ) {
                                   NULL, NULL, NULL);
 
 #ifdef FFMPEG_DEBUG 
-  Console(4) << "duration=" << duration << "s" << endl;
+  Console(LogLevel::Error) << "duration=" << duration << "s" << endl;
 #endif
 
   struct timeval time_of_day;
@@ -354,7 +354,7 @@ void FFmpegDecoder::getNewFrame( unsigned char *buffer ) {
         //have_new_frame = false;
         
 #ifdef FFMPEG_DEBUG 
-        //Console(4) << "Pos=" << getPosition() << endl;
+        //Console(LogLevel::Error) << "Pos=" << getPosition() << endl;
 #endif
         
       }
@@ -372,7 +372,7 @@ void FFmpegDecoder::getNewFrame( unsigned char *buffer ) {
 
 void FFmpegDecoder::startPlaying() {
 #ifdef FFMPEG_DEBUG 
-  Console(4) << "FFmpegDecoder::startPlaying()" << endl;
+  Console(LogLevel::Error) << "FFmpegDecoder::startPlaying()" << endl;
 #endif
 
   have_new_frame = true;
@@ -390,7 +390,7 @@ void FFmpegDecoder::startPlaying() {
 
 void FFmpegDecoder::stopPlaying() {
 #ifdef FFMPEG_DEBUG 
-  Console(4) << "FFmpegDecoder::stopPlaying()" << endl;
+  Console(LogLevel::Error) << "FFmpegDecoder::stopPlaying()" << endl;
 #endif
 
   if (status != STOPPED) 
@@ -407,7 +407,7 @@ void FFmpegDecoder::stopPlaying() {
 
 void FFmpegDecoder::pausePlaying() {
 #ifdef FFMPEG_DEBUG 
-  Console(4) << "FFmpegDecoder::pausePlaying()" << endl;
+  Console(LogLevel::Error) << "FFmpegDecoder::pausePlaying()" << endl;
 #endif
 
   have_new_frame = false;
@@ -419,7 +419,7 @@ void FFmpegDecoder::pausePlaying() {
 
 bool FFmpegDecoder::supportsFileType( const string &url ) {
 #ifdef FFMPEG_DEBUG 
-  Console(4) << "FFmpegDecoder::supportsFileType( " << url << " )" << endl;
+  Console(LogLevel::Error) << "FFmpegDecoder::supportsFileType( " << url << " )" << endl;
 #endif
 
   AutoRef< FFmpegDecoder > dec( new FFmpegDecoder() );
@@ -430,7 +430,7 @@ bool FFmpegDecoder::supportsFileType( const string &url ) {
 /// Get the current position in the clip (in seconds from start position)
 H3DTime FFmpegDecoder::getPosition() {
 #ifdef FFMPEG_DEBUG 
-  Console(4) << "FFmpegDecoder::getPosition()" << endl;
+  Console(LogLevel::Error) << "FFmpegDecoder::getPosition()" << endl;
 #endif
 
   return current_frame;
@@ -440,7 +440,7 @@ H3DTime FFmpegDecoder::getPosition() {
 /// Set the current position in the clip(in seconds from start position)
 void FFmpegDecoder::setPosition( H3DTime pos ) {
 #ifdef FFMPEG_DEBUG 
-  Console(4) << "FFmpegDecoder::setPosition( " << pos << " )" << endl;
+  Console(LogLevel::Error) << "FFmpegDecoder::setPosition( " << pos << " )" << endl;
 #endif
   av_seek_frame(pFormatCtx, videoStream, pos, 0);
 #ifdef WITH_AUDIO

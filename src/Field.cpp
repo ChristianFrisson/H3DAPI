@@ -46,7 +46,7 @@ Field::Field( ) :
   access_check_on( true ),
   is_program_setting( false ) {
 #ifdef DEBUG
-  Console(1) << "Field(" << getFullName() << ")::Field()" << endl;
+  Console(LogLevel::Debug) << "Field(" << getFullName() << ")::Field()" << endl;
 #endif
   update_lock = false;
   event_lock = false;
@@ -57,7 +57,7 @@ Field::~Field() {
     Scene::removeProgramSetting( this );
 
 #ifdef DEBUG
-  Console(1) << "Field(" << getFullName() << ")::~Field()" << endl;
+  Console(LogLevel::Debug) << "Field(" << getFullName() << ")::~Field()" << endl;
 #endif
   // remove all routes
   while( routes_out.begin() != routes_out.end() ) {
@@ -76,7 +76,7 @@ Field::~Field() {
 void Field::route( Field *f, int id ) {
   
 #ifdef DEBUG
-  Console(1) << "Field(" << getFullName() << ")::route()" << endl;
+  Console(LogLevel::Debug) << "Field(" << getFullName() << ")::route()" << endl;
 #endif
   // check that we have the correct access type
   checkAccessTypeRoute( f, id );
@@ -174,7 +174,7 @@ void Field::checkAccessTypeSet( int id ) {
 
 void Field::routeNoEvent( Field *f, int id ) {
 #ifdef DEBUG
-  Console(1) << "Field(" << getFullName() << ")::routeNoEvent()" << endl;
+  Console(LogLevel::Debug) << "Field(" << getFullName() << ")::routeNoEvent()" << endl;
 #endif
   // check that we have the correct access type
   checkAccessTypeRoute( f, id );
@@ -191,7 +191,7 @@ void Field::routeNoEvent( Field *f, int id ) {
 
 void Field::routeFrom( Field *f, int id ) {
 #ifdef DEBUG
-  Console(1) << "Field(" << getFullName() << ")::routeFrom()" << endl;
+  Console(LogLevel::Debug) << "Field(" << getFullName() << ")::routeFrom()" << endl;
 #endif
   // check that we have the correct access type
   checkAccessTypeRouteFrom( f, id );
@@ -204,7 +204,7 @@ void Field::routeFrom( Field *f, int id ) {
 //  Route management:
 Field * Field::replaceRoute( Field *f, unsigned int i, int id ) {
 #ifdef DEBUG
-  Console(1) << "Field(" << getFullName() << ")::route()" << endl;
+  Console(LogLevel::Debug) << "Field(" << getFullName() << ")::route()" << endl;
 #endif
   // check that we have the correct access type
   checkAccessTypeRoute( f, id );
@@ -229,7 +229,7 @@ Field * Field::replaceRoute( Field *f, unsigned int i, int id ) {
 
 Field * Field::replaceRouteNoEvent( Field *f, unsigned int i, int id ) {
 #ifdef DEBUG
-  Console(1) << "Field(" << getFullName() << ")::route()" << endl;
+  Console(LogLevel::Debug) << "Field(" << getFullName() << ")::route()" << endl;
 #endif
   // check that we have the correct access type
   checkAccessTypeRoute( f, id );
@@ -247,7 +247,7 @@ Field * Field::replaceRouteNoEvent( Field *f, unsigned int i, int id ) {
 
 Field* Field::replaceRouteFrom( Field *f, unsigned int i, int id ) {
 #ifdef DEBUG
-  Console(1) << "Field(" << getFullName() << ")::routeFrom()" << endl;
+  Console(LogLevel::Debug) << "Field(" << getFullName() << ")::routeFrom()" << endl;
 #endif
   // check that we have the correct access type
   checkAccessTypeRouteFrom( f, id );
@@ -264,7 +264,7 @@ Field* Field::replaceRouteFrom( Field *f, unsigned int i, int id ) {
 
 void Field::unroute( Field *f ) {
 #ifdef DEBUG
-  Console(1) << "Field(" << getFullName() << ")::unroute()" << endl;
+  Console(LogLevel::Debug) << "Field(" << getFullName() << ")::unroute()" << endl;
 #endif
   FieldSet::iterator i = std::find( routes_out.begin(), routes_out.end(), f );
   if( i != routes_out.end() ) {
@@ -279,7 +279,7 @@ void Field::unroute( Field *f ) {
 
 void Field::unrouteFrom( Field *f ) {
 #ifdef DEBUG
-  Console(1) << "Field(" << getFullName() << ")::unrouteFrom()" << endl;
+  Console(LogLevel::Debug) << "Field(" << getFullName() << ")::unrouteFrom()" << endl;
 #endif
   FieldVector::iterator i = std::find( routes_in.begin(), routes_in.end(), f );
   if( i != routes_in.end() ) {
@@ -291,7 +291,7 @@ void Field::unrouteFrom( Field *f ) {
 
 void Field::touch() {
 #ifdef DEBUG
-  Console(1) << "Field(" << getFullName() << ")::touch()" << endl;
+  Console(LogLevel::Debug) << "Field(" << getFullName() << ")::touch()" << endl;
 #endif
   // create new event, with a new timestamp
   event.time_stamp = TimeStamp::now();
@@ -308,7 +308,7 @@ void Field::touch() {
 // Event management:
 void Field::startEvent() {
 #ifdef DEBUG
-  Console(1) << "Field(" << getFullName() << ")::startEvent()" << endl;
+  Console(LogLevel::Debug) << "Field(" << getFullName() << ")::startEvent()" << endl;
 #endif
   // create new event, with a new timestamp
   event.time_stamp = TimeStamp::now();
@@ -325,7 +325,7 @@ void Field::startEvent() {
 
 void Field::propagateEvent( Event e ) {
 #ifdef DEBUG
-  Console(1) << "Field(" << getFullName() << ")::propagateEvent()" << endl;
+  Console(LogLevel::Debug) << "Field(" << getFullName() << ")::propagateEvent()" << endl;
 #endif
   if ( !event_lock && /*!event.ptr && */ e.time_stamp > event.time_stamp ) {
     event.time_stamp = e.time_stamp;
@@ -342,7 +342,7 @@ void Field::propagateEvent( Event e ) {
 
 void Field::upToDate() {
 #ifdef DEBUG
-  Console(1) << "Field< " << getFullName() << ")::upToDate()   event_ptr = " 
+  Console(LogLevel::Debug) << "Field< " << getFullName() << ")::upToDate()   event_ptr = " 
        << event.ptr << endl;
 #endif
   if ( event.ptr && !update_lock ) {

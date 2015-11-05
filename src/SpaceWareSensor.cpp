@@ -278,8 +278,8 @@ namespace SpaceWareSensorInternal {
       SpaceWareSensor *space_ware_sensor = 
         static_cast< SpaceWareSensor * >( data );
       space_ware_sensor->thread_is_active = false;
-      Console(4) << "Warning: SpaceWareSensor error. Node will be unusable."<<endl;
-      Console(4) << e << endl;
+      Console(LogLevel::Error) << "Warning: SpaceWareSensor error. Node will be unusable."<<endl;
+      Console(LogLevel::Error) << e << endl;
     }
     return NULL;
   }
@@ -419,8 +419,8 @@ namespace SpaceWareSensorInternal {
       XCloseDisplay( display );
     }
     catch (const Exception::H3DException &e) {
-      Console(4) << "Warning: SpaceWareSensor error. Node will be unusable."<<endl;
-      Console(4) << e << endl;
+      Console(LogLevel::Error) << "Warning: SpaceWareSensor error. Node will be unusable."<<endl;
+      Console(LogLevel::Error) << e << endl;
     }
     return NULL;
   }
@@ -539,10 +539,10 @@ SpaceWareSensor::SpaceWareSensor(
 
 #ifndef HAVE_3DXWARE
 #ifdef WIN32
-  Console(4) << "Warning: H3D API compiled without 3Dxware. SpaceWareSensor node "
+  Console(LogLevel::Error) << "Warning: H3D API compiled without 3Dxware. SpaceWareSensor node "
              << "will be unusable." << endl;
 #else
-  Console(4) << "Warning: SpaceWareSensor only supported on Windows platform." 
+  Console(LogLevel::Error) << "Warning: SpaceWareSensor only supported on Windows platform." 
              << endl;
 #endif
 #endif

@@ -343,7 +343,7 @@ string ShaderCombiner::applyModifier( const string &variable_name,
   } 
 
   if( modifier != "NONE" ) {
-    Console(4) << "Invalid modifier: \"" << modifier << "\" in ShaderCombiner. Using \"NONE\" instead. " << endl;
+    Console(LogLevel::Error) << "Invalid modifier: \"" << modifier << "\" in ShaderCombiner. Using \"NONE\" instead. " << endl;
   }
   return "";
 }
@@ -366,7 +366,7 @@ string ShaderCombiner::applyAlphaModifier( const string &variable_name,
     return variable_name + ".a  = -" + variable_name + ".a;";
   } 
   if( modifier != "NONE" ) {
-    Console(4) << "Invalid modifier: \"" << modifier << "\" in ShaderCombiner. Using \"NONE\" instead. " << endl;
+    Console(LogLevel::Error) << "Invalid modifier: \"" << modifier << "\" in ShaderCombiner. Using \"NONE\" instead. " << endl;
   }
   return "";
 }
@@ -392,7 +392,7 @@ string ShaderCombiner::combineFunction( const string &v0,
     return _value + " * " + v0 + " + (1.0-" + _value + ")*" + v1;
   } 
 
-  Console(4) << "Invalid function: \"" << _function << "\" in ShaderCombiner. Using \"SELECT1\" instead. " << endl;
+  Console(LogLevel::Error) << "Invalid function: \"" << _function << "\" in ShaderCombiner. Using \"SELECT1\" instead. " << endl;
   return v1;
 }
 

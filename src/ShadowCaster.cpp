@@ -162,7 +162,7 @@ void ShadowCaster::render() {
     generator.reset( gen );
     Scene *scene = Scene::scenes.size ( ) > 0 ? *Scene::scenes.begin ( ) : NULL;
     if( !scene ) {
-      Console(4)<<"ShadowCaster has to be within scenes"<<endl;
+      Console(LogLevel::Error)<<"ShadowCaster has to be within scenes"<<endl;
     }
     H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue ( )[0]);
     if( window ) {
@@ -282,7 +282,7 @@ void ShadowCaster::renderShadows( FrameBufferTextureGenerator *fbo, int i, void 
     // set up shader for shadow geometries
     Scene *scene = Scene::scenes.size ( ) > 0 ? *Scene::scenes.begin ( ) : NULL;
     if( !scene ) {
-      Console(4)<<"ShadowCaster has to be within scenes"<<endl;
+      Console(LogLevel::Error)<<"ShadowCaster has to be within scenes"<<endl;
     }
     H3DWindowNode* window = static_cast<H3DWindowNode*>(scene->window->getValue ( )[0]);
     bool use_sps = window==NULL? false:window->singlePassStereo->getValue();

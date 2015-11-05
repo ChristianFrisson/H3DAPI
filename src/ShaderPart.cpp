@@ -111,25 +111,25 @@ GLhandleARB ShaderPart::compileShaderPart(){
       shader_handle = glCreateShaderObjectARB( GL_VERTEX_SHADER_ARB );
     } else if( shader_type == "GEOMETRY" ) {
       if( !GLEW_EXT_geometry_shader4 ) {
-        Console(4) << "Warning: Geometry shaders not supported by your graphics card. ShaderPart with type \"GEOMETRY\" will be ignored." << endl;
+        Console(LogLevel::Error) << "Warning: Geometry shaders not supported by your graphics card. ShaderPart with type \"GEOMETRY\" will be ignored." << endl;
         return 0;
       }
       shader_handle = glCreateShaderObjectARB( GL_GEOMETRY_SHADER_EXT );
     }  else if( shader_type == "TESS_CONTROL" ) {
       if( !GLEW_ARB_tessellation_shader ) {
-        Console(4) << "Warning: Tesselation shaders not supported by your graphics card. ShaderPart with type \"TESS_CONTROL\" will be ignored." << endl;
+        Console(LogLevel::Error) << "Warning: Tesselation shaders not supported by your graphics card. ShaderPart with type \"TESS_CONTROL\" will be ignored." << endl;
         return 0;
       }
       shader_handle = glCreateShaderObjectARB( GL_TESS_CONTROL_SHADER );
     }  else if( shader_type == "TESS_EVALUATION" ) {
       if( !GLEW_ARB_tessellation_shader ) {
-        Console(4) << "Warning: Tesselation shaders not supported by your graphics card. ShaderPart with type \"TESS_EVALUATION\" will be ignored." << endl;
+        Console(LogLevel::Error) << "Warning: Tesselation shaders not supported by your graphics card. ShaderPart with type \"TESS_EVALUATION\" will be ignored." << endl;
         return 0;
       }
       shader_handle = glCreateShaderObjectARB( GL_TESS_EVALUATION_SHADER );
     } else {
       shader_handle = 0;
-      Console(3) << "Warning: Unsupported shader type \"" << shader_type
+      Console(LogLevel::Warning) << "Warning: Unsupported shader type \"" << shader_type
         << "\" in ShaderPart node. Must be either \"FRAGMENT\"," 
         << "\"VERTEX\", \"GEOMETRY\", \"TESS_CONTROL\" "
         << " or \"TESS_EVALUATION." << endl;
@@ -158,9 +158,9 @@ GLhandleARB ShaderPart::compileShaderPart(){
           nr_characters,
           NULL,
           log );
-        if( print_error == 1 ) Console(3) << "Warning: Error w";
-        else Console(3) << "Warning: W";
-        Console(3) << "hen compiling shader source of \"" 
+        if( print_error == 1 ) Console(LogLevel::Warning) << "Warning: Error w";
+        else Console(LogLevel::Warning) << "Warning: W";
+        Console(LogLevel::Warning) << "hen compiling shader source of \"" 
           << getName() << "\" node (" << url_used 
           << ")." << endl << log << endl;
 
@@ -219,7 +219,7 @@ std::string ShaderPart::shaderStringFromURL ( const std::string& shader_url ) {
 std::string ShaderPart::preProcess ( const std::string& input, const std::string& _url, int depth ) {
   // Catch infinite recursion
   if ( depth > pre_processor_max_recurse_depth ) {
-    Console(4) << "Warning: ShaderPart: " << getName() << ": Maximum recursion depth reached in pre-processing. Could be recursive include." << endl;
+    Console(LogLevel::Error) << "Warning: ShaderPart: " << getName() << ": Maximum recursion depth reached in pre-processing. Could be recursive include." << endl;
     return input;
   }
 
@@ -256,7 +256,7 @@ std::string ShaderPart::preProcess ( const std::string& input, const std::string
         include_source= preProcess ( include_source, path, depth+1 );
         output+= include_source + "\n";
       } else {
-        Console(4) << "Warning: ShaderPart: " << getName() << ": Could not include shader file: " << path << " in " << getURLBase() << "." << endl;
+        Console(LogLevel::Error) << "Warning: ShaderPart: " << getName() << ": Could not include shader file: " << path << " in " << getURLBase() << "." << endl;
       }
 
       setURLBase ( old_base );
@@ -284,11 +284,11 @@ void ShaderPart::SFShaderString::update() {
       return;
     }
   }
-  Console(4) << "None of the urls in ShaderPart:"<<this->getFullName()<<" with url [";
+  Console(LogLevel::Error) << "None of the urls in ShaderPart:"<<this->getFullName()<<" with url [";
   for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {  
-    Console(4) << " \"" << *i << "\"";
+    Console(LogLevel::Error) << " \"" << *i << "\"";
   }
-  Console(4) << "] could be loaded." << endl;
+  Console(LogLevel::Error) << "] could be loaded." << endl;
   shader_part->setURLUsed( "" );
   value = "";
   //PROFILE_END();

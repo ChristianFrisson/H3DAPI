@@ -69,7 +69,7 @@ void RenderTargetSelectGroup::render() {
   // Check that we have hardware support
   if( !GLEW_EXT_framebuffer_object ) {
     if( !support_message_displayed ) {
-      Console(4) << "Warning: Frame Buffer Objects not supported by your graphics card "
+      Console(LogLevel::Error) << "Warning: Frame Buffer Objects not supported by your graphics card "
      << "(EXT_frame_buffer_object). RenderTargetSelectGroup nodes have no effect. " 
      << endl;
       support_message_displayed = true;
@@ -79,7 +79,7 @@ void RenderTargetSelectGroup::render() {
 
   if( !GLEW_ARB_draw_buffers ) {
     if( !support_message_displayed ) {
-      Console(4) << "Warning: Your graphics card does not support multiple "
+      Console(LogLevel::Error) << "Warning: Your graphics card does not support multiple "
      << "render targets(ARB_draw_buffers). RenderTargetSelectGroup nodes have no effect. " << endl;
       support_message_displayed = true;
     }
@@ -115,7 +115,7 @@ void RenderTargetSelectGroup::render() {
   draw_buffers[target] = GL_COLOR_ATTACHMENT0_EXT + target;
   if( target >= draw_buffer_size ) draw_buffer_size = target + 1;
       } else {
-  Console(4) << "Warning: Invalid render target: " << target 
+  Console(LogLevel::Error) << "Warning: Invalid render target: " << target 
        << ". Targets supported by your graphics card are between 0 and "
        << max_nr_draw_buffers - 1 << "( in RenderTargetSelectGroup). " << endl;
       }

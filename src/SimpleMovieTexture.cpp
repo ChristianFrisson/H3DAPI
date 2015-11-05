@@ -177,11 +177,11 @@ void SimpleMovieTexture::DecoderManager::update() {
       }
     }
 
-    Console(4) << "Warning: None of the urls in SimpleMovieTexture with url [";
+    Console(LogLevel::Error) << "Warning: None of the urls in SimpleMovieTexture with url [";
     for( MFString::const_iterator i = urls->begin(); i != urls->end(); ++i ) {  
-      Console(4) << " \"" << *i << "\"";
+      Console(LogLevel::Error) << " \"" << *i << "\"";
     }
-    Console(4) << "] could be loaded. Either they don't exist or the file format "
+    Console(LogLevel::Error) << "] could be loaded. Either they don't exist or the file format "
              << "is not supported by any H3DVideoClipDecoderNodes that is available "
                << "(in " << getOwner()->getName() << ")" << endl;
 
@@ -191,7 +191,7 @@ void SimpleMovieTexture::DecoderManager::update() {
     H3DFloat _rate =static_cast< SFFloat * >( routes_in[5] )->getValue( tex->id );
     if( tex->decoder.get() ) {
       if(! tex->decoder->setRate( _rate ) ) {
-        Console(3) << "Warning: Unable to set rate to " << _rate
+        Console(LogLevel::Warning) << "Warning: Unable to set rate to " << _rate
                    << ". Rate not supported by decoder ( " 
                    << tex->decoder->getName() << " in " 
                    << tex->getName() << endl;

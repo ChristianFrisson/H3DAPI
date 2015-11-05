@@ -236,14 +236,14 @@ void Extrusion::VertexVector::update() {
     // points. If there are more scale or orientation values than spine points
     // the excess values are ignored.
     if( nr_of_orn_values < spine_size && nr_of_orn_values > 1 ) {
-      Console(3)
+      Console(LogLevel::Warning)
         << "Warning: Not enough orientation values in Extrusion node( "
         << getName() << "). Node will not be rendered. " << endl;
       return;
     }
 
     if( nr_of_scale_values < spine_size && nr_of_scale_values > 1  ) {
-      Console(3) << "Warning: Not enough scale values in Extrusion node( "
+      Console(LogLevel::Warning) << "Warning: Not enough scale values in Extrusion node( "
         << getName() << "). Node will not be rendered. " << endl;
       return;
     }

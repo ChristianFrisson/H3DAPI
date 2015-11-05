@@ -282,7 +282,7 @@ void Appearance::preRender() {
         s->preRender();
         break;
       } else {
-        Console(3) << "Warning: Shader node \"" << s->getName() 
+        Console(LogLevel::Warning) << "Warning: Shader node \"" << s->getName() 
                    << "\" does not support the \"" << s->language->getValue() 
                    << "\" language. Shader will be ignored." << endl;
         s->setSelected( false );
@@ -363,7 +363,7 @@ void Appearance::traverseSG( TraverseInfo &ti ) {
     ++nr_lights;
   }
   if( shaders->size() == 0 && (GLint)nr_lights > max_lights )
-      Console(4) << "Warning: Maximum number of lightsources (" << max_lights
+      Console(LogLevel::Error) << "Warning: Maximum number of lightsources (" << max_lights
                  << ") exceeded. Some lights will be ignored." << endl;
 }
 

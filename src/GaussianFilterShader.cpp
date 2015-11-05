@@ -140,7 +140,7 @@ void GaussianFilterShader::MFWeights::update() {
   float demand_sigma = gfs->sigma->getValue();
   if( demand_sigma<0 || demand_kernel_size<0 || demand_kernel_size%2 == 0 ) {
     // no need to update kernel
-    Console(2)<<"Invalid sigma or kernel size assigned, will not update kernel."<<endl;
+    Console(LogLevel::Warning)<<"Invalid sigma or kernel size assigned, will not update kernel."<<endl;
     return;
   }
 

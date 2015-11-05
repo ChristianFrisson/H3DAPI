@@ -82,7 +82,7 @@ void QuanserDevice::initialize() {
 #ifdef HAVE_QUARC
   hapi_device.reset( new HAPI::QuanserHapticsDevice( uri->getValue() ) );
 #else
-  Console(4) << "Cannot use QuanserDevice. HAPI compiled without"
+  Console(LogLevel::Error) << "Cannot use QuanserDevice. HAPI compiled without"
              << " Quanser support. Recompile HAPI with "
              << "HAVE_QUANSERAPI defined"
              << " in order to use it." << endl;

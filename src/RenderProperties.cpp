@@ -383,7 +383,7 @@ void RenderProperties::render() {
   const string &depth_func = depthFunc->getValue();
   GLenum gl_depth_func = GL_LESS;
   if( getAlphaFunc( depth_func, gl_depth_func ) != 0 ) {
-    Console(4) << "Invalid value \"" << depth_func << "\" for depthFunc field in RenderProperties node. Using \"LESS\" instead." << endl;
+    Console(LogLevel::Error) << "Invalid value \"" << depth_func << "\" for depthFunc field in RenderProperties node. Using \"LESS\" instead." << endl;
     gl_depth_func = GL_LESS;
   }
 
@@ -422,14 +422,14 @@ void RenderProperties::render() {
   const string &blend_func_rgb_src = blendFuncSrcFactorRGB->getValue();
   GLenum s_factor;
   if( getSFactor( blend_func_rgb_src, s_factor ) != 0 ) {
-    Console(4) << "Invalid value \"" << blend_func_rgb_src << "\" for blendFuncSrcFactorRGB field in RenderProperties node. Using \"ONE\" instead." << endl;
+    Console(LogLevel::Error) << "Invalid value \"" << blend_func_rgb_src << "\" for blendFuncSrcFactorRGB field in RenderProperties node. Using \"ONE\" instead." << endl;
     s_factor = GL_ONE;
   }
 
   const string &blend_func_alpha_src = blendFuncSrcFactorAlpha->getValue();
   GLenum s_factor_alpha;
   if( getSFactor( blend_func_alpha_src, s_factor_alpha ) != 0 ) {
-    Console(4) << "Invalid value \"" << blend_func_alpha_src << "\" for blendFuncSrcFactorAlpha field in RenderProperties node. Using \"ONE\" instead." << endl;
+    Console(LogLevel::Error) << "Invalid value \"" << blend_func_alpha_src << "\" for blendFuncSrcFactorAlpha field in RenderProperties node. Using \"ONE\" instead." << endl;
     s_factor_alpha = GL_ONE;
   }
 
@@ -438,14 +438,14 @@ void RenderProperties::render() {
   const string &blend_func_rgb_dst = blendFuncDstFactorRGB->getValue();
   GLenum d_factor;
   if( getDFactor( blend_func_rgb_dst, d_factor ) != 0 ) {
-    Console(4) << "Invalid value \"" << blend_func_rgb_dst << "\" for blendFuncDstFactorRGB field in RenderProperties node. Using \"ZERO\" instead." << endl;
+    Console(LogLevel::Error) << "Invalid value \"" << blend_func_rgb_dst << "\" for blendFuncDstFactorRGB field in RenderProperties node. Using \"ZERO\" instead." << endl;
     d_factor = GL_ZERO;
   }
 
   const string &blend_func_alpha_dst = blendFuncDstFactorAlpha->getValue();
   GLenum d_factor_alpha;
   if( getDFactor( blend_func_alpha_dst, d_factor_alpha ) != 0 ) {
-    Console(4) << "Invalid value \"" << blend_func_alpha_dst << "\" for blendFuncDstFactorAlpha field in RenderProperties node. Using \"ZERO\" instead." << endl;
+    Console(LogLevel::Error) << "Invalid value \"" << blend_func_alpha_dst << "\" for blendFuncDstFactorAlpha field in RenderProperties node. Using \"ZERO\" instead." << endl;
     d_factor_alpha = GL_ZERO;
   }
 
@@ -456,14 +456,14 @@ void RenderProperties::render() {
   const string &blend_equation_rgb = blendEquationRGB->getValue();
   GLenum equation_rgb = GL_FUNC_ADD;
   if( getBlendEquation( blend_equation_rgb, equation_rgb ) != 0 ) {
-    Console(4) << "Invalid value \"" << blend_equation_rgb << "\" for blendEquationRGB field in RenderProperties node. Using \"ADD\" instead." << endl;
+    Console(LogLevel::Error) << "Invalid value \"" << blend_equation_rgb << "\" for blendEquationRGB field in RenderProperties node. Using \"ADD\" instead." << endl;
     equation_rgb = GL_FUNC_ADD;
   }
 
   const string &blend_equation_alpha = blendEquationAlpha->getValue();
   GLenum equation_alpha = GL_FUNC_ADD;
   if( getBlendEquation( blend_equation_alpha, equation_alpha ) != 0 ) {
-    Console(4) << "Invalid value \"" << blend_equation_alpha << "\" for blendEquationAlpha field in RenderProperties node. Using \"ADD\" instead." << endl;
+    Console(LogLevel::Error) << "Invalid value \"" << blend_equation_alpha << "\" for blendEquationAlpha field in RenderProperties node. Using \"ADD\" instead." << endl;
     equation_alpha = GL_FUNC_ADD;
   }
 
@@ -482,7 +482,7 @@ void RenderProperties::render() {
   const string &alpha_func = alphaFunc->getValue();
   GLenum gl_alpha_func = GL_ALWAYS;
   if( getAlphaFunc( alpha_func, gl_alpha_func ) != 0 ) {
-    Console(4) << "Invalid value \"" << alpha_func << "\" for alphaFunc field in RenderProperties node. Using \"ALWAYS\" instead." << endl;
+    Console(LogLevel::Error) << "Invalid value \"" << alpha_func << "\" for alphaFunc field in RenderProperties node. Using \"ALWAYS\" instead." << endl;
     gl_alpha_func = GL_ALWAYS;
   }
 

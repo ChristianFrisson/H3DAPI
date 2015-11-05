@@ -217,7 +217,7 @@ namespace H3D {
     /// \param n The added value.
     virtual void onAdd( RefClass *n ) {
 #ifdef REF_COUNT_DEBUG
-      Console(1) << "RefCountMField::onAdd( " << getFullName() << " = " << this 
+      Console(LogLevel::Debug) << "RefCountMField::onAdd( " << getFullName() << " = " << this 
                  << ", n = " << n << ") " << endl;
 #endif
     }
@@ -228,7 +228,7 @@ namespace H3D {
     /// \param n The removed value.
     virtual void onRemove( RefClass *n ) {
 #ifdef REF_COUNT_DEBUG
-      Console(1) << "RefCountMField::onRemove( " << getFullName() << " = " 
+      Console(LogLevel::Debug) << "RefCountMField::onRemove( " << getFullName() << " = " 
                  << this << ", n = " << n << ") " << endl;
 #endif
     }

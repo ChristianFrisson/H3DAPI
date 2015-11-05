@@ -330,7 +330,7 @@ bool WxFrame::loadFile( const string &filename) {
     else if (strcmp( buffer, "FALSE" ) == 0 ){
       fullscreen = false; }
     else
-      Console(4) << "Invalid valid value \"" << buffer 
+      Console(LogLevel::Error) << "Invalid valid value \"" << buffer 
                  << "\" on environment "
                  << "variable H3D_FULLSCREEN. Must be TRUE or FALSE. "
                  << endl;
@@ -343,7 +343,7 @@ bool WxFrame::loadFile( const string &filename) {
     else if (strcmp( buffer, "FALSE" ) == 0 ){
       mirrored = false; }
     else
-      Console(4) << "Invalid valid value \"" << buffer 
+      Console(LogLevel::Error) << "Invalid valid value \"" << buffer 
                  << "\" on environment "
                  << "variable H3D_MIRRORED. Must be TRUE or FALSE. "<< endl;
   }
@@ -365,7 +365,7 @@ bool WxFrame::loadFile( const string &filename) {
       try {
         device_info = X3D::createX3DNodeFromURL( deviceinfo_file );
       } catch( const Exception::H3DException &e ) {
-        Console(3) << "Warning: Could not create default DeviceInfo node "
+        Console(LogLevel::Warning) << "Warning: Could not create default DeviceInfo node "
                    << "from file \"" << deviceinfo_file << "\": "
                    << e << endl;
       }
@@ -382,7 +382,7 @@ bool WxFrame::loadFile( const string &filename) {
       try {
         default_stylus = X3D::createX3DNodeFromURL( stylus_file );
       } catch( const Exception::H3DException &e ) {
-        Console( 4 ) << "Warning: Could not create default stylus "
+        Console(LogLevel::Error) << "Warning: Could not create default stylus "
                      << "from file \"" << stylus_file << "\": "
                      << e << endl;
       }
@@ -398,9 +398,8 @@ bool WxFrame::loadFile( const string &filename) {
 
     DeviceInfo::DeviceInfoList DEVlist = DeviceInfo::getAllDeviceInfos();
     int devcount = int( DEVlist.size() );
-    Console (3) << devcount << endl;
 
-    Console(3) << "Loading " << filename << endl;
+    Console(LogLevel::Info) << "Loading " << filename << endl;
     if ( filename.size() > 4 && 
          filename.find( ".wrl", filename.size()-5 ) != string::npos )
       t->children->push_back( X3D::createVRMLFromURL( filename, 
@@ -464,7 +463,7 @@ bool WxFrame::loadFile( const string &filename) {
       try {
         viewpoint = X3D::createX3DNodeFromURL( viewpoint_file );
       } catch( const Exception::H3DException &e ) {
-        Console(3) << "Warning: Could not create default Viewpoint node "
+        Console(LogLevel::Warning) << "Warning: Could not create default Viewpoint node "
                    << "from file \"" << viewpoint_file << "\": "
                    << e << endl;
       }

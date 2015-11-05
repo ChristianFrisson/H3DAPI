@@ -387,11 +387,11 @@ namespace H3D {
     ///  Scene::findNodes ( *scene, materials, "", &parents );
     ///
     ///  for ( AutoRefVector<Material>::const_iterator i= materials.begin(); i != materials.end(); ++i ) {
-    ///    Console(4) << *i << " " << (*i)->getName() << endl;
-    ///    Console(4) << "Parents: " << endl;
+    ///    Console(LogLevel::Error) << *i << " " << (*i)->getName() << endl;
+    ///    Console(LogLevel::Error) << "Parents: " << endl;
     ///    const AutoRefVector<Node>& node_parents= parents[*i];
     ///    for ( AutoRefVector<Node>::const_iterator j= node_parents.begin(); j != node_parents.end(); ++j ) {
-    ///      Console(4) << *j << " " << (*j)->getName() << endl;
+    ///      Console(LogLevel::Error) << *j << " " << (*j)->getName() << endl;
     ///    }
     ///  }
     ///
@@ -465,7 +465,7 @@ namespace H3D {
               Node* c= sf_node->getValue();
               if ( c ) {
                 if ( _verbose ) {
-                  Console(4) << "Node::findNodes(): " << _node.getName() << " -> " << f->getName() << endl;
+                  Console(LogLevel::Error) << "Node::findNodes(): " << _node.getName() << " -> " << f->getName() << endl;
                 }
                 findNodes ( *c, _result, _nodeName, _parentMap, _searchFieldNames, _typeNames, _exactNodeName, _verbose, &_node );
               }
@@ -475,7 +475,7 @@ namespace H3D {
                 Node* c= *j;
                 if ( c ) {
                   if ( _verbose ) {
-                    Console(4) << "Node::findNodes(): " << _node.getName() << " -> " << f->getName() << endl;
+                    Console(LogLevel::Error) << "Node::findNodes(): " << _node.getName() << " -> " << f->getName() << endl;
                   }
                   findNodes ( *c, _result, _nodeName, _parentMap, _searchFieldNames, _typeNames, _exactNodeName, _verbose, &_node );
                 }

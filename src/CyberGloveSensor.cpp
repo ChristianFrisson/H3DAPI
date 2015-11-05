@@ -101,7 +101,7 @@ bool CyberGloveSensor::connect() {
         return true;
       } catch( vhtBaseException *e ) {
         glove = 0;
-        Console(3) << "Warning: " << e->getMessage()
+        Console(LogLevel::Warning) << "Warning: " << e->getMessage()
                    << " in Node " << getName()
                    << " Check that the VirtualHand Device Manager is started"
                    << " and use DCU to check that a default configuration"
@@ -124,7 +124,7 @@ bool CyberGloveSensor::connect() {
           return true;
         } catch( vhtBaseException *e ) {
           glove = 0;
-          Console(3) << "Warning: " << e->getMessage()
+          Console(LogLevel::Warning) << "Warning: " << e->getMessage()
                    << " in Node " << getName()
                    << " Check that the VirtualHand Device Manager is started"
                    << " and that the values of the fields deviceClass, host,"
@@ -132,7 +132,7 @@ bool CyberGloveSensor::connect() {
                    << endl;
         }
       } else {
-        Console(3) << "Warning: Incorrect value for field host, "
+        Console(LogLevel::Warning) << "Warning: Incorrect value for field host, "
                    << "port or connectionType of Node "
                    << getName() << ". No cyber glove will be used." << endl;
       }

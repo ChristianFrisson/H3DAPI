@@ -202,7 +202,7 @@ HAPI::HAPIHapticShape *X3DGeometryNode::getOpenGLHapticShape(
     } else if( shape == "DEPTH_BUFFER" ) {
       type = 1;
     } else {
-      Console(4) << "Warning: Invalid OpenHaptics GLShape type: "
+      Console(LogLevel::Error) << "Warning: Invalid OpenHaptics GLShape type: "
                  << shape 
                  << ". Must be \"FEEDBACK_BUFFER\" or \"DEPTH_BUFFER\" "
                  << "(in \"" << getName() << "\")" << endl;
@@ -215,7 +215,7 @@ HAPI::HAPIHapticShape *X3DGeometryNode::getOpenGLHapticShape(
     else if( face == "AS_GRAPHICS" ) {
       // default values are the same as graphics
     } else {
-      Console(4) << "Warning: Invalid default OpenHaptics touchable face: "
+      Console(LogLevel::Error) << "Warning: Invalid default OpenHaptics touchable face: "
                  << face 
                  << ". Must be \"FRONT\", \"BACK\" or \"FRONT_AND_BACK\" "
                  << "(in active OpenHapticsSettings node\")" << endl;
@@ -453,7 +453,7 @@ void X3DGeometryNode::SFBoundTree::update() {
                                                  points,
                                                  max_triangles );
     } else {
-      Console(4) << "Warning: Invalid boundType: "
+      Console(LogLevel::Error) << "Warning: Invalid boundType: "
                  << type
                  << ". Must be \"SPHERE\", \"OBB\" or \"AABB\" "
                  << "(in active GeometryBoundTreeOptions node for \" "
@@ -573,7 +573,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
     else if( face == "AS_GRAPHICS" ) {
       // default values are the same as graphics
     } else {
-      Console(4) << "Warning: Invalid default touchable face: "
+      Console(LogLevel::Error) << "Warning: Invalid default touchable face: "
         << face 
         << ". Must be \"FRONT\", \"BACK\" or \"FRONT_AND_BACK\" "
         << "(in active HapticsOptions node\" )" << endl;
@@ -657,7 +657,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
   if( print_negative_scaling_warning ) {
     Matrix3f m3 = ti.getAccForwardMatrix().getScaleRotationPart();
     if( ( m3.getRow( 0 ) % m3.getRow( 1 ) ) * m3.getRow(2) < 0 ) {
-      Console(3) << "Warning: A parent transform node to the X3DGeometryNode "
+      Console(LogLevel::Warning) << "Warning: A parent transform node to the X3DGeometryNode "
                  << getName() << " contains a negative scaling coefficient. "
                  << " Haptics will most likely not be rendered correctly."
                  << endl;
@@ -694,7 +694,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
         type = HAPI::OpenHapticsRenderer::OpenHapticsOptions::CUSTOM;
       } else {
         type = HAPI::OpenHapticsRenderer::OpenHapticsOptions::FEEDBACK_BUFFER;
-        Console(4) << "Warning: Invalid OpenHaptics GLShape type: "
+        Console(LogLevel::Error) << "Warning: Invalid OpenHaptics GLShape type: "
           << shape 
           << ". Must be \"FEEDBACK_BUFFER\", \"DEPTH_BUFFER\" "
           << "or \"CUSTOM\""
@@ -745,7 +745,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
         type = HAPI::OpenHapticsRenderer::OpenHapticsOptions::CUSTOM;
       } else {
         type = HAPI::OpenHapticsRenderer::OpenHapticsOptions::FEEDBACK_BUFFER;
-        Console(4) << "Warning: Invalid OpenHaptics GLShape type: "
+        Console(LogLevel::Error) << "Warning: Invalid OpenHaptics GLShape type: "
           << shape 
           << ". Must be \"FEEDBACK_BUFFER\", \"DEPTH_BUFFER\" "
           << "or \"CUSTOM\""
@@ -797,7 +797,7 @@ void X3DGeometryNode::createAndAddHapticShapes(
         type = HAPI::OpenHapticsRenderer::OpenHapticsOptions::CUSTOM;
       } else {
         type = HAPI::OpenHapticsRenderer::OpenHapticsOptions::FEEDBACK_BUFFER;
-        Console(4) << "Warning: Invalid OpenHaptics GLShape type: "
+        Console(LogLevel::Error) << "Warning: Invalid OpenHaptics GLShape type: "
           << shape 
           << ". Must be \"FEEDBACK_BUFFER\", \"DEPTH_BUFFER\" "
           << "or \"CUSTOM\""
@@ -908,7 +908,7 @@ void X3DGeometryNode::addDynamicInfoToShape( TraverseInfo &ti,
           shape->setForceDynamic( true );
         else  if( !(dynamic_mode == "TRANSFORM_CHANGED" ||
                     dynamic_mode == "ALWAYS" ) ) {
-          Console(4) << "Warning: Invalid dynamic mode: "
+          Console(LogLevel::Error) << "Warning: Invalid dynamic mode: "
                      << dynamic_mode 
                      << ". Must be \"ALWAYS\", \"NEVER\" or \"TRANSFORM_CHANGED\" "
                      << "(in active HapticsOptions node\" )" << endl;

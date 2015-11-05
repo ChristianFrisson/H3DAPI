@@ -36,7 +36,7 @@ using namespace H3DUtil;
 void URNResolver::loadConfigFile( const string &_config_file ) {
   ifstream is( _config_file.c_str() );
   if( !is.good() ) {
-    Console(4) << "Warning: Could not open file URN resolver config file \"" 
+    Console(LogLevel::Error) << "Warning: Could not open file URN resolver config file \"" 
                << _config_file << "\"" << endl; 
     return;
   }
@@ -59,7 +59,7 @@ void URNResolver::loadConfigFile( const string &_config_file ) {
     
     string urn = line.substr( pos, 4 );
     if( !nonCaseEquals( urn, "urn:" ) ) {
-      Console(3) << "Invalid urn in URN resolve rule \"" << line 
+      Console(LogLevel::Warning) << "Invalid urn in URN resolve rule \"" << line 
                  << "\" in file \"" << _config_file << "\"" << endl;
       continue;
     } 
@@ -69,7 +69,7 @@ void URNResolver::loadConfigFile( const string &_config_file ) {
     string name_space = "";
     pos = line.find( ':', characters_processed );
     if( pos == string::npos ) {
-      Console(3) << "Invalid urn in URN resolve rule \"" << line
+      Console(LogLevel::Warning) << "Invalid urn in URN resolve rule \"" << line
                  << "\" in file \"" << _config_file << "\"" << endl;
       continue;
     } 
@@ -83,7 +83,7 @@ void URNResolver::loadConfigFile( const string &_config_file ) {
     string::size_type tab_pos = line.find( '\t', characters_processed );
     
     if( pos == string::npos )
-      Console(3) << "Invalid urn spec" << endl;
+      Console(LogLevel::Warning) << "Invalid urn spec" << endl;
     
     pos = pos < tab_pos ? pos: tab_pos;
     
@@ -99,7 +99,7 @@ void URNResolver::loadConfigFile( const string &_config_file ) {
     }
     
     if( pos >= line.size() ) {
-      Console(3) << "Invalid URN resolve rule \"" << line
+      Console(LogLevel::Warning) << "Invalid URN resolve rule \"" << line
                  << "\" in file \"" << _config_file << endl;
       continue;
     }

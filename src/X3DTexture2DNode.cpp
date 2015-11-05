@@ -249,7 +249,7 @@ void X3DTexture2DNode::glTexImage( Image *i, GLenum _texture_target,
     texture_properties->borderWidth->getValue() : 0;
 
     if( border_width < 0 || border_width > 1 ) {
-      Console(3) << "Warning: Invalid borderWidth \"" << border_width 
+      Console(LogLevel::Warning) << "Warning: Invalid borderWidth \"" << border_width 
                  << "\". Must be 0 or 1 (in " << getName()
                    << ")" << endl;
       border_width = 0;
@@ -481,7 +481,7 @@ Image* X3DTexture2DNode::renderToImage( H3DInt32 _width, H3DInt32 _height, bool 
     return _image;
   }
 
-  Console(4) << "ERROR: Texture ID: "<< t_id << " is not valid. Can not save texture!"<<endl;
+  Console(LogLevel::Error) << "ERROR: Texture ID: "<< t_id << " is not valid. Can not save texture!"<<endl;
   return NULL;
 }
 
@@ -493,10 +493,10 @@ void X3DTexture2DNode::UpdateTextureProperties::update(){
     target_type = texture_properties->textureType->getValue();
     if( target_type == "RECTANGLE" )  t->setTextureTarget(GL_TEXTURE_RECTANGLE_ARB);
     else if( target_type == "2DARRAY" ) {
-      Console(3) << "Warning: Invalid textureType \"2DARRAY\" in TextureProperties for "
+      Console(LogLevel::Warning) << "Warning: Invalid textureType \"2DARRAY\" in TextureProperties for "
         << "X3DTexture2DNode. \"2DARRAY\" can only be used for 3D textures" << endl;
     } else if( target_type != "NORMAL" ) {
-      Console(3) << "Warning: Invalid textureType: \"" << target_type << "\" in TextureProperties for "
+      Console(LogLevel::Warning) << "Warning: Invalid textureType: \"" << target_type << "\" in TextureProperties for "
         << "X3DTexture2DNode. " << endl;
     }
   }

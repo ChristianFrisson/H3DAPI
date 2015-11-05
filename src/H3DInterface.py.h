@@ -43,6 +43,7 @@ sys.stdout = Console\n\
 sys.stderr = Console\n\
 \n\
 class LogLevel:\n\
+  Debug = 1\n\
   Info = 3\n\
   Warning = 4\n\
   Error = 5\n\

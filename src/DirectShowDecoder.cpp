@@ -122,7 +122,7 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
     CFrameGrabber *frame_grabber = new CFrameGrabber( NULL, &hr, this );
     if (FAILED(hr) ) {
 #ifdef DSHOW_DEBUG_MSG
-      Console(4) << "Failed to create CFrameGrabber(" 
+      Console(LogLevel::Error) << "Failed to create CFrameGrabber(" 
                  << DirectShowDecoder::initDShowTextureRenderer << ")" << endl;
 #endif
       delete frame_grabber;
@@ -134,7 +134,7 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
     g_pRenderer = frame_grabber;
     if (FAILED(hr = g_pGB->AddFilter(g_pRenderer, L"TEXTURERENDERER"))) {
 #ifdef DSHOW_DEBUG_MSG
-      Console(4) << "Could not add renderer filter to graph! (" 
+      Console(LogLevel::Error) << "Could not add renderer filter to graph! (" 
                  << DirectShowDecoder::initDShowTextureRenderer << ")" << endl;
 #endif
         return hr;
@@ -155,7 +155,7 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
     // If the media file was not found, inform the user.
     if (hr == VFW_E_NOT_FOUND) {
 #ifdef DSHOW_DEBUG_MSG
-      Console(4) << "Could not add source filter to graph! (hr==VFW_E_NOT" 
+      Console(LogLevel::Error) << "Could not add source filter to graph! (hr==VFW_E_NOT" 
                  << "_FOUND)" << endl 
                  << "This sample reads a media file from your windows"
                  <<" directory. This file is missing from this machine." 
@@ -166,7 +166,7 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
     }
     else if(FAILED(hr)) {
 #ifdef DSHOW_DEBUG_MSG
-      Console(4) << "Could not add source filter to graph! (" 
+      Console(LogLevel::Error) << "Could not add source filter to graph! (" 
                  << DirectShowDecoder::initDShowTextureRenderer << ")" << endl;
 #endif
       return hr;
@@ -175,7 +175,7 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
     //if (FAILED(hr = pFSrc->FindPin(L"Output", &pFSrcPinOut))) {
     if (FAILED(hr = GetPin( pFSrc, PINDIR_OUTPUT, &pFSrcPinOut))) {
 #ifdef DSHOW_DEBUG_MSG
-      Console(4) << "Could not find output pin! " 
+      Console(LogLevel::Error) << "Could not find output pin! " 
                  << DirectShowDecoder::initDShowTextureRenderer << ")" << endl;
 #endif
         return hr;
@@ -191,7 +191,7 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
     // Find the source's output pin and the renderer's input pin
     if (FAILED(hr = frame_grabber->FindPin(L"In", &pFTRPinIn))) {
 #ifdef DSHOW_DEBUG_MSG
-      Console(4) << "Could not find input pin!  (" 
+      Console(LogLevel::Error) << "Could not find input pin!  (" 
                  << DirectShowDecoder::initDShowTextureRenderer << ")" << endl;
 #endif
         return hr;
@@ -200,7 +200,7 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
     // Connect these two filters
     if (FAILED(hr = g_pGB->Connect(pFSrcPinOut, pFTRPinIn))) {
 #ifdef DSHOW_DEBUG_MSG
-      Console(4) << "Could not connect pins! (" 
+      Console(LogLevel::Error) << "Could not connect pins! (" 
                  << DirectShowDecoder::initDShowTextureRenderer << ")" << endl;
 #endif
       return hr;
@@ -214,7 +214,7 @@ HRESULT DirectShowDecoder::initDShowTextureRenderer( const string &url )
 
     if (FAILED(hr = g_pGB->Render(pFSrcPinOut))) {
 #ifdef DSHOW_DEBUG_MSG
-      Console(4) << "Could not render source output pin!  ("
+      Console(LogLevel::Error) << "Could not render source output pin!  ("
                  << DirectShowDecoder::initDShowTextureRenderer << ")" 
                  << endl;
 #endif
@@ -365,7 +365,7 @@ void DirectShowDecoder::startPlaying() {
     HRESULT hr = S_OK;
     // Start the graph running;
     if (FAILED(hr = g_pMC->Run()) ){
-      Console( 4 ) << "Could not run the DirectShow graph! "
+      Console(LogLevel::Error) << "Could not run the DirectShow graph! "
                    << "(DirectShowDecoder::startPlaying)"<< endl; 
     } else {
       status = PLAYING;
@@ -390,7 +390,7 @@ void DirectShowDecoder::pausePlaying() {
     HRESULT hr = S_OK;
     // Stop the graph running;
     if (FAILED(hr = g_pMC->Pause()) ){
-      Console( 4 ) << "Pause failed (" << (&DirectShowDecoder::pausePlaying)
+      Console(LogLevel::Error) << "Pause failed (" << (&DirectShowDecoder::pausePlaying)
                    << ")" << endl;
     } else {
       status = PAUSED;

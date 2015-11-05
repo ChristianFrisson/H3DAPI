@@ -284,7 +284,7 @@ string PhongShader::getFunctionShaderString() {
     s << "   return pf; " << endl;
   } else {
     if( shader_model != "BLINN-PHONG" && shader_model != "BLINN-PHONG-EYEATINF" ) {
-      Console(4) << "Warning: Unsupported value \" " << shader_model << "\" for model field in PhongShader. Must be \"BLINN-PHONG\", \"BLINN-PHONG-EYEATINF\" or \"PHONG\". " << endl; 
+      Console(LogLevel::Error) << "Warning: Unsupported value \" " << shader_model << "\" for model field in PhongShader. Must be \"BLINN-PHONG\", \"BLINN-PHONG-EYEATINF\" or \"PHONG\". " << endl; 
     }
     
     if( shader_model == "BLINN-PHONG-EYEATINF" ) {
@@ -743,7 +743,7 @@ string PhongShader::getFragmentShaderString() {
     "    final_color.a = diffuse_color.a;\n"
     "  } \n" 
     "  generated_color = final_color;\n";
-  //Console(4)<< s.str() << endl;
+  //Console(LogLevel::Error)<< s.str() << endl;
   return s.str();
 }
 
@@ -1460,7 +1460,7 @@ string PhongShader::getBaseNormal( const string &normal,
 
     string coord_space = normalMapCoordSpace->getValue();
     if( coord_space != "OBJECT" && coord_space != "TANGENT" ) {
-      Console(4) << "Invalid normalMapCoordSpace value in PhongShader node: \"" 
+      Console(LogLevel::Error) << "Invalid normalMapCoordSpace value in PhongShader node: \"" 
                  << coord_space << "\". Using \"OBJECT\" instead." << endl;
       coord_space = "OBJECT";
     }

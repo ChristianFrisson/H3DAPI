@@ -100,7 +100,7 @@ NurbsTextureCoordinate::NurbsTextureCoordinate(
 
   // vOrder has to be 2 or greater to define the NurbsTextureCoordinate
   if( v_order < 2 ) {
-    Console(3) << "Warning: vOrder is less than 2 "
+    Console(LogLevel::Warning) << "Warning: vOrder is less than 2 "
                << "in NurbsTextureCoordinate node( "
                << getName() << "). Node will not be rendered. " << endl;
     return;
@@ -108,21 +108,21 @@ NurbsTextureCoordinate::NurbsTextureCoordinate(
   
   // uOrder has to be 2 or greater to define the NurbsTextureCoordinate
   if( u_order < 2 ) {
-    Console(3) << "Warning: uOrder is less than 2 "
+    Console(LogLevel::Warning) << "Warning: uOrder is less than 2 "
                << "in NurbsTextureCoordinate node( "
                << getName() << "). Node will not be rendered. " << endl;
     return;
   }
 
   if( v_dimension < v_order )  {
-    Console(3) << "Warning: vDimension is less than vOrder "
+    Console(LogLevel::Warning) << "Warning: vDimension is less than vOrder "
                << "in NurbsTextureCoordinate node( "
                << getName() << "). Node will not be rendered. " << endl;
     return;
   }
 
   if( u_dimension < u_order )  {
-    Console(3) << "Warning: uDimension is less than uOrder in "
+    Console(LogLevel::Warning) << "Warning: uDimension is less than uOrder in "
                << "NurbsTextureCoordinate node( "
                << getName() << "). Node will not be rendered. " << endl;
     return;
@@ -140,7 +140,7 @@ NurbsTextureCoordinate::NurbsTextureCoordinate(
   const vector< Vec2f > &noWeights = controlPoint->getValue();
 
   if( noWeights.size() != (unsigned int) (u_dimension * v_dimension ) ){
-    Console(3) << "Warning: The size of controlPoint does not match "
+    Console(LogLevel::Warning) << "Warning: The size of controlPoint does not match "
                << "vDimension * uDimension in NurbsTextureCoordinate node( "
                << getName() << "). Node will not be rendered. " << endl;
     return;
@@ -191,7 +191,7 @@ NurbsTextureCoordinate::NurbsTextureCoordinate(
     if(u_knots != NULL ) 
       delete [] u_knots;
     u_knots = new GLfloat[ theSizeToUse ];
-    Console(3) << "Warning: The uKnot array is not according to standard in NurbsTextureCoordinate node( "
+    Console(LogLevel::Warning) << "Warning: The uKnot array is not according to standard in NurbsTextureCoordinate node( "
       << getName() << "). A default uKnot array will be generated. " << endl;
     for( int i = 0; i < theSizeToUse; ++i )
       u_knots[i] = (GLfloat)( (H3DDouble)i / ( theSizeToUse - 1 ) );
@@ -223,7 +223,7 @@ NurbsTextureCoordinate::NurbsTextureCoordinate(
     if(v_knots != NULL ) 
       delete [] v_knots;
     v_knots = new GLfloat[ theSizeToUse ];
-    Console(3) << "Warning: The vKnot array is not according to standard in NurbsTextureCoordinate node( "
+    Console(LogLevel::Warning) << "Warning: The vKnot array is not according to standard in NurbsTextureCoordinate node( "
       << getName() << "). A default vKnot array will be generated. " << endl;
     for( int i = 0; i < theSizeToUse; ++i )
       v_knots[i] = (GLfloat)( (H3DDouble)i / ( theSizeToUse - 1 ) );

@@ -92,7 +92,7 @@ Group* X3D::createVRMLFromString( const string &str,
     if ( c )
       g->children->push_back( c );
   } else {
-    Console(3) << "Warning: Could not parse VRML from string" << endl;
+    Console(LogLevel::Warning) << "Warning: Could not parse VRML from string" << endl;
   }
   return g;
 }
@@ -125,7 +125,7 @@ Group* X3D::createVRMLFromURL( const string &url,
     ResourceResolver::setBaseURL( path ); 
 
   if( resolved_url == "" ) {
-    Console(3) << "Warning: Could not open file " 
+    Console(LogLevel::Warning) << "Warning: Could not open file " 
                << url << " for parsing." << endl;
     ResourceResolver::setBaseURL( old_base );
     return g;
@@ -156,7 +156,7 @@ Group* X3D::createVRMLFromStream( istream &is,
     if ( c )
       g->children->push_back( c );
   } else {
-    Console(3) << "Warning: Could not parse VRML from stream" << endl;
+    Console(LogLevel::Warning) << "Warning: Could not parse VRML from stream" << endl;
   }
   return g;
 }
@@ -175,7 +175,7 @@ AutoRef< Node > X3D::createVRMLNodeFromString( const string &str,
     if ( c && !c->children->empty() )
       g.reset( c->children->front() );
   } else {
-    Console(3) << "Warning: Could not parse VRML from string" << endl;
+    Console(LogLevel::Warning) << "Warning: Could not parse VRML from string" << endl;
   }
 
   return g;
@@ -211,7 +211,7 @@ AutoRef< Node > X3D::createVRMLNodeFromURL( const string &url,
     ResourceResolver::setBaseURL( path ); 
 
   if( resolved_url == "" ) {
-    Console(3) << "Warning: Could not open file " 
+    Console(LogLevel::Warning) << "Warning: Could not open file " 
                << url << " for parsing." << endl;
     ResourceResolver::setBaseURL( old_base );
     return g;
@@ -240,7 +240,7 @@ AutoRef< Node > X3D::createVRMLNodeFromStream( istream &is,
     if ( c && !c->children->empty() )
       g.reset( c->children->front() );
   } else {
-    Console(3) << "Warning: Could not parse VRML from stream" << endl;
+    Console(LogLevel::Warning) << "Warning: Could not parse VRML from stream" << endl;
   }
 
   return g;

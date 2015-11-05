@@ -81,13 +81,13 @@ MultiTexture::MultiTexture(
 
 void MultiTexture::render() {
   if( !GLEW_ARB_multitexture ) {
-    Console(4) << "Warning: Your graphic card driver does not support "
+    Console(LogLevel::Error) << "Warning: Your graphic card driver does not support "
                << "the ARB_multitexture extension so you cannot use the MultiTexture "
                << "node. " << endl;
     return;
   }
   if( !GLEW_ARB_texture_env_combine ) {
-    Console(4) << "Warning: Your graphic card driver does not support "
+    Console(LogLevel::Error) << "Warning: Your graphic card driver does not support "
                << "the ARB_texture_env_combine extension so you cannot use the "
                << "MultiTexture node. " << endl;
     return;
@@ -101,7 +101,7 @@ void MultiTexture::render() {
 
   for( unsigned int i = 0; i < texture->size(); ++i ) {
     if( i >= (unsigned int)nr_textures_supported ) {
-      Console(4) << "Warning! MultiTexture: Unable to display all"
+      Console(LogLevel::Error) << "Warning! MultiTexture: Unable to display all"
                  << "textures. Your device only has support for " 
                  << nr_textures_supported << " texture units.\n";
       break;
@@ -160,18 +160,18 @@ void MultiTexture::render() {
           arg2_rgb_operand = GL_SRC_ALPHA;
         } else {
           if( previous_func != "" ) {
-            Console(3) << "Warning: Invalid function \"" << previous_func 
+            Console(LogLevel::Warning) << "Warning: Invalid function \"" << previous_func 
                        << "\" in MultiTexture "
                        << " node (" << getName() << "). " << endl; 
           }
         }
       } else {
         if( arg2 == "SPECULAR" ) {
-          Console(3) << "Warning: Unsupported source \"" << arg2 
+          Console(LogLevel::Warning) << "Warning: Unsupported source \"" << arg2 
                      << "\" in MultiTexture "
                      << " node (" << getName() << ")." << endl; 
         } else {
-          Console(3) << "Warning: Invalid source \"" << arg2 << "\" in MultiTexture "
+          Console(LogLevel::Warning) << "Warning: Invalid source \"" << arg2 << "\" in MultiTexture "
                      << " node (" << getName() << "). " << endl; 
         }
       }
@@ -232,7 +232,7 @@ void MultiTexture::render() {
           glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_DOT3_RGB_ARB );
       } else {
         glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE );
-        Console(4) << "Warning: Your graphics card does not support the "
+        Console(LogLevel::Error) << "Warning: Your graphics card does not support the "
              << "ARB_texture_env_dot3 extension. \"DOTPRODUCT3\" mode cannot "
              << "be used in MultiTexture node( "
              << getName() << "). Using MODULATE instead. " << endl; 
@@ -243,12 +243,12 @@ void MultiTexture::render() {
           rgb_blend_mode == "MODULATEALPHA_ADDCOLOR" ||
           rgb_blend_mode == "MODULATEINVALPHA_ADDCOLOR" ||
           rgb_blend_mode == "MODULATEINVCOLOR_ADDALPHA" ) {
-        Console(3) << "Warning: Unsupported mode \"" << rgb_blend_mode 
+        Console(LogLevel::Warning) << "Warning: Unsupported mode \"" << rgb_blend_mode 
                    << "\" in MultiTexture "
                    << " node (" << getName() 
                    << "). Using MODULATE instead. " << endl; 
       } else {
-        Console(3) << "Warning: Invalid mode \"" << rgb_blend_mode 
+        Console(LogLevel::Warning) << "Warning: Invalid mode \"" << rgb_blend_mode 
                    << "\" in MultiTexture "
                    << " node (" << getName() 
                    << "). Using MODULATE instead. " << endl; 
@@ -305,12 +305,12 @@ void MultiTexture::render() {
           alpha_blend_mode == "MODULATEALPHA_ADDCOLOR" ||
           alpha_blend_mode == "MODULATEINVALPHA_ADDCOLOR" ||
           alpha_blend_mode == "MODULATEINVCOLOR_ADDALPHA" ) {
-        Console(3) << "Warning: Unsupported mode \"" << alpha_blend_mode
+        Console(LogLevel::Warning) << "Warning: Unsupported mode \"" << alpha_blend_mode
                    << "\" in MultiTexture "
                    << " node (" << getName() 
                    << "). Using MODULATE instead. " << endl; 
       } else {
-        Console(3) << "Warning: Invalid mode \"" << alpha_blend_mode
+        Console(LogLevel::Warning) << "Warning: Invalid mode \"" << alpha_blend_mode
                    << "\" in MultiTexture "
                    << " node (" << getName() 
                    << "). Using MODULATE instead. " << endl; 
@@ -342,7 +342,7 @@ void MultiTexture::render() {
       glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND0_ALPHA_ARB, GL_SRC_ALPHA );
     } else {
       if( func != "" ) {
-        Console(3) << "Warning: Invalid function \"" << func 
+        Console(LogLevel::Warning) << "Warning: Invalid function \"" << func 
                    << "\" in MultiTexture "
                    << " node (" << getName() << "). " << endl; 
       }

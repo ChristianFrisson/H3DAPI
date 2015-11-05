@@ -845,9 +845,9 @@ void H3DViewerFieldValuesPanelPropGrid::settingsCallback( Scene::ProgramSettings
   if( panel->mode == 1 && panel->IsShown() )
     panel->displayFieldsFromProgramSettings();
  /* if( event == Scene::ADD_SETTING ) {
-    Console(4) << "Added:" << setting.name << endl; 
+    Console(LogLevel::Error) << "Added:" << setting.name << endl; 
   } else {
-    Console(4) << "Removed: " << setting.name << endl; 
+    Console(LogLevel::Error) << "Removed: " << setting.name << endl; 
   }*/
 }
 

@@ -98,7 +98,7 @@ WxWidgetsWindow::WxWidgetsWindow( wxWindow *_theParent,
 
 void WxWidgetsWindow::initWindow() {
   if( isInitialized() && !allow_new_pixel_format_creation ) {
-    Console(4) << "WxWidgetsWindow does not support changing pixel format from/to "
+    Console(LogLevel::Error) << "WxWidgetsWindow does not support changing pixel format from/to "
                << "quad buffered stereo support after initialization." << endl;
     if( last_render_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
       renderMode->setValue( "QUAD_BUFFERED_STEREO" );
@@ -772,7 +772,7 @@ void WxWidgetsWindow::D3D9Canvas::updateGLFrameBufferSize( int w, int h ) {
                                                   D3DPOOL_DEFAULT, 
                                                   &src_surface, 
                                                   NULL) != D3D_OK ) {
-      Console(4) << "Warning: Could not create DirectX offscreen "
+      Console(LogLevel::Error) << "Warning: Could not create DirectX offscreen "
                  << "surface for NVidia 3DVision rendering." << endl;
     } else {
       // Add NVidia stereo header in last row of offscreen surface.
@@ -828,17 +828,17 @@ void WxWidgetsWindow::D3D9Canvas::OnSize(wxSizeEvent& event)
   // reset device
   HRESULT hr = g_pd3dDevice->Reset( &d3dpp );
   if(  hr != D3D_OK ) {
-    Console(4) << "DirectX device reset failed: ";
+    Console(LogLevel::Error) << "DirectX device reset failed: ";
     if( hr == D3DERR_DEVICELOST ) 
-      Console(4) << "Device lost" << endl;
+      Console(LogLevel::Error) << "Device lost" << endl;
     else if( hr == D3DERR_DEVICEREMOVED ) 
-      Console(4) << "Device removed" << endl;
+      Console(LogLevel::Error) << "Device removed" << endl;
     else if( hr == D3DERR_DRIVERINTERNALERROR )
-      Console(4) << "Driver internal error" << endl;
+      Console(LogLevel::Error) << "Driver internal error" << endl;
     else if( hr == D3DERR_OUTOFVIDEOMEMORY )
-      Console(4) << "Out of mem" << endl;
+      Console(LogLevel::Error) << "Out of mem" << endl;
     else
-      Console(4) << "Unknown error"<< endl;
+      Console(LogLevel::Error) << "Unknown error"<< endl;
   } 
 
   // restore d3d surfaces with the new size
@@ -903,7 +903,7 @@ void WxWidgetsWindow::D3D9Canvas::Render() {
                                  &dstRect,
                                  D3DX_DEFAULT,
                                  0)!=D3D_OK ) {
-      Console(4) <<"Warning: Error loading OpenGL data to DirectX offscreen surface" << endl;
+      Console(LogLevel::Error) <<"Warning: Error loading OpenGL data to DirectX offscreen surface" << endl;
     }
     
     // Debug: save surface to bitmap file

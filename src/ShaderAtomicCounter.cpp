@@ -61,7 +61,7 @@ void ShaderAtomicCounter::initialize ( ){
 #ifdef GLEW_ARB_shader_atomic_counters
   if ( !GLEW_ARB_shader_atomic_counters )
   {
-    Console ( 4 ) << "No shader atomic counters extension support in your system"
+    Console(LogLevel::Error) << "No shader atomic counters extension support in your system"
       << endl;
   }
 #endif
@@ -109,18 +109,18 @@ void ShaderAtomicCounter::render ( ){
   // it has to being in range from zero to GL_ACTIVE_ATOMIC_COUNTER_BUFFERS minus one
   // as i am not actually not very sure how to make the multiple atomic counter buffers
   // work for one shader program, so, it is set to zero here temporarily.
-  //Console(4)<<"program_handle is: "<<program_handle<<endl;
+  //Console(LogLevel::Error)<<"program_handle is: "<<program_handle<<endl;
   glGetActiveAtomicCounterBufferiv( program_handle, 0, GL_ATOMIC_COUNTER_BUFFER_BINDING, (GLint*)&atomic_counter_binding );
 #ifdef DEBUG_GL_ERROR
   err = glGetError();
   if( err!=GL_NO_ERROR ) {
-    Console(4)<<"error happens when getting atomic counter buffer: "<<gluErrorString(err)<<endl;
+    Console(LogLevel::Error)<<"error happens when getting atomic counter buffer: "<<gluErrorString(err)<<endl;
   }
 #endif
   if( atomic_counter_binding==GL_INVALID_VALUE ) {
-    Console(4)<<"program is invalid or the bufferIndex do not exist for the buffer!"<<endl;
+    Console(LogLevel::Error)<<"program is invalid or the bufferIndex do not exist for the buffer!"<<endl;
   }else if( atomic_counter_binding==GL_INVALID_ENUM ) {
-    Console(4)<<"parameter token is not accepted!"<<endl;
+    Console(LogLevel::Error)<<"parameter token is not accepted!"<<endl;
   }
 
   // setup barrier to ensure the previous read/write to the storage buffer is finished
@@ -130,14 +130,14 @@ void ShaderAtomicCounter::render ( ){
 #ifdef DEBUG_GL_ERROR
   err = glGetError();
   if( err!=GL_NO_ERROR ) {
-    Console(4)<<"error happens when set memory barrier: "<<gluErrorString(err)<<endl;
+    Console(LogLevel::Error)<<"error happens when set memory barrier: "<<gluErrorString(err)<<endl;
   }
 #endif
   glBindBufferBase ( GL_ATOMIC_COUNTER_BUFFER, atomic_counter_binding, buffer_id );
 #ifdef DEBUG_GL_ERROR
   err = glGetError();
   if( err!=GL_NO_ERROR ) {
-    Console(4)<<"error happens when bind buffer base: "<<gluErrorString(err)<<endl;
+    Console(LogLevel::Error)<<"error happens when bind buffer base: "<<gluErrorString(err)<<endl;
   }
   //glBufferSubData( GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(zero), &zero );
 #endif
@@ -160,7 +160,7 @@ void ShaderAtomicCounter::traverseSG( TraverseInfo &ti ){
 #ifdef DEBUG_GL_ERROR
     err = glGetError();
     if( err!=GL_NO_ERROR ) {
-      Console(4)<<"error happens when binding the atomic counter : "<<gluErrorString(err)<<endl;
+      Console(LogLevel::Error)<<"error happens when binding the atomic counter : "<<gluErrorString(err)<<endl;
     }
 #endif
     static const unsigned int initial_value = (unsigned int)initialValue->getValue();
@@ -169,7 +169,7 @@ void ShaderAtomicCounter::traverseSG( TraverseInfo &ti ){
 #ifdef DEBUG_GL_ERROR
     err = glGetError();
     if( err!=GL_NO_ERROR ) {
-      Console(4)<<"error happens when initializing the atomic counter value: "<<gluErrorString(err)<<endl;
+      Console(LogLevel::Error)<<"error happens when initializing the atomic counter value: "<<gluErrorString(err)<<endl;
     }
 #endif
     prev_travinfoadr = &ti;

@@ -117,7 +117,7 @@ void HAnimSegment::traverseSG( TraverseInfo &ti ) {
         points_single.clear();
         points_double = c->point->getValue();
       } else {
-        Console(4) << "Unsupported X3DCoordinateNode: \"" 
+        Console(LogLevel::Error) << "Unsupported X3DCoordinateNode: \"" 
                    << coord_node->getTypeName() << "\" in HAnimHumanoid." << endl;
         points_single.clear();
         points_double.clear();

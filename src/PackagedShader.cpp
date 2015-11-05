@@ -122,14 +122,14 @@ void PackagedShader::render() {
     for( unsigned int i = 0; i < dynamic_fields.size(); ++i ) {
       if( !Shaders::setCGUniformVariableValue( cg_vertex_program, 
                                                dynamic_fields[i] ) ) {
-        Console(3) << "Warning: Uniform variable \"" 
+        Console(LogLevel::Warning) << "Warning: Uniform variable \"" 
                    <<  dynamic_fields[i]->getName() 
                    << "\" not defined in shader source (" << source_url << ")" 
                    << " of the node \"" << getName() << "\"" << endl;
       }
       if( !Shaders::setCGUniformVariableValue( cg_fragment_program, 
                                                dynamic_fields[i] ) ) {
-        Console(3) << "Warning: Uniform variable \"" 
+        Console(LogLevel::Warning) << "Warning: Uniform variable \"" 
                    <<  dynamic_fields[i]->getName() 
                    << "\" not defined in shader source (" << source_url << ")" 
                    << " of the node \"" << getName() << "\"" << endl;
@@ -146,7 +146,7 @@ void PackagedShader::initCGShaderProgram() {
   
   CGerror err = cgGetError();
   if (err != CG_NO_ERROR) {
-    Console(3) << cgGetErrorString( err ) << endl;
+    Console(LogLevel::Warning) << cgGetErrorString( err ) << endl;
   }
 
   if( cg_vertex_program ) {
@@ -195,13 +195,13 @@ void PackagedShader::initCGShaderProgram() {
         }
         err = cgGetError();
         if( err != CG_NO_ERROR ) {
-          Console(3) << "Warning: Shader program error when compiling vertex "
+          Console(LogLevel::Warning) << "Warning: Shader program error when compiling vertex "
                      << "shader source (" << *i << ") in \"" 
                      << getName() << "\" node." << endl 
                      << cgGetErrorString( err ) 
                      << endl;
           const char *last_listing = cgGetLastListing( cg_context );
-          if( last_listing ) Console(3) << last_listing  << endl;
+          if( last_listing ) Console(LogLevel::Warning) << last_listing  << endl;
         }
 
         if ( url_contents == "" ) {
@@ -221,13 +221,13 @@ void PackagedShader::initCGShaderProgram() {
           ResourceResolver::releaseTmpFileName( resolved_url );
         err = cgGetError();
         if( err != CG_NO_ERROR ) {
-          Console(3) << "Warning: Shader program error when compiling fragment "
+          Console(LogLevel::Warning) << "Warning: Shader program error when compiling fragment "
                      << "shader source (" << *i << ") in \"" 
                      << getName() << "\" node." << endl 
                      << cgGetErrorString( err ) 
                      << endl;
           const char *last_listing = cgGetLastListing( cg_context );
-          if( last_listing ) Console(3) << last_listing  << endl;
+          if( last_listing ) Console(LogLevel::Warning) << last_listing  << endl;
           if( cg_vertex_program ) {
             cgDestroyProgram( cg_vertex_program );
             cg_vertex_program = NULL;
@@ -239,15 +239,15 @@ void PackagedShader::initCGShaderProgram() {
       }
     }
     if( getURLUsed() == "" ) {
-      Console(4) << "Warning: None of the urls in PackagedShader node with url [";
+      Console(LogLevel::Error) << "Warning: None of the urls in PackagedShader node with url [";
       for( MFString::const_iterator i = url->begin(); 
            i != url->end(); ++i ) {  
-        Console(4) << " \"" << *i << "\"";
+        Console(LogLevel::Error) << " \"" << *i << "\"";
       }
-      Console(4) << "] could be loaded (in " << getName() << ")" << endl;
+      Console(LogLevel::Error) << "] could be loaded (in " << getName() << ")" << endl;
     }
   } else {
-    Console(4) << "Warning: Your graphics card does not support the "
+    Console(LogLevel::Error) << "Warning: Your graphics card does not support the "
                << "CG shader profile specified (" << language->getValue()
                << ") in \"" << getName() << "\". Shader will be disabled. " << endl;
   }

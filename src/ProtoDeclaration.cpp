@@ -92,14 +92,14 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
                 sfnode->setValue( X3D::createX3DNodeFromString( (*i).value ) );
               }
             } catch( const Exception::H3DException &e ) {
-              Console(3) << "Could not create default value for " << f->getFullName() << endl;
-              Console(3) << e << endl;
+              Console(LogLevel::Warning) << "Could not create default value for " << f->getFullName() << endl;
+              Console(LogLevel::Warning) << e << endl;
             }
           } else {
             ParsableField *pfield = 
               dynamic_cast< ParsableField * >( f );
             if( !pfield ) {
-              Console(3) << "Cannot parse value field for\"" 
+              Console(LogLevel::Warning) << "Cannot parse value field for\"" 
                          << f->getFullName() 
                          << "\". Field type must be a subclass of ParsableField "
                          << "in order to be parsable. " << endl;
@@ -111,18 +111,18 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
                 pfield->setValueFromString( (*i).value ); 
               }
               catch( const X3D::Convert::X3DFieldConversionError &e ) {
-                Console(3) << "Could not convert \"" 
+                Console(LogLevel::Warning) << "Could not convert \"" 
                      << ( (*i).value.size() < 100 ? (*i).value: (string)"value" )
                      << "\" to " << e.value << " for field \"" 
                      << f->getFullName() << "\"." << endl;
               }
               catch( const X3D::Convert::UnimplementedConversionType &e ) {
-                Console(3) << "Field conversion error when converting value for field \"" 
+                Console(LogLevel::Warning) << "Field conversion error when converting value for field \"" 
                      << f->getFullName() << "\". Conversion for " << e.value 
                      << " not implemented" << endl;
               }
             } else {
-              Console(3) << "Warning: 'value' attribute ignored. Only used if "
+              Console(LogLevel::Warning) << "Warning: 'value' attribute ignored. Only used if "
                    << "accesstype is initializeOnly, inputOnly or inputOutput " 
                    << endl;
             }
@@ -131,7 +131,7 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
         proto->addField( (*i).name, (*i).access_type, f );
 
       } else {
-        Console(3) << "Warning: Invalid field type in \"field\" element. " 
+        Console(LogLevel::Warning) << "Warning: Invalid field type in \"field\" element. " 
                    << endl;
       }
     }
@@ -170,8 +170,8 @@ X3DPrototypeInstance *ProtoDeclaration::newProtoInstance() {
     
   } catch( const Exception::H3DException &e ) {
     delete proto;
-    Console(3) << "Could not create X3DPrototypeInstance of " << name << endl;
-    Console(3) << e << endl;
+    Console(LogLevel::Warning) << "Could not create X3DPrototypeInstance of " << name << endl;
+    Console(LogLevel::Warning) << e << endl;
     return NULL;
   }
 }
@@ -194,7 +194,7 @@ AutoRef< Node > ProtoDeclaration::createProtoInstanceNodeVRML( PrototypeInstance
       }
     }
   } else {
-    Console(3) << "Warning: Could not parse VRML from string" << endl;
+    Console(LogLevel::Warning) << "Warning: Could not parse VRML from string" << endl;
   }
   return n;
 }

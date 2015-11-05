@@ -683,7 +683,7 @@ void H3DViewImage::OnTimer ( wxTimerEvent& event ) {
 void H3DViewImage::updateImage () {
   Image* image= texture->renderToImage ( -1, -1 );
   if ( !image ) {
-    Console(4) << "ERROR: Failed to render texture to image!" << endl;
+    Console(LogLevel::Error) << "ERROR: Failed to render texture to image!" << endl;
     return;
   }
 

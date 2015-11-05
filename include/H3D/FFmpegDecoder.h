@@ -97,9 +97,9 @@ namespace H3D {
 
 /*
       if (v == true) 
-        Console(4) << "setLooping(true)" << endl;
+        Console(LogLevel::Error) << "setLooping(true)" << endl;
       if (v == false) 
-        Console(4) << "setLooping(false)" << endl;
+        Console(LogLevel::Error) << "setLooping(false)" << endl;
       looping = v;
 */
     }

@@ -115,7 +115,7 @@ void DeviceLog::traverseSG( TraverseInfo &ti ) {
 
 void DeviceLog::createLogForceEffect( int index ) {
   if( index < 0 ) {
-    Console(3) << "Warning: Invalid index " << index
+    Console(LogLevel::Warning) << "Warning: Invalid index " << index
                << " in deviceIndex field in node "
                << getName() << ". Index is ignored." << endl;
     return;
@@ -124,10 +124,10 @@ void DeviceLog::createLogForceEffect( int index ) {
     log_force_effect.resize( index + 1, NULL );
   const vector< string > &urls = url->getValue();
   if( urls.empty() ) {
-    Console(3) << "Warning: The url field in node "
+    Console(LogLevel::Warning) << "Warning: The url field in node "
                << getName() << " is empty. No logging can be done." << endl;
   } else if( index >= (int)urls.size() ) {
-    Console(3) << "Warning: There is no url in the url field in node "
+    Console(LogLevel::Warning) << "Warning: There is no url in the url field in node "
                << getName() << " for the given index " << index
                << " Each device needs a corresponding url in the url field."
                << endl;

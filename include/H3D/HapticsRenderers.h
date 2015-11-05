@@ -83,7 +83,7 @@ namespace H3D {
       database.initFields( this );
 
 #ifndef HAVE_OPENHAPTICS
-      Console(4) << "Cannot use OpenHapticsRenderer. HAPI compiled without"
+      Console(LogLevel::Error) << "Cannot use OpenHapticsRenderer. HAPI compiled without"
      << " OpenHaptics support. Recompile HAPI with "
      << "HAVE_OPENHAPTICS defined"
      << " in order to use it." << endl;

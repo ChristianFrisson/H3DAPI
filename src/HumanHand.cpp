@@ -103,7 +103,7 @@ void HumanHand::initialize() {
         tracker = new vhtTracker( trackerIOConn );
       } catch( vhtBaseException *e ) {
         tracker = 0;
-        Console(3) << "Warning, could not initialize real tracker in node "
+        Console(LogLevel::Warning) << "Warning, could not initialize real tracker in node "
                    << getName()
                    << "Error message from Virtual Hand SDK is: "
                    << e->getMessage() << endl;
@@ -111,7 +111,7 @@ void HumanHand::initialize() {
     }
 
     if( !tracker ) {
-      Console(3) << "Warning: No real tracker found, in node "
+      Console(LogLevel::Warning) << "Warning: No real tracker found, in node "
                  << getName() << " a tracker will be emulated." << endl;
       tracker = new vhtTrackerEmulator();
     }
@@ -127,7 +127,7 @@ void HumanHand::initialize() {
                                       rcvr1 );
       } catch( vhtBaseException *e ) {
         master = 0;
-        Console(3) << e->getMessage() << endl;
+        Console(LogLevel::Warning) << e->getMessage() << endl;
       }
     }
 
@@ -143,7 +143,7 @@ void HumanHand::initialize() {
                                       glove_handedness ) );
       } catch( vhtBaseException *e ) {
         hand.reset(0);
-        Console(3) << e->getMessage() << endl;
+        Console(LogLevel::Warning) << e->getMessage() << endl;
       }
     }
 
@@ -154,12 +154,12 @@ void HumanHand::initialize() {
       cameraXForm = new vhtTransform3D();
     } catch( vhtBaseException *e ) {
       drawer.reset(0);
-      Console(3)
+      Console(LogLevel::Warning)
                  << e->getMessage() << endl;
     }
 
   } else {
-    Console(3) << "Warning: No CyberGlove specified for node: "
+    Console(LogLevel::Warning) << "Warning: No CyberGlove specified for node: "
                << getName() << ". Node will not be used." << endl;
   }
 #endif

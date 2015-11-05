@@ -66,7 +66,7 @@ namespace H3D {
       typename SF::value_type old_value = this->value;
       SF::update();
       if( this->value == old_value ) {
-        //Console(4)<<"monitored value actually changed"<<endl;
+        //Console(LogLevel::Error)<<"monitored value actually changed"<<endl;
         actualChanged = false;
       }else {
         actualChanged = true;

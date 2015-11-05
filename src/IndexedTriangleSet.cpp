@@ -494,7 +494,7 @@ void IndexedTriangleSet::traverseSG( TraverseInfo &ti ) {
     render_patches= render_patches_new;
     if ( !GLEW_ARB_tessellation_shader ) {
       if ( render_patches_new ) {
-        Console(4) << "Warning: Tessellation shaders are not supported by your graphics hardware! "
+        Console(LogLevel::Error) << "Warning: Tessellation shaders are not supported by your graphics hardware! "
           "IndexedTriangleSet " << getName() << " will not be rendered as GL_PATCHES." << endl;
       }
     } else {
@@ -504,7 +504,7 @@ void IndexedTriangleSet::traverseSG( TraverseInfo &ti ) {
 }
 
 void IndexedTriangleSet::AutoNormal::update() {
- // Console(4) << "Calculating normals" << endl;
+ // Console(LogLevel::Error) << "Calculating normals" << endl;
   bool normals_per_vertex = 
     static_cast< SFBool * >( routes_in[0] )->getValue();
   X3DCoordinateNode *_coord = 
@@ -564,7 +564,7 @@ void IndexedTriangleSet::AutoTangent::update() {
       value.push_back( tangent );
     }
     ++nr_attribs_used;
-    //Console(4) << "Calculating tangents" << endl;
+    //Console(LogLevel::Error) << "Calculating tangents" << endl;
   }
 
   if( !have_binormals_in_attrib ) {
@@ -577,7 +577,7 @@ void IndexedTriangleSet::AutoTangent::update() {
       value.push_back( binormal );
     }
     
-    //Console(4) << "Calculating binormal" << endl;
+    //Console(LogLevel::Error) << "Calculating binormal" << endl;
   }
 
   if( normals_per_vertex ) 
@@ -863,7 +863,7 @@ Vec3f IndexedTriangleSet::AutoTangent::getTexCoord( X3DCoordinateNode *_coord,
       Vec4f tc = tex_coord->getTexCoord( _index, 0 );
       return Vec3f( tc.x, tc.y, tc.z ) / tc.w;
     } else {
-      Console(4) << "Warning: X3DTextureCoordinateNode does not support getTexCoord() function. Tangents and binormals cannot be calculated for IndexedTriangleSet." << endl;
+      Console(LogLevel::Error) << "Warning: X3DTextureCoordinateNode does not support getTexCoord() function. Tangents and binormals cannot be calculated for IndexedTriangleSet." << endl;
     }
   } else {
     IndexedTriangleSet *its = static_cast< IndexedTriangleSet * >( getOwner() );

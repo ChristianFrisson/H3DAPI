@@ -612,7 +612,7 @@ void H3DWindowNode::checkIfStereoObtained() {
         GLboolean quad_stereo_supported;
         glGetBooleanv( GL_STEREO, &quad_stereo_supported);
         if( !quad_stereo_supported ) {
-          Console(4) << "Warning: Stereo pixel format not supported by your "
+          Console(LogLevel::Error) << "Warning: Stereo pixel format not supported by your "
             << "graphics card(or it is not enabled). Quad buffered "
             << "stereo cannot be used. "
             << "Using \"MONO\" instead. " <<endl;
@@ -626,7 +626,7 @@ void H3DWindowNode::checkIfStereoObtained() {
 #ifdef GLEW_ARB_viewport_array
         if( !GLEW_ARB_viewport_array ) {
 #endif
-          Console(4) << "Warning: GL_ARB_viewport_array not supported by your "
+          Console(LogLevel::Error) << "Warning: GL_ARB_viewport_array not supported by your "
             << "graphics card. VERTICAL_SPLIT_KEEP_ASPECT_ONE_PASS "
             << "stereo cannot be used. "
             << "Using \"MONO\" instead. " <<endl;
@@ -1054,7 +1054,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
   GLdouble mono_projmatrix[16], mono_mvmatrix[16];
   bool any_pointing_device_sensors =
     X3DPointingDeviceSensorNode::instancesExists();
-  //    Console(4) << clip_near << " " << clip_far << endl;
+  //    Console(LogLevel::Error) << clip_near << " " << clip_far << endl;
   bool isStereoMode = renderMode->isStereoMode();
   bool isSinglePass = renderMode->isSinglePass();
   if( isStereoMode ) {
@@ -1475,7 +1475,7 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
         
       } else {
 #endif
-        Console(4) << "Warning: GL_ARB_viewport_array is not supported by the graphic card. "
+        Console(LogLevel::Error) << "Warning: GL_ARB_viewport_array is not supported by the graphic card. "
           <<"single pass stereo can not be used."<<endl;
 #ifdef GLEW_ARB_viewport_array
       }

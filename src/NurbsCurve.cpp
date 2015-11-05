@@ -151,7 +151,7 @@ void NurbsCurve::render( ) {
           if( consecutiveKnots > (local_order - 1) ){
             if (!generate_uniform) generate_uniform = true;
             if( !printWarning->isUpToDate() ) {
-              Console(3) << "Warning: There are more consecutive knots than"
+              Console(LogLevel::Warning) << "Warning: There are more consecutive knots than"
                 << " the order -1 in " << getTypeName() << " node( " << getName()
                 << "). Default knots are calculated." << endl;
                 printWarning->upToDate();
@@ -160,7 +160,7 @@ void NurbsCurve::render( ) {
           if( knots[ i - 1 ] > knots[i] ){
             if (!generate_uniform) generate_uniform = true;
             if( !printWarning->isUpToDate() ) {
-              Console(3) << "Warning: Change the order of the values of knots so "
+              Console(LogLevel::Warning) << "Warning: Change the order of the values of knots so "
                 << "they are non-decreasing in " << getTypeName() << " node( "
                 << getName() << ") or default knot values are used." << endl;
               printWarning->upToDate();
@@ -190,7 +190,7 @@ void NurbsCurve::render( ) {
     }
   } else {
     if( !printWarning->isUpToDate() ) {
-      Console(3) << "Warning: The number of weight values is not the same as "
+      Console(LogLevel::Warning) << "Warning: The number of weight values is not the same as "
         << "the number of control points. Default weight 1.0 is assumed." << endl;
       printWarning->upToDate();
     }
@@ -201,7 +201,7 @@ void NurbsCurve::render( ) {
   // Order has to be 2 or greater to define the nurbsCurve
   if( local_order < 2 ) {
     if( !printWarning->isUpToDate() ) {
-      Console(3) << "Warning: order is less than 2 in " << getTypeName()
+      Console(LogLevel::Warning) << "Warning: order is less than 2 in " << getTypeName()
         << " node( "  << getName() 
         << "). Node will not be rendered. " << endl;
       printWarning->upToDate();
@@ -214,7 +214,7 @@ void NurbsCurve::render( ) {
   // or greater than the order
   if( no_of_control_points < local_order )  {
     if( !printWarning->isUpToDate() ) {
-      Console(3) << "Warning: The size of controlPoint does not match "
+      Console(LogLevel::Warning) << "Warning: The size of controlPoint does not match "
         << "order in " << getTypeName() << " node( "
         << getName() << "). Node will not be rendered. " << endl;
       printWarning->upToDate();

@@ -305,7 +305,7 @@ void Sphere::traverseSG( TraverseInfo &ti ) {
         else if( face == "AS_GRAPHICS" ) {
           // default values are the same as graphics
         } else {
-          Console(4) << "Warning: Invalid default touchable face: "
+          Console(LogLevel::Error) << "Warning: Invalid default touchable face: "
             << face 
             << ". Must be \"FRONT\", \"BACK\" or \"FRONT_AND_BACK\" "
             << "(in active HapticsOptions node\" )" << endl;

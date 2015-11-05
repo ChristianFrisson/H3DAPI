@@ -77,14 +77,14 @@ void ShaderStorageBuffer::initialize ( ){
 #ifdef GLEW_ARB_shader_storage_buffer_object
   if ( !GLEW_ARB_shader_storage_buffer_object )
   {
-    Console ( 4 ) << "No shader storage buffer object extension support in your system"
+    Console(LogLevel::Error) << "No shader storage buffer object extension support in your system"
       << endl;
   }
   else{
     glGetIntegerv ( GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, (GLint*)&max_block_bindings );
   }
 #else
-    Console ( 4 ) << "Binary compiled without support for shader storage buffered object extension."
+    Console(LogLevel::Error) << "Binary compiled without support for shader storage buffered object extension."
       << endl;
 #endif
 }
@@ -133,7 +133,7 @@ void ShaderStorageBuffer::render ( ){
   storage_block_index = glGetProgramResourceIndex ( program_handle, GL_SHADER_STORAGE_BLOCK, storageName->getValue().c_str() );
   if ( storage_block_index == GL_INVALID_INDEX )
   {
-    Console ( 4 ) << "Warning[ShaderStorageBuffer]:"
+    Console(LogLevel::Error) << "Warning[ShaderStorageBuffer]:"
       << "There is no active shader storage block named as " << storageName->getValue() << endl;
     return;
   }
@@ -166,7 +166,7 @@ int ShaderStorageBuffer::generateShaderStorageBinding ( ){
   if ( global_block_bindings.size()>=max_block_bindings )
   {
     global_block_bindings_lock.unlock ( );
-    Console ( 4 ) << "The global block binding points are used up, the maximum number"
+    Console(LogLevel::Error) << "The global block binding points are used up, the maximum number"
       << " of binding points is: " << max_block_bindings <<"."<<endl;
     return -1;
   }

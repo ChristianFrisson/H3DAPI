@@ -84,7 +84,7 @@ void GeneralFunction::SFFunctionObject::update() {
   const string &param = 
     static_cast< SFString * >( routes_in[1] )->getValue();
   if( !value->setFunctionString( _function, param ) ) {
-    H3DUtil::Console(3) << "Could not parse function expression: \"" << _function
+    H3DUtil::Console(LogLevel::Warning) << "Could not parse function expression: \"" << _function
                         << "\" in ParsedFunction node(" << owner->getName() 
                         <<"). " << endl;
   }
@@ -110,7 +110,7 @@ HAPI::HAPIFunctionObject *GeneralFunction::getAsHAPIFunctionObject() {
   HAPI::ParsedFunction * return_function = new HAPI::ParsedFunction;
   if( !return_function->setFunctionString( function->getValue(),
                                            params->getValue() ) ) {
-    H3DUtil::Console(3) << "Could not parse function expression: \"" 
+    H3DUtil::Console(LogLevel::Warning) << "Could not parse function expression: \"" 
                         << function->getValue() << "\" in ParsedFunction node("
                         << getName() << "). " << endl;
     delete return_function;

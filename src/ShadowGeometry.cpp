@@ -458,7 +458,7 @@ void ShadowGeometry::updateAdjacenctVertexArray( const vector< HAPI::Collision::
 
         // if( triangles[i].a == triangles[i].b ||
         //      triangles[i].b == triangles[i].c ||
-        //      triangles[i].c == triangles[i].a ) { Console(4) << "Degenerate" << endl; continue; }
+        //      triangles[i].c == triangles[i].a ) { Console(LogLevel::Error) << "Degenerate" << endl; continue; }
     //    cerr << triangles[i].a << endl;
 
     //    _adjacency_index.push_back( i*3 );
@@ -490,7 +490,7 @@ void ShadowGeometry::updateAdjacenctVertexArray( const vector< HAPI::Collision::
     int n0_index = neighbours[ i*3 ];
     if( n0_index == -1 ) {
       // no neighbour so just repeat the vertex
-      //Console(4) << "No neighbour" << endl;
+      //Console(LogLevel::Error) << "No neighbour" << endl;
       _adjacency_index.push_back( i*3 );
     } else {
       const HAPI::Collision::Triangle &n0 = _triangles[n0_index];
@@ -506,7 +506,7 @@ void ShadowGeometry::updateAdjacenctVertexArray( const vector< HAPI::Collision::
     int n1_index = neighbours[ i*3 + 1];
     if( n1_index == -1 ) {
       // no neighbour so just repeat the vertex
-      // Console(4) << "No neighbour" << endl;
+      // Console(LogLevel::Error) << "No neighbour" << endl;
       _adjacency_index.push_back( i*3 + 1 );
     } else {
       const HAPI::Collision::Triangle &n1 = _triangles[n1_index];
@@ -522,7 +522,7 @@ void ShadowGeometry::updateAdjacenctVertexArray( const vector< HAPI::Collision::
     int n2_index = neighbours[ i*3 + 2];
     if( n2_index == -1 ) {
       // no neighbour so just repeat the vertex
-      // Console(4) << "No neighbour" << endl;
+      // Console(LogLevel::Error) << "No neighbour" << endl;
       _adjacency_index.push_back( i*3 + 2 );
     } else {
       const HAPI::Collision::Triangle &n2 = _triangles[n2_index];

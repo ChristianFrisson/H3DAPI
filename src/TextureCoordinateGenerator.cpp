@@ -134,7 +134,7 @@ void TextureCoordinateGenerator::startTexGen() {
     glEnable( GL_TEXTURE_GEN_R );
   } else if( gen_mode == "CAMERASPACEREFLECTIONVECTOR" ) {
     if( !GLEW_ARB_texture_cube_map ) {
-      Console(4) << "Warning: ARB_texture_cube_map extension not supported "
+      Console(LogLevel::Error) << "Warning: ARB_texture_cube_map extension not supported "
                  << "by your graphics card. \"CAMERASPACEREFLECTIONVECTOR\" "
                  << "mode in \"" << getName() << "\" node cannot be used." 
                  << endl;
@@ -147,7 +147,7 @@ void TextureCoordinateGenerator::startTexGen() {
     glEnable( GL_TEXTURE_GEN_R );
   } else if( gen_mode == "CAMERASPACENORMAL" ) {
     if( !GLEW_ARB_texture_cube_map ) {
-      Console(4) << "Warning: ARB_texture_cube_map extension not supported "
+      Console(LogLevel::Error) << "Warning: ARB_texture_cube_map extension not supported "
                  << "by your graphics card. \"CAMERASPACENORMAL\" "
                  << "mode in \"" << getName() << "\" node cannot be used." 
                  << endl;

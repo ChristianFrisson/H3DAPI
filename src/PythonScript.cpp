@@ -312,7 +312,7 @@ PythonScript::~PythonScript() {
     // scene using the same module_name ( or DEF ).
     if( PyDict_DelItemString( temp_sys_module_dict,
                               (char*)module_name.c_str() ) == -1 ) {
-      Console(4) << "Could not remove the python module " << module_name
+      Console(LogLevel::Error) << "Could not remove the python module " << module_name
                  << " from the sys.modules database. " << endl;
     }
 
@@ -369,7 +369,7 @@ void PythonScript::loadScript( const string &script_filename, const string &scri
   if (PyDict_GetItemString( static_cast< PyObject * >(module_dict), "__builtins__") == NULL) {
     if (PyDict_SetItemString( static_cast< PyObject * >(module_dict), "__builtins__",
                              PyEval_GetBuiltins()) != 0)
-      Console(3) << "Warning: PyEval_GetBuiltins() could not be installed in module dictionary!" << endl;
+      Console(LogLevel::Warning) << "Warning: PyEval_GetBuiltins() could not be installed in module dictionary!" << endl;
   }  
   
   if ( script_content != "" ) {
@@ -381,7 +381,7 @@ void PythonScript::loadScript( const string &script_filename, const string &scri
                                                    static_cast< PyObject * >(module_dict) );
 
     if ( r == NULL ) {
-      Console( 3 ) << "Python error in file \"" << script_filename << "\":" << endl;
+      Console( LogLevel::Error ) << "Python error in file \"" << script_filename << "\":" << endl;
       PyErr_Print();
     }
   } else {
@@ -414,7 +414,7 @@ void PythonScript::loadScript( const string &script_filename, const string &scri
                                                static_cast< PyObject * >(module_dict) );
 
       if ( r == NULL ) {
-        Console( 3 ) << "Python error in file \"" << script_filename << "\":" << endl;
+        Console( LogLevel::Error ) << "Python error in file \"" << script_filename << "\":" << endl;
         PyErr_Print();
       }
       delete[] buffer;
@@ -435,7 +435,7 @@ void PythonScript::loadScript( const string &script_filename, const string &scri
   
 #endif
     else {
-      Console(4) << "Could not open \""<< script_filename << endl;
+      Console(LogLevel::Error) << "Could not open \""<< script_filename << endl;
     }
   }
 
@@ -475,7 +475,7 @@ catchOutErr = CatchOutErr ()\n\
     static_cast< PyObject * >(module_dict), 
     NULL );
   if ( r == NULL ) {
-    Console(4) << "Python console error!" << endl;
+    Console(LogLevel::Error) << "Python console error!" << endl;
     PyErr_Print ();
     PyGILState_Release(state);
     return "ERROR: Internal console error!\n";
@@ -536,7 +536,7 @@ catchOutErr = CatchOutErr ()\n\
     static_cast< PyObject * >(module_dict), 
     NULL );
   if ( r == NULL ) {
-    Console(4) << "Python console error!" << endl;
+    Console(LogLevel::Error) << "Python console error!" << endl;
     PyErr_Print ();
     PyGILState_Release(state);
     return "ERROR: Internal console error!\n";
@@ -589,7 +589,7 @@ void PythonScript::initialize() {
   PyObject *temp_sys_module_dict = PyImport_GetModuleDict(); // borrowed ref
   if( PyDict_GetItemString( temp_sys_module_dict,
                             (char*)module_name.c_str() ) ) { // borrowed ref
-    Console(4) << "The module " << module_name << " already exists. "
+    Console(LogLevel::Error) << "The module " << module_name << " already exists. "
                << "It will be overridden which might cause strange behaviour. "
                << "Check the moduleName field of PythonScript "
                << "in the scene if this behaviour is undesired." << endl;
@@ -642,13 +642,13 @@ void PythonScript::initialize() {
       Py_DECREF( args );
     }   
   } else {
-    Console(4) << "Warning: None of the urls in the PythonScript node \"" 
+    Console(LogLevel::Error) << "Warning: None of the urls in the PythonScript node \"" 
          << getName() << "\" with url [";
     for( MFString::const_iterator i = url->begin(); 
          i != url->end(); ++i ) {  
-      Console(4) << " \"" << *i << "\"";
+      Console(LogLevel::Error) << " \"" << *i << "\"";
     }
-    Console(4) << "] could be found. " << endl;
+    Console(LogLevel::Error) << "] could be found. " << endl;
   }
 
   PyGILState_Release(state);

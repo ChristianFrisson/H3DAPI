@@ -94,7 +94,7 @@ bool OrthoViewpoint::windowFromfieldOfView( H3DFloat width, H3DFloat height,
   vector< H3DFloat > field_of_view = fieldOfView->getValue();
   H3DFloat aspect_ratio = width / height;
   if( field_of_view.size() < 4 ) {
-    Console(3) << "Warning: to few values in field fieldOfView in "
+    Console(LogLevel::Warning) << "Warning: to few values in field fieldOfView in "
                << " OrthoViewpoint node ( " << getName()
                << " ). Default value will be used " << endl;
     field_of_view.clear();

@@ -178,12 +178,12 @@ Image* ImageTexture::SFImage::loadImage( ImageTexture *texture,
     }
   }
 
-  Console(4) << "Warning: None of the urls in ImageTexture with url [";
+  Console(LogLevel::Error) << "Warning: None of the urls in ImageTexture with url [";
   for( vector<string>::const_iterator i = urls.begin(); 
        i != urls.end(); ++i ) {  
-    Console(4) << " \"" << *i << "\"";
+    Console(LogLevel::Error) << " \"" << *i << "\"";
   }
-  Console(4) << "] could be loaded. Either they don't exist or the file format "
+  Console(LogLevel::Error) << "] could be loaded. Either they don't exist or the file format "
              << "is not supported by any H3DImageLoaderNode that is available "
              << "(in " << getOwner()->getName() << ")" << endl;
 
@@ -457,7 +457,7 @@ void ImageTexture::removeSharedImage () {
     if ( si.use_count <= 0 ) {
 #ifdef DEBUG_SHARING
       if ( !wrapped_image->url->empty() ) {
-        Console(4) << "[ImageDatabase]: DELETE image: " << wrapped_image->url->getValueByIndex ( 0 ) << endl;
+        Console(LogLevel::Error) << "[ImageDatabase]: DELETE image: " << wrapped_image->url->getValueByIndex ( 0 ) << endl;
       }
 #endif
       image_database.erase ( wrapped_image->url->getValue() );
@@ -466,7 +466,7 @@ void ImageTexture::removeSharedImage () {
     wrapped_image= NULL;
 
 #ifdef DEBUG_SHARING
-    Console(4) << "[ImageDatabase]: DEREF share. There are " << image_database.size() << " image(s) in the database" << endl;
+    Console(LogLevel::Error) << "[ImageDatabase]: DEREF share. There are " << image_database.size() << " image(s) in the database" << endl;
 #endif
   }
 }
@@ -495,7 +495,7 @@ void ImageTexture::addSharedImage ( std::vector < std::string > _urls ) {
       si.image.reset ( i );
 #ifdef DEBUG_SHARING
       if ( !_urls.empty() ) {
-        Console(4) << "[ImageDatabase]: NEW image: " << _urls[0] << endl;
+        Console(LogLevel::Error) << "[ImageDatabase]: NEW image: " << _urls[0] << endl;
       }
 #endif
     }
@@ -505,7 +505,7 @@ void ImageTexture::addSharedImage ( std::vector < std::string > _urls ) {
     si.use_count++;
 
 #ifdef DEBUG_SHARING
-    Console(4) << "[ImageDatabase]: REF share. There are " << image_database.size() << " image(s) in the database" << endl;
+    Console(LogLevel::Error) << "[ImageDatabase]: REF share. There are " << image_database.size() << " image(s) in the database" << endl;
 #endif
   }
 }

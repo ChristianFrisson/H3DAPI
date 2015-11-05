@@ -103,7 +103,7 @@ HaptikDevice::HaptikDevice(
     manufacturer->push_back( haptik.device[i].manufacturer, id );
   }
 #else
-  Console(4) << "Cannot use HaptikDevice since H3D API is compiled"
+  Console(LogLevel::Error) << "Cannot use HaptikDevice since H3D API is compiled"
              << "without support for it. Define HAVE_HAPTIK_LIBRARY in "
              << " HAPI.h to support it." << endl;
 #endif
@@ -116,7 +116,7 @@ void HaptikDevice::initialize() {
 #ifdef HAVE_HAPTIK_LIBRARY
   hapi_device.reset( new HAPI::HaptikHapticsDevice );
 #else
-   Console(4) << "Cannot use HaptikDevice since H3D API is compiled"
+   Console(LogLevel::Error) << "Cannot use HaptikDevice since H3D API is compiled"
               << "without support for it. Define HAVE_HAPTIK_LIBRARY in "
               << " HAPI.h to support it." << endl;
 #endif

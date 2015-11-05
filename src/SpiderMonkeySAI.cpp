@@ -63,8 +63,8 @@ static JSClass global_class = {
 
 /* The error reporter callback. */
 void reportError(JSContext *cx, const char *message, JSErrorReport *report) {
-  Console(4) << report->filename ? report->filename : "<no filename>" ;
-  Console(4) << ":"
+  Console(LogLevel::Error) << report->filename ? report->filename : "<no filename>" ;
+  Console(LogLevel::Error) << ":"
              << (unsigned int) report->lineno
              << ":"
              << message << endl;

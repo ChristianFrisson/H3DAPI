@@ -1,4 +1,4 @@
-## \file H3DInterface.py Documentation file for the H3DInterface module.
+﻿## \file H3DInterface.py Documentation file for the H3DInterface module.
 from H3D import *
 
 #import sys
@@ -10,6 +10,7 @@ from H3D import *
 
 ## Human readable log levels for console output
 class LogLevel:
+  Debug = 1
   Info = 3
   Warning = 4
   Error = 5

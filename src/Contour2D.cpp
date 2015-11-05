@@ -124,7 +124,7 @@ void Contour2D::renderTrimmedCurve( GLUnurbsObj *nurbs_object ) {
     }
 
   if( !closedContour ) {
-    Console(3) << "Warning: the children field does not define a closed curve "
+    Console(LogLevel::Warning) << "Warning: the children field does not define a closed curve "
                << "in Contour2D node( "
                << getName() << "). Node will not be used. " << endl;
     return;
@@ -149,7 +149,7 @@ void Contour2D::renderTrimmedCurve( GLUnurbsObj *nurbs_object ) {
       
       // Order has to be 2 or greater to define the NurbsCurve2D
       if( order < 2 ) {
-        Console(3) << "Warning: Order is less than 2 in NurbsCurve2D node( "
+        Console(LogLevel::Warning) << "Warning: Order is less than 2 in NurbsCurve2D node( "
           << nurbs_curve_2D->getName() << "). Node will not be rendered. " 
           << endl;
         return;
@@ -162,7 +162,7 @@ void Contour2D::renderTrimmedCurve( GLUnurbsObj *nurbs_object ) {
       // Number of controlPoints has to be at least order 
       // to define the NurbsCurve2D
       if( theCurve.size() < (unsigned int)order )  {
-        Console(3) << "Warning: the number of controlPoints is less than order"
+        Console(LogLevel::Warning) << "Warning: the number of controlPoints is less than order"
           << " in NurbsCurve2D node( "
           << nurbs_curve_2D->getName() 
           << "). Node will not be rendered. " << endl;
@@ -198,7 +198,7 @@ void Contour2D::renderTrimmedCurve( GLUnurbsObj *nurbs_object ) {
       H3DInt32 theSizeToUse = (H3DInt32) theKnot.size();
       if( generateUniform ) {
         theSizeToUse = (H3DInt32) theCurve.size() + order;
-        Console(3) << "Warning: The Knot array is not according to standard in"
+        Console(LogLevel::Warning) << "Warning: The Knot array is not according to standard in"
           << " NurbsCurve2D node( "
           << nurbs_curve_2D->getName() 
           << "). A default Knot array will be generated. " << endl;

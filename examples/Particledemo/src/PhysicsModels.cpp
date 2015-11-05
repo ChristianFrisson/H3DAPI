@@ -499,16 +499,7 @@ void WindPhysicsModelDialog::handleSettingsChange (wxCommandEvent & event) {
     }
     windPhysicsModel->direction->setValue(Vec3f(x, y, z));
   }
-  Console (3) << "WIND PHYSICS MODEL STATS" << endl;
-  Console (3) << index << endl;
-  Console (3) << "Enabled: " << windPhysicsModel->enabled->getValue() << endl;
-  Console (3) << "Speed: " << windPhysicsModel->speed->getValue() << endl;
-  Console (3) << "Gustiness: " << windPhysicsModel->gustiness->getValue() << 
-    endl;
-  Console (3) << "Turbulence: " << windPhysicsModel->turbulence->getValue() << 
-    endl;
-  Console (3) << "Direction: " << windPhysicsModel->direction->getValue() << 
-    endl;
+
 }
 
 void WindPhysicsModelDialog::getIndex () {

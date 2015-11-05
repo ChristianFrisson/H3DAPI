@@ -176,7 +176,7 @@ void HapticTexturesSurface::initialize() {
   H3DFloat min_stiffness = minStiffness->getValue();
   if( max_stiffness < min_stiffness ) {
     min_stiffness = max_stiffness;
-    Console(3) << "Warning: Value of maxStiffness is smaller than value of "
+    Console(LogLevel::Warning) << "Warning: Value of maxStiffness is smaller than value of "
                << "minStiffness in node " << getName() << ". Node will not "
                << "behave as intended." << endl;
   }
@@ -185,7 +185,7 @@ void HapticTexturesSurface::initialize() {
   H3DFloat min_damping = minDamping->getValue();
   if( max_damping < min_damping ) {
     min_damping = max_damping;
-    Console(3) << "Warning: Value of maxDamping is smaller than value of "
+    Console(LogLevel::Warning) << "Warning: Value of maxDamping is smaller than value of "
                << "minDamping in node " << getName() << ". Node will not "
                << "behave as intended." << endl;
   }
@@ -194,7 +194,7 @@ void HapticTexturesSurface::initialize() {
   H3DFloat min_static_friction = minStaticFriction->getValue();
   if( max_static_friction < min_static_friction ) {
     min_static_friction = max_static_friction;
-    Console(3) << "Warning: Value of maxStaticFriction is smaller than value "
+    Console(LogLevel::Warning) << "Warning: Value of maxStaticFriction is smaller than value "
                << "of minStaticFriction in node " << getName() << ". Node "
                << "will not behave as intended." << endl;
   }
@@ -203,7 +203,7 @@ void HapticTexturesSurface::initialize() {
   H3DFloat min_dynamic_friction = minDynamicFriction->getValue();
   if( max_dynamic_friction < min_dynamic_friction ) {
     min_dynamic_friction = max_dynamic_friction;
-    Console(3) << "Warning: Value of maxDynamicFriction is smaller than value "
+    Console(LogLevel::Warning) << "Warning: Value of maxDynamicFriction is smaller than value "
                << "of minDynamicFriction in node " << getName() << ". Node "
                << "will not behave as intended." << endl;
   }
@@ -307,7 +307,7 @@ void HapticTexturesSurface::UpdateMinMaxParamValue::
     // Because of circular updates? It should not since
     // AutoUpdate should "prevent" this.
 
-    // This is only used to not clutter the code with many Console(3)
+    // This is only used to not clutter the code with many Console(LogLevel::Warning)
     // warning strings.
     string error_first = "";
     string error_second = "";
@@ -404,7 +404,7 @@ void HapticTexturesSurface::UpdateMinMaxParamValue::
     }
 
     if( error_first != "" ) {
-      Console(3) << "Warning: Trying to set the value of the field "
+      Console(LogLevel::Warning) << "Warning: Trying to set the value of the field "
                  << error_first << " to a value which is " << error_second
                  << " value. In node named " << hts->getName()
                  << ". Value will not be transferred "

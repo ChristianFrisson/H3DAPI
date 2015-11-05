@@ -546,14 +546,14 @@ void X3DTextureNode::UpdateSaveToURL::onNewValue( const std::string &v ) {
 
 #ifndef HAVE_OPENEXR
   if( need_exr_format ) { // need to save as EXR file but without openexr library
-    Console(4) << "Warning: Could not save texture to file! Compiled without the required OpenEXR library." << endl;
+    Console(LogLevel::Error) << "Warning: Could not save texture to file! Compiled without the required OpenEXR library." << endl;
     node->saveSuccess->setValue ( false, node->id );
     return;
   }
 #endif
 #ifndef HAVE_FREEIMAGE
   if( !need_exr_format ) { // need to save as PNG file but without freeimage library
-    Console(4) << "Warning: Could not save texture to file! Compiled without the required FreeImage library." << endl;
+    Console(LogLevel::Error) << "Warning: Could not save texture to file! Compiled without the required FreeImage library." << endl;
     node->saveSuccess->setValue ( false, node->id );
     return;
   }

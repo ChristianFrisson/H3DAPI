@@ -246,7 +246,7 @@ void X3DTexture3DNode::glTexImage( Image *i, GLenum _texture_target,
       texture_properties->borderWidth->getValue() : 0;
     
     if( border_width < 0 || border_width > 1 ) {
-      Console(3) << "Warning: Invalid borderWidth \"" << border_width 
+      Console(LogLevel::Warning) << "Warning: Invalid borderWidth \"" << border_width 
                  << "\". Must be 0 or 1 (in " << getName()
                  << ")" << endl;
       border_width = 0;
@@ -443,10 +443,10 @@ void X3DTexture3DNode::UpdateTextureProperties::update(){
     string target_type = texture_properties->textureType->getValue();
     if( target_type == "2D_ARRAY" ) {t->setTextureTarget(GL_TEXTURE_2D_ARRAY_EXT);} 
     else if( target_type == "2D_RECTANGLE" ) {
-      Console(3) << "Warning: Invalid textureType \"2D_RECTANGLE\" in TextureProperties for "
+      Console(LogLevel::Warning) << "Warning: Invalid textureType \"2D_RECTANGLE\" in TextureProperties for "
         << "X3DTexture2DNode. \"2D_RECTANGLE\" can only be used for 2D textures" << endl;
     } else if( target_type != "NORMAL" ) {
-      Console(3) << "Warning: Invalid textureType: \"" << target_type << "\" in TextureProperties for "
+      Console(LogLevel::Warning) << "Warning: Invalid textureType: \"" << target_type << "\" in TextureProperties for "
         << "X3DTexture3DNode. " << endl;
     }
   }

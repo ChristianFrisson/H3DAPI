@@ -93,7 +93,7 @@ void SimballDevice::initialize() {
 #ifdef HAVE_SIMBALLMEDICAL_API
   hapi_device.reset( new HAPI::SimballHapticsDevice( deviceNr->getValue() ) );
 #else
-  Console(4) << "Cannot use SimballDevice. HAPI compiled without"
+  Console(LogLevel::Error) << "Cannot use SimballDevice. HAPI compiled without"
              << " SimballMedical support. Recompile HAPI with "
              << "HAVE_SIMBALLMEDICAL_API defined in order to use it." << endl;
 #endif

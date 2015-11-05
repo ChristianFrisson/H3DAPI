@@ -144,7 +144,7 @@ void SphereSensor::setDragOutputEvents( bool _enabled,
             // intersection "browsers may interpret this in a variety of ways"
             // which means doing whatever feels natural.
             // H3DAPI resends last event.
-            Console(3) << "Warning: No intersection with invisible sphere"
+            Console(LogLevel::Warning) << "Warning: No intersection with invisible sphere"
                        << " in SphereSensor node( "
                        << getName() 
                        << " ). Last event resent." << endl;

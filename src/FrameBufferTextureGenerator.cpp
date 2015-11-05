@@ -302,11 +302,11 @@ void FrameBufferTextureGenerator::initialize()
   if( GLEW_ARB_direct_state_access ) {
     if( !useDSA->getValue() ) {
       support_dsa = false;
-      //Console(4)<<"not support dsa"<<endl;
+      //Console(LogLevel::Error)<<"not support dsa"<<endl;
     }
     else{
       support_dsa = true;
-      //Console(4)<<"support dsa"<<endl;
+      //Console(LogLevel::Error)<<"support dsa"<<endl;
     }
   }
 #endif
@@ -342,7 +342,7 @@ void FrameBufferTextureGenerator::initialize()
   }
 
   if( n&& !v ) {
-    Console(4)<<"Warning: In FrameBufferTextureGenerator: "<< getName()<<", local"
+    Console(LogLevel::Error)<<"Warning: In FrameBufferTextureGenerator: "<< getName()<<", local"
       <<" navigation info is defined but no local viewpoint is defined and local"
       <<" viewpoint is necessary for local navigation info to be applied!"<<endl;
   }
@@ -358,15 +358,15 @@ void FrameBufferTextureGenerator::initialize()
       X3DViewpointNode* v_c = dynamic_cast< X3DViewpointNode* >( *i );
       X3DBackgroundNode* b_c = dynamic_cast< X3DBackgroundNode* >( *i );
       if( v_c&&!v ) {
-        Console(4)<<"Warning: In FrameBufferTextureGenerator: "<< getName()<<", local viewpoint"
+        Console(LogLevel::Error)<<"Warning: In FrameBufferTextureGenerator: "<< getName()<<", local viewpoint"
           <<"is defined without setting its containerField!"<<endl;
       }
       if( n_c&&!n ) {
-        Console(4)<<"Warning: In FrameBufferTextureGenerator: "<< getName()<<", local"
+        Console(LogLevel::Error)<<"Warning: In FrameBufferTextureGenerator: "<< getName()<<", local"
           <<" navigation info is defined without setting containerField!"<<endl;
       }
       if( b_c&&!b ) {
-        Console(4)<<"Warning: In FrameBufferTextureGenerator: "<< getName()<<", local"
+        Console(LogLevel::Error)<<"Warning: In FrameBufferTextureGenerator: "<< getName()<<", local"
           <<" background is defined without setting containerField!"<<endl;
       }
   }
@@ -436,7 +436,7 @@ void FrameBufferTextureGenerator::render()     {
   }
 
   if( !GLEW_EXT_framebuffer_object ) {
-    Console(4) << "Warning: Frame Buffer Objects not supported by your graphics card "
+    Console(LogLevel::Error) << "Warning: Frame Buffer Objects not supported by your graphics card "
       << "(EXT_frame_buffer_object). FrameBufferTextureGenerator nodes will "
       << "not work." << endl;
     return;
@@ -462,7 +462,7 @@ void FrameBufferTextureGenerator::render()     {
       } else {
         static bool message_printed = false;
         if( !message_printed && !current_shadow_caster->object->empty() ) {
-          Console(4) << "Warning: Shadows cannot be used with FrameBufferTextureGenerator (" << getName() 
+          Console(LogLevel::Error) << "Warning: Shadows cannot be used with FrameBufferTextureGenerator (" << getName() 
             << ") since it does not have a stencil buffer. Make sure that a depthBufferType that supports"
             << " stencil buffer is used, e.g. DEPTH_STENCIL" << endl;
           message_printed = true;
@@ -474,18 +474,18 @@ void FrameBufferTextureGenerator::render()     {
 
   string output_texture_type = outputTextureType->getValue();
   if( output_texture_type == "2D_ARRAY" && !GLEW_EXT_texture_array) {
-    Console(4) << "Warning: Texture arrays not supported by your graphics card "
+    Console(LogLevel::Error) << "Warning: Texture arrays not supported by your graphics card "
       << "(EXT_texture_array). FrameBufferTextureGenerator nodes with \"2D_ARRAY\" will "
       << "not work." << endl;
     return;
   } else if( output_texture_type == "2D_RECTANGLE" && !GLEW_ARB_texture_rectangle) {
-    Console(4) << "Warning: Texture rectangles not supported by your graphics card "
+    Console(LogLevel::Error) << "Warning: Texture rectangles not supported by your graphics card "
       << "(ARB_texture_rectangle). FrameBufferTextureGenerator nodes with \"2D_RECTANGLE\" will "
       << "not work." << endl;
     return;
   } else if( (output_texture_type == "2D_MULTISAMPLE_ARRAY" 
     || output_texture_type == "2D_MULTISAMPLE") && !GLEW_ARB_texture_multisample ) {
-    Console(4) << "Warning: Multi-sampled texture is not supported by your graphics card "
+    Console(LogLevel::Error) << "Warning: Multi-sampled texture is not supported by your graphics card "
       << "(ARB_texture_multisample). FrameBufferTextureGenerator nodes with \"2D_MULTISAMPLE\" or \"2D_MULTISAMPLE_ARRAY\" will "
       << "not work." << endl;
     return;
@@ -524,7 +524,7 @@ void FrameBufferTextureGenerator::render()     {
       return;
     }
   }else{
-    Console(3) << "Warning: Invalid value for \"update\" field in \""
+    Console(LogLevel::Warning) << "Warning: Invalid value for \"update\" field in \""
       << getName() << "\" node (\"" << update_string
       << "\"). Must be one of \"NONE\", \"NEXT_FRAME_ONLY\", , \"NEXT_FRAME_ONLY\"" 
       << " or \"ALWAYS\". Using \"ALWAYS\" instead." << endl;
@@ -621,7 +621,7 @@ void FrameBufferTextureGenerator::render()     {
       
     }else{
 #endif
-      Console(4) << "Warning: GL_ARB_viewport_array is not supported by the graphic card. "
+      Console(LogLevel::Error) << "Warning: GL_ARB_viewport_array is not supported by the graphic card. "
         <<"single pass stereo can not be used."<<endl;
 #ifdef GLEW_ARB_viewport_array
     }
@@ -670,7 +670,7 @@ void FrameBufferTextureGenerator::render()     {
   if( GLEW_ARB_draw_buffers ) {
     glDrawBuffers( H3DMax( (int)color_ids.size(), 1 ), &draw_buffers[0]);
   } else {
-    Console(4) << "Warning: Your graphics card does not support multiple "
+    Console(LogLevel::Error) << "Warning: Your graphics card does not support multiple "
       << "render targets(ARB_draw_buffers). Only one color texture will"
       << " have update to their values";
   }
@@ -991,7 +991,7 @@ void FrameBufferTextureGenerator::initializeFBO() {
     if( (GLint)nr_color_textures > max_draw_buffers ||
       (GLint)nr_color_textures > max_color_attachments ) {
         nr_color_textures = H3DMin( max_draw_buffers, max_draw_buffers );
-        Console(4) << "Warning: Too many color textures. Supported by your graphics card: "
+        Console(LogLevel::Error) << "Warning: Too many color textures. Supported by your graphics card: "
           << nr_color_textures << ". Tried to use: " << color_texture_types.size() 
           << ". Additional textures will be ignored(in FrameBufferTextureGenerator). "
           << endl;
@@ -1029,7 +1029,7 @@ void FrameBufferTextureGenerator::createOutputTextures () {
   } else {
     if( output_texture_type != "2D" && output_texture_type != "2D_RECTANGLE" &&
         output_texture_type != "2D_MULTISAMPLE" ) {
-      Console(4) << "Warning: Invalid outputTextureType value: \"" << output_texture_type 
+      Console(LogLevel::Error) << "Warning: Invalid outputTextureType value: \"" << output_texture_type 
         << "\". Valid values are \"2D\", \"2D_RECTANGLE\", \"2D_MULTISAMPLE\"," 
         << "\"2D_MULTISAMPLE_ARRAY\", \"2D_ARRAY\" and \"3D\". "
         <<"Using 2D instead(in FrameBufferTextureGenerator node). " << endl;
@@ -1073,7 +1073,7 @@ void FrameBufferTextureGenerator::createOutputTextures () {
         depth_id = tex->getTextureId();
       }
       else if( output_texture_type == "3D" ) {
-        Console(4) << "Warning: 3D depth textures cannot be generated by "
+        Console(LogLevel::Error) << "Warning: 3D depth textures cannot be generated by "
           <<"FrameBufferTextureGenerator. OpenGL does not support it. Depth texture will be undefined" << endl;
       }
     }
@@ -1088,7 +1088,7 @@ void FrameBufferTextureGenerator::createOutputTextures () {
   if( (GLint)nr_color_textures > max_draw_buffers ||
     (GLint)nr_color_textures > max_color_attachments ) {
       nr_color_textures = H3DMin( max_draw_buffers, max_draw_buffers );
-      Console(4) << "Warning: Too many color textures. Supported by your graphics card: "
+      Console(LogLevel::Error) << "Warning: Too many color textures. Supported by your graphics card: "
         << nr_color_textures << ". Tried to use: " << color_texture_types.size() 
         << ". Additional textures will be ignored(in FrameBufferTextureGenerator). "
         << endl;
@@ -1190,7 +1190,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
       // use depth buffer from external frame buffer
       if( !external_FBO_depth ) { // however no external fbo is set
         if( !depthWarningPrinted->getValue() ) {
-          Console(4)<< "Warning: There is no external fbo set to be used for sharing "
+          Console(LogLevel::Error)<< "Warning: There is no external fbo set to be used for sharing "
             << "please add one!" << endl;
           depthWarningPrinted->setValue(true);
         }
@@ -1199,7 +1199,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
         // update the depth_id and depth tex of internal fbo bounded depth buffer.
         if( getNrSamples->getValue()>0 ) {
           if( !depthWarningPrinted->getValue() ) {
-            Console(4)<< "Warning: Multi-sampled FBO can not share depth buffer "
+            Console(LogLevel::Error)<< "Warning: Multi-sampled FBO can not share depth buffer "
               << "will use FBO_COPY instead" <<std::endl;
             depthWarningPrinted->setValue(true);
           }
@@ -1212,7 +1212,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
           GLenum depth_target = depthTexture->getValue()->getTextureTarget();
           if( external_depth_target != depth_target ) {
             if( !depthWarningPrinted->getValue() ) {
-              Console(4)<< "Warning, the external specified texture target:["
+              Console(LogLevel::Error)<< "Warning, the external specified texture target:["
                 << external_depth_target << "] is not the same as "
                 << "internal depth texture, depth texture sharing fail."
                 << std::endl;
@@ -1238,7 +1238,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
       if( !external_FBO_depth ) { 
         // however no external fbo is set
         if( !depthWarningPrinted->getValue() ) {
-          Console(4)<< "Warning: There is no external fbo set to be copied "
+          Console(LogLevel::Error)<< "Warning: There is no external fbo set to be copied "
             << "please add one, if it is being forget!";
           depthWarningPrinted->setValue(true);
         }
@@ -1249,7 +1249,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
       }
     } else { 
       if( !depthWarningPrinted->getValue() ) {
-        Console(4)  << "The specified depth_buffer_storage value: ["
+        Console(LogLevel::Error)  << "The specified depth_buffer_storage value: ["
           <<depth_buffer_storage<<"] is not currently supported" 
           << std::endl;
         depthWarningPrinted->setValue(true);
@@ -1278,7 +1278,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
     if( color_buffer_storages.size()<color_ids.size() ) { 
       // not enough storages set for color buffers, just handling those being set.
       if( !colorMismatchWarningPrinted->getValue() ) {
-        Console(4)<<"Warning, number of generated color buffer texture is more "
+        Console(LogLevel::Error)<<"Warning, number of generated color buffer texture is more "
           <<"than external specified color storage, locally cleared "
           <<"color buffer will be used for extra internal color buffers";
         colorMismatchWarningPrinted->setValue(true);
@@ -1289,7 +1289,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
       }
     } else if( color_buffer_storages.size()>color_ids.size() ) {
       if( !colorMismatchWarningPrinted->getValue() ) {
-        Console(4)<<"Warning, number of generated color buffer texture is "
+        Console(LogLevel::Error)<<"Warning, number of generated color buffer texture is "
           <<"less than external specified color storage "
           <<"extra external color storage will be ignored!"<<std::endl;
         colorMismatchWarningPrinted->setValue(true);
@@ -1333,7 +1333,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
           parseColorBufferStorage(color_buffer_storage, style, index);
           if( index > max_color_attachments ) {
             if( !colorInitWarningPrinted->getValue()[i] ) {
-              Console(4) << "Warning, the specified attachment index exceeds "
+              Console(LogLevel::Error) << "Warning, the specified attachment index exceeds "
                 <<"the maximum limit of color attachments, " 
                 << "this specified color buffer from external fbo "
                 <<"will not be used."<< std::endl;
@@ -1348,7 +1348,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
             if( external_fbo_colors_vector.size()<need_external_fbo_num ) { 
               // there is no external fbo can be used
               if( !colorInitWarningPrinted->getValue()[i] ) {
-                Console(4)<< "Warning: There is not enough external fbo set "
+                Console(LogLevel::Error)<< "Warning: There is not enough external fbo set "
                   << "to be used for sharing "
                   << "please add one, if it is being forget!" <<std::endl;
                 colorInitWarningPrinted->setValue(i,true);
@@ -1369,7 +1369,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
                 external_fbo_colors_vector[need_external_fbo_num-1]
               )->getColorIds().size()<=index ) {
                 if( !colorInitWarningPrinted->getValue()[i] ) {
-                  Console(4) <<"Warning, the specified color buffer texture index "
+                  Console(LogLevel::Error) <<"Warning, the specified color buffer texture index "
                     <<"is smaller than color id numbers of external fbo "
                     <<"will use cleared color buffer instead"<<std::endl;
                   colorInitWarningPrinted->setValue(i,true);
@@ -1389,7 +1389,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
               // update the color_ids[i] and colorTextures[i] of internal fbo bounded depth buffer.
               if( external_color_target!= color_target ) {
                 if( !colorInitWarningPrinted->getValue()[i] ) {
-                  Console(4) <<"Warning, the external FBO color texture target " 
+                  Console(LogLevel::Error) <<"Warning, the external FBO color texture target " 
                     <<"is different from the local color texture"
                     <<std::endl;
                   colorInitWarningPrinted->setValue(i,true);
@@ -1435,7 +1435,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
             // of the external fbo to the i th color buffer of internal fbo
             if( external_fbo_colors_vector.size()<need_external_fbo_num ) { 
               if( !colorInitWarningPrinted->getValue()[i] ) {
-                Console(4)<< "Warning: There is no external fbo set to be used for copying "
+                Console(LogLevel::Error)<< "Warning: There is no external fbo set to be used for copying "
                   << "please add one, if it is being forget!" <<std::endl;
                 colorInitWarningPrinted->setValue(i,true);
               }
@@ -1446,7 +1446,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
               external_fbo_colors_vector[need_external_fbo_num-1]
             )->getColorIds().size()<=index ) {
               if( !colorInitWarningPrinted->getValue()[i] ) {
-                Console(4) <<"Warning, the specified color buffer texture index "
+                Console(LogLevel::Error) <<"Warning, the specified color buffer texture index "
                   <<"is smaller than color id numbers of external fbo "
                   <<"will use cleared color buffer instead"<<std::endl;
                 colorInitWarningPrinted->setValue(i,true);
@@ -1467,7 +1467,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
   if( GLEW_ARB_draw_buffers ) {
     glDrawBuffers( H3DMax( (int)color_ids.size(), 1 ), &draw_buffers[0]);
   } else {
-    Console(4) << "ERROR: Your graphics card does not support multiple "
+    Console(LogLevel::Error) << "ERROR: Your graphics card does not support multiple "
       << "render targets(ARB_draw_buffers). Only one color texture will"
       << " have update to their values" << std::endl;
   }
@@ -1481,20 +1481,20 @@ bool FrameBufferTextureGenerator::parseColorBufferStorage(std::string color_buff
   std::size_t found = color_buffer_storage.find("_");
   if(found==std::string::npos){ 
     // no "_" in the string,  such color_buffer_storage is not currently supported
-    Console(4) << "The color_buffer_storage value:[ "
+    Console(LogLevel::Error) << "The color_buffer_storage value:[ "
       <<color_buffer_storage<<" ] is not currently supported." <<std::endl;
     return false;
   }else{// at least one "_" in the string. get the first part as base.
     base = color_buffer_storage.substr(0,found-0);
     if( base!="FBO" ) {
-      Console(4) << "The color_buffer_storage value:[ "
+      Console(LogLevel::Error) << "The color_buffer_storage value:[ "
         <<color_buffer_storage<<" ] is not currently supported." <<std::endl;
       return false;
     }
     std::size_t second_found = color_buffer_storage.find("_",found+1);
     if(second_found==std::string::npos){
       // only one "_" exist, such color_buffer_storage is not currently supported
-      Console(4) << "The color_buffer_storage value:[ "
+      Console(LogLevel::Error) << "The color_buffer_storage value:[ "
         <<color_buffer_storage<<" ] is not currently supported." <<std::endl;
       return false;
     }else{ // at least two "_" in the string. the string is either FBO_COPY_x or FBO_SHARE_x
@@ -1519,7 +1519,7 @@ void FrameBufferTextureGenerator::_check_gl_error(const char *file, int line) {
     case GL_INVALID_FRAMEBUFFER_OPERATION:  error="INVALID_FRAMEBUFFER_OPERATION";  break;
     }
 
-    Console(4) << "GL_" << error.c_str() <<" - "<<file<<":"<<line<<endl;
+    Console(LogLevel::Error) << "GL_" << error.c_str() <<" - "<<file<<":"<<line<<endl;
     err=glGetError();
   }
 }
@@ -1564,7 +1564,7 @@ bool FrameBufferTextureGenerator::resizeBuffers( H3DInt32 _width, H3DInt32 _heig
 
   if( (output_texture_type=="2D_MULTISAMPLE"||output_texture_type=="2D_MULTISAMPLE_ARRAY")&&getNrSamples->getValue()==0  ) {
     samples->setValue(1);
-    Console(4)<<"Warning: when using 2D_MULTISAMPLE or 2D_MULTISAMPLE_ARRAY  as output, the number of samples"
+    Console(LogLevel::Error)<<"Warning: when using 2D_MULTISAMPLE or 2D_MULTISAMPLE_ARRAY  as output, the number of samples"
       <<"specified should not be zero, will set the number of sample to be one"<<endl;
       
   }
@@ -1770,43 +1770,43 @@ bool FrameBufferTextureGenerator::checkFBOCompleteness() {
   // check for errors
   GLenum fbo_err = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
   if( fbo_err != GL_FRAMEBUFFER_COMPLETE_EXT ) {
-    Console(4) << "Warning: Frame Buffer Object error: ";
+    Console(LogLevel::Error) << "Warning: Frame Buffer Object error: ";
     switch(fbo_err) {
     case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT :
-      Console(4) << "Attachment not complete" << endl;
+      Console(LogLevel::Error) << "Attachment not complete" << endl;
       break;
     case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT :
-      Console(4) << "Wrong size of attachments" << endl;
+      Console(LogLevel::Error) << "Wrong size of attachments" << endl;
       break;
     case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT :
-      Console(4) << "Draw buffer err" << endl;
+      Console(LogLevel::Error) << "Draw buffer err" << endl;
       break;
     case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT :
-      Console(4) << "Color attachments have different formats" << endl;
+      Console(LogLevel::Error) << "Color attachments have different formats" << endl;
       break;
     case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT :
-      Console(4) << "No attachments" << endl;
+      Console(LogLevel::Error) << "No attachments" << endl;
       break;
     case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
-      Console(4) << "Unsupported" << endl;
+      Console(LogLevel::Error) << "Unsupported" << endl;
       break;
     case GL_FRAMEBUFFER_UNDEFINED:
-      Console(4) << "Target is the default framebuffer, but the default framebuffer does not exist"<<endl;
+      Console(LogLevel::Error) << "Target is the default framebuffer, but the default framebuffer does not exist"<<endl;
       break;
     case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-      Console(4) << "Read buffer err" << endl;
+      Console(LogLevel::Error) << "Read buffer err" << endl;
       break;
     case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-      Console(4) << "mutiple sample setup error" <<endl;
+      Console(LogLevel::Error) << "mutiple sample setup error" <<endl;
       break;
     case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-      Console(4) << "layered error" <<endl;
+      Console(LogLevel::Error) << "layered error" <<endl;
       break;
     default:
-      Console(4) << "Unkown error" << endl;
+      Console(LogLevel::Error) << "Unkown error" << endl;
       break;
     }
-    Console(4) << " (in FrameBufferTextureGenerator node). " << endl;
+    Console(LogLevel::Error) << " (in FrameBufferTextureGenerator node). " << endl;
     return false;
   }
   return true;
@@ -1820,41 +1820,41 @@ GLenum FrameBufferTextureGenerator::stringToInternalFormat( const string &s ) {
     if( GLEW_ARB_texture_float ) {
       internal_format = GL_RGBA32F_ARB;
     } else {
-      Console(4) << "Warning: Your graphics card does not support floating point textures (ARB_texture_float). Using RGBA instead(in FrameBufferTextureGenerator node). " << endl;
+      Console(LogLevel::Error) << "Warning: Your graphics card does not support floating point textures (ARB_texture_float). Using RGBA instead(in FrameBufferTextureGenerator node). " << endl;
     }
   } else if( s == "RGBA16F" ) { 
     if( GLEW_ARB_texture_float ) {
       internal_format = GL_RGBA16F_ARB;
     } else {
-      Console(4) << "Warning: Your graphics card does not support floating point textures (ARB_texture_float). Using RGBA instead(in FrameBufferTextureGenerator node). " << endl;
+      Console(LogLevel::Error) << "Warning: Your graphics card does not support floating point textures (ARB_texture_float). Using RGBA instead(in FrameBufferTextureGenerator node). " << endl;
     }
   } else if( s == "RGB32F" ) { 
     if( GLEW_ARB_texture_float ) {
       internal_format = GL_RGB32F_ARB;
     } else {
       internal_format = GL_RGB;
-      Console(4) << "Warning: Your graphics card does not support floating point textures (ARB_texture_float). Using RGB instead(in FrameBufferTextureGenerator node). " << endl;
+      Console(LogLevel::Error) << "Warning: Your graphics card does not support floating point textures (ARB_texture_float). Using RGB instead(in FrameBufferTextureGenerator node). " << endl;
     }
   } else if( s == "RGB16F" ) { 
     if( GLEW_ARB_texture_float ) {
       internal_format = GL_RGB16F_ARB;
     } else {
       internal_format = GL_RGB;
-      Console(4) << "Warning: Your graphics card does not support floating point textures (ARB_texture_float). Using RGB instead(in FrameBufferTextureGenerator node). " << endl;
+      Console(LogLevel::Error) << "Warning: Your graphics card does not support floating point textures (ARB_texture_float). Using RGB instead(in FrameBufferTextureGenerator node). " << endl;
     }
   } else if( s == "R32F" ) {
     if( GLEW_ARB_texture_rg ) {
       internal_format = GL_R32F;
     }else{
       internal_format = GL_R8;
-      Console(4)<< "Warning: Your graphics card does not support floating point RED. Using R8 (8bit red channel) format instead(in FrameBufferTextureGenerator node). " << endl;
+      Console(LogLevel::Error)<< "Warning: Your graphics card does not support floating point RED. Using R8 (8bit red channel) format instead(in FrameBufferTextureGenerator node). " << endl;
     }
   }
   else if( s == "RGB" ) { 
     internal_format = GL_RGB;
   } else {
     if( s != "RGBA" ) {
-      Console(4) << "Warning: Invalid generateColorTextures value: \"" << s 
+      Console(LogLevel::Error) << "Warning: Invalid generateColorTextures value: \"" << s 
         << "\". Using \"RGBA\" instead(in FrameBufferTextureGenerator node). " << endl;
     }
   }
@@ -1888,7 +1888,7 @@ GLenum FrameBufferTextureGenerator::stringToInternalDepthFormat( const string &s
     if( GLEW_ARB_depth_texture ) {
       internal_format = GL_DEPTH_COMPONENT16_ARB;
     } else {
-      Console(4)  << "Warning: Your graphics card does not support depth "
+      Console(LogLevel::Error)  << "Warning: Your graphics card does not support depth "
         << "textures (ARB_depth_texture). Using DEPTH instead"
         << "(in FrameBufferTextureGenerator node). " << endl;
     }
@@ -1896,35 +1896,35 @@ GLenum FrameBufferTextureGenerator::stringToInternalDepthFormat( const string &s
     if( GLEW_ARB_depth_texture ) {
       internal_format = GL_DEPTH_COMPONENT24_ARB;
     } else {
-      Console(4) << "Warning: Your graphics card does not support depth textures (ARB_depth_texture). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl;
+      Console(LogLevel::Error) << "Warning: Your graphics card does not support depth textures (ARB_depth_texture). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl;
     }
   } else if( s == "DEPTH32" ) { 
     if( GLEW_ARB_depth_texture ) {
       internal_format = GL_DEPTH_COMPONENT32_ARB;
     } else {
-      Console(4) << "Warning: Your graphics card does not support depth textures (ARB_depth_texture). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl;
+      Console(LogLevel::Error) << "Warning: Your graphics card does not support depth textures (ARB_depth_texture). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl;
     }
   } else if( s == "DEPTH32F" ) { 
     if( GLEW_ARB_depth_buffer_float ) {
       internal_format = GL_DEPTH_COMPONENT32F;
     } else {
-      Console(4) << "Warning: Your graphics card does not support floating point depth textures (ARB_depth_buffer_float). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl; 
+      Console(LogLevel::Error) << "Warning: Your graphics card does not support floating point depth textures (ARB_depth_buffer_float). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl; 
     }
   } else if( s == "DEPTH24_STENCIL8" ) { 
     if( GLEW_EXT_packed_depth_stencil ) {
       internal_format = GL_DEPTH24_STENCIL8_EXT;
     } else {
-      Console(4) << "Warning: Your graphics card does not support packed depth stencil buffers(EXT_packed_depth_stencil). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl; 
+      Console(LogLevel::Error) << "Warning: Your graphics card does not support packed depth stencil buffers(EXT_packed_depth_stencil). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl; 
     }
   } else if( s == "DEPTH_STENCIL" ) { 
     if( GLEW_EXT_packed_depth_stencil ) {
       internal_format = GL_DEPTH_STENCIL_EXT;
     } else {
-      Console(4) << "Warning: Your graphics card does not support packed depth stencil buffers(EXT_packed_depth_stencil). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl; 
+      Console(LogLevel::Error) << "Warning: Your graphics card does not support packed depth stencil buffers(EXT_packed_depth_stencil). Using DEPTH instead(in FrameBufferTextureGenerator node). " << endl; 
     }
   } else {
     if( s != "DEPTH" ) {
-      Console(4) << "Warning: Invalid depthBufferType value: \"" << s 
+      Console(LogLevel::Error) << "Warning: Invalid depthBufferType value: \"" << s 
         << "\". Using \"DEPTH\" instead(in FrameBufferTextureGenerator node). " << endl;
     }
   }
@@ -1975,7 +1975,7 @@ void FrameBufferTextureGenerator::blitDepthBuffer(GLenum src, GLenum dst,
           GL_DEPTH_BUFFER_BIT , GL_NEAREST);
       }
 #else
-      Console(3) << "Warning: H3DAPI built without direct state access. Update to a newer glew version and rebuild." << endl;
+      Console(LogLevel::Warning) << "Warning: H3DAPI built without direct state access. Update to a newer glew version and rebuild." << endl;
 #endif
     }else{
       glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, src );
@@ -2011,7 +2011,7 @@ void FrameBufferTextureGenerator::blitColorBuffer(GLenum src, GLenum dst,
       glBlitNamedFramebuffer(src, dst, srcX, srcY, srcX+w, srcY+h, 
         0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 #else
-      Console(3) << "Warning: H3DAPI built without direct state access. Update to a newer glew version and rebuild." << endl;
+      Console(LogLevel::Warning) << "Warning: H3DAPI built without direct state access. Update to a newer glew version and rebuild." << endl;
 #endif
     }else{
       glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, src);
@@ -2059,7 +2059,7 @@ void FrameBufferTextureGenerator::blitFBOBuffers(GLenum src, GLenum dst,
           0, 0, w, h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
       }
 #else
-      Console(3) << "Warning: H3DAPI built without direct state access. Update to a newer glew version and rebuild." << endl;
+      Console(LogLevel::Warning) << "Warning: H3DAPI built without direct state access. Update to a newer glew version and rebuild." << endl;
 #endif
       // invalidate the src fbo after blit
 #ifdef GLEW_ARB_direct_state_access
@@ -2184,7 +2184,7 @@ void FrameBufferTextureGenerator::NeedMultiSample::update()
 {
   FrameBufferTextureGenerator* fbtg = static_cast< FrameBufferTextureGenerator* >(getOwner());
   if( !fbtg ) {
-    Console(4)<<"NeedMultiSample field is not initialized with its FBTG owner!"<<endl;
+    Console(LogLevel::Error)<<"NeedMultiSample field is not initialized with its FBTG owner!"<<endl;
     return;
   }
   string output_texture_type = fbtg->outputTextureType->getValue();
@@ -2194,7 +2194,7 @@ void FrameBufferTextureGenerator::NeedMultiSample::update()
     value = true;
     if( nr_layers>0&&output_texture_type=="2D_ARRAY" ) {
       value = false;
-      Console(4)<<"Warning: layered 2d array with multiple sample is not supported, "
+      Console(LogLevel::Error)<<"Warning: layered 2d array with multiple sample is not supported, "
         <<"will ignore the samples you just set."
         <<"Please use 2D_MULTISAMPLE_ARRAY as outputTextureType instead!"<<endl;
     }
@@ -2213,7 +2213,7 @@ void H3D::FrameBufferTextureGenerator::GetNrSamples::update()
     int nr_samples = samples->getValue();
     int max_samples = GraphicsHardwareInfo::getInfo().max_samples;
     if( nr_samples>max_samples ) {
-      Console(4) << "Warning: Unsupported nr of multi-samples: " << nr_samples 
+      Console(LogLevel::Error) << "Warning: Unsupported nr of multi-samples: " << nr_samples 
         << ". Your graphics draw supports a maximum of " << max_samples 
         << " (in FrameBufferTextureGenerator)." << endl;
       value = max_samples;

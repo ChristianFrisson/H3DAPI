@@ -99,7 +99,7 @@ ForceDimensionDevice::ForceDimensionDevice(
 #ifdef HAVE_DHDAPI
   hapi_device.reset( new HAPI::ForceDimensionHapticsDevice );
 #else
-  Console(4) << "Cannot use ForceDimensionDevice. HAPI compiled without"
+  Console(LogLevel::Error) << "Cannot use ForceDimensionDevice. HAPI compiled without"
        << " DHDAPI support. Recompile HAPI with HAVE_DHDAPI defined"
        << " in order to use it." << endl;
 #endif

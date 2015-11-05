@@ -429,7 +429,7 @@ int main(int argc, char* argv[]) {
   else if( ostream_str == "cout" )
     console_ostream = &cout;
   else
-    Console(4) << "Invalid value \"" <<  ostream_str
+    Console(LogLevel::Error) << "Invalid value \"" <<  ostream_str
     << "\" on ostream variable. Must be cerr or cout."<< endl;
 
   Console.setShowTime(console_show_time);
@@ -475,7 +475,7 @@ int main(int argc, char* argv[]) {
     else if (strcmp( buffer, "FALSE" ) == 0 ){
       manualCursorControl = false; }
     else
-      Console(4) << "Invalid value \"" << buffer 
+      Console(LogLevel::Error) << "Invalid value \"" << buffer 
       << "\" on environment "
       << "variable H3D_MANUALCURSORCONTROL. Must be TRUE or FALSE. "
       << endl;
@@ -494,7 +494,7 @@ int main(int argc, char* argv[]) {
     else if (strcmp( buffer, "FALSE" ) == 0 ){
       fullscreen = false; }
     else
-      Console(4) << "Invalid value \"" << buffer 
+      Console(LogLevel::Error) << "Invalid value \"" << buffer 
       << "\" on environment "
       << "variable H3D_FULLSCREEN. Must be TRUE or FALSE. "
       << endl;
@@ -507,7 +507,7 @@ int main(int argc, char* argv[]) {
     else if (strcmp( buffer, "FALSE" ) == 0 ){
       mirrored = false; }
     else
-      Console(4) << "Invalid value \"" << buffer 
+      Console(LogLevel::Error) << "Invalid value \"" << buffer 
       << "\" on environment "
       << "variable H3D_MIRRORED. Must be TRUE or FALSE. "<< endl;
   }
@@ -583,7 +583,7 @@ int main(int argc, char* argv[]) {
       else if( !strcmp(argv[i]+2,"spacemouse") ){
         use_space_mouse = true; }
       else {
-        Console(4) << "Unknown argument "
+        Console(LogLevel::Error) << "Unknown argument "
           << "'" << argv[i] << "'" << endl; }
       break;
 
@@ -618,13 +618,13 @@ int main(int argc, char* argv[]) {
       break;
 
     default:
-      Console(4) << "Unknown argument "
+      Console(LogLevel::Error) << "Unknown argument "
         << "'" << argv[i] << "'" << endl;
     }
   }
 
   if (!xml_files.size()){
-    Console(4) << help_message << endl;
+    Console(LogLevel::Error) << help_message << endl;
     return 1;
   }
 
@@ -649,7 +649,7 @@ int main(int argc, char* argv[]) {
       try {
         device_info = X3D::createX3DNodeFromURL( deviceinfo_file );
       } catch( const Exception::H3DException &e ) {
-        Console(3) << "Warning: Could not create default DeviceInfo node "
+        Console(LogLevel::Warning) << "Warning: Could not create default DeviceInfo node "
           << "from file \"" << deviceinfo_file << "\": "
           << e << endl;
       }
@@ -662,7 +662,7 @@ int main(int argc, char* argv[]) {
       try {
         default_stylus = X3D::createX3DNodeFromURL( stylus_file );
       } catch( const Exception::H3DException &e ) {
-        Console( 4 ) << "Warning: Could not create default stylus "
+        Console(LogLevel::Error) << "Warning: Could not create default stylus "
           << "from file \"" << stylus_file << "\": "
           << e << endl;
       }
@@ -693,7 +693,7 @@ int main(int argc, char* argv[]) {
     AutoRef< Group > g( new Group );
     for( vector<string>::iterator file = xml_files.begin() ;
       file != xml_files.end() ; ++file ){
-      Console(3) << "Loading " << *file << endl;
+      Console(LogLevel::Info) << "Loading " << *file << endl;
       scene->loadSceneRoot( *file );
     }
 
@@ -725,7 +725,7 @@ int main(int argc, char* argv[]) {
       try {
         viewpoint = X3D::createX3DNodeFromURL( viewpoint_file );
       } catch( const Exception::H3DException &e ) {
-        Console(3) << "Warning: Could not create default Viewpoint node "
+        Console(LogLevel::Warning) << "Warning: Could not create default Viewpoint node "
           << "from file \"" << viewpoint_file << "\": "
           << e << endl;
       }
@@ -743,7 +743,7 @@ int main(int argc, char* argv[]) {
   }
 
   catch (const Exception::H3DException &e) {
-    Console(4) << e << endl;
+    Console(LogLevel::Error) << e << endl;
 
     // This is required to ensure the scene is deleted
     // in all cases probably due to circular references

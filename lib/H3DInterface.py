@@ -1,4 +1,4 @@
-
+﻿
 from H3D import *
 
 import sys
@@ -9,6 +9,7 @@ sys.stdout = Console
 sys.stderr = Console
 
 class LogLevel:
+  Debug = 1
   Info = 3
   Warning = 4
   Error = 5

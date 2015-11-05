@@ -51,7 +51,7 @@ void H3DFunctionNode::Value::update() {
     static_cast< MFDouble * >( routes_in[0] )->getValue();
 
   if( _input.size() != function->nrInputValues() ) {
-    H3DUtil::Console(3) 
+    H3DUtil::Console(LogLevel::Warning) 
       << "Invalid number of parameters in \"input\" field in \""
       << owner->getName() << "\". Got " << _input.size()
       << ", expected " << function->nrInputValues() << endl;

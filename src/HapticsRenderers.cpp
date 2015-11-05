@@ -136,7 +136,7 @@ void OpenHapticsRenderer::ShapeType::onValueChange( const string &v ) {
     } else if( v == "DEPTH_BUFFER" ) {
       r->setDefaultShapeType( HAPI::OpenHapticsRenderer::OpenHapticsOptions::DEPTH_BUFFER );    
     } else {
-      Console(4) << "Warning: Invalid OpenHaptics shape type: "
+      Console(LogLevel::Error) << "Warning: Invalid OpenHaptics shape type: "
                  << v 
                  << ". Must be \"FEEDBACK_BUFFER\" or \"DEPTH_BUFFER\" "
                  << "(in \"" << getName() << "\")" << endl;
@@ -188,7 +188,7 @@ HAPI::HAPIHapticsRenderer *OpenHapticsRenderer::getNewHapticsRenderer() {
         defaultHapticCameraView->getValue(),
         false );
     } else {
-      Console(4) << "Warning: Invalid OpenHaptics shape type: "
+      Console(LogLevel::Error) << "Warning: Invalid OpenHaptics shape type: "
                  << default_shape_type
                  << ". Must be \"FEEDBACK_BUFFER\" or \"DEPTH_BUFFER\" "
                  << "(in \"" << getName() << "\")" << endl;

@@ -84,7 +84,7 @@ void HapticMasterDevice::initialize() {
 #ifdef HAVE_HAPTIC_MASTER_API
   hapi_device.reset( new HAPI::HapticMasterDevice( deviceName->getValue()) );
 #else
-  Console(4) << "Cannot use HapticMasterDevice. HAPI compiled without"
+  Console(LogLevel::Error) << "Cannot use HapticMasterDevice. HAPI compiled without"
              << " HapticMaster support. Recompile HAPI with "
              << "HAVE_HAPTIC_MASTER_API defined"
              << " in order to use it." << endl;

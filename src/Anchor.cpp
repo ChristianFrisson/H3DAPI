@@ -179,7 +179,7 @@ void Anchor::GeometrySelected::update() {
         }
       }
       if( no_valid_things )
-        Console(3) << "Warning: The url field in Anchor node "
+        Console(LogLevel::Warning) << "Warning: The url field in Anchor node "
                    << anchor->getName() << " is incorrect. "
                    << "The anchor will not be activated." << endl;
     }

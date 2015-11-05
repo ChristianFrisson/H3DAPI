@@ -98,7 +98,7 @@ void EntactDevice::initialize() {
   hapi_device.reset( new HAPI::EntactHapticsDevice( serialNumber->getValue(),
                                                     ipAddress->getValue() ) );
 #else
-  Console(4) << "Cannot use EntactDevice. HAPI compiled without"
+  Console(LogLevel::Error) << "Cannot use EntactDevice. HAPI compiled without"
              << " Entact support. Recompile HAPI with HAVE_ENTACTAPI defined"
              << " in order to use it." << endl;
 #endif

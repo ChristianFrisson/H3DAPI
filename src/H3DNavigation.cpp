@@ -194,7 +194,7 @@ void H3DNavigation::doNavigation(
            }
            
            if( !isUniformScaling( scaling ) ) {
-              Console(3) << "Warning: Non-uniform scaling in the"
+              Console(LogLevel::Warning) << "Warning: Non-uniform scaling in the"
                          << " active X3DViewpointNode ( "
                          << vp->getName()
                          << " ) nodes local coordinate system. Speed and avatar size of "
@@ -233,7 +233,7 @@ void H3DNavigation::doNavigation(
       }
 
       if( !isUniformScaling( scaling ) ) {
-         Console(3) << "Warning: Non-uniform scaling in the"
+         Console(LogLevel::Warning) << "Warning: Non-uniform scaling in the"
                     << " active X3DViewpointNode ( "
                     << vp->getName()
                     << " ) nodes local coordinate system. Speed and avatar size of "

@@ -154,7 +154,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
   // vOrder has to be 2 or greater to define the nurbssurfacepatch
   if( v_order < 2 ) {
     if( !printWarning->isUpToDate() ) {
-      Console(3) << "Warning: vOrder is less than 2 in " << getTypeName()
+      Console(LogLevel::Warning) << "Warning: vOrder is less than 2 in " << getTypeName()
                  << " node( "  << getName() 
                  << "). Node will not be rendered. " << endl;
       printWarning->upToDate();
@@ -165,7 +165,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
   // uOrder has to be 2 or greater to define the nurbssurfacepatch
   if( u_order < 2 ) {
     if( !printWarning->isUpToDate() ) {
-      Console(3) << "Warning: uOrder is less than 2 in " << getTypeName()
+      Console(LogLevel::Warning) << "Warning: uOrder is less than 2 in " << getTypeName()
                  << " node( "  << getName() 
                  << "). Node will not be rendered. " << endl;
       printWarning->upToDate();
@@ -177,7 +177,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
   // to define the nurbssurfacepatch
   if( v_dimension < v_order )  {
     if( !printWarning->isUpToDate() ) {
-      Console(3) << "Warning: vDimension is less than vOrder in "
+      Console(LogLevel::Warning) << "Warning: vDimension is less than vOrder in "
         << getTypeName() << " node( "
         << getName() << "). Node will not be rendered. " << endl;
       printWarning->upToDate();
@@ -189,7 +189,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
   // to define the nurbssurfacepatch
   if( u_dimension < u_order )  {
     if( !printWarning->isUpToDate() ) {
-      Console(3) << "Warning: uDimension is less than uOrder in "
+      Console(LogLevel::Warning) << "Warning: uDimension is less than uOrder in "
         << getTypeName() << " node( "
         << getName() << "). Node will not be rendered. " << endl;
       printWarning->upToDate();
@@ -213,7 +213,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
     // another check to see that the nurbssurfacepatch is correctly defined
     if( noWeights.size() != (unsigned int)(u_dimension * v_dimension) )  {
       if( !printWarning->isUpToDate() ) {
-        Console(3) << "Warning: The size of controlPoint does not match "
+        Console(LogLevel::Warning) << "Warning: The size of controlPoint does not match "
           << "vDimension * uDimension in " << getTypeName() << " node( "
           << getName() << "). Node will not be rendered. " << endl;
         printWarning->upToDate();
@@ -229,7 +229,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
     H3DInt32 sizeOfVertex;
     if( theWeights.size() < noWeights.size() ) {
       if( !printWarning->isUpToDate() ) {
-        Console(3) << "Warning: The number of weight values is less than "
+        Console(LogLevel::Warning) << "Warning: The number of weight values is less than "
           << "the number of control points in " << getTypeName() << " node( "
           << getName() << "). Default weight 1.0 is assumed." << endl;
       }
@@ -282,7 +282,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
     H3DInt32 uSizeToUse = (H3DInt32) uk.size() ;
     if( generateUniform ) {
       if( !printWarning->isUpToDate() && uSizeToUse != 0 ) {
-        Console(3) << "Warning: The uKnot array is not according to standard in "
+        Console(LogLevel::Warning) << "Warning: The uKnot array is not according to standard in "
           << getTypeName() << " node( "
           << getName() << "). A default uKnot array will be generated. " << endl;
       }
@@ -316,7 +316,7 @@ void X3DNurbsSurfaceGeometryNode::render( ) {
     H3DInt32 vSizeToUse = (H3DInt32)vk.size() ;
     if( generateUniform ) {
       if( !printWarning->isUpToDate() && vSizeToUse != 0 ) {
-        Console(3) << "Warning: The vKnot array is not according to standard in "
+        Console(LogLevel::Warning) << "Warning: The vKnot array is not according to standard in "
           << getTypeName() << " node( "
           << getName() << "). A default vKnot array will be generated. " << endl;
       }

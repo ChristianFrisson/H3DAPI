@@ -290,7 +290,7 @@ void CylinderSensor::setDragOutputEvents( bool _enabled,
             // (or plane) intersection "browsers may interpret this in a
             // variety of ways" which means doing whatever feels natural.
             // H3DAPI resends last event.
-            Console(3) << "Warning: No intersection with invisible "
+            Console(LogLevel::Warning) << "Warning: No intersection with invisible "
                        << ( use_caps ? "plane" : "cylinder" )
                        << " in CylinderSensor node( "
                        << getName() 

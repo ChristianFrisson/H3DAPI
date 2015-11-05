@@ -196,7 +196,7 @@ Group* X3D::createX3DFromURL( const string &url,
     g->children->push_back( n.get() );
   return g;
 #else
-  Console(3) << "H3D API compiled without HAVE_XERCES flag. X3D-XML files "
+  Console(LogLevel::Warning) << "H3D API compiled without HAVE_XERCES flag. X3D-XML files "
        << "are not supported" << endl;
   return 0;
 #endif
@@ -234,7 +234,7 @@ AutoRef< Node > X3D::createX3DNodeFromString( const string &str,
     parser->parse( IStreamInputSource( s, (const XMLCh*)L"<string input>" ) );
     return handler.getResultingNode();
 #else
-  Console(3) << "H3D API compiled without HAVE_XERCES flag. X3D-XML files "
+  Console(LogLevel::Warning) << "H3D API compiled without HAVE_XERCES flag. X3D-XML files "
        << "are not supported" << endl;
   return AutoRef< Node >(NULL);
 #endif
@@ -368,7 +368,7 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
 #ifdef HAVE_XERCES
   return handler.getResultingNode();
 #else
-  Console(3) << "H3D API compiled without HAVE_XERCES flag. X3D-XML files "
+  Console(LogLevel::Warning) << "H3D API compiled without HAVE_XERCES flag. X3D-XML files "
        << "are not supported" << endl;
   return AutoRef< Node >(NULL);
 #endif
@@ -394,7 +394,7 @@ AutoRef< Node > X3D::createX3DNodeFromStream( istream &is,
   delete[] system_id_ch;
   return handler.getResultingNode();
 #else
-  Console(3) << "H3D API compiled without HAVE_XERCES flag. X3D-XML files "
+  Console(LogLevel::Warning) << "H3D API compiled without HAVE_XERCES flag. X3D-XML files "
        << "are not supported" << endl;
   return AutoRef< Node >( NULL );
 #endif

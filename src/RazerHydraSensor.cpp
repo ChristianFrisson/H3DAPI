@@ -186,7 +186,7 @@ X3DSensorNode( _enabled, _metadata, _isActive ),
   c1HemiTrackingEnabled->setValue( false, id );
   
 #ifndef HAVE_SIXENSE
-  Console(4) << "Warning: H3D API compiled without Sixense SDK. RazerHydraSensor node "
+  Console(LogLevel::Error) << "Warning: H3D API compiled without Sixense SDK. RazerHydraSensor node "
              << "will be unusable." << endl;
 #endif
 }
@@ -211,7 +211,7 @@ void RazerHydraSensor::EnableHydraSensor::onValueChange( const bool &new_value )
     if( !thread_handle.get() ) {
       int sixense_initialized = sixenseInit();
       if( sixense_initialized == SIXENSE_FAILURE ) {
-        Console(4) << "Warning: Could not initialize Sixense SDK. RazerHydraSensor node "
+        Console(LogLevel::Error) << "Warning: Could not initialize Sixense SDK. RazerHydraSensor node "
                    << "will be unusable." << endl;
         rhs->isActive->setValue( false, rhs->id );
         return;
@@ -235,7 +235,7 @@ void RazerHydraSensor::EnableHydraSensor::onValueChange( const bool &new_value )
   }
 #ifdef H3D_WINDOWS
   } else {
-    Console(4) << "Warning: Sixense SDK not found on this system. "
+    Console(LogLevel::Error) << "Warning: Sixense SDK not found on this system. "
                << "RazerHydraSensor node will be unusable until sixense.dll "
                << "is added to PATH environment variable." << endl;
   }
@@ -292,7 +292,7 @@ void RazerHydraSensor::traverseSG( TraverseInfo &ti ) {
           c1ButtonJoystick->setValue( (current_data.buttons & SIXENSE_BUTTON_JOYSTICK) > 0, id );
         }
       } else {
-        Console(3) << "Warning: Developer forgot to take care of a new case of controller index for RazerHydraSensor " << getName() << " make sure the lazy **** fixes it." << endl;
+        Console(LogLevel::Warning) << "Warning: Developer forgot to take care of a new case of controller index for RazerHydraSensor " << getName() << " make sure the lazy **** fixes it." << endl;
       }
       tmp_hydra_data.pop_front();
     }

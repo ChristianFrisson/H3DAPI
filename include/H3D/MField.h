@@ -375,7 +375,7 @@ namespace H3D {
     inline virtual typename std::vector<Type>::const_reference
     getValueByIndex( typename BaseMField::size_type i, int id = 0 ) {
 #ifdef DEBUG
-      Console(1) << "MField(" << this->name << ")::getValue()" << endl;
+      Console(LogLevel::Debug) << "MField(" << this->name << ")::getValue()" << endl;
 #endif
       // check that we have the correct access type
       this->checkAccessTypeGet( id );
@@ -407,7 +407,7 @@ namespace H3D {
     inline virtual void setValue( typename BaseMField::size_type i,
                                   const Type &v, int id = 0  ) {
 #ifdef DEBUG
-      Console(1) << "MField< " << typeid( Type ).name() 
+      Console(LogLevel::Debug) << "MField< " << typeid( Type ).name() 
            << " >(" << this->name << ")::setValue()" << endl;
 #endif
       // check that we have the correct access type
@@ -548,7 +548,7 @@ namespace H3D {
   template< class Type  >
   void MField< Type >::update() {
 #ifdef DEBUG
-    Console(1) << "MField< " << typeid( Type ).name() 
+    Console(LogLevel::Debug) << "MField< " << typeid( Type ).name() 
          << " >(" << this->name << ")::update()" << endl;
 #endif
     if( this->owner )
@@ -563,7 +563,7 @@ namespace H3D {
   template< class Type  >
   void MField< Type >::setValue( const std::vector< Type > &v, int id ) {
 #ifdef DEBUG
-    Console(1) << "MField< " << typeid( Type ).name() 
+    Console(LogLevel::Debug) << "MField< " << typeid( Type ).name() 
          << " >(" << this->name << ")::setValue()" << endl;
 #endif
     // check that we have the correct access type
@@ -579,7 +579,7 @@ namespace H3D {
   template< class Type >
   const std::vector< Type > &MField<Type >::getValue( int id ) {
 #ifdef DEBUG
-    Console(1) << "MField< " << typeid( Type ).name() 
+    Console(LogLevel::Debug) << "MField< " << typeid( Type ).name() 
          << " >(" << this->name << ")::getValue()" << endl;
 #endif
     // check that we have the correct access type

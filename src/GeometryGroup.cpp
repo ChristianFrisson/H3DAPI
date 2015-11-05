@@ -234,7 +234,7 @@ void GeometryGroup::IsTouched::update() {
         geom->contactNormal->routeNoEvent( o->contactNormal, o->id );
         geom->contactTexCoord->routeNoEvent( o->contactTexCoord, o->id );
       }
-      Console(3) << "index i: " << route_index[i] << endl;
+      Console(LogLevel::Warning) << "index i: " << route_index[i] << endl;
     }
   }
 }

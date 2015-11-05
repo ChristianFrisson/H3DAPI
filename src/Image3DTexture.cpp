@@ -149,12 +149,12 @@ Image* Image3DTexture::SFImage::loadImage( Image3DTexture *texture,
     }
   }
 
-  Console(4) << "Warning: None of the urls in Image3DTexture with url [";
+  Console(LogLevel::Error) << "Warning: None of the urls in Image3DTexture with url [";
   for( vector<string>::const_iterator i = urls.begin(); 
        i != urls.end(); ++i ) {  
-    Console(4) << " \"" << *i << "\"";
+    Console(LogLevel::Error) << " \"" << *i << "\"";
   }
-  Console(4) << "] could be loaded. Either they don't exist or the file format "
+  Console(LogLevel::Error) << "] could be loaded. Either they don't exist or the file format "
              << "is not supported by any H3DImageLoaderNode that is available "
              << "(in " << getOwner()->getName() << ")" << endl;
 

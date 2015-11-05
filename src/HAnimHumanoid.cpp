@@ -450,7 +450,7 @@ void HAnimHumanoid::traverseSG( TraverseInfo &ti ) {
         points_single.clear();
         points_double = c->point->getValue();
       } else {
-        Console(4) << "Unsupported X3DCoordinateNode: \"" 
+        Console(LogLevel::Error) << "Unsupported X3DCoordinateNode: \"" 
                    << coord->getTypeName() << "\" in HAnimHumanoid." << endl;
         points_single.clear();
         points_double.clear();
@@ -466,7 +466,7 @@ void HAnimHumanoid::traverseSG( TraverseInfo &ti ) {
     if( normal ) {
       normals_single = normal->vector->getValue();
     } else if( base_normal ) {
-      Console(4) << "Unsupported X3DNormalNode: \"" 
+      Console(LogLevel::Error) << "Unsupported X3DNormalNode: \"" 
                    << base_normal->getTypeName() << "\" in HAnimHumanoid." << endl;
       normals_single.clear();
     }
@@ -538,7 +538,7 @@ void HAnimHumanoid::MFSkeletonNode::onAdd( Node *n ) {
     } else if( dynamic_cast< HAnimSite * >( n ) ) {
       
     } else {
-      Console(4) << "Invalid Node type: \"" << n->getTypeName() 
+      Console(LogLevel::Error) << "Invalid Node type: \"" << n->getTypeName() 
                  << "\" in HAnimHumanoid.skeleton field. Must be HAnimJoint or HAnimSite" << endl;
       return;
     }
@@ -557,7 +557,7 @@ void HAnimHumanoid::MFJoint::onAdd( Node *n ) {
     } else if( HAnimSite *site = dynamic_cast< HAnimSite * >( n ) ) {
       site->displayList->route( humanoid->displayList );
     } else {
-      Console(4) << "Invalid Node type: \"" << n->getTypeName() 
+      Console(LogLevel::Error) << "Invalid Node type: \"" << n->getTypeName() 
                  << "\" in HAnimHumanoid.skeleton field. Must be HAnimJoint or HAnimSite" << endl;
       return;
     }

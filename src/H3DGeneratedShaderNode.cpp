@@ -171,7 +171,7 @@ void H3DGeneratedShaderNode::buildShader() {
   }
 
   sv << "}" << endl;
-  //  Console(4) << sv.str() << endl;
+  //  Console(LogLevel::Error) << sv.str() << endl;
   vertexShaderString->clear( id );
   vertexShaderString->push_back( string("glsl:") + sv.str(), id );
 
@@ -193,7 +193,7 @@ void H3DGeneratedShaderNode::buildShader() {
   sf << getFinalFragmentShaderOutputString() << endl;
   sf << "}" << endl;
 
-  //  Console(4) << sf.str() << endl;
+  //  Console(LogLevel::Error) << sf.str() << endl;
   fragmentShaderString->clear( id );
   fragmentShaderString->push_back( string("glsl:") + sf.str(), id );
   

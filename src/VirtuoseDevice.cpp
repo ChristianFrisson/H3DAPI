@@ -90,7 +90,7 @@ void VirtuoseDevice::initialize() {
 #ifdef HAVE_VIRTUOSEAPI
   hapi_device.reset( new HAPI::HaptionHapticsDevice( ip_address ) );
 #else
-  Console(4) << "Cannot use VirtuoseDevice. HAPI compiled without"
+  Console(LogLevel::Error) << "Cannot use VirtuoseDevice. HAPI compiled without"
              << " VirtuoseAPI support. Recompile HAPI with "
              << "HAVE_VIRTUOSEAPI defined"
              << " in order to use it." << endl;

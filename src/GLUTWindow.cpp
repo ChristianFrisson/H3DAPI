@@ -149,7 +149,7 @@ GLUTWindow::~GLUTWindow() {
 
 void GLUTWindow::initWindow() {
   if( isInitialized() ) {
-    Console(4) << "GLUTWindow does not support changing pixel format from/to "
+    Console(LogLevel::Error) << "GLUTWindow does not support changing pixel format from/to "
                << "quad buffered stereo support after initialization." << endl;
     if( last_render_mode == RenderMode::QUAD_BUFFERED_STEREO ) {
       renderMode->setValue( "QUAD_BUFFERED_STEREO" );
@@ -200,7 +200,7 @@ void GLUTWindow::initWindow() {
   } else {
     glutGameModeString(gameMode->getValue().c_str());
     if( ! glutGameModeGet(GLUT_GAME_MODE_POSSIBLE) ) {
-      Console(4) << "The selected GLUT gamemode ("
+      Console(LogLevel::Error) << "The selected GLUT gamemode ("
                  << gameMode->getValue()
                  << ") is not available\n"
                  << std::endl;

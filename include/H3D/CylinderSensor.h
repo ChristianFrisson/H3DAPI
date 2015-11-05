@@ -151,7 +151,7 @@ namespace H3D {
       virtual void setValue( const H3DFloat &b, int _id = 0 ) {
         if( b < -limit ) {
           SFFloat::setValue( -limit, _id );
-          Console(3) << "Warning: The value of field " << getName()
+          Console(LogLevel::Warning) << "Warning: The value of field " << getName()
                      << " in CylinderSensor node( "
                      << owner->getName() 
                      << " ) is outside valid range [-2pi, 2pi]."
@@ -159,7 +159,7 @@ namespace H3D {
         }
         else if( b > limit ) {
           SFFloat::setValue( limit, _id );
-          Console(3) << "Warning: The value of field " << getName()
+          Console(LogLevel::Warning) << "Warning: The value of field " << getName()
                      << " in CylinderSensor node( "
                      << owner->getName() 
                      << " ) is outside valid range [-2pi, 2pi]."
@@ -173,7 +173,7 @@ namespace H3D {
         SFFloat::update();
         if( value < -limit ) {
           value = -limit;
-          Console(3) << "Warning: The value of field " << getName()
+          Console(LogLevel::Warning) << "Warning: The value of field " << getName()
                      << " in CylinderSensor node( "
                      << owner->getName() 
                      << " ) is outside valid range [-2pi, 2pi]."
@@ -181,7 +181,7 @@ namespace H3D {
         }
         else if( value > limit ) {
           value  = limit;
-          Console(3) << "Warning: The value of field " << getName()
+          Console(LogLevel::Warning) << "Warning: The value of field " << getName()
                      << " in CylinderSensor node( "
                      << owner->getName() 
                      << " ) is outside valid range [-2pi, 2pi]."

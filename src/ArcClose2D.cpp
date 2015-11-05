@@ -112,7 +112,7 @@ void ArcClose2D::render() {
     start_point = (start + end)/2.f;
     start_point_tc = ( start_tc + end_tc ) / 2.f;
   } else if( closure_type != "PIE" ) {
-    Console(3) << "Warning: The field \"closureType\" in ArcClose2D node( "
+    Console(LogLevel::Warning) << "Warning: The field \"closureType\" in ArcClose2D node( "
         << getName() << ") is not correctly defined. The value \"PIE\" will be used. " << endl;
   }
   

@@ -72,7 +72,7 @@ bool H3DSingleTextureNode::makeResident () {
       is_resident= true;
 
 #ifdef DEBUG_BINDLESS
-      Console(4) << "Resident texture count: " << resident_textures.size() << endl;
+      Console(LogLevel::Error) << "Resident texture count: " << resident_textures.size() << endl;
 #endif
 
       return true;
@@ -93,7 +93,7 @@ void H3DSingleTextureNode::makeNonResident () {
 
     // Ignore errors making the texture non-resident
     if ( glGetError () != GL_NO_ERROR ) {
-      Console(4) << "ERROR: Cannot make texture non-resident: " << getName() << endl;
+      Console(LogLevel::Error) << "ERROR: Cannot make texture non-resident: " << getName() << endl;
     }
 
     is_resident= false;
@@ -103,7 +103,7 @@ void H3DSingleTextureNode::makeNonResident () {
     }
 
 #ifdef DEBUG_BINDLESS
-        Console(4) << "Resident texture count: " << resident_textures.size() << endl;
+        Console(LogLevel::Error) << "Resident texture count: " << resident_textures.size() << endl;
 #endif
   }
 #endif

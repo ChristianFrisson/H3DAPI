@@ -161,7 +161,7 @@ bool ComposedShader::isTransparent( X3DMaterialNode *material ) {
     return false;
   } else {
     if( mode != "AS_MATERIAL") {
-      Console(4) << "Warning: Invalid transparencyDetectMode \"" << mode << "\" in ComposedShader."
+      Console(LogLevel::Error) << "Warning: Invalid transparencyDetectMode \"" << mode << "\" in ComposedShader."
      << " Must be one of \"AS_MATERIAL\", \"TRANSPARENT\" or \"OPAQUE\"." << endl;
     }
     if( material ) return material->isTransparent();
@@ -202,7 +202,7 @@ bool ComposedShader::addField( const string &_name,
   }else{
     // can not add same field twice,even though it has different name.
     // This is the limit of h3d dynamic field object. 
-    Console(4)<<"Warning: Failed to add field: "<<_name<<" to shader "<< getName()
+    Console(LogLevel::Error)<<"Warning: Failed to add field: "<<_name<<" to shader "<< getName()
       <<", either current node is invalid or the added field is already in the node database!"
       <<endl;
   }
@@ -318,7 +318,7 @@ void ComposedShader::traverseSG ( TraverseInfo& ti ) {
     if ( GLEW_ARB_tessellation_shader ) {
       ti.setUserData( "shaderRequiresPatches", &require_patches );
     } else if ( !tessellation_support_checked ) {
-      Console(4) << "Your graphic card driver does not support tessellation shaders."
+      Console(LogLevel::Error) << "Your graphic card driver does not support tessellation shaders."
                  << " The ComposedShader node " << getName() << " will not be rendered correctly!" << endl;
       tessellation_support_checked = true;
     }
@@ -346,7 +346,7 @@ void ComposedShader::traverseSG ( TraverseInfo& ti ) {
 void ComposedShader::render() {
   if( !GLEW_ARB_shader_objects ) {
     if( !shader_support_checked ) {
-      Console(4) << "Your graphic card driver does not support shader objects( ARB_shader_objects) so you cannot"
+      Console(LogLevel::Error) << "Your graphic card driver does not support shader objects( ARB_shader_objects) so you cannot"
                  << " use the ComposedShader node. Shader will be disabled" << endl;
       shader_support_checked = true;
     } 
@@ -535,11 +535,11 @@ GLhandleARB ComposedShader::createHandle(ComposedShader* shader) {
       glGetInfoLogARB( program_handle, nr_characters, NULL, log );
 
 	 if(print_error == 2) {
-        Console(4) << "Warning: Error while linking shader parts in \""
+        Console(LogLevel::Error) << "Warning: Error while linking shader parts in \""
           << const_cast<ComposedShader&>(*shader).getName() << "\" node. "
           << endl << log << endl;
       } else {
-        Console(3) << "Warning: While linking shader parts in \""
+        Console(LogLevel::Warning) << "Warning: While linking shader parts in \""
           << const_cast<ComposedShader&>(*shader).getName() << "\" node. "
           << endl << log << endl;
       }
@@ -582,7 +582,7 @@ void ComposedShader::setGeometryShaderParameters( GLenum _program_handle ) {
                              GL_GEOMETRY_INPUT_TYPE_EXT, 
                              GL_TRIANGLES_ADJACENCY_EXT );
     } else {
-      Console(4) << "Invalid geometryInputType \"" << input_type
+      Console(LogLevel::Error) << "Invalid geometryInputType \"" << input_type
                  << "\" in ComposedShader. Using \"TRIANGLES\" instead." << endl;
       glProgramParameteriEXT(_program_handle,
                              GL_GEOMETRY_INPUT_TYPE_EXT, 4/*GL_TRIANGLES*/);
@@ -601,7 +601,7 @@ void ComposedShader::setGeometryShaderParameters( GLenum _program_handle ) {
                              GL_GEOMETRY_OUTPUT_TYPE_EXT, 
                              GL_TRIANGLE_STRIP );
     } else {
-      Console(4) << "Invalid geometryOutputType \"" << output_type
+      Console(LogLevel::Error) << "Invalid geometryOutputType \"" << output_type
                  << "\" in ComposedShader. Using \"TRIANGLE_STRIP\" instead."
                  << endl;
       glProgramParameteriEXT(_program_handle,
@@ -614,7 +614,7 @@ void ComposedShader::setGeometryShaderParameters( GLenum _program_handle ) {
     int nr_output_vertices = geometryVerticesOut->getValue();
 
     if( nr_output_vertices > max_output_vertices ) {
-      Console( 4 ) << "Invalid geomtryVerticesOut value " << nr_output_vertices
+      Console(LogLevel::Error) << "Invalid geomtryVerticesOut value " << nr_output_vertices
                    << " in ComposedShader. Hardware supports a maximum of " 
                    << max_output_vertices << "." << endl;
       nr_output_vertices = max_output_vertices;
@@ -711,7 +711,7 @@ void ComposedShader::UpdateUniforms::update() {
       it->second.location = location;
       if( !Shaders::setGLSLUniformVariableValue( node->program_handle, it->second.field, &(it->second), true /* force update */ ) 
         && !node->suppressUniformWarnings->getValue() ) {
-        Console(4) << "Warning: Uniform variable \"" << it->first
+        Console(LogLevel::Error) << "Warning: Uniform variable \"" << it->first
           << "\" not defined in shader source or field is of unsupported field type of the ShaderPart nodes "
           << "in the node \"" << node->getName() << "\"" << endl;
       }
@@ -734,7 +734,7 @@ void ComposedShader::UpdateUniforms::update() {
       if( !Shaders::setGLSLUniformVariableValue( node->program_handle, 
         it->second.field, &it->second ) &&
         !node->suppressUniformWarnings->getValue() ) {
-          Console(4) << "Warning: Uniform variable \"" << it->first
+          Console(LogLevel::Error) << "Warning: Uniform variable \"" << it->first
             << "\" not defined in shader source or field is of unsupported field type of the ShaderPart nodes "
             << "in the node \"" << node->getName() << "\"" << endl;
       }
@@ -766,7 +766,7 @@ void ComposedShader::UpdateSaveShadersToUrl::onNewValue( const std::string &v ){
     // if
     error = glGetError();
     if( error!=GL_NO_ERROR ) {
-      Console(4)<<" Warning: extract shader information error: "<<gluErrorString(error)<<endl;
+      Console(LogLevel::Error)<<" Warning: extract shader information error: "<<gluErrorString(error)<<endl;
       continue;
     }
     //glewGetString( shader_type );
@@ -792,12 +792,12 @@ void ComposedShader::UpdateSaveShadersToUrl::onNewValue( const std::string &v ){
       outFile<< shader_content <<endl;
       outFile.close();
     }else{
-      Console(4)<<"shader type unsupported yet"<<endl;
+      Console(LogLevel::Error)<<"shader type unsupported yet"<<endl;
     }
   }
-  //Console(4)<<"will output shader uniform"<<endl;
+  //Console(LogLevel::Error)<<"will output shader uniform"<<endl;
   ofstream   outFile( v+"_shader_uniform.txt", ofstream::out  );
-  //Console(4)<<"shader uniform txt opened."<<endl;
+  //Console(LogLevel::Error)<<"shader uniform txt opened."<<endl;
   int total = -1;
   GLhandleARB program_id = cs->getProgramHandle();
 

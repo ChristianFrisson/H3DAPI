@@ -77,10 +77,10 @@ Node* Node::clone ( bool deepCopy, DeepCopyMap *deepCopyMap ) {
             cloneFieldValue ( *f_from, *f_to, deepCopy, *deepCopyMap );
           } else {
             delete f_to;
-            Console(4) << "Warning: Failed to add cloned dynamic field " << f_from->getFullName() << "!" << endl;
+            Console(LogLevel::Error) << "Warning: Failed to add cloned dynamic field " << f_from->getFullName() << "!" << endl;
           }
         } else {
-          Console(4) << "Warning: Failed to clone dynamic field " << f_from->getFullName() << "!" << endl;
+          Console(LogLevel::Error) << "Warning: Failed to clone dynamic field " << f_from->getFullName() << "!" << endl;
         }
       }
     }

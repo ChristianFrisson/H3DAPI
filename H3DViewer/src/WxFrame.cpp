@@ -947,7 +947,7 @@ bool WxFrame::loadIniFile() {
     else if (strcmp( buffer, "FALSE" ) == 0 ){
       manualCursorControl = false; }
     else
-      Console(4) << "Invalid value \"" << buffer 
+      Console(LogLevel::Error) << "Invalid value \"" << buffer 
       << "\" on environment "
       << "variable H3D_MANUALCURSORCONTROL. Must be TRUE or FALSE. "
       << endl;
@@ -959,7 +959,7 @@ bool WxFrame::loadIniFile() {
     else if (strcmp( buffer, "FALSE" ) == 0 ){
     ini_fullscreen = false; }
     else
-      Console(4) << "Invalid value \"" << buffer 
+      Console(LogLevel::Error) << "Invalid value \"" << buffer 
                  << "\" on environment "
                  << "variable H3D_FULLSCREEN. Must be TRUE or FALSE. "
                  << endl;
@@ -972,7 +972,7 @@ bool WxFrame::loadIniFile() {
     else if (strcmp( buffer, "FALSE" ) == 0 ){
       ini_mirrored = false; }
     else
-      Console(4) << "Invalid value \"" << buffer 
+      Console(LogLevel::Error) << "Invalid value \"" << buffer 
                  << "\" on environment "
                  << "variable H3D_MIRRORED. Must be TRUE or FALSE. "<< endl;
   }
@@ -1010,7 +1010,7 @@ bool WxFrame::loadFile( const string &filename) {
         try {
           device_info = X3D::createX3DNodeFromURL( deviceinfo_file );
         } catch( const Exception::H3DException &e ) {
-          Console(3) << "Warning: Could not create default DeviceInfo node "
+          Console(LogLevel::Warning) << "Warning: Could not create default DeviceInfo node "
             << "from file \"" << deviceinfo_file << "\": "
             << e << endl;
         }
@@ -1025,7 +1025,7 @@ bool WxFrame::loadFile( const string &filename) {
           default_stylus = X3D::createX3DNodeFromURL( stylus_file,
                                                       &default_stylus_dn );
         } catch( const Exception::H3DException &e ) {
-          Console( 4 ) << "Warning: Could not create default stylus "
+          Console(LogLevel::Error) << "Warning: Could not create default stylus "
             << "from file \"" << stylus_file << "\": "
             << e << endl;
         }
@@ -1040,7 +1040,7 @@ bool WxFrame::loadFile( const string &filename) {
     }
     unsigned int device_info_size = (unsigned int)(DeviceInfo::getAllDeviceInfos().size());
 
-    Console(3) << "Loading " << filename << endl;
+    Console(LogLevel::Info) << "Loading " << filename << endl;
     scene->loadSceneRoot( filename );
 
     DeviceInfo::DeviceInfoList device_infos = DeviceInfo::getAllDeviceInfos();
@@ -1127,7 +1127,7 @@ bool WxFrame::loadFile( const string &filename) {
           viewpoint = X3D::createX3DNodeFromURL( viewpoint_file );
         } catch( const Exception::H3DException &e ) {
           viewpoint.reset( new Viewpoint );
-          Console(3) << "Warning: Could not create default Viewpoint node "
+          Console(LogLevel::Warning) << "Warning: Could not create default Viewpoint node "
                      << "from file \"" << viewpoint_file << "\": "
                      << e << endl;
         }

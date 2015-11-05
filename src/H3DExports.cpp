@@ -41,7 +41,7 @@ Node *H3DExports::getH3DExportNode( const string &name ) {
     if( di && di->device->size() > 0 ) 
       return di->device->getValueByIndex( 0 );
     else {
-      Console(3) << "Warning: No device exists in DeviceInfo when " 
+      Console(LogLevel::Warning) << "Warning: No device exists in DeviceInfo when " 
                  << "trying to IMPORT from HDEV from H3D_EXPORTS. "
                  << "Using dummy device instead. " << endl;
       if( !H3DExportsInternal::no_device.get() )
@@ -53,7 +53,7 @@ Node *H3DExports::getH3DExportNode( const string &name ) {
     if( di && di->device->size() > 1 ) 
       return di->device->getValueByIndex( 1 );
     else {
-      Console(3) << "Warning: No device exists in DeviceInfo when " 
+      Console(LogLevel::Warning) << "Warning: No device exists in DeviceInfo when " 
                  << "trying to IMPORT from HDEV1 from H3D_EXPORTS. "
                  << "Using dummy device instead. " << endl;
       if( !H3DExportsInternal::no_device.get() )
@@ -65,7 +65,7 @@ Node *H3DExports::getH3DExportNode( const string &name ) {
     if( di && di->device->size() > 2 ) 
       return di->device->getValueByIndex( 2 );
     else {
-      Console(3) << "Warning: No device exists in DeviceInfo when " 
+      Console(LogLevel::Warning) << "Warning: No device exists in DeviceInfo when " 
                  << "trying to IMPORT from HDEV2 from H3D_EXPORTS. "
                  << "Using dummy device instead. " << endl;
       if( !H3DExportsInternal::no_device.get() )

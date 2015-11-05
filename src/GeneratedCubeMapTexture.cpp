@@ -147,7 +147,7 @@ void GeneratedCubeMapTexture::renderTextureProperties(){
 
 void GeneratedCubeMapTexture::render() {
   if( !GLEW_ARB_texture_cube_map ) {
-    Console(4) << "Warning: ARB_texture_cube_map extension not supported "
+    Console(LogLevel::Error) << "Warning: ARB_texture_cube_map extension not supported "
                << "by your graphics card. ComposedCubeMapTexture node cannot "
                << "be used." << endl; 
   } else {
@@ -232,7 +232,7 @@ void GeneratedCubeMapTexture::updateCubeMap( GLuint texture_target,
     // check FBO status
     GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
     if(status != GL_FRAMEBUFFER_COMPLETE_EXT) {
-      Console( 4)  << "GeneratedCubeMapTexture error: Error setting up frame "
+      Console(LogLevel::Error)  << "GeneratedCubeMapTexture error: Error setting up frame "
                    << "buffer object" << endl;
       return;
     }
@@ -359,7 +359,7 @@ void GeneratedCubeMapTexture::renderPreViewpoint( X3DChildNode *n,
     if(  getTextureId() == 0 ) 
       updateCubeMapTextures( n, vp );
   } else {
-    Console(3) << "Warning: Invalid value for \"update\" field in \""
+    Console(LogLevel::Warning) << "Warning: Invalid value for \"update\" field in \""
                << getName() << "\" node (\"" << update_string
                << "\"). Must be one of \"NONE\", \"NEXT_FRAME_ONLY\"" 
                << " or \"ALWAYS\"" << endl;

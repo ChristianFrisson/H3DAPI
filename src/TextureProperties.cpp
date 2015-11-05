@@ -189,7 +189,7 @@ void TextureProperties::renderTextureProperties( GLenum texture_target ) {
   // anisotropicDegree
   H3DFloat anisotropic = anisotropicDegree->getValue();
   if( anisotropic < 1 ) {
-    Console(3) << "Warning: Invalid anisotropicDegree \"" << anisotropic 
+    Console(LogLevel::Warning) << "Warning: Invalid anisotropicDegree \"" << anisotropic 
                << "\". Must be greater that 1.0 (in " << getName()
                << ")" << endl;
     
@@ -221,7 +221,7 @@ void TextureProperties::renderTextureProperties( GLenum texture_target ) {
       glTexParameteri( texture_target, GL_TEXTURE_WRAP_S, 
                        GL_CLAMP_TO_BORDER );
     } else {
-      Console(3) << "Warning: MIRRORED_REPEAT boundary mode not "
+      Console(LogLevel::Warning) << "Warning: MIRRORED_REPEAT boundary mode not "
                  << "supported by your graphics card (in " << getName()
                  << ")" << endl;
     }
@@ -230,14 +230,14 @@ void TextureProperties::renderTextureProperties( GLenum texture_target ) {
       glTexParameteri( texture_target, GL_TEXTURE_WRAP_S, 
                        GL_MIRRORED_REPEAT_ARB );
     } else {
-      Console(3) << "Warning: MIRRORED_REPEAT boundary mode not "
+      Console(LogLevel::Warning) << "Warning: MIRRORED_REPEAT boundary mode not "
                  << "supported by your graphics card (in " << getName()
                  << ")" << endl;
     }
   } else if( s_mode == "REPEAT" ) {
     glTexParameteri( texture_target, GL_TEXTURE_WRAP_S, GL_REPEAT );
   } else {
-    Console(3) << "Warning: Invalid boundary mode \"" << s_mode 
+    Console(LogLevel::Warning) << "Warning: Invalid boundary mode \"" << s_mode 
                << "\" in TextureProperties "
                << " node for texture node(" << getName() << ")." << endl; 
   }
@@ -253,7 +253,7 @@ void TextureProperties::renderTextureProperties( GLenum texture_target ) {
       glTexParameteri( texture_target, GL_TEXTURE_WRAP_T, 
                        GL_CLAMP_TO_BORDER );
     } else {
-      Console(3) << "Warning: MIRRORED_REPEAT boundary mode not "
+      Console(LogLevel::Warning) << "Warning: MIRRORED_REPEAT boundary mode not "
                  << "supported by your graphics card (in " << getName()
                  << ")" << endl;
     }
@@ -262,14 +262,14 @@ void TextureProperties::renderTextureProperties( GLenum texture_target ) {
       glTexParameteri( texture_target, GL_TEXTURE_WRAP_T, 
                        GL_MIRRORED_REPEAT_ARB );
     } else {
-      Console(3) << "Warning: MIRRORED_REPEAT boundary mode not "
+      Console(LogLevel::Warning) << "Warning: MIRRORED_REPEAT boundary mode not "
                  << "supported by your graphics card (in " << getName()
                  << ")" << endl;
     }
   } else if( t_mode == "REPEAT" ) {
     glTexParameteri( texture_target, GL_TEXTURE_WRAP_T, GL_REPEAT );
   } else {
-    Console(3) << "Warning: Invalid boundary mode \"" << t_mode 
+    Console(LogLevel::Warning) << "Warning: Invalid boundary mode \"" << t_mode 
                << "\" in TextureProperties "
                << " node for texture node(" << getName() << ")." << endl; 
   }
@@ -286,7 +286,7 @@ void TextureProperties::renderTextureProperties( GLenum texture_target ) {
       glTexParameteri( texture_target, GL_TEXTURE_WRAP_R, 
                        GL_CLAMP_TO_BORDER );
     } else {
-      Console(3) << "Warning: MIRRORED_REPEAT boundary mode not "
+      Console(LogLevel::Warning) << "Warning: MIRRORED_REPEAT boundary mode not "
                  << "supported by your graphics card (in " << getName()
                  << ")" << endl;
     }
@@ -295,14 +295,14 @@ void TextureProperties::renderTextureProperties( GLenum texture_target ) {
       glTexParameteri( texture_target, GL_TEXTURE_WRAP_R, 
                        GL_MIRRORED_REPEAT_ARB );
     } else {
-      Console(3) << "Warning: MIRRORED_REPEAT boundary mode not "
+      Console(LogLevel::Warning) << "Warning: MIRRORED_REPEAT boundary mode not "
                  << "supported by your graphics card (in " << getName()
                  << ")" << endl;
     }
   } else if( r_mode == "REPEAT" ) {
     glTexParameteri( texture_target, GL_TEXTURE_WRAP_R, GL_REPEAT );
   } else {
-    Console(3) << "Warning: Invalid boundary mode \"" << r_mode 
+    Console(LogLevel::Warning) << "Warning: Invalid boundary mode \"" << r_mode 
                << "\" in TextureProperties "
                << " node for texture node(" << getName() << ")." << endl; 
   }
@@ -319,7 +319,7 @@ void TextureProperties::renderTextureProperties( GLenum texture_target ) {
            mag_filter == "NICEST" ) {
     glTexParameteri( texture_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
   } else  {
-    Console(3) << "Warning: Invalid magnification filter \"" << mag_filter 
+    Console(LogLevel::Warning) << "Warning: Invalid magnification filter \"" << mag_filter 
                << "\" in TextureProperties "
                << " node for texture node(" << getName() << ")." << endl; 
   }
@@ -348,7 +348,7 @@ void TextureProperties::renderTextureProperties( GLenum texture_target ) {
     glTexParameteri( texture_target, GL_TEXTURE_MIN_FILTER, 
                      GL_NEAREST_MIPMAP_NEAREST );
   } else {
-    Console(3) << "Warning: Invalid minification filter \"" << min_filter 
+    Console(LogLevel::Warning) << "Warning: Invalid minification filter \"" << min_filter 
                << "\" in TextureProperties "
                << " node for texture node(" << getName() << ")." << endl; 
   }
@@ -356,7 +356,7 @@ void TextureProperties::renderTextureProperties( GLenum texture_target ) {
   // priority
   H3DFloat priority = texturePriority->getValue();
   if( priority < 0 || priority > 1 ) {
-    Console(3) << "Warning: Invalid texturePriority \"" << priority
+    Console(LogLevel::Warning) << "Warning: Invalid texturePriority \"" << priority
                << "\". Must be in range [0, 1] (in " << getName()
                << ")" << endl;
         
@@ -381,7 +381,7 @@ void TextureProperties::renderTextureProperties( GLenum texture_target ) {
                compression == "LOW"  ) {
       glHint( GL_TEXTURE_COMPRESSION_HINT_ARB, GL_NICEST );
     } else {
-      Console(3) << "Warning: Invalid textureCompression mode \"" 
+      Console(LogLevel::Warning) << "Warning: Invalid textureCompression mode \"" 
                  << compression  << "\" in TextureProperties "
                  << " node for texture node(" << getName() << ")." << endl; 
     }
@@ -398,13 +398,13 @@ void TextureProperties::renderTextureProperties( GLenum texture_target ) {
       glTexParameteri( texture_target, GL_TEXTURE_COMPARE_FUNC_ARB, GL_GEQUAL );
     } else {
       if( compare_mode != "NONE" ) {
-        Console(3) << "Warning: Invalid textureCompareMode: " << compare_mode 
+        Console(LogLevel::Warning) << "Warning: Invalid textureCompareMode: " << compare_mode 
                    << " in TextureProperties node for texture node(" << getName() << ")." << endl; 
       }
       glTexParameteri( texture_target, GL_TEXTURE_COMPARE_MODE_ARB, GL_NONE );
     }
   } else {
-    Console(3) << "Warning: textureCompareMode is not supported by your graphics card. " 
+    Console(LogLevel::Warning) << "Warning: textureCompareMode is not supported by your graphics card. " 
                << "Requires the ARB_shadow extension (in TextureProperties node). " << endl;
   }
 
@@ -414,7 +414,7 @@ void TextureProperties::renderTextureProperties( GLenum texture_target ) {
     glTexParameterf( texture_target, GL_TEXTURE_COMPARE_FAIL_VALUE_ARB, fail_value );
   } else {
     if( fail_value != 0 ) {
-      Console(3) << "Warning: textureCompareFailValue is not supported by your graphics card. " 
+      Console(LogLevel::Warning) << "Warning: textureCompareFailValue is not supported by your graphics card. " 
                  << "Requires the ARB_shadow_ambient extension (in TextureProperties node). " << endl;
     }
   }

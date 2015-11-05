@@ -633,7 +633,7 @@ Vec3f IndexedFaceSet::AutoTangent::getTexCoord( X3DCoordinateNode *_coord,
       Vec4f tc = tex_coord->getTexCoord( index, 0 );
       return Vec3f( tc.x, tc.y, tc.z ) / tc.w;
     } else {
-      Console(4) << "Warning: X3DTextureCoordinateNode does not support getTexCoord() function. Tangents and binormals cannot be calculated for IndexedFaceSet." << endl;
+      Console(LogLevel::Error) << "Warning: X3DTextureCoordinateNode does not support getTexCoord() function. Tangents and binormals cannot be calculated for IndexedFaceSet." << endl;
     }
   } else {
     IndexedFaceSet *its = static_cast< IndexedFaceSet * >( getOwner() );
@@ -791,7 +791,7 @@ void IndexedFaceSet::AutoTangent::generateTangentsPerFace(
       // Calculation only works for triangle meshes so print a warning
       // if it is not a triangle mesh.
       if( j < coord_index.size() && coord_index[j] != -1 ) {
-        Console(4) << "Warning: Automatic tangent vertex attribute generation only"
+        Console(LogLevel::Error) << "Warning: Automatic tangent vertex attribute generation only"
                    << " supported for triangle meshes. IndexedFaceSet node "
                    << "includes non-triangle faces so results are undefined" << endl;
       }

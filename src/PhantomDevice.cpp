@@ -130,7 +130,7 @@ void PhantomDevice::initialize() {
 #ifdef HAVE_OPENHAPTICS
   hapi_device.reset( new HAPI::PhantomHapticsDevice( deviceName->getValue() ) );
 #else
-  Console(4) << "Cannot use PhantomDevice. HAPI compiled without"
+  Console(LogLevel::Error) << "Cannot use PhantomDevice. HAPI compiled without"
              << " OpenHaptics support. Recompile HAPI with "
              << "HAVE_OPENHAPTICS defined"
              << " in order to use it." << endl;

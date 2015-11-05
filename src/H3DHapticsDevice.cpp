@@ -229,7 +229,7 @@ H3DHapticsDevice::ErrorCode H3DHapticsDevice::initDevice() {
         initialized->setValue( true, id );
       } else {
         if( !error_msg_printed ) {
-          Console(4) << hapi_device->getLastErrorMsg() << endl;
+          Console(LogLevel::Error) << hapi_device->getLastErrorMsg() << endl;
           error_msg_printed = true;
         }
       }

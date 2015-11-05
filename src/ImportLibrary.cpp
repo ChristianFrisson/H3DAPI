@@ -100,13 +100,13 @@ void ImportLibrary::initialize() {
   }
 
   // no library found
-  Console(4) << "Warning: Could not load any of the dynamic libraries ";
+  Console(LogLevel::Error) << "Warning: Could not load any of the dynamic libraries ";
   for( MFString::const_iterator i = url->begin();
        i != url->end();
        ++i ) {
-    Console(4) << "\"" << *i << "\" ";
+    Console(LogLevel::Error) << "\"" << *i << "\" ";
   }
 
-  Console(4) << "specified in " << getName() 
+  Console(LogLevel::Error) << "specified in " << getName() 
              << " (" << DynamicLibrary::getLastError() << ")." << endl;
 }

@@ -117,7 +117,7 @@ string EnvironmentMapShader::getFragmentShaderString() {
       s << "    vec3 tex_coord = gl_NormalMatrix * reflection_vector_local; " << endl;
     } else {
       if( t != "GLOBAL_SPACE" ) {
-        Console(4) << "Invalid type: \"" << t << "\" in EnvironmentMapShader. Using \"GLOBAL_SPACE\" instead. " << endl;
+        Console(LogLevel::Error) << "Invalid type: \"" << t << "\" in EnvironmentMapShader. Using \"GLOBAL_SPACE\" instead. " << endl;
       }
       s << "    vec3 tex_coord = reflection_vector_local; " << endl;
     }

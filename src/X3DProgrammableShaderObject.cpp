@@ -52,10 +52,10 @@ X3DProgrammableShaderObject::X3DProgrammableShaderObject( H3DNodeDatabase* _data
     use_bindless_textures= bindless_textures;
     use_bindless_textures_set= true;
 	if ( wants_bindless_textures && !GLEW_ARB_bindless_texture ) {
-	  Console(4) << "WARNING: Bindless textures are not supported by your system! Using regular textures instead." << endl;
+	  Console(LogLevel::Error) << "WARNING: Bindless textures are not supported by your system! Using regular textures instead." << endl;
 	}
   } else if ( bindless_textures != use_bindless_textures ) {
-    Console(4) << "WARNING: Cannot change bindlessTextures option after creating a shader node!" << endl;
+    Console(LogLevel::Error) << "WARNING: Cannot change bindlessTextures option after creating a shader node!" << endl;
   }
 #endif
 
@@ -154,7 +154,7 @@ void X3DProgrammableShaderObject::UpdateTextures::update () {
     break;
   }
   default:
-    Console(4) << "ERROR: Unknown field type!" << endl;
+    Console(LogLevel::Error) << "ERROR: Unknown field type!" << endl;
     break;
   }
 

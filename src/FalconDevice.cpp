@@ -119,7 +119,7 @@ void FalconDevice::initialize() {
   }
   usedDriver->setValue( "NOVINT" );
 #else
-  Console(4) << "Cannot use FalconDevice. HAPI compiled without"
+  Console(LogLevel::Error) << "Cannot use FalconDevice. HAPI compiled without"
              << " FalconAPI support. Recompile HAPI with "
              << "HAVE_FALCONAPI defined"
              << " in order to use it." << endl;
@@ -128,7 +128,7 @@ void FalconDevice::initialize() {
   } 
   else {
     if( preferred_driver != "NOVINT" ) {
-      Console(4) << "Invalid value \"" << preferred_driver 
+      Console(LogLevel::Error) << "Invalid value \"" << preferred_driver 
                  << "\" of preferredDriver field in FalconDevice node." 
                  << "Should be \"NOVINT\" or \"NIFALCON\". Using "
                  << "\"NOVINT\" instead" << endl;
@@ -145,7 +145,7 @@ void FalconDevice::initialize() {
     hapi_device.reset( new HAPI::NiFalconHapticsDevice( index ) );
     usedDriver->setValue( "NIFALCON" );
 #else
-    Console(4) << "Cannot use FalconDevice. HAPI compiled without"
+    Console(LogLevel::Error) << "Cannot use FalconDevice. HAPI compiled without"
                << " FalconAPI support. Recompile HAPI with "
                << "HAVE_FALCONAPI defined"
                << " in order to use it." << endl;

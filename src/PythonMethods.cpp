@@ -720,8 +720,8 @@ if( check_func( value ) ) { \
         PyImport_ImportModule( "H3DInterface" ) );
       if ( PythonInternals::H3DInterface_module.get() == NULL ) {
         PyErr_Print();
-        Console(4) << "PythonScript::initialiseParser() - ";
-        Console(4) << "  Error importing H3DInterface module, check that you have a valid PYTHONPATH environment variable and try again." << endl;
+        Console(LogLevel::Error) << "PythonScript::initialiseParser() - ";
+        Console(LogLevel::Error) << "  Error importing H3DInterface module, check that you have a valid PYTHONPATH environment variable and try again." << endl;
         exit(-1); // SHOULD THROW AN ERROR!
       }
       PythonInternals::H3DInterface_dict = 
@@ -739,7 +739,7 @@ if( check_func( value ) ) { \
               if (PyDict_SetItemString(  PythonInternals::H3DInterface_dict, 
                 "__builtins__",
                 PyEval_GetBuiltins()) != 0)
-                Console(3) << "Warning: PyEval_GetBuiltins() could not be installed in module dictionary!" << endl;
+                Console(LogLevel::Warning) << "Warning: PyEval_GetBuiltins() could not be installed in module dictionary!" << endl;
           }
         }
 
@@ -749,7 +749,7 @@ if( check_func( value ) ) { \
           PythonInternals::H3DInterface_dict,
           PythonInternals::H3DInterface_dict );
         if ( r == NULL ) {
-          Console( 3 ) << "Python error in file H3DInterface.py.h:" << endl;
+          Console( LogLevel::Error ) << "Python error in file H3DInterface.py.h:" << endl;
           PyErr_Print();
         }
       }
@@ -784,7 +784,7 @@ if( check_func( value ) ) { \
               if (PyDict_SetItemString(  PythonInternals::H3DUtils_dict, 
                 "__builtins__",
                 PyEval_GetBuiltins()) != 0)
-                Console(3) << "Warning: PyEval_GetBuiltins() could not be installed in module dictionary!" << endl;
+                Console(LogLevel::Warning) << "Warning: PyEval_GetBuiltins() could not be installed in module dictionary!" << endl;
           }
         }
 
@@ -794,7 +794,7 @@ if( check_func( value ) ) { \
           PythonInternals::H3DUtils_dict,
           PythonInternals::H3DUtils_dict );
         if ( r == NULL ) {
-          Console( 3 ) << "Python error in file H3DInterface.py.h:" << endl;
+          Console( LogLevel::Error ) << "Python error in file H3DInterface.py.h:" << endl;
           PyErr_Print();
         }
       }
@@ -2590,7 +2590,7 @@ call the base class __init__ function." );
 
       Py_INCREF(Py_None);
       return Py_None; 
-       //Console(4) <<"11" << endl;
+       //Console(LogLevel::Error) <<"11" << endl;
     }
 
     PyObject *pythonFieldSetName( PyObject *self, PyObject *arg ) {
