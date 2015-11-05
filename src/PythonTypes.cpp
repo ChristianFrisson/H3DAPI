@@ -3822,6 +3822,7 @@ self, deepCopy )" );
 
   static PyMethodDef PyConsole_methods[] = {
     { "write", (PyCFunction) PyConsole::write, 0 },
+    { "writeAtLevel", (PyCFunction)PyConsole::writeAtLevel, 0 },
     {NULL, NULL}
   };
 
@@ -3867,12 +3868,23 @@ self, deepCopy )" );
     (newfunc) PyType_GenericAlloc,            /* tp_new */
   };
 
+  void writeHelper ( int _level, const std::string& _msg ) {
+    Console ( _level ) << _msg;
+
+    // Python print results in a separate call with the newline
+    // and we only want to flush once for each print since Console
+    // may addprefix time stamp etc on each sync
+    if( !_msg.empty() && _msg[_msg.length() - 1] == '\n' ) {
+      Console.flush();
+    }
+  }
+
   PyObject* PyConsole::write( PyObject *self, PyObject *args ) {
     PyObject *s = PyObject_Repr( args );
-    char *str = PyString_AsString( args );
-    if( str  ) {
-      Console(4) << str;
-      Console.flush();
+    char *msg = PyString_AsString( args );
+    if( msg ) {
+      writeHelper ( LogLevel::Info, msg );
+
       Py_DECREF( s );
       Py_INCREF( Py_None );
       return Py_None;
@@ -3881,6 +3893,36 @@ self, deepCopy )" );
       return 0;
     }
   }
+
+  PyObject* PyConsole::writeAtLevel( PyObject *self, PyObject *args ) {
+
+    if( !PyTuple_Check( args ) || PyTuple_Size( args ) != 2 ) {
+      PyErr_SetString( PyExc_ValueError, 
+                       "Invalid argument(s) to function PyConsole.writeAtLevel( \
+self, level, message )" );
+      return NULL;
+    } 
+    
+    PyObject *levelObj = PyTuple_GetItem( args, 0 );
+    PyObject *msgObj = PyTuple_GetItem( args, 1 );
+    
+    if( PyInt_Check( levelObj ) && PyString_Check ( msgObj ) ) {
+      int level = PyInt_AsLong( levelObj );
+      char* msg = PyString_AsString( msgObj );
+      
+      if ( msg ) {
+        writeHelper ( level, msg );
+      }
+
+      Py_INCREF( Py_None );
+      return Py_None;
+    }
+
+    PyErr_SetString( PyExc_ValueError,
+      "Invalid argument(s) to function H3D.Console.setLevel( self, level )" );
+    return 0;
+  }
+
 }
 
 #endif // HAVE_PYTHON

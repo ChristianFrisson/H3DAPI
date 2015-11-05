@@ -1051,6 +1051,9 @@ namespace H3D {
     }
 
     static PyObject* write( PyObject *self, PyObject *to_write );
+
+    static PyObject* writeAtLevel( PyObject *self, PyObject *args );
+
   };
 
   /// Returns which is the name the PyVec3f is to be installed

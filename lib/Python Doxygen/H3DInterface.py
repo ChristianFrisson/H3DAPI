@@ -8,6 +8,19 @@ from H3D import *
 #sys.stdout = Console
 #sys.stderr = Console
 
+## Human readable log levels for console output
+class LogLevel:
+  Info = 3
+  Warning = 4
+  Error = 5
+
+## Convenience function to log a message to the H3D Console with 
+## a specific log level
+##
+## Note: print ( msg ) is the same as log ( LogLevel.Info, msg )
+##
+def log ( level, message ):
+  Console.writeAtLevel ( level, message + "\n" )
 
 ## The base class for all Field types in Python.
 ## It provides common basic event handling methods for all fields.

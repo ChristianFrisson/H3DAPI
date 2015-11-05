@@ -42,6 +42,14 @@ Console = H3DConsole()\n\
 sys.stdout = Console\n\
 sys.stderr = Console\n\
 \n\
+class LogLevel:\n\
+  Info = 3\n\
+  Warning = 4\n\
+  Error = 5\n\
+\n\
+def log ( level, message ):\n\
+  Console.writeAtLevel ( level, message + \"\\n\" )\n\
+\n\
 ###################################################################\n\
 #\n\
 # Base types; Vec2f, Vec3f, Vec2d, Vec2d, etc, etc, etc\n\
