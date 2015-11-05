@@ -203,7 +203,7 @@ public:
       window_pos_x = -1;
       window_pos_y = -1;
       fullscreen = false;
-      stereo_mode = wxString( "MONO", wxConvUTF8 );
+      stereo_mode = wxString( "NONE", wxConvUTF8 );
       silent = false;
       logInitTime = false;
       wxHandleFatalExceptions();
@@ -411,7 +411,9 @@ bool MyApp::OnInit()
     // switch to fullscreen right now, and also change the window fullscreen value
     theWxFrame->glwindow->fullscreen->setValue(fullscreen);
     theWxFrame->glwindow->setFullscreen(fullscreen);
-    theWxFrame->glwindow->renderMode->setValue(toStr(stereo_mode));
+    if( toStr(stereo_mode) != "NONE" ){
+      theWxFrame->glwindow->renderMode->setValue(toStr(stereo_mode));    
+    }
     if( fullscreen&&window_width!=-1&&window_height!=-1 ) {
       // resize window size to required value, after fullscreen is applied
       // only do this when no default windows size is used
