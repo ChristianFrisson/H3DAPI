@@ -165,7 +165,7 @@ IF( TARGET HAPI )
   SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} HAPI )
 ELSE( TARGET HAPI )
   #HAPI
-	SET( HAPI_DECIDES_RENDERER_SUPPORT 1 )
+  SET( HAPI_DECIDES_RENDERER_SUPPORT 1 )
   FIND_PACKAGE(HAPI REQUIRED)
 
   IF(HAPI_FOUND)
@@ -216,7 +216,7 @@ ELSE(WIN32)
 ENDIF(WIN32)
 
 IF(GLUT_FOUND)
-	SET(HAVE_GLUT 1)
+  SET(HAVE_GLUT 1)
   INCLUDE_DIRECTORIES( ${GLUT_INCLUDE_DIR} )
   IF(WIN32)
     IF(MINGW)
@@ -454,11 +454,11 @@ IF( MSVC )
 
   SET( H3DAPI_is_working_copy 10 )
   IF( SubWCRev )
-		EXECUTE_PROCESS( COMMAND ${SubWCRev} ${H3DAPI_SOURCE_DIR}/../
-										 RESULT_VARIABLE H3DAPI_is_working_copy )
-		IF( ${H3DAPI_is_working_copy} EQUAL 0 )
-		  SET( H3DAPI_SVN_VERSION "$WCREV$" )
-		ENDIF( ${H3DAPI_is_working_copy} EQUAL 0 )
+    EXECUTE_PROCESS( COMMAND ${SubWCRev} ${H3DAPI_SOURCE_DIR}/../
+                     RESULT_VARIABLE H3DAPI_is_working_copy )
+    IF( ${H3DAPI_is_working_copy} EQUAL 0 )
+      SET( H3DAPI_SVN_VERSION "$WCREV$" )
+    ENDIF( ${H3DAPI_is_working_copy} EQUAL 0 )
   ENDIF( SubWCRev )
 
   # autogenerate H3DAPI.rc depending on the version
@@ -544,50 +544,20 @@ IF( WIN32 )
   # Temporary variables used later to set LINK_FLAGS.
   SET( TEMP_OUTPUT_POSTFIX "" )
 
-	# if we are using 64 bit compiler some object files get too big so we need
+  # if we are using 64 bit compiler some object files get too big so we need
   # to add the /bigobj flag
   IF( CMAKE_CL_64 )
     SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /bigobj" )
   ENDIF( CMAKE_CL_64 )
   
   IF( MSVC )
-    SET( H3D_MSVC_VERSION 6 )
-    SET( TEMP_MSVC_VERSION 1299 )
-    WHILE( ${MSVC_VERSION} GREATER ${TEMP_MSVC_VERSION} )
-      MATH( EXPR H3D_MSVC_VERSION "${H3D_MSVC_VERSION} + 1" )
-      MATH( EXPR TEMP_MSVC_VERSION "${TEMP_MSVC_VERSION} + 100" )
-    ENDWHILE( ${MSVC_VERSION} GREATER ${TEMP_MSVC_VERSION} )
-
+    include( H3DCommonFunctions )
     # change the name depending on compiler to be able to tell them apart
     # since they are not compatible with each other. 
-		SET( TEMP_OUTPUT_POSTFIX "_vc${H3D_MSVC_VERSION}" )
-    SET_TARGET_PROPERTIES( H3DAPI PROPERTIES OUTPUT_NAME ${PROJECT_NAME}${TEMP_OUTPUT_POSTFIX} )
+    setH3DMSVCOutputName( H3DAPI "H3DAPI" TEMP_OUTPUT_POSTFIX )
+    # Add common H3D compile flags for microsoft visual studio
+    addCommonH3DMSVCCompileFlags( H3DAPI_COMPILE_FLAGS )
 
-    # Treat wchar_t as built in type for all visual studio versions.
-    # This is default for every version above 7 ( so far ) but we still set it for all.
-    SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /Zc:wchar_t")
-
-    IF( MSVC80 )
-      # This might be useful for visual studio 2005 users that often recompile the api.
-      IF( NOT DEFINED USE_VC8_MP_FLAG )
-        SET( USE_VC8_MP_FLAG "NO" CACHE BOOL "In visual studio 8 the MP flag exists but is not documented. Maybe it is unsafe to use. If you want to use it then set this flag to yes." )
-      ENDIF( NOT DEFINED USE_VC8_MP_FLAG )
-
-      IF( USE_VC8_MP_FLAG )
-        SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /MP" )
-      ENDIF( USE_VC8_MP_FLAG )
-    ENDIF( MSVC80 )
-
-    IF( ${MSVC_VERSION} GREATER 1399 )
-      # Remove compiler warnings about deprecation for visual studio versions 8 and above.
-      SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} -D_CRT_SECURE_NO_DEPRECATE" )
-    ENDIF( ${MSVC_VERSION} GREATER 1399 )
-
-    IF( ${MSVC_VERSION} GREATER 1499 )
-      # Build using several threads for visual studio versions 9 and above.
-      SET( H3DAPI_COMPILE_FLAGS "${H3DAPI_COMPILE_FLAGS} /MP" )
-    ENDIF( ${MSVC_VERSION} GREATER 1499 )
-    
     # H3D API is now to big to link incrementally with vc8.
     SET( H3DAPI_LINK_FLAGS "${H3DAPI_LINK_FLAGS} /INCREMENTAL:NO" )
     SET( H3DAPI_LINK_FLAGS_DEBUG "${H3DAPI_LINK_FLAGS_DEBUG} /NODEFAULTLIB:msvcrt" )
@@ -683,34 +653,34 @@ IF( H3DAPI_LOADER_PROJECTS )
     ENDIF(GLUT_FOUND)
   ENDIF( H3DAPI_H3DLOAD_PROJECTS )
 
-	IF( H3D_USE_DEPENDENCIES_ONLY )
-		IF(WIN32)
-			FIND_PACKAGE(wxWidgetsWin)
-			IF(wxWidgets_FOUND)
-				INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIR} ) 
-				SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
-			ENDIF(wxWidgets_FOUND)
-		ENDIF(WIN32)
+  IF( H3D_USE_DEPENDENCIES_ONLY )
+    IF(WIN32)
+      FIND_PACKAGE(wxWidgetsWin)
+      IF(wxWidgets_FOUND)
+        INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIR} ) 
+        SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
+      ENDIF(wxWidgets_FOUND)
+    ENDIF(WIN32)
 
-		IF(wxWidgets_FOUND)
-		ELSE(wxWidgets_FOUND)
-			SET(wxWidgets_USE_LIBS base core)
-			FIND_PACKAGE(wxWidgets)
-			IF(wxWidgets_FOUND)
-				INCLUDE(${wxWidgets_USE_FILE})
-				SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
-			ENDIF(wxWidgets_FOUND)
-		ENDIF(wxWidgets_FOUND)
-	ENDIF( H3D_USE_DEPENDENCIES_ONLY )
+    IF(wxWidgets_FOUND)
+    ELSE(wxWidgets_FOUND)
+      SET(wxWidgets_USE_LIBS base core)
+      FIND_PACKAGE(wxWidgets)
+      IF(wxWidgets_FOUND)
+        INCLUDE(${wxWidgets_USE_FILE})
+        SET(requiredLibs ${requiredLibs} ${wxWidgets_LIBRARIES} )
+      ENDIF(wxWidgets_FOUND)
+    ENDIF(wxWidgets_FOUND)
+  ENDIF( H3D_USE_DEPENDENCIES_ONLY )
 
-	IF( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
-		MESSAGE( STATUS "Including H3DViewer" )
-		ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../H3DViewer/build
-											${CMAKE_CURRENT_BINARY_DIR}/H3DViewer )
-		SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} H3DViewer )
-	ELSE( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
-		MESSAGE( WARNING "wxWidgets was not found. H3DViewer will not be generated." )
-	ENDIF( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
+  IF( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
+    MESSAGE( STATUS "Including H3DViewer" )
+    ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../H3DViewer/build
+                      ${CMAKE_CURRENT_BINARY_DIR}/H3DViewer )
+    SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} H3DViewer )
+  ELSE( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
+    MESSAGE( WARNING "wxWidgets was not found. H3DViewer will not be generated." )
+  ENDIF( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
 ENDIF( H3DAPI_LOADER_PROJECTS )
 
 IF( NOT DEFINED H3DAPI_EXAMPLE_PROJECTS )
@@ -718,22 +688,22 @@ IF( NOT DEFINED H3DAPI_EXAMPLE_PROJECTS )
 ENDIF( NOT DEFINED H3DAPI_EXAMPLE_PROJECTS )
 
 IF( H3DAPI_EXAMPLE_PROJECTS )
-	IF( GLUT_FOUND )
-		MESSAGE( STATUS "Including H3DAPI manual Examples" )
-		ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/manualExamples/C++
-											${CMAKE_CURRENT_BINARY_DIR}/examples/manualExamples )
-	ENDIF( GLUT_FOUND )
-	
-	IF( EXISTS ${H3DAPI_SOURCE_DIR}/../examples/Particledemo )
-		IF( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
-			MESSAGE( STATUS "Including ParticleDemo" )
-  		ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/Particledemo/build
-  											${CMAKE_CURRENT_BINARY_DIR}/examples/Particledemo )
-			SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} ParticleDemo )
-		ELSE( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
-			MESSAGE( WARNING "wxWidgets was not found. ParticleDemo will not be generated." )
-		ENDIF( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
-	ENDIF( EXISTS ${H3DAPI_SOURCE_DIR}/../examples/Particledemo )
+  IF( GLUT_FOUND )
+    MESSAGE( STATUS "Including H3DAPI manual Examples" )
+    ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/manualExamples/C++
+                      ${CMAKE_CURRENT_BINARY_DIR}/examples/manualExamples )
+  ENDIF( GLUT_FOUND )
+  
+  IF( EXISTS ${H3DAPI_SOURCE_DIR}/../examples/Particledemo )
+    IF( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
+      MESSAGE( STATUS "Including ParticleDemo" )
+      ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/Particledemo/build
+                        ${CMAKE_CURRENT_BINARY_DIR}/examples/Particledemo )
+      SET( INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES ${INSTALL_RUNTIME_AND_LIBRARIES_ONLY_DEPENDENCIES} ParticleDemo )
+    ELSE( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
+      MESSAGE( WARNING "wxWidgets was not found. ParticleDemo will not be generated." )
+    ENDIF( ( NOT H3D_USE_DEPENDENCIES_ONLY ) OR wxWidgets_FOUND )
+  ENDIF( EXISTS ${H3DAPI_SOURCE_DIR}/../examples/Particledemo )
 
   MESSAGE( STATUS "Including H3DAPI ThreadExample" )
   ADD_SUBDIRECTORY( ${H3DAPI_SOURCE_DIR}/../examples/ThreadExample
