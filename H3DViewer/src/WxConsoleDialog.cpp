@@ -168,7 +168,12 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
   H3DUtil::Console.setOutputStream( *console_stream );
 
   // Warnings
-  console_stream_buf_w = new ConsoleStreamBuf( logText, wxTextAttr ( *wxYELLOW ) );
+#if wxMAJOR_VERSION >= 3
+  wxColour yellow = *wxYELLOW;
+#else
+  wxColour yellow( 255, 255, 0 );
+#endif
+  console_stream_buf_w = new ConsoleStreamBuf( logText, wxTextAttr ( yellow ) );
   console_stream_w.reset( new ostream( console_stream_buf_w ) );
   H3DUtil::Console.setOutputStream( *console_stream_w, H3DUtil::LogLevel::Warning );
 
