@@ -54,6 +54,7 @@ namespace H3D {
                          Inst< SFInt32      > _width = 0,
                          Inst< SFInt32      > _height = 0,
                          Inst< SFInt32      > _depth = 0,
+                         Inst< SFInt32      > _dataSize = 0,
                          Inst< SFString     > _storageName = 0
                          );
 
@@ -98,6 +99,10 @@ namespace H3D {
     /// <b>Access type:</b> inputOutput \n
     /// <b>Default value:</b> 16 \n
     auto_ptr<SFInt32> depth;
+
+    /// data size of the structure used for shader storage buffer
+    /// the metric is bytes
+    auto_ptr<SFInt32> dataSize;
 
     /// storage buffer name used in shader
     /// by default, it will use the node name if not being set

@@ -26,7 +26,7 @@
               </ShaderImage3D>
             </field>
             <field name="abufferCounterImg" type="SFNode" accessType="inputOutput">
-              <ShaderImage2D DEF="abufferCounterImg" height="512" width = "512" format="GL_R32F">
+              <ShaderImage2D DEF="abufferCounterImg" height="512" width = "512" format="GL_R32UI">
               </ShaderImage2D>
             </field>
             <ShaderPart  type="VERTEX" url="shaders/passThroughVert_oit.glsl"></ShaderPart>

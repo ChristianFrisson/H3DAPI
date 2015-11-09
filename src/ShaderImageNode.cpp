@@ -92,7 +92,7 @@ void ShaderImageNode::deleteImage ( int id ){
   
   set<unsigned int>::const_iterator it_end = global_image_units.end ( );
 
-  if ( global_image_units.find ( id ) == it_end )
+  if ( global_image_units.find ( id ) != it_end )
   {// erase the id if it exist, and actually it should exist if the id is a valid image id
     global_image_units.erase ( id );
     global_image_units_lock.unlock ( );

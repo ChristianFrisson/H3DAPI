@@ -46,6 +46,7 @@ namespace ShaderStorageBufferInternals{
   FIELDDB_ELEMENT ( ShaderStorageBuffer, width, INPUT_OUTPUT );
   FIELDDB_ELEMENT ( ShaderStorageBuffer, height, INPUT_OUTPUT );
   FIELDDB_ELEMENT ( ShaderStorageBuffer, depth, INPUT_OUTPUT  ); 
+  FIELDDB_ELEMENT ( ShaderStorageBuffer, dataSize, INPUT_OUTPUT  ); 
   FIELDDB_ELEMENT ( ShaderStorageBuffer, storageName, INPUT_OUTPUT );
 }
 
@@ -55,19 +56,26 @@ ShaderStorageBuffer::ShaderStorageBuffer(
                                 Inst< SFInt32       > _width,
                                 Inst< SFInt32       > _height,
                                 Inst< SFInt32       > _depth,
+                                Inst< SFInt32       > _dataSize,
                                 Inst< SFString      > _storageName ) :
   ShaderChildNode(_displayList,_metadata),
   width(_width),
   height(_height),
   depth(_depth),
+  dataSize(_dataSize),
   storageName(_storageName){
   type_name = "ShaderStorageBuffer";
   database.initFields(this);
   displayList->setName( "displayList" );
   displayList->setOwner( this );
+  width->route(displayList);
+  height->route(displayList);
+  depth->route(displayList);
+  dataSize->route(displayList);
   width->setValue ( 512 );
   height->setValue ( 512 );
   depth->setValue ( 16 );
+  dataSize->setValue( 4 );
   storage_block_binding = -1;
   buffer_id = -1;
   storageName->setValue(getName());
@@ -113,7 +121,7 @@ void ShaderStorageBuffer::prepareStorageBuffer ( ){
   glBindBuffer ( GL_SHADER_STORAGE_BUFFER, buffer_id );
   // As the data will be frequently modified by the shader and used for rendering
   // we use GL_DYNAMIC_COPY here
-  glBufferData ( GL_SHADER_STORAGE_BUFFER, width->getValue ( )*height->getValue ( )*depth->getValue ( ),
+  glBufferData ( GL_SHADER_STORAGE_BUFFER, width->getValue ( )*height->getValue ( )*depth->getValue ( )*dataSize->getValue(),
     NULL, GL_DYNAMIC_COPY ); 
 #endif
 }
@@ -125,7 +133,7 @@ void ShaderStorageBuffer::render ( ){
     // program_handle is not correctly compiled, no need to render  
     return;
   }
-  if ( buffer_id == -1 || displayList->hasCausedEvent(width)
+  if ( buffer_id == -1 || displayList->hasCausedEvent(width) || displayList->hasCausedEvent(dataSize)
     || displayList->hasCausedEvent(height)||displayList->hasCausedEvent(depth))
   {// either it is the first that the buffer is used, or the size need to be changed
     prepareStorageBuffer ( );

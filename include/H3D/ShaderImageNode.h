@@ -68,7 +68,7 @@ namespace H3D {
       image_unit = _image_unit;
     }
 
-    ~ShaderImageNode ( );
+    virtual ~ShaderImageNode ( );
   protected:
 
     /// image unit used, will be used to bind to shader program

@@ -75,6 +75,7 @@ ShaderImage2D::ShaderImage2D(
 }
 
 
+
 void ShaderImage2D::render ( ){
 #ifdef GLEW_ARB_shader_image_load_store
   if ( texture_id == 0 || image_unit == -1||displayList->hasCausedEvent ( width )
@@ -115,14 +116,14 @@ void ShaderImage2D::prepareShaderImage ( ){
   glActiveTexture ( texture_unit );
   glBindTexture ( GL_TEXTURE_2D, texture_id );
 
-  // set filter
-  glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-  glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-
   // texture creation , as no pixel data will be assigned, the pixel type and format 
   // does not need to be correct
   glTexImage2D ( GL_TEXTURE_2D, 0, stringImageFormat_map[format->getValue ( )], 
-    width->getValue ( ), height->getValue ( ), 0, GL_RED, GL_UNSIGNED_INT, 0 );
+    width->getValue ( ), height->getValue ( ), 0, GL_RED_INTEGER, GL_UNSIGNED_INT, 0 );
+  // set filter
+  glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+  glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+  glBindTexture( GL_TEXTURE_2D, 0 );
 #endif
 }
 
@@ -133,7 +134,7 @@ std::map<string, GLenum> ShaderImage2D::initStringImageFormat_map ( ){
   m["GL_RGBA32F"] = GL_RGBA32F; m["GL_RGBA16F"] = GL_RGBA16F; 
   m["GL_R32F"] = GL_R32F; m["GL_R16F"] = GL_R16F; m["GL_RG16F"] = GL_RG16F;
   m["GL_RGBA32UI"] = GL_RGBA32UI; m["GL_RGBA16UI"] = GL_RGBA16UI; m["GL_RGBA8UI"] = GL_RGBA8UI;
-  m["GL_R32UI"] = GL_R32F; m["GL_R16UI"] = GL_R16UI; m["GL_R8UI"] = GL_R8UI;
+  m["GL_R32UI"] = GL_R32UI; m["GL_R16UI"] = GL_R16UI; m["GL_R8UI"] = GL_R8UI;
   m["GL_RGBA32I"] = GL_RGBA32I; m["GL_RGBA16I"] = GL_RGBA16I; m["GL_RGBA8I"] = GL_RGBA8I;
   m["GL_R32I"] = GL_R32I; m["GL_R16I"] = GL_R16I; m["GL_R8I"] = GL_R8I;
   return m;
