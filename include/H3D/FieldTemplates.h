@@ -147,11 +147,6 @@ namespace H3D {
   class EventCollectingField : public FieldType {
   protected:
     
-    virtual void update() {
-      FieldType::update();
-      event_fields.clear();
-    }
-    
     /// When the event is propagated the field that created the event is
     /// saved
     virtual void propagateEvent( Field::Event e ) {
@@ -160,12 +155,26 @@ namespace H3D {
     }
     
   public:
+    /// Check that the field is up-to-date, if not update() is called 
+    /// to make it up-to-date. Overridden here to clear the event
+    /// field collection when updated.
+    virtual void upToDate() {
+      FieldType::upToDate();
+      event_fields.clear();
+    }
+
     /// Returns true if the Field given has generated an event to this
     /// field since the last call to the update() function.
     inline bool hasCausedEvent( Field *f ) {
       return event_fields.find( f ) != event_fields.end();
     }
     
+    /// Returns the number of input fields that has generated an event
+    /// to this field since the last call to the update() function.
+    inline unsigned int nrPendingEvents() {
+      return event_fields.size();
+    }
+
     /// Returns true if the Field given has generated an event to this
     /// field since the last call to the update() function.
     template< class FieldType2 >
