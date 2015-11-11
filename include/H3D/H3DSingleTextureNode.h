@@ -138,7 +138,7 @@ namespace H3D {
     /// The OpenGL texture unit that is used to render this texture.
     /// The value will be mostly specified when textures are rendered in shader and used
     /// while connect the texture unit with sampler location in shader code.
-    GLuint texture_unit;
+    GLint texture_unit;
     /// The OpenGL texture target that is used to render this texture.
     GLenum texture_target; 
 
