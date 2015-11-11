@@ -152,7 +152,7 @@ void WxProfiledResultDialog::OnPythonInfoChecked(wxCommandEvent &event) {
 }
 
 void WxProfiledResultDialog::OnScrollbar(wxScrollEvent& event){
-  H3DUtil::Console(LogLevel::Error)<<"scroll bar event happen"<<std::endl;
+  H3DUtil::Console(H3DUtil::LogLevel::Error)<<"scroll bar event happen"<<std::endl;
 }
 
 void WxProfiledResultDialog::OnPaint(wxPaintEvent &evetn){
