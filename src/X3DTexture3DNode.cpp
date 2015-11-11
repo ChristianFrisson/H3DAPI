@@ -275,11 +275,14 @@ void X3DTexture3DNode::glTexImage( Image *i, GLenum _texture_target,
 }
 
 void X3DTexture3DNode::render()     {
+  glGetIntegerv(GL_ACTIVE_TEXTURE_ARB, &texture_unit);
+  GLenum texture_target_prev = texture_target;
   updateTextureProperties->upToDate();
+  bool texture_target_changed = (texture_target_prev != texture_target);
   Image * i = static_cast< Image * >(image->getValue());
-  if( displayList->hasCausedEvent( image ) ) {
+  if( displayList->hasCausedEvent( image )|| texture_target_changed) {
 
-    if( !image->imageChanged() || texture_id == 0 ) {
+    if( !image->imageChanged() || texture_id == 0|| texture_target_changed) {
       // the image has changed so remove the old texture and install 
       // the new
       glDeleteTextures( 1, &texture_id );

@@ -56,7 +56,7 @@ GeneratedTexture::GeneratedTexture(
 }
 
 void GeneratedTexture::render() {
-  //glGetIntegerv( GL_ACTIVE_TEXTURE_ARB, &texture_unit );
+  glGetIntegerv( GL_ACTIVE_TEXTURE_ARB, &texture_unit );
   ensureInitialized();
   glBindTexture(  texture_target, texture_id );
   renderTextureProperties();
