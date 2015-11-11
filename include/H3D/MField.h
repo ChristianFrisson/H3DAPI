@@ -37,8 +37,6 @@
 #include <H3D/Node.h>
 #include <H3D/X3DFieldConversion.h>
 
-using namespace std;
-
 namespace H3D {
 
   class H3DAPI_API MFieldClass {

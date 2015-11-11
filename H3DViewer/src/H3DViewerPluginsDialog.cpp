@@ -36,6 +36,8 @@
 #include <H3D/LibraryInfo.h>
 #include <H3DUtil/DynamicLibrary.h>
 
+using namespace std;
+
 inline string toStr( const wxString &s ) {
 # if(wxUSE_UNICODE)
   char *b = new char[s.size()+1];

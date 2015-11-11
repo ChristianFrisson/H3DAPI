@@ -31,13 +31,12 @@
 #define __X3DFIELDCONVERSION_H__
 
 #include <sstream>
+#include <H3D/H3DApi.h>
 #include <H3DUtil/Exception.h>
 #include <H3D/H3DTypes.h>
 #include <H3DUtil/PixelImage.h>
 
 #include <typeinfo>
-
-using namespace std;
 
 namespace H3D {
   namespace X3D {

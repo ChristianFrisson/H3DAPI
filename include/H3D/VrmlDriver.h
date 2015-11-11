@@ -37,8 +37,6 @@
 #include <H3D/PrototypeVector.h>
 #include <H3D/H3DScriptNode.h>
 
-using namespace std;
-
 //namespace H3D {
 //  class Group;
 //}

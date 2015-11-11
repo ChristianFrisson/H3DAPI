@@ -35,7 +35,6 @@
 #include <xercesc/util/BinInputStream.hpp>
 #include <iostream>
 
-using namespace std;
 XERCES_CPP_NAMESPACE_USE
 
 namespace H3D {

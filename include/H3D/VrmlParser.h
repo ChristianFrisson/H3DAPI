@@ -38,8 +38,6 @@
 #include <H3D/ProtoDeclaration.h>
 #include <H3D/X3D.h>
 
-using namespace std;
-
 namespace H3D {
   namespace X3D {
     

@@ -31,8 +31,6 @@
 
 #include <H3D/H3DTypes.h>
 
-using namespace std;
-
 namespace H3D {
 
   struct DvState {

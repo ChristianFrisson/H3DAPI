@@ -35,8 +35,6 @@
 #include <iostream>
 #include <string>
 
-using namespace std;
-
 namespace H3D {
   /// The URNResolver resolves URNs (Uniform Resource Name) into paths. A
   /// URN allows an abstract resolution mechanism to be invoked to locate

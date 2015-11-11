@@ -38,8 +38,6 @@
 #include <H3D/X3DTypes.h>
 #include <memory>
 
-using namespace std;
-
 namespace H3D {
   // forward declaration
   class Node;

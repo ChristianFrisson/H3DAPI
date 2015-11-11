@@ -39,9 +39,6 @@
 #include <list>
 #include <typeinfo>
 
-using namespace std;
-
-
 /// Useful macro for cleaner field definitions.
 #define FIELDDB_ELEMENT( base, field, access ) \
 FieldDBInsert field( access( &base::database, #field, &base::field ) );

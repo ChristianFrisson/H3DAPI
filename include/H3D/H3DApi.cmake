@@ -213,6 +213,9 @@
 
 /// H3D API namespace
 namespace H3D {
+
+  using namespace std;
+
   /// Initialize H3D API(only needed if using H3D API as a static library). 
   void initializeH3D();
 

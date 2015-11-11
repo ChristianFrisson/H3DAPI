@@ -34,8 +34,6 @@
 #include <map>
 #include <string>
 
-using namespace std;
-
 namespace H3D {
   namespace X3D {
     /// An exception for errors when the Node type is not what was

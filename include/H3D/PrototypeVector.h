@@ -30,8 +30,6 @@
 #define __PROTOTYPEVECTOR_H__
 #include <H3D/ProtoDeclaration.h>
 
-using namespace std;
-
 namespace H3D {
   namespace X3D {
 

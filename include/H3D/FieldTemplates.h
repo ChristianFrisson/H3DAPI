@@ -36,8 +36,6 @@
 #include <H3D/MField.h>
 #include <H3D/TypedField.h>
 
-using namespace std;
-
 namespace H3D {
 
   H3D_VALUE_EXCEPTION( string, InvalidNodeType );

@@ -40,8 +40,6 @@
 #include <H3DUtil/AutoRef.h>
 #include <H3D/PrototypeVector.h>
 
-using namespace std;
-
 namespace H3D {
   /// X3D namespace
   namespace X3D {

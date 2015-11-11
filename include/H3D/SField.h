@@ -137,6 +137,8 @@ namespace H3D {
 
     /// Set the value of the field.
     inline virtual void setValue( const Type &v, int id = 0 );
+
+    inline void setValueIfChanged( const Type &v, int id = 0 );
     /// Get the value of the field.
     inline virtual const Type &getValue( int id = 0 );
         
@@ -188,6 +190,25 @@ namespace H3D {
   }
 
   template< class Type >
+  void SField<Type>::setValueIfChanged( const Type &v, int id ) {
+#ifdef DEBUG
+    Console(1) << "SField< " << typeid( Type ).name() 
+               << " >(" << this->name << ")::setValue()" << endl;
+#endif
+    // check that we have the correct access type
+    this->checkAccessTypeSet( id );
+    
+    // reset the event pointer since we want to ignore any pending
+    // events when the field is set to a new value.
+    this->event.ptr = NULL;
+    if( value != v ) {
+      value = v; 
+     // generate an event.
+      this->startEvent();
+    }
+  }
+
+  template< class Type >
   void SField<Type>::setValue( const Type &v, int id ) {
 #ifdef DEBUG
     Console(LogLevel::Debug) << "SField< " << typeid( Type ).name() 
@@ -197,12 +218,15 @@ namespace H3D {
     this->checkAccessTypeSet( id );
     
     value = v;
+
+
     // reset the event pointer since we want to ignore any pending
     // events when the field is set to a new value.
     this->event.ptr = NULL;
+
     // generate an event.
     this->startEvent();
-  }
+ }
 
   template< class Type >
   const Type &SField<Type>::getValue( int id ) {

@@ -114,7 +114,7 @@ public:
     bool isDefaultValue( Field *f );
 
     wxPGProperty *property;
-    auto_ptr< unsigned char > default_value;
+    std::auto_ptr< unsigned char > default_value;
 
     // the size of default_value pointer in bytes.
     unsigned int default_value_size;
@@ -122,13 +122,13 @@ public:
   };
   
   static wxPGProperty *getPropertyFromField( H3D::Field *f,
-                                             const string &field_name = "" );
+                                             const std::string &field_name = "" );
   
   static void setupProperty( wxPropertyGrid *grid,
                              H3D::Field *f,
                              H3D::Field *default_field,
                              H3DUtil::AutoPtrVector< H3D::Field > &property_update_fields,
-                             const string &property_name = "" );
+                             const std::string &property_name = "" );
 
   static void settingsCallback( H3D::Scene::ProgramSettingsEvent event,
                                 const H3D::Scene::ProgramSetting &setting,
@@ -187,7 +187,7 @@ public:
     values[i] = value;
   }
 
-  vector< double > values;
+  std::vector< double > values;
 };
 
 inline bool operator == (const H3DwxVector& a, const H3DwxVector& b)

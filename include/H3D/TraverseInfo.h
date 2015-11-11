@@ -37,7 +37,6 @@
 #include <stack>
 #include <map>
 
-using namespace std;
 
 namespace H3D {
   // forward declarations

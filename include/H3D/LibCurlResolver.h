@@ -39,8 +39,6 @@
 #include <curl/curl.h>
 #include <H3D/ResourceResolver.h>
 
-using namespace std;
-
 namespace H3D {
 
   /// The LibCurlResolver uses libcurl to resolve URLs using e.g. the

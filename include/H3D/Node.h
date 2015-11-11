@@ -35,8 +35,6 @@
 #include <H3DUtil/RefCountedClass.h>
 #include <H3DUtil/Console.h>
 
-using namespace std;
-
 namespace H3D {
   class X3DPrototypeInstance;
 
