@@ -531,8 +531,42 @@ void FrameBufferTextureGenerator::render()     {
   }
   GLint previous_fbo_id;
   glGetIntegerv( GL_DRAW_FRAMEBUFFER_BINDING, &previous_fbo_id );
+  
+  // if a viewpoint has been specified use that instead of what has already 
+  // been set up (current active viewpoint)
+  bool have_local_vp = false;
+  bool have_local_navi = false;
+  X3DViewpointNode* vp = static_cast<X3DViewpointNode*>(viewpoint->getValue());
+  if (vp != NULL) {
+    have_local_vp = true;
+  }
+  else {
+    vp = X3DViewpointNode::getActive();
+  }
+  NavigationInfo* nav_info = navigationInfo->getValue();
+  if (nav_info != NULL) {
+    have_local_navi = true;
+  }
+  else {
+    nav_info = NavigationInfo::getActive();
+  }
+  if (useNavigation->getValue()) {
+    // useNavigation will force the use of main scene viewpoint to have user navigation
+    have_local_vp = false;
+    vp = X3DViewpointNode::getActive();
+  }
+
   // Save current state.
-  glPushAttrib( GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_VIEWPORT_BIT|GL_SCISSOR_BIT );
+  if( have_local_vp ) {
+    // when there is local viewpoint, push GL_POLYGON_BIT to make use cull face mode will not be 
+    // affect by main scene rendering when mirroring is specified
+    glPushAttrib(GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_VIEWPORT_BIT | GL_SCISSOR_BIT|GL_POLYGON_BIT);
+  } else {
+    // when there is no local viewpoint, the global one will be used, so need to keep the face mode specified
+    // in main scene, otherwise the mirroring effect will only flip the object, its cull face won't be flipped
+    glPushAttrib(GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_VIEWPORT_BIT | GL_SCISSOR_BIT);
+  }
+  
 
   
 
@@ -678,28 +712,6 @@ void FrameBufferTextureGenerator::render()     {
   /// Check if we just need to generate depth texture.
   if( generateColorTextures->size() == 0&&generateDepthTexture->getValue() ) {
     glColorMask(false,false,false,false);
-  }
-
-  // if a viewpoint has been specified use that instead of what has already 
-  // been set up (current active viewpoint)
-  bool have_local_vp = false;
-  bool have_local_navi = false;
-  X3DViewpointNode* vp = static_cast<X3DViewpointNode*>(viewpoint->getValue());
-  if( vp!=NULL ) {
-    have_local_vp = true;
-  }else{
-    vp = X3DViewpointNode::getActive();
-  }
-  NavigationInfo* nav_info = navigationInfo->getValue();
-  if( nav_info!=NULL ) {
-    have_local_navi = true;
-  }else{
-    nav_info = NavigationInfo::getActive();
-  }
-  if( useNavigation->getValue() ) {
-    // useNavigation will force the use of main scene viewpoint to have user navigation
-    have_local_vp = false;
-    vp = X3DViewpointNode::getActive();
   }
   
   
