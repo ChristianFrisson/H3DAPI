@@ -557,18 +557,17 @@ void FrameBufferTextureGenerator::render()     {
   }
 
   // Save current state.
-  if( have_local_vp ) {
+  if (have_local_vp) {
     // when there is local viewpoint, push GL_POLYGON_BIT to make use cull face mode will not be 
     // affect by main scene rendering when mirroring is specified
-    glPushAttrib(GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_VIEWPORT_BIT | GL_SCISSOR_BIT|GL_POLYGON_BIT);
+    glPushAttrib(GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_VIEWPORT_BIT | GL_SCISSOR_BIT | GL_POLYGON_BIT);
+    // ignore mirroring in fbtg node
+    glFrontFace(GL_CCW);
   } else {
     // when there is no local viewpoint, the global one will be used, so need to keep the face mode specified
     // in main scene, otherwise the mirroring effect will only flip the object, its cull face won't be flipped
     glPushAttrib(GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_VIEWPORT_BIT | GL_SCISSOR_BIT);
   }
-  
-
-  
 
   /// Make sure all textures and buffers are initialized.
   if( !fbo_initialized ) initializeFBO();
