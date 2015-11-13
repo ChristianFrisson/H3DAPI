@@ -50,53 +50,9 @@ ShaderImageNode::ShaderImageNode(
 
 }
 
-
-
 ShaderImageNode::~ShaderImageNode ( ){
-  if ( image_unit!=-1 )
-  {
-    deleteImage ( image_unit );
-  }
   if ( texture_id )
   {
     glDeleteTextures ( 1, &texture_id );
   }
-}
-
- int ShaderImageNode::generateImage ( ){
-
-  global_image_units_lock.lock ( );
-  set<unsigned int>::const_iterator it_end = global_image_units.end ( );
-  if ( global_image_units.size()>=max_image_unit )
-  {// all valid id for image units are used, return -1 represent invalid
-    global_image_units_lock.unlock ( );
-    return -1;
-  }
-  for ( size_t i = 0; i < max_image_unit; i++ )
-  {
-    if ( global_image_units.find ( i ) == it_end )
-    {
-      // no previous hit in global image units, use this one and insert it into the set
-      global_image_units.insert ( i );
-      global_image_units_lock.unlock ( );
-      return i;
-    }
-  }
-  // it should never goes here, return -1 just in case it does
-  global_image_units_lock.unlock ( );
-  return -1;
-}
-
-void ShaderImageNode::deleteImage ( int id ){
-  global_image_units_lock.lock ( );
-  
-  set<unsigned int>::const_iterator it_end = global_image_units.end ( );
-
-  if ( global_image_units.find ( id ) != it_end )
-  {// erase the id if it exist, and actually it should exist if the id is a valid image id
-    global_image_units.erase ( id );
-    global_image_units_lock.unlock ( );
-  }
-  // the shader image you want to delete is not valid, release the lock anyway
-  global_image_units_lock.unlock ();
 }

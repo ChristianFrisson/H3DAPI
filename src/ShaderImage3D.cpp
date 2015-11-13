@@ -79,7 +79,7 @@ ShaderImage3D::ShaderImage3D( Inst< DisplayList  > _displayList ,
 
 void ShaderImage3D::render ( ){
 #ifdef GLEW_ARB_shader_image_load_store
-  if ( texture_id == 0 || image_unit == -1 || displayList->hasCausedEvent ( width )
+  if ( texture_id == 0|| displayList->hasCausedEvent ( width )
     || displayList->hasCausedEvent ( height ) || displayList->hasCausedEvent(depth) 
     || displayList->hasCausedEvent ( format ) )
   {// either the first render invocation or parameter for the image needs update
@@ -110,10 +110,6 @@ void ShaderImage3D::prepareShaderImage ( ){
     // generate texture if do not have valid one
     glGenTextures(1,&texture_id);
   }
-  if ( image_unit==-1 )
-  {
-    image_unit = generateImage ( );
-  }
   glBindTexture ( GL_TEXTURE_2D_ARRAY, texture_id );
   // set filter, for texture image, GL_NEAREST is required
   glTexParameteri ( GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
@@ -122,7 +118,7 @@ void ShaderImage3D::prepareShaderImage ( ){
   // configure the texture image, for shader image load and or store,
   // the last three parameter is used to define how data is organized,
   // as we do not actually specify any data for texture so the data format 
-  // and data type are not important as long as it does not caush gl error.
+  // and data type are not important as long as it does not cause gl error.
   glTexImage3D ( GL_TEXTURE_2D_ARRAY, 0, stringImageFormat_map[format->getValue()], 
                   width->getValue ( ), height->getValue ( ), depth->getValue ( ), 0, GL_RGBA, GL_FLOAT, 0 );
 #endif

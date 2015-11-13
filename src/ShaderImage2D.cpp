@@ -77,13 +77,16 @@ ShaderImage2D::ShaderImage2D(
 
 
 void ShaderImage2D::render ( ){
+  // before calling render, make sure that glActiveTexture is called 
+  // or setTextureUnit is called , so texture_unit is the correct one to be used
+  // also make sure setImageUnit is called for the similar reason
+  glGetIntegerv(GL_ACTIVE_TEXTURE_ARB, &texture_unit);
 #ifdef GLEW_ARB_shader_image_load_store
-  if ( texture_id == 0 || image_unit == -1||displayList->hasCausedEvent ( width )
+  if ( texture_id == 0 ||displayList->hasCausedEvent ( width )
     ||displayList->hasCausedEvent(height)||displayList->hasCausedEvent(format) )
   {// either the first render invocation or parameter for the image needs update
     prepareShaderImage ( );
   }
-  glActiveTexture ( texture_unit );
   // For now, always set memory barrier here so image read/write is coherent
   // to make sure the write to shader image is finish and can be accessed later through read
   // this is not always necessary of course and can take time for opengl to sync.
@@ -97,6 +100,9 @@ void ShaderImage2D::render ( ){
       );
   // by default, bind the level zero of the texture to the image unit we generated
   // currently , this is hard coded, maybe can be exposed as parameter later 
+  //Console(LogLevel::Info) << "texture id i  dfs: " << texture_id << std::endl;
+  //Console(LogLevel::Info) << "image unit is: " << image_unit << std::endl;
+  //Console(LogLevel::Info) << "texture unit is: " << texture_unit << std::endl;
   glBindImageTextureEXT ( image_unit, texture_id, 0, false, 0, 
     GL_READ_WRITE, stringImageFormat_map[format->getValue ( )] );
 #endif
@@ -107,10 +113,6 @@ void ShaderImage2D::prepareShaderImage ( ){
   if ( !texture_id ) {
     // texture for shader image is zero, need to create a new one
     glGenTextures ( 1, &texture_id );
-  }
-  if ( image_unit==-1 )
-  {
-    image_unit = generateImage ( );
   }
   // bind to specified texture unit 
   glActiveTexture ( texture_unit );

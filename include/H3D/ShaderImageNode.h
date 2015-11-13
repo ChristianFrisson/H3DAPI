@@ -75,7 +75,9 @@ namespace H3D {
     /// the value of image_unit will be maintained in this node.
     /// Note: this is different from texture image unit which is used by
     /// texture object to be accessed in shader
-    unsigned int image_unit;
+    /// its value will be assigned in shader before it is actually rendered and 
+    /// connected to its location in shader
+    GLuint image_unit;
 
     
     // collection of all the current image units already used, 
@@ -84,11 +86,6 @@ namespace H3D {
     // lock to ensure the access to global_image_units is always safe
     static H3DUtil::MutexLock global_image_units_lock;
     static unsigned int max_image_unit;
-    // create a image unit id, it will be ensured that any shader image
-    // used have different image unit it
-    static int generateImage ( );
-    // remove the image unit id
-    static void deleteImage ( int id );
   };
 }
 
