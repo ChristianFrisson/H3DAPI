@@ -36,6 +36,7 @@
 // ---------------------------------------------------------------------------
 #include <wx/wx.h>
 #include <wx/clipbrd.h>
+#include <wx/notebook.h>
 #include <sstream>
 #include <fstream>
 #include <memory>
@@ -59,7 +60,13 @@ public:
   ~WxConsoleDialog();
 
   /// wx interface.
-  wxTextCtrl *logText;
+
+  /// Tabs for different console levels
+  wxNotebook* tabs;
+
+  wxTextCtrl *logText;         ///< Console for all output levels
+  wxTextCtrl *logTextErrors;   ///< Console for errors
+  wxTextCtrl *logTextWarnings; ///< Console for warnings
 
   /// 
   wxClipboard *clip_board;
@@ -69,6 +76,9 @@ public:
 
   /// Reset changes in wxLockGUI.
   friend void wxUnlockGUI( void * );
+
+  /// Update the tab headings to display the number of error/warning messages
+  void updateNotebook();
 
 protected:
 
@@ -87,9 +97,12 @@ protected:
     static const size_t buffer_size= 1000;
 
     /// Constructor.
-    ConsoleStreamBuf( wxTextCtrl *_text, const wxTextAttr& _textStyle = wxTextAttr() ) :
+    ConsoleStreamBuf( WxConsoleDialog& _owner, wxTextCtrl *_text, wxTextCtrl *_textAux = NULL, const wxTextAttr& _textStyle = wxTextAttr() ) :
+      owner( &_owner ),
       text_ctrl( _text ),
-      text_style( _textStyle ) {
+      text_ctrl_aux( _textAux ),
+      text_style( _textStyle ),
+      line_count ( 0 ) {
       // reserve memory for the string to avoid having to reallocate.
       other_threads_text.Alloc( 1000 );
       buffer.reserve( buffer_size );
@@ -99,7 +112,10 @@ protected:
     int overflow( int ch );
 
     /// Called on idle from main thread to transfer threaded output
-    void onIdle( WxConsoleDialog& _owner );
+    void onIdle();
+
+    /// Write a line to the console
+    void writeLine( const wxString& _line );
 
     /// Lock to be used for accessing the other_threads_text member.
     H3DUtil::MutexLock text_lock;
@@ -109,8 +125,14 @@ protected:
     /// mutex lock for thread safety.
     wxString other_threads_text;
 
+    /// Ptr back to owner window
+    WxConsoleDialog* owner;
+
     /// The wxTextCtrl to output text to.
     wxTextCtrl *text_ctrl;
+
+    /// An additional (optional) text control to also output to
+    wxTextCtrl *text_ctrl_aux;
 
     /// Text/font style to use for output
     wxTextAttr text_style;
@@ -120,7 +142,13 @@ protected:
     /// A string buffer is used to avoid spamming the text control with single
     /// characters which affects the performance
     std::string buffer;
+
+    /// Count number of lines output
+    std::size_t line_count;
   };
+
+  /// Get a string to use as the title of a console tab. Appends the number of messages in braces
+  wxString getTabTitle( const wxString& _title, std::size_t _count );
 
   // the buffer object for console_stream. Pointer is owned by
   // the console_stream object.

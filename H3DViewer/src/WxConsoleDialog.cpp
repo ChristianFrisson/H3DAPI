@@ -50,8 +50,7 @@ int WxConsoleDialog::ConsoleStreamBuf::overflow( int c ) {
   if ( ch == '\n' || buffer.size() >= buffer_size ) { 
 
     if( wxIsMainThread() ) {
-      text_ctrl->SetDefaultStyle( text_style );
-      text_ctrl->AppendText( wxString( buffer.c_str(), wxConvUTF8) );
+      writeLine( wxString( buffer.c_str(), wxConvUTF8 ) );
       text_lock.lock();
       mainthread_text_copy.Append( wxString( buffer.c_str(), wxConvUTF8) );
       text_lock.unlock();
@@ -67,7 +66,7 @@ int WxConsoleDialog::ConsoleStreamBuf::overflow( int c ) {
   return c;
 }
 
-void WxConsoleDialog::ConsoleStreamBuf::onIdle( WxConsoleDialog& _owner ) {
+void WxConsoleDialog::ConsoleStreamBuf::onIdle() {
   wxString output, output2;
 
   // transfer text output to console from other threads than
@@ -81,23 +80,33 @@ void WxConsoleDialog::ConsoleStreamBuf::onIdle( WxConsoleDialog& _owner ) {
 
   // Send available text to wxTextCtrl.
   if( !output.IsEmpty() ) {
-    text_ctrl->SetDefaultStyle( text_style );
-    text_ctrl->AppendText( output );
-    if ( _owner.filelog_enabled)
-      _owner.filelog_cout << output;
-    _owner.filelog_cout.flush();
+    writeLine( output );
+    if ( owner->filelog_enabled)
+      owner->filelog_cout << output;
+    owner->filelog_cout.flush();
   }
 
-  if ( _owner.filelog_enabled) {
+  if ( owner->filelog_enabled) {
     text_lock.lock();
     if( !mainthread_text_copy.IsEmpty() ) {
       output2.Alloc( 1000 );
       output2.swap( mainthread_text_copy );
-      _owner.filelog_console << output2;
-      _owner.filelog_console.flush();
+      owner->filelog_console << output2;
+      owner->filelog_console.flush();
     }
     text_lock.unlock();
   }
+}
+
+void WxConsoleDialog::ConsoleStreamBuf::writeLine( const wxString& _line ) {
+  line_count++;
+  text_ctrl->SetDefaultStyle( text_style );
+  text_ctrl->AppendText( _line );
+  if( text_ctrl_aux ) {
+    text_ctrl_aux->SetDefaultStyle( text_style );
+    text_ctrl_aux->AppendText( _line );
+  }
+  owner->updateNotebook();
 }
 
 WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
@@ -110,21 +119,42 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
 {
   wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
 
+  tabs = new wxNotebook( this, wxID_ANY );
+
   // create text ctrl with minimal size 400x200
-  logText = new wxTextCtrl ( this, -1, wxT(""),
+  logText = new wxTextCtrl ( tabs, -1, wxT(""),
     wxDefaultPosition, wxSize( 750, 450 ),
     wxTE_MULTILINE | wxTE_READONLY | wxTE_RICH );
 
   logText->SetFont( wxFont( 10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL ) );
   logText->SetBackgroundColour( wxColour( 50,50,50 ) );
+  tabs->AddPage( logText, "All" );
+
+  logTextErrors = new wxTextCtrl( tabs, -1, wxT( "" ),
+    wxDefaultPosition, wxSize( 750, 450 ),
+    wxTE_MULTILINE | wxTE_READONLY | wxTE_RICH );
+
+  logTextErrors->SetFont( wxFont( 10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL ) );
+  logTextErrors->SetBackgroundColour( wxColour( 50, 50, 50 ) );
+
+  tabs->AddPage( logTextErrors, "Errors" );
+
+  logTextWarnings = new wxTextCtrl( tabs, -1, wxT( "" ),
+    wxDefaultPosition, wxSize( 750, 450 ),
+    wxTE_MULTILINE | wxTE_READONLY | wxTE_RICH );
+
+  logTextWarnings->SetFont( wxFont( 10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL ) );
+  logTextWarnings->SetBackgroundColour( wxColour( 50, 50, 50 ) );
+
+  tabs->AddPage( logTextWarnings, "Warnings" );
+
+  topsizer->Add( tabs,
+      1,            // make vertically stretchable
+      wxEXPAND |    // make horizontally stretchable
+      wxALL,        //   and make border all around
+      10 );         // set border width to 10 */
 
   clip_board = new wxClipboard();
-
-  topsizer->Add(logText, 
-    1,            // make vertically stretchable
-    wxEXPAND |    // make horizontally stretchable
-    wxALL,        //   and make border all around
-    10 );         // set border width to 10 */
 
   // Clear button
   wxButton *clearBtn = new wxButton(this, wxID_CLEAR, wxT("Cle&ar"));
@@ -133,7 +163,7 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
   wxButton *closeButton = new wxButton( this, wxID_CLOSE, wxT("&Close") );
 
   // Copy button
-  wxButton *copyButton = new wxButton(this, wxID_ANY, wxT("&Copy"));
+  wxButton *copyButton = new wxButton(this, wxID_ANY, wxT("Co&py"));
 
   // boxsizer for the buttons
   wxBoxSizer *button_sizer = new wxBoxSizer( wxHORIZONTAL );
@@ -163,7 +193,7 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
   // redirect the console to logText wxTextCtrl.
 
   // Default
-  console_stream_buf = new ConsoleStreamBuf( logText, wxTextAttr( *wxGREEN ) );
+  console_stream_buf = new ConsoleStreamBuf( *this, logText, NULL, wxTextAttr( *wxGREEN ) );
   console_stream.reset( new ostream( console_stream_buf ) );
   H3DUtil::Console.setOutputStream( *console_stream );
 
@@ -173,12 +203,12 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
 #else
   wxColour yellow( 255, 255, 0 );
 #endif
-  console_stream_buf_w = new ConsoleStreamBuf( logText, wxTextAttr ( yellow ) );
+  console_stream_buf_w = new ConsoleStreamBuf( *this, logText, logTextWarnings, wxTextAttr ( yellow ) );
   console_stream_w.reset( new ostream( console_stream_buf_w ) );
   H3DUtil::Console.setOutputStream( *console_stream_w, H3DUtil::LogLevel::Warning );
 
   // Errors
-  console_stream_buf_e = new ConsoleStreamBuf( logText, wxTextAttr( *wxRED ) );
+  console_stream_buf_e = new ConsoleStreamBuf( *this, logText, logTextErrors, wxTextAttr( *wxRED ) );
   console_stream_e.reset( new ostream( console_stream_buf_e ) );
   H3DUtil::Console.setOutputStream( *console_stream_e, H3DUtil::LogLevel::Error );
 
@@ -274,29 +304,72 @@ BEGIN_EVENT_TABLE(WxConsoleDialog, wxDialog)
 }
 
 void WxConsoleDialog::OnConsoleClear(wxCommandEvent &event) {
-  WxConsoleDialog::logText->Clear();
+  switch( tabs->GetSelection() ) {
+  case 0:
+    logText->Clear();
+    break;
+  case 1:
+    logTextErrors->Clear();
+    console_stream_buf_e->line_count = 0;
+    break;
+  case 2:
+    logTextWarnings->Clear();
+    console_stream_buf_w->line_count = 0;
+    break;
+  }
+
+
+  updateNotebook();
 }
 
 void WxConsoleDialog::OnCopyToClipboard(wxCommandEvent &event){
-  bool copied = false;
-  if(!logText->IsEmpty()){
+  wxTextCtrl* ctrl= logText;
+  switch( tabs->GetSelection() ) {
+  case 0:
+    ctrl = logText;
+    break;
+  case 1:
+    ctrl = logTextErrors;
+    break;
+  case 2:
+    ctrl = logTextWarnings;
+    break;
+  }
+
+  if(!ctrl->IsEmpty()){
     if(clip_board->Open()){
       clip_board->Clear();
       wxTextDataObject* tmp=new wxTextDataObject();
-      tmp->SetText(logText->GetValue());
+      tmp->SetText( ctrl->GetValue());
       clip_board->SetData(tmp);
       clip_board->Flush();
-      copied = true;
       clip_board->Close();
     }
-    /*if(!copied){
-    ::wxMessageBox("The clipboard copy failed", "Error", wxICON_ERROR | wxCENTRE);
-    }*/
   }
 }
 
 void WxConsoleDialog::OnIdle(wxIdleEvent &event) {
-  console_stream_buf->onIdle( *this );
-  console_stream_buf_w->onIdle( *this );
-  console_stream_buf_e->onIdle( *this );
+  console_stream_buf->onIdle();
+  console_stream_buf_w->onIdle();
+  console_stream_buf_e->onIdle();
+}
+
+void WxConsoleDialog::updateNotebook() {
+  tabs->SetPageText( 1, getTabTitle ( wxT("Errors"), console_stream_buf_e->line_count ) );
+  tabs->SetPageText( 2, getTabTitle( wxT("Warnings"), console_stream_buf_w->line_count ) );
+}
+
+wxString WxConsoleDialog::getTabTitle( const wxString& _title, std::size_t _count ) {
+  // Avoid reporting very large numbers of messages
+  if( _count < 1000 ) {
+    if( _count > 0 ) {
+      std::stringstream ss;
+      ss << _title << " (" << _count << ")";
+      return wxString ( ss.str().c_str(), wxConvUTF8 );
+    } else {
+      return _title;
+    }
+  } else {
+    return _title + wxT(" (!)");
+  }
 }
