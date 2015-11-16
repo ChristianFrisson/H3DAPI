@@ -79,6 +79,7 @@
 #include <H3D/MFMatrix4d.h>
 #include <H3D/X3DShaderNode.h>
 #include <H3D/X3DProgrammableShaderObject.h>
+#include <H3D/GraphicsHardwareInfo.h>
 
 using namespace H3D;
 
@@ -1603,8 +1604,17 @@ void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
   if ( X3DProgrammableShaderObject::use_bindless_textures ) return;
 
   GLint nr_textures_supported;
-  glGetIntegerv( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported );
+  GLint nr_images_supported;
+  if (GraphicsHardwareInfo::infoIsInitialized()) {
+    nr_textures_supported = GraphicsHardwareInfo::getInfo().max_combined_texture_image_units;
+    nr_images_supported = GraphicsHardwareInfo::getInfo().max_image_units;
+  }else {
+    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported);
+    glGetIntegerv(GL_MAX_IMAGE_UNITS, &nr_images_supported);
+  }
+  
   unsigned int nr_textures = 0; 
+  unsigned int nr_images = 0;
   Node* n;
   MFNode* mfnode;
   for( H3DDynamicFieldsObject::field_iterator f = dfo->firstField();f != dfo->endField(); ++f ) 
@@ -1616,9 +1626,10 @@ void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
       if (ShaderImageNode *si = dynamic_cast<ShaderImageNode*>(n)) {
         glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures); // this is not needed, in theory
         si->setTextureUnit(GL_TEXTURE0_ARB + nr_textures);
-        si->setImageUnit(nr_textures);
+        si->setImageUnit(nr_images);
         si->displayList->callList();
         ++nr_textures;
+        ++nr_images;
       }else if( H3DSingleTextureNode *t = 
         dynamic_cast< H3DSingleTextureNode *>( n ) ) {
           glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
@@ -1635,9 +1646,10 @@ void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
           if (ShaderImageNode *si = dynamic_cast<ShaderImageNode*>(_n)) {
             glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures);
             si->setTextureUnit(GL_TEXTURE0_ARB + nr_textures);
-            si->setImageUnit(nr_textures);
+            si->setImageUnit(nr_images);
             si->displayList->callList();
             ++nr_textures;
+            ++nr_images;
           }else if( H3DSingleTextureNode *t = 
             dynamic_cast< H3DSingleTextureNode *>( _n ) ) {
               glActiveTextureARB(GL_TEXTURE0_ARB + nr_textures );
@@ -1650,6 +1662,9 @@ void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
     if( nr_textures > (unsigned int)nr_textures_supported ) {
       Console(LogLevel::Error) << "Warning: Nr of textures provided to shader is larger than the maximum number supported(" << nr_textures_supported << ") " << endl;
       break;
+    }
+    if( nr_images > (unsigned int)nr_images_supported ) {
+      Console(LogLevel::Error) << "Warning: Nr of texture image used in shader is larger than the maximum number supported(" << nr_images_supported << ")" << endl;
     }
   }
   glActiveTextureARB(GL_TEXTURE0_ARB );
