@@ -65,7 +65,7 @@ public:
   wxImagePanel(wxWindow* parent);
  
   void paintEvent(wxPaintEvent & evt);
-  void setImage ( wxImage _image );
+  void setImage ( const wxImage& _image );
 
   DECLARE_EVENT_TABLE()
 
@@ -88,6 +88,7 @@ protected:
 
   wxImagePanel* draw_pane;
   AutoRef < X3DTextureNode > texture;
+  unsigned char* image_data;
 };
 
 /** Implementing TreeViewDialog */

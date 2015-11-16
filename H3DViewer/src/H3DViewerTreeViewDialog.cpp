@@ -605,7 +605,7 @@ void wxImagePanel::paintEvent(wxPaintEvent & evt) {
   dc.DrawBitmap( image, 0, 0, false );
 }
 
-void wxImagePanel::setImage ( wxImage _image ) {
+void wxImagePanel::setImage ( const wxImage& _image ) {
   image= wxBitmap ( _image );
 
   wxSize s ( image.GetWidth(), image.GetHeight() );
@@ -614,7 +614,9 @@ void wxImagePanel::setImage ( wxImage _image ) {
 }
 
 H3DViewImage::H3DViewImage ( wxWindow* parent, X3DTextureNode& _texture ) 
-: ViewImage ( parent ) {
+: 
+  image_data ( NULL ),
+  ViewImage ( parent ) {
   draw_pane = new wxImagePanel ( m_imagePanel );
   m_imagePanel->GetSizer()->Add(draw_pane, 1, wxEXPAND);
 
@@ -681,8 +683,8 @@ void H3DViewImage::OnTimer ( wxTimerEvent& event ) {
 }
 
 void H3DViewImage::updateImage () {
-  Image* image= texture->renderToImage ( -1, -1 );
-  if ( !image ) {
+  auto_ptr < Image > image ( texture->renderToImage ( -1, -1 ) );
+  if ( !image.get() ) {
     Console(LogLevel::Error) << "ERROR: Failed to render texture to image!" << endl;
     return;
   }
@@ -699,6 +701,9 @@ void H3DViewImage::updateImage () {
       }
   }
 
-  draw_pane->setImage ( wxImage ( image->width(), image->height(), rgb ) );
+  draw_pane->setImage ( wxImage ( image->width(), image->height(), rgb, true ) );
   Layout ();
+
+  delete [] image_data;
+  image_data = rgb;
 }
