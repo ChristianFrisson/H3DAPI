@@ -1148,8 +1148,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
         viewports_size[6] != width->getValue() || viewports_size[7] != height->getValue() ) {
           glViewport( (int)viewports_size[4], (int)viewports_size[5], 
             (int)viewports_size[6], (int)viewports_size[7] );
-          fbo_current_x = viewports_size[4];
-          fbo_current_y = viewports_size[5];
+          fbo_current_x = (H3DInt32)viewports_size[4];
+          fbo_current_y = (H3DInt32)viewports_size[5];
       }
     }
 
@@ -1254,8 +1254,8 @@ void H3DWindowNode::render( X3DChildNode *child_to_render ) {
         viewports_size[10] != width->getValue() || viewports_size[11] != height->getValue() ) {
           glViewport( (int)viewports_size[8], (int)viewports_size[9], 
             (int)viewports_size[10], (int)viewports_size[11] );
-          fbo_current_x = viewports_size[8];
-          fbo_current_y = viewports_size[9];
+          fbo_current_x = (H3DInt32)viewports_size[8];
+          fbo_current_y = (H3DInt32)viewports_size[9];
       }
     }
     

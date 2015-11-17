@@ -486,6 +486,9 @@ namespace H3D {
     // the first four values are the default viewport which cover the whole
     // window. The second and third four value tuple represent the viewport
     // for stereo mode which requires two viewports
+    // the type of viewports_size is float because the place where it is used
+    // glViewportArray requires the viewport bounds to be floating point value
+    // to allow fractional pixel offsets in viewport transform
     H3DFloat viewports_size[12];
 
     // number of viewport in this window
@@ -493,7 +496,7 @@ namespace H3D {
     H3DInt32 nr_viewports;
 
   protected:
-    /// internal help function to initialise the window and
+    /// internal help function to initialize the window and
     /// check if success. it will call the initWindow function
     /// to initialize the window.
     void initWindowWithContext();

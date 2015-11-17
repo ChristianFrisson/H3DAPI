@@ -66,7 +66,7 @@ void MFNodeSplitter::traverseSG( TraverseInfo &ti ) {
 
 void MFNodeSplitter::initialize(){
   X3DChildNode::initialize();
-  for( int i = 0 ; i<indexes->size();++i ) {
+  for( unsigned int i = 0 ; i<indexes->size();++i ) {
     SFNode* sf = new SFNode;
     stringstream ss;
     ss<<"sfnode_"<<i;
@@ -81,13 +81,13 @@ void MFNodeSplitter::UpdateSelection::update(){
   MFNodeSplitter* mfs = static_cast<MFNodeSplitter*>(this->getOwner());
   vector<int> _indexes = mfs->indexes->getValue();
   // update the sfnode value
-  for( int i = 0; i<mfs->indexes->size(); ++i ) {
+  for( unsigned int i = 0; i<mfs->indexes->size(); ++i ) {
     stringstream ss;
     ss<<"sfnode_"<<i;
     SFNode* sf = static_cast<SFNode*>( mfs->getField(ss.str()) );
     ss.str("");
     ss.clear();
-    if( mfs->mfnode->getValue().size()>_indexes[i] ) {
+    if( mfs->mfnode->getValue().size()>(size_t)_indexes[i] ) {
       sf->setValue(mfs->mfnode->getValueByIndex(_indexes[i]));
     }else{
       sf->setValue(NULL);

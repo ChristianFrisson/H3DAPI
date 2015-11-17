@@ -264,13 +264,13 @@ void FullscreenRectangle::render() {
 }
 
 void FullscreenRectangle::fillVec3ToArray( const Vec3d V, vector<float>& array ){
-  array.push_back(V.x);
-  array.push_back(V.y);
-  array.push_back(V.z);
+  array.push_back((H3DFloat)V.x);
+  array.push_back((H3DFloat)V.y);
+  array.push_back((H3DFloat)V.z);
 }
 
 void FullscreenRectangle::fillVec3ToArray( const Vec3f V, vector<GLuint>& array ){
-  array.push_back(V.x);
-  array.push_back(V.y);
-  array.push_back(V.z);
+  array.push_back((GLuint)V.x);
+  array.push_back((GLuint)V.y);
+  array.push_back((GLuint)V.z);
 }

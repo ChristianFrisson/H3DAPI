@@ -172,16 +172,16 @@ void X3DTexture3DNode::glTexImage( Image *i, GLenum _texture_target,
     unsigned int new_depth = i->depth(); 
 
     // Enforce global maximum texture dimension
-    if ( max_dimension > 0 && new_width > max_dimension ) {
-      new_width= max_dimension;
+    if ( max_dimension > 0 && new_width > (unsigned int)max_dimension ) {
+      new_width= (unsigned int)max_dimension;
       needs_scaling= true;
     }
-    if ( max_dimension > 0 && new_height > max_dimension ) {
-      new_height= max_dimension;
+    if ( max_dimension > 0 && new_height > (unsigned int)max_dimension ) {
+      new_height= (unsigned int)max_dimension;
       needs_scaling= true;
     }
-    if ( max_dimension > 0 && new_depth > max_dimension ) {
-      new_depth= max_dimension;
+    if ( max_dimension > 0 && new_depth > (unsigned int)max_dimension ) {
+      new_depth= (unsigned int)max_dimension;
       needs_scaling= true;
     }
 

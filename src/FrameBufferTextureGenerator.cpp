@@ -777,7 +777,7 @@ void FrameBufferTextureGenerator::render()     {
         if ( bg && bgVP ) {
           RGBA clear_color = bg->glClearColor();
           glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
-          for( int i = 0; i<generateColorTextures->size(); ++i ) {
+          for( unsigned int i = 0; i<generateColorTextures->size(); ++i ) {
             clear_color_value.get()[4*i] = clear_color.r;
             clear_color_value.get()[4*i+1] = clear_color.g;
             clear_color_value.get()[4*i+2] = clear_color.b;
@@ -815,7 +815,7 @@ void FrameBufferTextureGenerator::render()     {
           // when color texture output is more than one, and have the size as clearColors
           // use clearColors instead
           MFColorRGBA::vector_return_type clear_colors = clearColors->getValue();
-          for(int i = 0; i<generateColorTextures->size(); ++i){
+          for(unsigned int i = 0; i<generateColorTextures->size(); ++i){
             clear_color_value.get()[4*i] = clear_colors[i].r;
             clear_color_value.get()[4*i+1] = clear_colors[i].g;
             clear_color_value.get()[4*i+2] = clear_colors[i].b;
@@ -824,7 +824,7 @@ void FrameBufferTextureGenerator::render()     {
         }else{
           // if colorTexutres is size is not more than one, or clearColors size 
           // mismatch colorTextues size, use colorColor instead for all color attachment
-          for( int i = 0; i<generateColorTextures->size(); ++i ) {
+          for( unsigned int i = 0; i<generateColorTextures->size(); ++i ) {
             clear_color_value.get()[4*i] = clear_color.r;
             clear_color_value.get()[4*i+1] = clear_color.g;
             clear_color_value.get()[4*i+2] = clear_color.b;
@@ -2137,32 +2137,33 @@ void FrameBufferTextureGenerator::setupScissor( bool needSinglePassStereo,
 #ifdef GL_ARB_viewport_array
   if( needSinglePassStereo ) {
     glEnable(GL_SCISSOR_TEST);
-    H3DInt32 scissorBox_size[12];
+    
+    GLint scissorBox_size[12];
     int box_x  = scissorBoxX->getValue();
     int box_y = scissorBoxY->getValue();
     int box_w = scissorBoxWidth->getValue();
     int box_h = scissorBoxHeight->getValue();
-    scissorBox_size[0] = viewports_size[0];
-    scissorBox_size[1] = viewports_size[1];
-    scissorBox_size[2] = viewports_size[2];
-    scissorBox_size[3] = viewports_size[3];
+    scissorBox_size[0] = (GLint)viewports_size[0];
+    scissorBox_size[1] = (GLint)viewports_size[1];
+    scissorBox_size[2] = (GLint)viewports_size[2];
+    scissorBox_size[3] = (GLint)viewports_size[3];
     for( int i = 1; i<3; ++i ) { 
       // only modify the scissor box for the second and third viewport
-      scissorBox_size[4*i] = viewports_size[4*i]+box_x;
-      scissorBox_size[4*i+1] = viewports_size[4*i+1]+box_y;
+      scissorBox_size[4*i] = (GLint)viewports_size[4*i]+box_x;
+      scissorBox_size[4*i+1] = (GLint)viewports_size[4*i+1]+box_y;
       scissorBox_size[4*i+2] = box_w;
       scissorBox_size[4*i+3] = box_h;
       if( box_x<0 ) {
-        scissorBox_size[4*i] = viewports_size[4*i]+viewports_size[4*i+2]*(-box_x/10000.0);
+        scissorBox_size[4*i] = (GLint)viewports_size[4*i]+ (GLint)( viewports_size[4*i+2]*(-(float)box_x/(float)10000.0) );
       }
       if( box_y<0 ) {
-        scissorBox_size[4*i+1] = viewports_size[4*i+1]+viewports_size[4*i+3]*(-box_y/10000.0);
+        scissorBox_size[4*i+1] = (GLint)viewports_size[4*i+1]+ (GLint)( viewports_size[4*i+3]*(-(float)box_y/(float)10000.0) );
       }
       if( box_w<0 ) {
-        scissorBox_size[4*i+2] = viewports_size[4*i+2]*(-box_w/10000.0);
+        scissorBox_size[4*i+2] = (GLint)( viewports_size[4*i+2]*(-(float)box_w/(float)10000.0) );
       }
       if( box_h<0 ) {
-        scissorBox_size[4*i+3] = viewports_size[4*i+3]*(-box_h/10000.0);
+        scissorBox_size[4*i+3] = (GLint)( viewports_size[4*i+3]*(-(float)box_h/(float)10000.0) );
       }
     }
     glScissorArrayv( 0, 3, scissorBox_size );
@@ -2174,16 +2175,16 @@ void FrameBufferTextureGenerator::setupScissor( bool needSinglePassStereo,
     int box_w = scissorBoxWidth->getValue();
     int box_h = scissorBoxHeight->getValue();
     if( box_x<0 ) {
-      box_x = (-box_x/10000.0)*desired_fbo_width;
+      box_x = int ( (-(float)box_x/10000.0)*desired_fbo_width );
     }
     if( box_y<0 ) {
-      box_y = (-box_y/10000.0)*desired_fbo_height;
+      box_y = int ( (-(float)box_y/10000.0)*desired_fbo_height );
     }
     if( box_w<0 ) {
-      box_w = (-box_w/10000.0)*desired_fbo_width;
+      box_w = int( (-(float)box_w/10000.0)*desired_fbo_width );
     }
     if( box_h<0 ) {
-      box_h = (-box_h/10000.0)*desired_fbo_height;
+      box_h = int( (-(float)box_h/10000.0)*desired_fbo_height );
     }
     glScissor( box_x, box_y, box_w, box_h  );
 #ifdef GL_ARB_viewport_array
