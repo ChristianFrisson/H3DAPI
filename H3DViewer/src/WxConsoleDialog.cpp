@@ -128,7 +128,7 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
 
   logText->SetFont( wxFont( 10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL ) );
   logText->SetBackgroundColour( wxColour( 50,50,50 ) );
-  tabs->AddPage( logText, "All" );
+  tabs->AddPage( logText, wxT( "All" ) );
 
   logTextErrors = new wxTextCtrl( tabs, -1, wxT( "" ),
     wxDefaultPosition, wxSize( 750, 450 ),
@@ -137,7 +137,7 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
   logTextErrors->SetFont( wxFont( 10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL ) );
   logTextErrors->SetBackgroundColour( wxColour( 50, 50, 50 ) );
 
-  tabs->AddPage( logTextErrors, "Errors" );
+  tabs->AddPage( logTextErrors, wxT( "Errors" ) );
 
   logTextWarnings = new wxTextCtrl( tabs, -1, wxT( "" ),
     wxDefaultPosition, wxSize( 750, 450 ),
@@ -146,7 +146,7 @@ WxConsoleDialog::WxConsoleDialog ( wxWindow *parent,
   logTextWarnings->SetFont( wxFont( 10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL ) );
   logTextWarnings->SetBackgroundColour( wxColour( 50, 50, 50 ) );
 
-  tabs->AddPage( logTextWarnings, "Warnings" );
+  tabs->AddPage( logTextWarnings, wxT( "Warnings" ) );
 
   topsizer->Add( tabs,
       1,            // make vertically stretchable
