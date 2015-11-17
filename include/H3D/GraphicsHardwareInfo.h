@@ -129,6 +129,7 @@ namespace H3D {
       H3DInt32 max_texture_size;
       H3DInt32 max_texture_stack_depth;
       H3DInt32 max_texture_units;
+      H3DInt32 max_image_units;
       H3DInt32 max_varying_floats;
       H3DInt32 max_vertex_attribs;
       H3DInt32 max_vertex_texture_image_units;
