@@ -499,7 +499,7 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   {
     location = ui->location;
   }
-  GLenum glerr1 = glGetError(); // clear the OpenGL error status
+  glGetError(); // clear the OpenGL error status
   if( location == -1 ) 
   {
     // check if the field is actually not uniform value
@@ -1610,7 +1610,11 @@ void H3D::Shaders::renderTextures( H3DDynamicFieldsObject *dfo ) {
     nr_images_supported = GraphicsHardwareInfo::getInfo().max_image_units;
   }else {
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, &nr_textures_supported);
-    glGetIntegerv(GL_MAX_IMAGE_UNITS, &nr_images_supported);
+#ifdef GLEW_ARB_shader_image_load_store
+    if (GLEW_ARB_shader_image_load_store) {
+      glGetIntegerv(GL_MAX_IMAGE_UNITS, &nr_images_supported);
+    }
+#endif // GLEW_ARB_shader_image_load_store
   }
   
   unsigned int nr_textures = 0; 
