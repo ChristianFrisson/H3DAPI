@@ -232,6 +232,13 @@ bool GraphicsHardwareInfo::initializeInfo() {
   info.max_texture_stack_depth = v;
   glGetIntegerv( GL_MAX_TEXTURE_UNITS, &v );
   info.max_texture_units = v;
+#ifdef GLEW_ARB_shader_image_load_store
+  if (GLEW_ARB_shader_image_load_store){
+    glGetIntegerv(GL_MAX_IMAGE_UNITS, &v);
+    info.max_image_units = v;
+  }
+#endif // GLEW_ARB_shader_image_load_store
+
   glGetIntegerv( GL_MAX_VARYING_FLOATS, &v );
   info.max_varying_floats = v;
   glGetIntegerv( GL_MAX_VERTEX_ATTRIBS, &v );
