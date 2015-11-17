@@ -329,11 +329,15 @@ void X3DGroupingNode::MFChild::onRemove( Node *n ) {
       }
       
     }
-    ClipPlane *cp = dynamic_cast< ClipPlane * >(n);
-    if( cp ) {
-      vector< ClipPlane * >::iterator to_remove =
-        find( o->clip_planes.begin(), o->clip_planes.end(), cp );
-      o->clip_planes.erase( to_remove );
+    if (!o->clip_planes.empty()) {
+      ClipPlane *cp = dynamic_cast<ClipPlane *>(n);
+      if (cp) {
+        vector< ClipPlane * >::iterator to_remove =
+          find(o->clip_planes.begin(), o->clip_planes.end(), cp);
+        if (to_remove != o->clip_planes.end()) {
+          o->clip_planes.erase(to_remove);
+        }
+      }
     }
   }
   MFChildBase::onRemove( n );
