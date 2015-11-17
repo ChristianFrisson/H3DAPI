@@ -366,8 +366,6 @@ void H3DViewerFieldValuesPanelPropGrid::populateGridFromNode( wxPropertyGrid *Fi
     }
   }
 
-  int rows = 0;
-
   // initialize only fields.
   if( init_only_fields.size() > 0 ) {
     FieldValuesGrid->Append( new wxPropertyCategory(wxT("Initialize only"),wxPG_LABEL) );
@@ -612,10 +610,6 @@ wxPGProperty *H3DViewerFieldValuesPanelPropGrid::getPropertyFromField( Field *f,
     wxprop_name_s << field_name << f;
     string wxprop_name = wxprop_name_s.str();
 
-    bool allow_cell_update = true;
-
-   
-
     if( x3d_type == X3DTypes::SFSTRING ) {
       SFString *sfstring = static_cast< SFString * >( f );
 
@@ -671,7 +665,7 @@ wxPGProperty *H3DViewerFieldValuesPanelPropGrid::getPropertyFromField( Field *f,
 #endif //USE_VECTOR_PROPERTIES
     else if( x3d_type == X3DTypes::SFCOLOR ) {
       property = new wxColourProperty(field_name.c_str(), wxprop_name.c_str());
-    } else if( ParsableField *pfield = dynamic_cast< ParsableField * >( f ) ) {
+    } else if( dynamic_cast< ParsableField * >( f ) ) {
       property = new H3DLongStringProperty( false, field_name.c_str(), wxprop_name.c_str() );
     }
   }

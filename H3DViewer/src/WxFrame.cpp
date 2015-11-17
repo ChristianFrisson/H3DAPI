@@ -996,8 +996,6 @@ bool WxFrame::loadFile( const string &filename) {
 
   bool ini_file_exists = loadIniFile();
 
-  bool use_space_mouse = false;
-
   // Loading X3D file and setting up VR environment ---
   
   DeviceInfo *di_before = DeviceInfo::getActive();
@@ -1747,7 +1745,6 @@ void WxFrame::OnAbout(wxCommandEvent & event)
 
 //Idle event
 void WxFrame::OnIdle(wxIdleEvent &event) {
-  static bool flag;
   TimeStamp now;
   if ( now - last_viewmenu_update > 0.5 && 
        (X3DViewpointNode::viewpointsChanged() || 
@@ -3116,11 +3113,6 @@ void FrameRateDialog::OnCharHook(wxKeyEvent& event) {
 }
 
 void FrameRateDialog::updateMenuItems() {
-  unsigned int nr_devices = 0;
-  DeviceInfo *di = DeviceInfo::getActive();
-  if( di ) {
-    nr_devices = di->device->size();
-  }
 
   wxBoxSizer* framerate_sizer = new wxBoxSizer( wxHORIZONTAL );
   framerate_sizer->Add( new wxStaticText( this, wxID_ANY, wxT("&Graphics:")), 0,
@@ -3153,11 +3145,7 @@ void FrameRateDialog::updateMenuItems() {
 }
 
 void FrameRateDialog::updateFrameRates() {
-  unsigned int nr_devices = 0;
   DeviceInfo *di = DeviceInfo::getActive();
-  if( di ) {
-    nr_devices = di->device->size();
-  }
 
   Scene *scene = *Scene::scenes.begin();
   
@@ -3701,9 +3689,6 @@ wxPanel* SettingsDialog::CreateGeneralSettingsPage(wxWindow* parent ) {
   shadow_depth_offset_sizer->Add(shadow_depth_offset_text, 0, wxALL|wxALIGN_CENTER_VERTICAL,5);
   graphics_caching_sizer->Add(shadow_depth_offset_sizer, 0, wxGROW|wxALL, 5);
   
-
-  int bound_type = 1;
-  int max_triangles_in_leaf = 1;
 
   // Geometry bound
   wxStaticBox* bound_tree_box = new wxStaticBox(panel, wxID_ANY,

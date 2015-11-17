@@ -154,8 +154,9 @@ void H3DViewerFieldValuesPanel::updateGridFromNode( wxGrid *FieldValuesGrid,
 
   // initialize only fields.
   if( init_only_fields.size() > 0 ) {
-    if( rows >= FieldValuesGrid->GetNumberRows() )
+    if (rows >= FieldValuesGrid->GetNumberRows()){
       FieldValuesGrid->AppendRows(1);
+    }
     FieldValuesGrid->SetCellSize( rows, 0, 1, 2 );
     FieldValuesGrid->SetCellAlignment(rows, 0, wxALIGN_CENTRE, wxALIGN_CENTRE);
     FieldValuesGrid->SetCellValue(rows, 0, _T("Initialize only"));
@@ -320,9 +321,9 @@ void H3DViewerFieldValuesPanel::updateRowFromField( wxGrid *FieldValuesGrid,
                                                      const string &custom_field_name ) {
   if(!default_field) default_field = f;
   
-  if( SFNode *sfnode = dynamic_cast< SFNode * >( f ) ) {
+  if( dynamic_cast< SFNode * >( f ) ) {
     
-  } else if( MFNode *mfnode = dynamic_cast< MFNode * >( f ) ) {
+  } else if( dynamic_cast< MFNode * >( f ) ) {
     
   } else {
     wxGridCellEditor *current_editor = FieldValuesGrid->GetCellEditor( row, 1 );
