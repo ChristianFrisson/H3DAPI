@@ -102,9 +102,13 @@ FalconDevice::FalconDevice(
 void FalconDevice::initialize() {
   H3DHapticsDevice::initialize();
 
+#ifdef HAVE_FALCONAPI
+  const string &device_name = deviceName->getValue();
+#endif
 #if defined(HAVE_NIFALCONAPI) || defined(HAVE_FALCONAPI)
   H3DInt32 index = deviceIndex->getValue();
-#endif 
+#endif
+
   const string &preferred_driver = preferredDriver->getValue();
 
   if( preferred_driver == "NIFALCON" ) {
@@ -113,13 +117,12 @@ void FalconDevice::initialize() {
   usedDriver->setValue( "NIFALCON" );
 #else
 #ifdef HAVE_FALCONAPI
-  const string &device_name = deviceName->getValue();
-  if( device_name != "" ) {
-    hapi_device.reset( new HAPI::FalconHapticsDevice( device_name ) );
-  } else {
-    hapi_device.reset( new HAPI::FalconHapticsDevice( index ) );
-  }
-  usedDriver->setValue( "NOVINT" );
+    if( device_name != "" ) {
+      hapi_device.reset( new HAPI::FalconHapticsDevice( device_name ) );
+    } else {
+      hapi_device.reset( new HAPI::FalconHapticsDevice( index ) );
+    }
+    usedDriver->setValue( "NOVINT" );
 #else
   Console(LogLevel::Error) << "Cannot use FalconDevice. HAPI compiled without"
              << " FalconAPI support. Recompile HAPI with "
