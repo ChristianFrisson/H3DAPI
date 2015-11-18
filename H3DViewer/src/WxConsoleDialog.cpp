@@ -281,13 +281,22 @@ WxConsoleDialog::~WxConsoleDialog() {
   cout.rdbuf(orig_cout_buf);
   cerr.rdbuf(orig_cerr_buf);
 
-  // The contained buffer is not deleted, set a new buffer and delete
-  // buffer to clear up memory.
-  streambuf * tmp_buf = console_stream->rdbuf(NULL);
-
-  console_stream.reset( NULL );
-  delete tmp_buf;
   delete clip_board;
+
+  // Clean up "default(????)" console buffer.
+  streambuf * tmp_buf = console_stream->rdbuf(NULL);
+  console_stream.reset( NULL );
+  delete tmp_buf; tmp_buf = 0;
+
+  // Clean up warning buffer
+  streambuf * tmp_buf_w = console_stream_w->rdbuf(NULL);
+  console_stream_w.reset( NULL );
+  delete tmp_buf_w; tmp_buf_w = 0;
+
+  // Clean up error buffer
+  streambuf * tmp_buf_e = console_stream_e->rdbuf(NULL);
+  console_stream_e.reset( NULL );
+  delete tmp_buf_e; tmp_buf_e = 0;
 }
 
 /*******************Event Table*********************/
