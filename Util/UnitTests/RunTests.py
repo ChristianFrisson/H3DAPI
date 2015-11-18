@@ -321,8 +321,8 @@ class TestExamples ( object ):
 
             testCaseFile= open (os.path.join(root, base)+'.py', 'r')
 
-            script = "<PythonScript ><![CDATA[python:" + boilerplateScript + testCaseFile.read() + "]]></PythonScript>"
-            print(script)
+            script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % self.early_shutdown_file) + testCaseFile.read() + "]]></PythonScript>"
+            #print(script)
             #script = script % (self.fps_data_file, self.early_shutdown_file)
 
             variations = [Variation ("Default", script)]
