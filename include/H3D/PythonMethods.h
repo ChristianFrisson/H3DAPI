@@ -274,7 +274,9 @@ namespace H3D {
                                            args );
           ////const char *value = PyString_AsString( PyObject_Repr( r ) );
           Py_DECREF( args );
-          if( r == Py_None ) {
+          // Note: Fields that contain nodes must be able to return None to represent NULL
+          // For other fields it is probably a missing return statement, so warn in this case
+          if( r == Py_None && this->getX3DType() != X3DTypes::SFNODE && this->getX3DType() != X3DTypes::MFNODE ) {
             Console(LogLevel::Warning) << "Warning: update()-function for Python defined field of type " 
                        << this->getFullName() << " does not return a value. "<< endl;
             Py_DECREF( r );
