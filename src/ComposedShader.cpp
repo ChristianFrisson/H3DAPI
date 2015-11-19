@@ -711,7 +711,7 @@ void ComposedShader::UpdateUniforms::update() {
       it->second.location = location;
       if( !Shaders::setGLSLUniformVariableValue( node->program_handle, it->second.field, &(it->second), true /* force update */ ) 
         && !node->suppressUniformWarnings->getValue() ) {
-        Console(LogLevel::Error) << "Warning: Uniform variable \"" << it->first
+        Console(LogLevel::Warning) << "Warning: Uniform variable \"" << it->first
           << "\" not defined in shader source or field is of unsupported field type of the ShaderPart nodes "
           << "in the node \"" << node->getName() << "\"" << endl;
       }
@@ -734,7 +734,7 @@ void ComposedShader::UpdateUniforms::update() {
       if( !Shaders::setGLSLUniformVariableValue( node->program_handle, 
         it->second.field, &it->second ) &&
         !node->suppressUniformWarnings->getValue() ) {
-          Console(LogLevel::Error) << "Warning: Uniform variable \"" << it->first
+          Console(LogLevel::Warning) << "Warning: Uniform variable \"" << it->first
             << "\" not defined in shader source or field is of unsupported field type of the ShaderPart nodes "
             << "in the node \"" << node->getName() << "\"" << endl;
       }
