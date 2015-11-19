@@ -48,9 +48,9 @@ namespace H3D {
   class H3DAPI_API ImageObjectInfo : public X3DChildNode {
   public:
 
-    /// An MFNode where we make sure the type of the nodes contained
-    /// is a subclass of X3DTextureNode.
-    class H3DAPI_API SFImageObjectNode : public DependentSFNodeObject< H3DImageObject, 
+    /// An SFNode where we make sure the type of the nodes contained
+    /// is a subclass of H3DImageObject.
+    class H3DAPI_API SFImageObjectNode : public DependentSFNodeObject< H3DImageObject,
                              FieldRef< H3DImageObject,
                                        H3DImageObject::SFImage,
                                        &H3DImageObject::image >,
