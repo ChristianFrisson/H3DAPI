@@ -1,5 +1,8 @@
 """
 This script is supposed to run unit tests on every H3DAPI node. 
+
+NOTE: You must install Imagemagick (and add to PATH) in order for image comparison to function, otherwise screenshot tests will always fail
+
 """
 
 import os, sys
@@ -14,6 +17,9 @@ import re
 import argparse
 import math
 import signal
+import glob
+import ConfigParser
+from collections import namedtuple
 #from PIL import Image
 from ProcessWrapper import *
 
@@ -72,7 +78,7 @@ class Variation ( object ):
     self.global_insertion_string_failed = False
     
   def parse ( self, input ):
-    """ Parses the input x3d string and return a new x3d string where those Options have been inserted into the appropriate nodes. """
+    """ Parses the input x3d string and returns a new x3d string where this Variation's Options have been inserted into the appropriate nodes. """
     replace_with= ""
     output= input
     reg_use = None
@@ -195,42 +201,13 @@ class TestExamples ( object ):
     elif platform_system == 'Linux':
       return ProcessUnix()
 
-  ## This function I found on stackoverflow.com here http://stackoverflow.com/questions/69645/take-a-screenshot-via-a-python-script-linux
-  #def getScreenByPIL(self):
-  #  import ImageGrab
-  #  img = ImageGrab.grab()
-  #  return img
-
-  ## This function I found on stackoverflow.com here http://stackoverflow.com/questions/69645/take-a-screenshot-via-a-python-script-linux
-  #def getScreenByWx(self):
-  #  import wx
-  #  app = wx.App()  # Need to create an App instance before doing anything
-  #  screen = wx.ScreenDC()
-  #  size = screen.GetSize()
-  #  bmp = wx.EmptyBitmap(size[0], size[1])
-  #  mem = wx.MemoryDC(bmp)
-  #  mem.Blit(0, 0, size[0], size[1], screen, 0, 0)
-  #  #bmp.SaveFile('screenshot.png', wx.BITMAP_TYPE_PNG )
-  #  myWxImage = wx.ImageFromBitmap( bmp )
-  #  PilImage = Image.new( 'RGB', (myWxImage.GetWidth(), myWxImage.GetHeight()) )
-  #  PilImage.fromstring( myWxImage.GetData() )
-  #  del mem  # Release bitmap
-  #  return PilImage
-
-  #def getScreenShot( self ):
-  #  if platform.system() == 'Windows':
-  #    return self.getScreenByPIL()
-  #  else:
-  #    return self.getScreenByWx()
-    
   def testStartUp ( self, url, cwd, variation ):
     """ Returns true if the example can be started. """
     
     process = self.getProcess()
     return process.testLaunch ( ["H3DViewer.exe" if platform.system() == 'Windows' else "H3DLoad"] + self.load_flags + [url], cwd, self.startup_time, self.shutdown_time, 1 if variation and variation.global_insertion_string_failed else self.startup_time_multiplier, self.early_shutdown_file )
     
-
-  def testExample ( self, name, url, orig_url= None, var_name= "", variation = None ):    
+  def runTestCase ( self, name, url, orig_url= None, var_name= "", variation = None ):
 
     if orig_url is None:
       orig_url= url
@@ -299,14 +276,94 @@ class TestExamples ( object ):
     haystack= haystack.lower()
     return ( haystack.count ( "warning" ), haystack.count ( "error" ) )
     
+  def parseTestDefinitionFile(self, file_path):
+    """
+    Parses the specified test definition file and returns a list of namedtuples containing the following:      
+      name: the name of this test case
+      x3d: x3d file path
+      type: test type
+      baseline: baseline folder
+      script: an optional test script
+      All of these values default to None
+    The list will contain one namedtuple for each Section in the specified definition file
+    """
+    confParser = ConfigParser.RawConfigParser(defaults={'x3d':None, 'type':None, 'baseline':None, 'script':None}, allow_no_value=True)
+    try:
+      confParser.read(file_path)
+    except:
+      print sys.exc_info()[0]
+      return None
+    result = []
+    for sect in confParser.sections():
+      test_case = namedtuple('TestDefinition', ['name','x3d', 'type', 'baseline', 'script']) 
+      test_case.name = sect
+      test_case.x3d = confParser.get(sect, 'x3d')
+      test_case.type = confParser.get(sect, 'type')    
+      test_case.baseline = confParser.get(sect, 'baseline')
+      test_case.script = confParser.get(sect, 'script')
+      result.append(test_case)
+    return result
   
-  def testAllExamples ( self, variations= None, directory= ".", fileExtensions= [".x3d"] ):
+
+  def validate_screenshot(self, output_path='.', baseline_path='.', diff_name='.'):
+    """ Compare screenshots """
+
+    ret= { 'success': True, 'message': '', 'files': []}
+    # Comparison thresholds
+    fuzz= 3               # % of fuzz (increase to ignore small differences)
+    error_threshold= 5    # Number of pixels that must differ in order to trigger a warning
+
+    g= glob.glob(baseline_path)
+    if g:
+      baselinescreenshot= max(g, key= os.path.getmtime)
+      #diff_name= "difference_%s_%s_r%s_%s.png" % (caseName, clientName, results['revision'], ret['time'].strftime('%b_%d_%Y_%H_%M_%S'))
+      try:
+        process= subprocess.Popen(
+          ["compare",
+           "-fuzz","%d%%"%fuzz,
+           "-metric","AE",
+           baseline_path,output_path,diff_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+      except:
+        print "WARNING: Image comparison not available! Probably Imagemagick is not installed, or not in the path."
+        process= None
+
+      if process:
+        (output, err) = process.communicate()
+        exit_code = process.wait()
+
+        metric= None
+        try:
+          metric= int(err)
+        except:
+          ret['success']= False
+          ret['message']+= (
+            'WARNING: Image comparison failed!\n\nDetails:\n%s\n%s' % (output, err) )
+
+        if not metric is None and metric > error_threshold:
+          ret['success']= False
+          ret['message']+= (
+            'WARNING: The screenshot ' +
+            'is significantly different to the baseline. The differences are attached as ' + diff_name + '.\n' )
+          ret['files'].append ( os.path.abspath(diff_name) )
+        else:
+          # Test passed, we can clean up the file right now
+          try:
+            os.remove ( diff_name )
+          except:
+            print "WARNING: Could not remove " + diff_name
+
+    else:
+      print "WARNING: No screenshot baseline, skipping validation!"
+    return ret
+
+
+  def processAllTestDefinitions ( self, directory= ".", fileExtensions= [".testcase"] ):
     try:
       os.makedirs(self.filepath)
     except:
       pass
      
-    results= []
+    results = []
 
     boilerplateScriptFile = open(os.path.join(os.getcwd(), 'UnitTestBoilerplate.py'), 'r')
     boilerplateScript = boilerplateScriptFile.read()
@@ -316,45 +373,61 @@ class TestExamples ( object ):
         base, ext= os.path.splitext(file)
         if ext.lower() in fileExtensions:
           file_path= os.path.join(root,file)
-          if (base+'.py') in files:
-            print "Testing: " + file_path
+          print "Checking " + file_path + " for tests"
+          testCases = self.parseTestDefinitionFile(file_path)
+          for testCase in testCases:
+            if testCase != None and testCase.x3d != None and testCase.type != None:
+              print "Testing: " + testCase.name
+              print testCase.x3d
+              print testCase.type
+              print testCase.baseline
+              print testCase.script
+              if testCase.type == 'screenshot':
+                if testCase.script != None:
+                  testCaseFile= open (os.path.join(root, testCase.script), 'r')
+                  testCaseScript = testCaseFile.read()
+                else:
+                  testCaseScript = ""
 
-            testCaseFile= open (os.path.join(root, base)+'.py', 'r')
+                script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (self.early_shutdown_file, os.path.join(root, 'output', testCase.name+"_"))) + '\n' + testCaseScript + "]]></PythonScript>"
+                print script
+              
+                variation_results= []
+                v = Variation (testCase.name, script)
+                # Create a temporary x3d file containing our injected script
+                success, variation_path= self._createVariationFile ( v, os.path.join(root, testCase.x3d))
+                # Run that H3DViewer with that x3d file
+                result = self.runTestCase ( file, variation_path, os.path.join(root, testCase.x3d), v.name, v)
 
-            script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % self.early_shutdown_file) + testCaseFile.read() + "]]></PythonScript>"
-            #print(script)
-            #script = script % (self.fps_data_file, self.early_shutdown_file)
+                for output_file in os.listdir(os.path.join(directory, 'output')):
+                  output_base, output_ext = os.path.splitext(output_file)
+                  if output_base.startswith(testCase.name+"_"):
+                    if output_ext.lower() == '.png':
+                      diff_path = os.path.join(directory, "diffs", "diff_") + output_file
+                      baseline_path = os.path.join(directory, testCase.baseline, output_file)
+                      comp_result = self.validate_screenshot(os.path.join(directory, 'output', output_file), baseline_path, diff_path)
+                    
 
-            variations = [Variation ("Default", script)]
-
-            if variations:
-              variation_results= []
-              for v in variations:
-                print "Variation: " + v.name
-                success, variation_path= self._createVariation ( v, file_path )
-                result= self.testExample ( file, variation_path, file_path, v.name, v )
                 result.created_variation= success
                 variation_results.append ( ( v, result ) )
                 os.remove ( variation_path )
-              results.append ( variation_results )
-            else:
-              results.append ( [( Variation(), self.testExample ( file, file_path ) )] )
+                results.append ( variation_results )
             
-            if self.error_reporter:
-              self.error_reporter.reportResults( results )
-          else:
-            # Test skipped
-            result= TestResults()
-            result.name= file
-            result.url= file_path
-            result.skipped= True
-            if variations:
-              variation_results= []
-              for v in variations:
-                variation_results.append ( (v, result) )
-              results.append ( variation_results )
+                if self.error_reporter:
+                  self.error_reporter.reportResults( results )
             else:
-              results.append ( [(Variation(),result)] )
+              # Test skipped
+              result= TestResults()
+              result.name= file
+              result.url= os.path.join(root, testCase.x3d)
+              result.skipped= True
+              if variations:
+                variation_results= []
+                for v in variations:
+                  variation_results.append ( (v, result) )
+                results.append ( variation_results )
+              else:
+                results.append ( [(Variation(),result)] )
               
     return results
   
@@ -365,7 +438,7 @@ class TestExamples ( object ):
     else:
       return True
   
-  def _createVariation ( self, variation, file_path ):
+  def _createVariationFile ( self, variation, file_path ):
     
     orig_file= open ( file_path, 'r' )
     
@@ -593,7 +666,7 @@ def testH3DAPI (global_variations):
   html_reporter_errors= TestReportHTML( os.path.join(args.output, "H3DAPI"), only_failed= True )
 
   tester= TestExamples( os.path.join(args.workingdir, ""), startup_time= 5, shutdown_time= 5, testable_callback= isTestable, error_reporter=html_reporter_errors)
-  results= tester.testAllExamples( global_variations, directory=args.workingdir )
+  results = tester.processAllTestDefinitions(directory=args.workingdir)
 
   reporter= TestReport()
   print reporter.reportResults ( results )
