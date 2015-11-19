@@ -211,6 +211,10 @@
 #define H3DAPI_MINOR_VERSION ${H3DAPI_MINOR_VERSION}
 #define H3DAPI_BUILD_VERSION ${H3DAPI_BUILD_VERSION}
 
+#if defined( _MSC_VER ) && ( _MSC_VER < 1600 )
+namespace std {} // Have to define the namespace before using it.
+#endif
+
 /// H3D API namespace
 namespace H3D {
 
