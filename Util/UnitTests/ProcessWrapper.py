@@ -91,7 +91,6 @@ class ProcessWin32 ( Process ):
     success= self.isRunning()
     if success:
       self.kill()
-      time.sleep(shutdown_time)
     return success
     
   def isRunning ( self ):

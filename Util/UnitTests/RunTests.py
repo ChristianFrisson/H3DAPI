@@ -18,6 +18,7 @@ import argparse
 import math
 import signal
 import glob
+import Image
 import ConfigParser
 from collections import namedtuple
 #from PIL import Image
@@ -29,7 +30,7 @@ parser.add_argument('--workingdir', dest='workingdir',
                     default=os.getcwd(),
                     help='the directory containing the unit tests')
 parser.add_argument('--output', dest='output',
-                   default='examples_report',
+                   default='reports',
                    help='the directory to output the results to')
 args = parser.parse_args()
 
@@ -45,6 +46,7 @@ def isError ( result ):
   """ Returns true if one of the possible errors occurred. """
   return (result.errors > 0 or not result.started_ok or not result.terminated_ok) and not result.skipped
 
+
 def getExitCode ( results ):
   """ Returns an exit code based on the test results. """
   for result in results:
@@ -55,8 +57,6 @@ def getExitCode ( results ):
         return 1
   return 0
   
-  
-
 
 class Option ( object ): 
   """ Specifies the value of a field that is identified by its name and its container node. """
@@ -129,21 +129,24 @@ class Variation ( object ):
             replace_string = replace_string + '>\n'
             replace_string = replace_string + '</' + node_type + '>\n'
             output = reg.sub( replace_string, output )
-    return output
-    
+    return output    
 
 
 class TestResults ( object ):
-  
+  # Container class for all kinds of possible test results
   def __init__ ( self, fps_data_file = "" ):
+    self.filename= ""
     self.name= ""
+    self.test_type= ""
     self.url= ""
     self.std_out= ""
     self.std_err= ""
     self.started_ok= False
     self.terminated_ok= False
-    self.screenshot= ""
-    self.screenshot_thumb= ""
+    self.screenshots_ok= True
+    self.screenshots= []
+    self.screenshot_diffs= []
+    self.screenshot_thumbs= []
     self.warnings= 0
     self.errors= 0
     self.skipped= False
@@ -172,9 +175,8 @@ class TestResults ( object ):
         self.fps_avg = "%.2f" % (math.fsum( fps_list_float ) / float( len( fps_list_float ) ) )
         self.fps_mean = "%.2f" % float( fps_list_float[len( fps_list_float ) / 2] )
       
-
     
-class TestExamples ( object ):
+class TestCaseRunner ( object ):
 
   def __init__ ( self, filepath, startup_time= 10, shutdown_time= 5, testable_callback= None, fake_fullscreen_due_to_PIL_bug = True, error_reporter = None ):
     self.filepath= filepath
@@ -185,13 +187,13 @@ class TestExamples ( object ):
     self.early_shutdown_file = '%s/test_complete' % (os.getcwd())
     self.screenshot_tmp_file = '%s/tmp_screenshot.png' % (os.getcwd())
     self.startup_time_multiplier = 10
-    self.load_flags = ["/w=800", "/h=600"]
+    self.load_flags = ["--no-fullscreen","--screen=800x600"]
     # Used to get intermediate failed results in order to be able to cancel test early and still get some results.
     self.error_reporter = error_reporter
 
-  def launchExample ( self, url, cwd ):
+  def launchTest ( self, url, cwd ):
     process = self.getProcess()
-    process.launch ( ["H3DViewer.exe" if platform.system() == 'Windows' else "H3DLoad"] + self.load_flags + [url], cwd )
+    process.launch ( ["H3DLoad.exe" if platform.system() == 'Windows' else "H3DLoad"] + self.load_flags + [url], cwd )
     return process
 
   def getProcess( self ):
@@ -205,29 +207,29 @@ class TestExamples ( object ):
     """ Returns true if the example can be started. """
     
     process = self.getProcess()
-    return process.testLaunch ( ["H3DViewer.exe" if platform.system() == 'Windows' else "H3DLoad"] + self.load_flags + [url], cwd, self.startup_time, self.shutdown_time, 1 if variation and variation.global_insertion_string_failed else self.startup_time_multiplier, self.early_shutdown_file )
+    return process.testLaunch ( ["H3DLoad.exe" if platform.system() == 'Windows' else "H3DLoad"] + self.load_flags + [url], cwd, self.startup_time, self.shutdown_time, 1 if variation and variation.global_insertion_string_failed else self.startup_time_multiplier, self.early_shutdown_file )
     
-  def runTestCase ( self, name, url, orig_url= None, var_name= "", variation = None ):
+  def runTestCase (self, filename, test_case, url, orig_url= None, var_name= "", variation = None ):
 
     if orig_url is None:
       orig_url= url
     
     test_results= TestResults( self.fps_data_file )
-    test_results.name= name
+    test_results.filename= filename
+    test_results.name= test_case.name
+    test_results.type= test_case.type
     test_results.url= orig_url
     test_results.variation = variation
     
     cwd= os.path.split ( orig_url )[0]
     filename= os.path.abspath ( url )
     
-#    test_results.started_ok= self.testStartUp ( filename, cwd, variation )
+    test_results.started_ok= self.testStartUp ( url, cwd, variation )
     
     if os.path.isfile( self.early_shutdown_file ):
       os.remove( self.early_shutdown_file )
-    if os.path.isfile( self.screenshot_tmp_file ):
-      os.remove( self.screenshot_tmp_file )
-    process= self.launchExample ( filename, cwd )
-    startup_time_multiplier = 10 # if variation.global_insertion_string_failed else self.startup_time_multiplier
+    process= self.launchTest ( url, cwd )
+    startup_time_multiplier = self.startup_time_multiplier
     for i in range( 0, startup_time_multiplier ):
       time.sleep(self.startup_time)
       if os.path.isfile( self.early_shutdown_file ) or not process.isRunning():
@@ -239,21 +241,13 @@ class TestExamples ( object ):
       test_results.calculateFPS()
       return test_results
     
-    if test_results.started_ok:
-      im = None
-      if os.path.isfile( self.screenshot_tmp_file ):
-        im = Image.open( self.screenshot_tmp_file )
-      else:
-        im = self.getScreenShot()
-      if im:
-        test_results.screenshot= os.path.join(self.filepath,createFilename(orig_url, var_name)+".jpg")
-        im.save(test_results.screenshot, "JPEG")
-        im.thumbnail((256,256), Image.ANTIALIAS)
-        test_results.screenshot_thumb= os.path.join(self.filepath,createFilename(orig_url, var_name)+"_thumb.jpg")
-        im.save(test_results.screenshot_thumb, "JPEG")
-    
+    if test_results.started_ok:   
       process.sendKey ( "{ESC}" )
-      time.sleep(self.shutdown_time)
+
+      time_slept = 0.0
+      while time_slept < self.shutdown_time and process.isRunning():
+        time.sleep(0.5)
+        time_slept += 0.5
     
     if not process.isRunning ():
       test_results.terminated_ok= True
@@ -264,7 +258,10 @@ class TestExamples ( object ):
       return test_results
     else:
       process.kill ()
-      time.sleep(self.shutdown_time)
+      time_slept = 0
+      while time_slept < self.shutdown_time and process.isRunning():
+        time.sleep(0.5)
+        time_slept += 0.5
       test_results.std_out= process.getStdOut()
       test_results.std_err= process.getStdErr()
       test_results.warnings, test_results.errors= self._countWarnings ( test_results )
@@ -304,11 +301,10 @@ class TestExamples ( object ):
       result.append(test_case)
     return result
   
-
   def validate_screenshot(self, output_path='.', baseline_path='.', diff_name='.'):
     """ Compare screenshots """
 
-    ret= { 'success': True, 'message': '', 'files': []}
+    ret= { 'success': True, 'message': '', 'diff_file': '', 'thumb': ''}
     # Comparison thresholds
     fuzz= 3               # % of fuzz (increase to ignore small differences)
     error_threshold= 5    # Number of pixels that must differ in order to trigger a warning
@@ -344,9 +340,19 @@ class TestExamples ( object ):
           ret['message']+= (
             'WARNING: The screenshot ' +
             'is significantly different to the baseline. The differences are attached as ' + diff_name + '.\n' )
-          ret['files'].append ( os.path.abspath(diff_name) )
+          ret['diff_file'] = ( os.path.abspath(diff_name) )
+          im = Image.open(diff_name)
+          if im:
+            im.thumbnail((256,256), Image.ANTIALIAS)
+            ret['thumb'] = os.path.join(os.path.split(diff_name)[0], os.path.split(diff_name)[0], os.path.splitext(os.path.split(diff_name)[1])[0]+"_thumb.png")
+            im.save(ret['thumb'], "PNG")
         else:
           # Test passed, we can clean up the file right now
+          im = Image.open(output_path)
+          if im:
+            im.thumbnail((256,256), Image.ANTIALIAS)
+            ret['thumb'] = os.path.join(os.path.split(output_path)[0], os.path.split(output_path)[0], os.path.splitext(os.path.split(output_path)[1])[0]+"_thumb.png")
+            im.save(ret['thumb'], "PNG")
           try:
             os.remove ( diff_name )
           except:
@@ -354,8 +360,12 @@ class TestExamples ( object ):
 
     else:
       print "WARNING: No screenshot baseline, skipping validation!"
+      im = Image.open(output_path)
+      if im:
+        im.thumbnail((256,256), Image.ANTIALIAS)
+        ret['thumb'] = os.path.join(os.path.split(output_path)[0], os.path.split(output_path)[0], os.path.splitext(os.path.split(output_path)[1])[0]+"_thumb.png")
+        im.save(ret['thumb'], "PNG")
     return ret
-
 
   def processAllTestDefinitions ( self, directory= ".", fileExtensions= [".testcase"] ):
     try:
@@ -390,27 +400,34 @@ class TestExamples ( object ):
                   testCaseScript = ""
 
                 script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (self.early_shutdown_file, os.path.join(root, 'output', testCase.name+"_"))) + '\n' + testCaseScript + "]]></PythonScript>"
-                print script
+                #print script
               
                 variation_results= []
                 v = Variation (testCase.name, script)
                 # Create a temporary x3d file containing our injected script
                 success, variation_path= self._createVariationFile ( v, os.path.join(root, testCase.x3d))
                 # Run that H3DViewer with that x3d file
-                result = self.runTestCase ( file, variation_path, os.path.join(root, testCase.x3d), v.name, v)
+                result = self.runTestCase (file, testCase, variation_path, os.path.join(root, testCase.x3d), v.name, v)
 
                 for output_file in os.listdir(os.path.join(directory, 'output')):
                   output_base, output_ext = os.path.splitext(output_file)
-                  if output_base.startswith(testCase.name+"_"):
+                  if output_base.startswith(testCase.name+"_") and not output_base.endswith('_thumb'):
                     if output_ext.lower() == '.png':
                       diff_path = os.path.join(directory, "diffs", "diff_") + output_file
                       baseline_path = os.path.join(directory, testCase.baseline, output_file)
                       comp_result = self.validate_screenshot(os.path.join(directory, 'output', output_file), baseline_path, diff_path)
-                    
-
+                      result.screenshots_ok = comp_result['success'] and result.screenshots_ok
+                      result.screenshots.append(os.path.join(directory, 'output', output_file))
+                      result.screenshot_thumbs.append(comp_result['thumb']) # thumb will be of the diff if the validation failed and of the original screenshot if it succeded
+                      if comp_result['diff_file'] != '':
+                        result.screenshot_diffs.append(os.path.join(diff_path, comp_result['diff_file']))
+                      else:
+                        result.screenshot_diffs.append('')
                 result.created_variation= success
                 variation_results.append ( ( v, result ) )
                 os.remove ( variation_path )
+                      
+
                 results.append ( variation_results )
             
                 if self.error_reporter:
@@ -463,6 +480,7 @@ class TestReport ( object ):
         output+= "\n"
         output+= "Started OK    : %s\n" % str(r.started_ok)
         output+= "Exited OK     : %s\n" % str(r.terminated_ok)
+        output+= "Screenshot OK : %s\n" % str(r.screenshots_ok)
       
     return output
     
@@ -519,7 +537,10 @@ class TestReportHTML ( object ):
       
           output+= "<td>"
           output+= "<h3>" + v.name + ( "" if r.created_variation else " (Unchanged file)" ) + "</h3>"
-          output+= self._getThumbnail ( r )
+          screenshot = self._getErrorScreenshot( r )
+          if screenshot == "":
+            screenshot = self._getScreenshot( r, count=1 )
+          output+= screenshot
           output+= "<p>Start: " + self._getStatus ( r.started_ok ) + "; "
           output+= "Exit:" + self._getStatus ( r.terminated_ok ) + "</p>\n"
           output+= "<p>Errors: " + self._getErrorCount ( r.errors, 'fail' ) + "; "
@@ -592,7 +613,7 @@ class TestReportHTML ( object ):
 """ % (
       result.name,
       result.name, result.url,
-      self._getThumbnail ( result ),
+      self._getScreenshot ( result ),
       self._getStatus ( result.started_ok ), 
       self._getStatus ( result.terminated_ok ),
       result.std_out,
@@ -641,16 +662,37 @@ td, th {
   width: 260px;
 }
 
+img {
+  float: left;
+}
+
 """
     
   def _getStatus ( self, status ):
     return "<span class='success'>OK</span>" if status else "<span class='fail'>FAIL</span>"
     
-  def _getThumbnail ( self, result ):
-    if result.screenshot != "":
-      return "<p><a href='" + os.path.split(result.screenshot)[1] + "'><image src='" + os.path.split(result.screenshot_thumb)[1] + "' /></a></p>\n"
-    else:
-      return ""
+  def _getScreenshot ( self, result, count = 0 ):
+    res = "<p>"
+    for i in range(0, len(result.screenshots)):
+      if result.screenshot_diffs[i] != "":
+        img_path = os.path.relpath(result.screenshot_diffs[i], self.filepath)
+      else:
+        img_path = os.path.relpath(result.screenshots[i], self.filepath)
+      thumb_path = os.path.relpath(result.screenshot_thumbs[i], self.filepath)
+      res += "<a href='" + img_path + "'><image src='" + thumb_path + "' /></a>"
+      count -= 1
+      if count == 0:
+        break
+    res += "</p>\n"
+    return res
+
+  def _getErrorScreenshot( self, result ):
+    for i in range(0, len(result.screenshots)):
+      if result.screenshot_diffs[i] != "":
+        img_path = os.path.relpath(result.screenshot_diffs[i], self.filepath)
+        thumb_path = os.path.relpath(result.screenshot_thumbs[i], self.filepath)
+        return "<p><a href='" + img_path + "'><image src='" + thumb_path + "' /></a></p>\n"
+    return ""
       
   def _getErrorCount ( self, nrErrors, errorType ):
     return ("<span class='success'>%s</span>" if nrErrors==0 else "<span class='"+errorType+"'>%s</span>") % nrErrors
@@ -658,77 +700,34 @@ td, th {
   def _getFPS ( self, fps ):
     return ( "<span class='success'>%s</span>" % fps ) if fps != "" else "<span class='fail'>-</span>"
         
-def testH3DAPI (global_variations):
 
-  def isTestable ( file_name , files_in_dir):
-    return files_in_dir.find(file_name + '.py')
-
-  html_reporter_errors= TestReportHTML( os.path.join(args.output, "H3DAPI"), only_failed= True )
-
-  tester= TestExamples( os.path.join(args.workingdir, ""), startup_time= 5, shutdown_time= 5, testable_callback= isTestable, error_reporter=html_reporter_errors)
-  results = tester.processAllTestDefinitions(directory=args.workingdir)
-
-  reporter= TestReport()
-  print reporter.reportResults ( results )
-
-  html_reporter= TestReportHTML( os.path.join(args.output, "H3DAPI") )
-  html_reporter.reportResults ( results )
-  
-  html_reporter_errors.reportResults ( results )
-
-  return getExitCode ( results )
-  
+ 
 
 print ""
 print "WARNING: Do not change the window focus, or perform other input until the test is complete!"
 print ""
 time.sleep(3)
 
-#def globalCombinations( fields_to_edit, the_list ):
-#  if len( the_list ) == 0:
-#    for i in range( 2, len(fields_to_edit[0]) ):
-#      the_list.append( [i] )
-#  else:
-#    if len(fields_to_edit[0]) > 3:
-#      the_list_length = len( the_list )
-#      for i in range( 0, len(fields_to_edit[0]) - 3 ):
-#        for j in range( 0, the_list_length ):
-#          the_list.append( list( the_list[j] ) )
-#    for i, j in enumerate( the_list ):
-#      j.append( i / ( len(fields_to_edit[0]) - 2 ) + 2 )
-#  if len( fields_to_edit ) > 1:
-#    the_list = globalCombinations( fields_to_edit[1:len(fields_to_edit)], the_list )
-
-# Setting up variations that should be tested for.
-#fields_to_edit = [["GraphicsOptions", "preferVertexBufferObject", "true", "false" ], [ "GraphicsOptions", "useCaching", "true", "false"] ]
-#variation_combinations = []
-#globalCombinations( fields_to_edit, variation_combinations )
-#global_settings_variations = []
-#for c, combo in enumerate( variation_combinations ):
-#  variation = Variation( "Variation " + str( c ) )
-#  for i, j in enumerate( combo ):
-#    variation.options.append ( Option ( ["GlobalSettings"], "", "", "Scene", True ) )
-#    variation.options.append ( Option ( [fields_to_edit[i][0]], fields_to_edit[i][1], fields_to_edit[i][j], "GlobalSettings", True ) )
-#  global_settings_variations.append( variation )
-
-#print_shader_warnings_variation = Variation( "Variation shader warning" )
-#print_shader_warnings_variation.options.append ( Option ( ["GlobalSettings"], "", "", "Scene", True ) )
-#print_shader_warnings_variation.options.append ( Option ( ["DebugOptions"], "printShaderWarnings", "true", "GlobalSettings", True ) )
-#global_settings_variations.append( print_shader_warnings_variation )
-
 exitCode= 0
-c= testH3DAPI (None)
+
+def isTestable ( file_name , files_in_dir):
+  return True
+
+html_reporter_errors= TestReportHTML( os.path.join(args.output, ""), only_failed= True )
+
+tester= TestCaseRunner( os.path.join(args.workingdir, ""), startup_time= 5, shutdown_time= 5, testable_callback= isTestable, error_reporter=html_reporter_errors)
+results = tester.processAllTestDefinitions(directory=args.workingdir)
+
+reporter= TestReport()
+print reporter.reportResults ( results )
+
+html_reporter= TestReportHTML( os.path.join(args.output, "") )
+html_reporter.reportResults ( results )
+  
+html_reporter_errors.reportResults ( results )
+
+c = getExitCode ( results )
+
 if c != 0:
   exitCode= c
   
-#c= testH3DPhysics (global_settings_variations)
-#if c != 0:
-#  exitCode= c
-
-#c= testMedX3D (global_settings_variations)
-#if c != 0:
-#  exitCode= c
-  
-#c= testUI (global_settings_variations)
-#if c != 0:
-#  exitCode= c
