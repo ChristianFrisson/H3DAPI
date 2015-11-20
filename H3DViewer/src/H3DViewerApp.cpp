@@ -209,7 +209,11 @@ public:
       wxHandleFatalExceptions();
 #if defined( H3D_WINDOWS )
       //AddVectoredExceptionHandler(1, VectoredExceptionHandler);
-      SetUnhandledExceptionFilter(MyUnhandledExceptionFilter);
+      if (char *buffer = getenv("H3D_CREATE_DBGDUMPFILE")) {
+          if (strcmp(buffer, "TRUE") == 0) {
+              SetUnhandledExceptionFilter(MyUnhandledExceptionFilter);
+          }
+      }      
 #endif
   }
   virtual bool OnInit();
