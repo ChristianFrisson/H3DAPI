@@ -10,15 +10,15 @@
 #    script - A .py file containing testing scripts. Check TestScriptExample.py.
 #    
 #  
-[Test]
+[Rendering test]
 x3d=test.x3d
 type=screenshot
 baseline=baseline
 script=TestScriptExample.py
 
 
-[Same test again]
+[Performance test]
 x3d=test.x3d
-type=screenshot
+type=performance
 baseline=baseline
-script=TestScriptExample.py
+runtime=5

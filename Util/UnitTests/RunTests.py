@@ -26,12 +26,18 @@ from ProcessWrapper import *
 
 parser = argparse.ArgumentParser(
   description='Runs python tests')
-parser.add_argument('--workingdir', dest='workingdir',
+parser.add_argument('--workingdir', dest='workingdir', 
                     default=os.getcwd(),
-                    help='the directory containing the unit tests')
+                    help='The directory containing the unit tests.')
 parser.add_argument('--output', dest='output',
-                   default='reports',
-                   help='the directory to output the results to')
+                   default='output',
+                   help='The directory to output the results to.')
+parser.add_argument('--only_validate', dest='only_validate', action='store_true',
+                    default=False,
+                    help='Does not run the test cases, only goes through the output directory and compares the generated output. Will not report start/termination results. Can not be combined with only_generate.')
+parser.add_argument('--only_generate', dest='only_generate', action='store_true',
+                    default=False,
+                    help='does not run validation on the generated output. Will not report screenshot or performance comparison results. Can not be combined with only_validate.')                    
 args = parser.parse_args()
 
 
@@ -136,17 +142,18 @@ class TestResults ( object ):
   # Container class for all kinds of possible test results
   def __init__ ( self, fps_data_file = "" ):
     self.filename= ""
-    self.name= ""
+    self.case_name= ""
     self.test_type= ""
     self.url= ""
     self.std_out= ""
     self.std_err= ""
     self.started_ok= False
     self.terminated_ok= False
-    self.screenshots_ok= True
+    self.screenshots_ok = []
     self.screenshots= []
     self.screenshot_diffs= []
     self.screenshot_thumbs= []
+    self.step_names= []
     self.warnings= 0
     self.errors= 0
     self.skipped= False
@@ -156,8 +163,9 @@ class TestResults ( object ):
     self.fps_mean = ""
     self.fps_avg = ""
     self.fps_data_file = fps_data_file
-    if os.path.isfile( self.fps_data_file ):
-      os.remove( self.fps_data_file )
+    if not args.only_validate:
+      if os.path.isfile( self.fps_data_file ):
+        os.remove( self.fps_data_file )
     self.variation = None
 
   def calculateFPS(self):
@@ -187,13 +195,13 @@ class TestCaseRunner ( object ):
     self.early_shutdown_file = '%s/test_complete' % (os.getcwd())
     self.screenshot_tmp_file = '%s/tmp_screenshot.png' % (os.getcwd())
     self.startup_time_multiplier = 10
-    self.load_flags = ["--no-fullscreen","--screen=800x600"]
+    self.load_flags = []#"--no-fullscreen","--screen=800x600"]
     # Used to get intermediate failed results in order to be able to cancel test early and still get some results.
     self.error_reporter = error_reporter
 
   def launchTest ( self, url, cwd ):
     process = self.getProcess()
-    process.launch ( ["H3DLoad.exe" if platform.system() == 'Windows' else "H3DLoad"] + self.load_flags + [url], cwd )
+    process.launch ( ["H3DViewer.exe" if platform.system() == 'Windows' else "H3DLoad"] + self.load_flags + [url], cwd )
     return process
 
   def getProcess( self ):
@@ -238,7 +246,6 @@ class TestCaseRunner ( object ):
       test_results.std_out= process.getStdOut()
       test_results.std_err= process.getStdErr()
       test_results.warnings, test_results.errors= self._countWarnings ( test_results )
-      test_results.calculateFPS()
       return test_results
     
     if test_results.started_ok:   
@@ -254,7 +261,6 @@ class TestCaseRunner ( object ):
       test_results.std_out= process.getStdOut()
       test_results.std_err= process.getStdErr()
       test_results.warnings, test_results.errors= self._countWarnings ( test_results )
-      test_results.calculateFPS()
       return test_results
     else:
       process.kill ()
@@ -284,7 +290,7 @@ class TestCaseRunner ( object ):
       All of these values default to None
     The list will contain one namedtuple for each Section in the specified definition file
     """
-    confParser = ConfigParser.RawConfigParser(defaults={'x3d':None, 'type':None, 'baseline':None, 'script':None}, allow_no_value=True)
+    confParser = ConfigParser.RawConfigParser(defaults={'x3d':None, 'type':None, 'baseline':None, 'script':None, 'runtime':'0'}, allow_no_value=True)
     try:
       confParser.read(file_path)
     except:
@@ -292,16 +298,17 @@ class TestCaseRunner ( object ):
       return None
     result = []
     for sect in confParser.sections():
-      test_case = namedtuple('TestDefinition', ['name','x3d', 'type', 'baseline', 'script']) 
+      test_case = namedtuple('TestDefinition', ['name','x3d', 'type', 'baseline', 'script', 'runtime']) 
       test_case.name = sect
       test_case.x3d = confParser.get(sect, 'x3d')
       test_case.type = confParser.get(sect, 'type')    
       test_case.baseline = confParser.get(sect, 'baseline')
       test_case.script = confParser.get(sect, 'script')
+      test_case.runtime = confParser.get(sect, 'runtime')
       result.append(test_case)
     return result
   
-  def validate_screenshot(self, output_path='.', baseline_path='.', diff_name='.'):
+  def validate_screenshot(self, screenshot_path='.', baseline_path='.', thumb_dir = '.', diff_path='.'):
     """ Compare screenshots """
 
     ret= { 'success': True, 'message': '', 'diff_file': '', 'thumb': ''}
@@ -318,7 +325,7 @@ class TestCaseRunner ( object ):
           ["compare",
            "-fuzz","%d%%"%fuzz,
            "-metric","AE",
-           baseline_path,output_path,diff_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+           baseline_path,screenshot_path,diff_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
       except:
         print "WARNING: Image comparison not available! Probably Imagemagick is not installed, or not in the path."
         process= None
@@ -333,41 +340,169 @@ class TestCaseRunner ( object ):
         except:
           ret['success']= False
           ret['message']+= (
-            'WARNING: Image comparison failed!\n\nDetails:\n%s\n%s' % (output, err) )
+            'WARNING: Image comparison failed!\n\nDetails:\n%s\n%s' % (screenshot_path, err) )
 
         if not metric is None and metric > error_threshold:
           ret['success']= False
           ret['message']+= (
             'WARNING: The screenshot ' +
-            'is significantly different to the baseline. The differences are attached as ' + diff_name + '.\n' )
-          ret['diff_file'] = ( os.path.abspath(diff_name) )
-          im = Image.open(diff_name)
+            'is significantly different to the baseline. The differences are attached as ' + diff_path + '.\n' )
+          ret['diff_file'] = ( os.path.abspath(diff_path) )
+          im = Image.open(diff_path)
           if im:
             im.thumbnail((256,256), Image.ANTIALIAS)
-            ret['thumb'] = os.path.join(os.path.split(diff_name)[0], os.path.split(diff_name)[0], os.path.splitext(os.path.split(diff_name)[1])[0]+"_thumb.png")
+            ret['thumb'] = os.path.join(thumb_dir, os.path.splitext(os.path.split(diff_path)[1])[0]+"_thumb.png")
             im.save(ret['thumb'], "PNG")
         else:
           # Test passed, we can clean up the file right now
-          im = Image.open(output_path)
+          im = Image.open(screenshot_path)
           if im:
             im.thumbnail((256,256), Image.ANTIALIAS)
-            ret['thumb'] = os.path.join(os.path.split(output_path)[0], os.path.split(output_path)[0], os.path.splitext(os.path.split(output_path)[1])[0]+"_thumb.png")
+            ret['thumb'] = os.path.join(thumb_dir, os.path.splitext(os.path.split(screenshot_path)[1])[0]+"_thumb.png")
             im.save(ret['thumb'], "PNG")
           try:
-            os.remove ( diff_name )
+            os.remove ( diff_path )
           except:
-            print "WARNING: Could not remove " + diff_name
+            print "WARNING: Could not remove " + diff_path
 
     else:
       print "WARNING: No screenshot baseline, skipping validation!"
-      im = Image.open(output_path)
+      im = Image.open(screenshot_path)
       if im:
         im.thumbnail((256,256), Image.ANTIALIAS)
-        ret['thumb'] = os.path.join(os.path.split(output_path)[0], os.path.split(output_path)[0], os.path.splitext(os.path.split(output_path)[1])[0]+"_thumb.png")
+        ret['thumb'] = os.path.join(thumb_dir, os.path.splitext(os.path.split(screenshot_path)[1])[0]+"_thumb.png")
         im.save(ret['thumb'], "PNG")
     return ret
+    if testCase.script != None:
+      testCaseFile= open (os.path.join(directory, testCase.script), 'r')
+      testCaseScript = testCaseFile.read()
+    else:
+      testCaseScript = ""
+                
+    script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (self.early_shutdown_file, os.path.join(screenshot_dir, testCase.name+"_"))) + '\n' + testCaseScript + "]]></PythonScript>"
+                              
+    variation_results= []
+    v = Variation (testCase.name, script)
+    if not args.only_validate:
+      # Create a temporary x3d file containing our injected script
+      success, variation_path= self._createVariationFile ( v, os.path.join(directory, testCase.x3d))
+      # Run that H3DViewer with that x3d file
+      result = self.runTestCase (file, testCase, variation_path, os.path.join(directory, testCase.x3d), v.name, v)
+      result.created_variation= success
+    else:
+      result = TestResults('')
+      result.filename= file
+      result.name= testCase.name
+      result.type= testCase.type
+      result.url= os.path.join(directory, testCase.x3d)
+      result.created_variation= True
 
-  def processAllTestDefinitions ( self, directory= ".", fileExtensions= [".testcase"] ):
+
+  def processScreenshotTestCase(self, file, testCase, results, directory, output_dir, screenshot_dir, diff_dir, thumb_dir, report_dir, boilerplateScript):
+    """
+        
+    """
+    if testCase.script != None:
+      testCaseFile= open (os.path.join(directory, testCase.script), 'r')
+      testCaseScript = testCaseFile.read()
+    else:
+      testCaseScript = ""
+                
+    script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (self.early_shutdown_file, os.path.join(screenshot_dir, testCase.name+"_"))) + '\n' + testCaseScript + "]]></PythonScript>"
+                              
+    variation_results= []
+    v = Variation (testCase.name, script)
+    if not args.only_validate:
+      # Create a temporary x3d file containing our injected script
+      success, variation_path= self._createVariationFile ( v, os.path.join(directory, testCase.x3d))
+      # Run that H3DViewer with that x3d file
+      result = self.runTestCase (file, testCase, variation_path, os.path.join(directory, testCase.x3d), v.name, v)
+      result.created_variation= success
+    else:
+      result = TestResults('')
+      result.filename= file
+      result.name= testCase.name
+      result.type= testCase.type
+      result.url= os.path.join(directory, testCase.x3d)
+      result.created_variation= True
+
+    result.has_baseline= (testCase.baseline != None) and os.path.exists(os.path.join(output_dir, testCase.baseline))
+
+    for screenshot_file in os.listdir(screenshot_dir):
+      screenshot_base, screenshot_ext = os.path.splitext(screenshot_file)
+      if screenshot_base.startswith(testCase.name+"_") and not screenshot_base.endswith('_thumb'):
+        if screenshot_ext.lower() == '.png':
+          diff_path = os.path.join(diff_dir, "diff_") + screenshot_file
+          baseline_path = os.path.join(testCase.baseline, screenshot_file)
+          if not args.only_generate:
+            comp_result = self.validate_screenshot(os.path.join(screenshot_dir, screenshot_file), baseline_path, thumb_dir, diff_path)
+            result.screenshots_ok.append(comp_result['success'] and result.screenshots_ok)
+            result.screenshot_thumbs.append(comp_result['thumb']) # thumb will be of the diff if the validation failed and of the original screenshot if it succeded
+          else:
+            result.screenshot_thumbs.append(os.path.join(thumb_dir, screenshot_base+"_thumb.png"))
+          result.step_names.append(screenshot_base)
+          result.screenshots.append(os.path.join(screenshot_dir, screenshot_file)) 
+          if not args.only_generate and comp_result['diff_file'] != '':
+            result.screenshot_diffs.append(os.path.join(diff_path, comp_result['diff_file']))
+          else:
+            result.screenshot_diffs.append('')
+                
+    if not args.only_validate:
+      os.remove ( variation_path )
+    variation_results.append ( ( v, result ) )
+              
+                      
+
+    results.append ( variation_results )
+            
+    if self.error_reporter:
+      self.error_reporter.reportResults( results )
+
+
+  def processPerformanceTestCase(self, file, testCase, results, directory, output_dir, screenshot_dir, report_dir, thumb_dir, boilerplateScript):
+    """
+        
+    """
+    if testCase.script != None:
+      testCaseFile= open (os.path.join(directory, testCase.script), 'r')
+      testCaseScript = testCaseFile.read()
+    else:
+      testCaseScript = ""
+                
+    screenshot_path = os.path.join(screenshot_dir, os.path.splitext(file)[0]+testCase.name+'.png')
+    fps_data_path = os.path.join(report_dir, os.path.splitext(file)[0]+testCase.name+'_perf.txt')
+    script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (fps_data_path.replace('\\', '/'), self.early_shutdown_file.replace('\\', '/'), testCase.runtime.replace('\\', '/'), screenshot_path.replace('\\', '/'))) + '\n' + testCaseScript + "]]></PythonScript>"
+
+
+    variation_results= []
+    v = Variation (testCase.name, script)
+    if not args.only_validate:
+      # Create a temporary x3d file containing our injected script
+      success, variation_path= self._createVariationFile ( v, os.path.join(directory, testCase.x3d))
+      # Run that H3DViewer with that x3d file
+      result = self.runTestCase (file, testCase, variation_path, os.path.join(directory, testCase.x3d), v.name, v)
+
+      result.screenshots.append(screenshot_path)
+      im = Image.open(screenshot_path)
+      im.thumbnail((256,256), Image.ANTIALIAS)
+      result.screenshot_thumbs.append(os.path.join(thumb_dir, os.path.splitext(os.path.split(screenshot_path)[1])[0]+"_thumb.png"))
+      im.save(os.path.join(thumb_dir, os.path.splitext(os.path.split(screenshot_path)[1])[0]+"_thumb.png"), "PNG")
+
+      result.created_variation= success
+    else:
+      result = TestResults(fps_data_path)
+      result.filename= file
+      result.name= testCase.name
+      result.test_type= testCase.type
+      result.url= os.path.join(directory, testCase.x3d)
+      result.created_variation= True
+      result.calculateFPS()
+    results.append([(v, result)])
+
+  def processAllTestDefinitions ( self, directory= ".", output_dir= ".", fileExtensions= [".testcase"] ):
+    """
+        
+    """
     try:
       os.makedirs(self.filepath)
     except:
@@ -375,8 +510,20 @@ class TestCaseRunner ( object ):
      
     results = []
 
-    boilerplateScriptFile = open(os.path.join(os.getcwd(), 'UnitTestBoilerplate.py'), 'r')
-    boilerplateScript = boilerplateScriptFile.read()
+    screenshotBoilerplateScriptFile = open(os.path.join(os.getcwd(), 'UnitTestScreenshotBoilerplate.py'), 'r')
+    screenshotBoilerplateScript = screenshotBoilerplateScriptFile.read()
+
+    performanceBoilerplateScriptFile = open(os.path.join(os.getcwd(), 'UnitTestPerformanceBoilerplate.py'), 'r')
+    performanceBoilerplateScript = performanceBoilerplateScriptFile.read()
+
+    screenshot_dir = os.path.join(output_dir, 'screenshots')
+    diff_dir = os.path.join(output_dir, 'diffs')
+    thumb_dir = os.path.join(output_dir, 'thumbs')
+    report_dir = os.path.join(output_dir, 'reports')
+    for dir in [output_dir, screenshot_dir, diff_dir, thumb_dir, report_dir]:
+      if not os.path.exists(dir):
+        os.mkdir(dir)
+
 
     for root, dirs, files in os.walk(directory):
       for file in files:
@@ -388,50 +535,10 @@ class TestCaseRunner ( object ):
           for testCase in testCases:
             if testCase != None and testCase.x3d != None and testCase.type != None:
               print "Testing: " + testCase.name
-              print testCase.x3d
-              print testCase.type
-              print testCase.baseline
-              print testCase.script
               if testCase.type == 'screenshot':
-                if testCase.script != None:
-                  testCaseFile= open (os.path.join(root, testCase.script), 'r')
-                  testCaseScript = testCaseFile.read()
-                else:
-                  testCaseScript = ""
-
-                script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (self.early_shutdown_file, os.path.join(root, 'output', testCase.name+"_"))) + '\n' + testCaseScript + "]]></PythonScript>"
-                #print script
-              
-                variation_results= []
-                v = Variation (testCase.name, script)
-                # Create a temporary x3d file containing our injected script
-                success, variation_path= self._createVariationFile ( v, os.path.join(root, testCase.x3d))
-                # Run that H3DViewer with that x3d file
-                result = self.runTestCase (file, testCase, variation_path, os.path.join(root, testCase.x3d), v.name, v)
-
-                for output_file in os.listdir(os.path.join(directory, 'output')):
-                  output_base, output_ext = os.path.splitext(output_file)
-                  if output_base.startswith(testCase.name+"_") and not output_base.endswith('_thumb'):
-                    if output_ext.lower() == '.png':
-                      diff_path = os.path.join(directory, "diffs", "diff_") + output_file
-                      baseline_path = os.path.join(directory, testCase.baseline, output_file)
-                      comp_result = self.validate_screenshot(os.path.join(directory, 'output', output_file), baseline_path, diff_path)
-                      result.screenshots_ok = comp_result['success'] and result.screenshots_ok
-                      result.screenshots.append(os.path.join(directory, 'output', output_file))
-                      result.screenshot_thumbs.append(comp_result['thumb']) # thumb will be of the diff if the validation failed and of the original screenshot if it succeded
-                      if comp_result['diff_file'] != '':
-                        result.screenshot_diffs.append(os.path.join(diff_path, comp_result['diff_file']))
-                      else:
-                        result.screenshot_diffs.append('')
-                result.created_variation= success
-                variation_results.append ( ( v, result ) )
-                os.remove ( variation_path )
-                      
-
-                results.append ( variation_results )
-            
-                if self.error_reporter:
-                  self.error_reporter.reportResults( results )
+                result = self.processScreenshotTestCase(file, testCase, results, root, output_dir, screenshot_dir, diff_dir, thumb_dir, report_dir, screenshotBoilerplateScript)
+              elif testCase.type == 'performance':
+                result = self.processPerformanceTestCase(file, testCase, results, root, output_dir, screenshot_dir, report_dir, thumb_dir, performanceBoilerplateScript)              
             else:
               # Test skipped
               result= TestResults()
@@ -471,17 +578,28 @@ class TestReport ( object ):
   
   def reportResults ( self, results ):
     output= ""
-  
+    if args.only_generate:
+      return output
+    all_screenshots_succeeded = True
+
     for result in results:
       for variation in result:
         v= variation[0]
         r= variation[1]
         output+= "Test results for: " + str(r.name) + " (" + v.name + ")\n"
         output+= "\n"
-        output+= "Started OK    : %s\n" % str(r.started_ok)
-        output+= "Exited OK     : %s\n" % str(r.terminated_ok)
-        output+= "Screenshot OK : %s\n" % str(r.screenshots_ok)
-      
+        if not args.only_validate:
+          output+= "Started OK    : %s\n" % str(r.started_ok)
+          output+= "Exited OK     : %s\n" % str(r.terminated_ok)
+        if r.test_type == 'screenshot':
+          output+= "Screenshots OK :\n"
+          for i in range(0, len(r.screenshots)):
+            output+= "  %s [%s]\n" % (r.step_names[i], ("OK" if r.screenshots_ok[i] else "Failed"))
+          if False in r.screenshots_ok:
+            all_screenshots_succeeded = False
+
+    if r.test_type == 'screenshot':
+      output+= "\n%s\n" % ("All screenshot comparisons OK!" if all_screenshots_succeeded else "One or more screenshot comparisons Failed!")
     return output
     
 class TestReportHTML ( object ):
@@ -533,24 +651,32 @@ class TestReportHTML ( object ):
       
           report_path= os.path.join (
             self.filepath,
-            createFilename(r.url, v.name) + "_report.html" )
+            v.name + "_report.html" )
       
           output+= "<td>"
           output+= "<h3>" + v.name + ( "" if r.created_variation else " (Unchanged file)" ) + "</h3>"
-          screenshot = self._getErrorScreenshot( r )
-          if screenshot == "":
+          if r.test_type == 'screenshot':
+            screenshot = self._getErrorScreenshot( r )
+            if screenshot == "":
+              screenshot = self._getScreenshot( r, count=1 )
+          else:
             screenshot = self._getScreenshot( r, count=1 )
+
           output+= screenshot
-          output+= "<p>Start: " + self._getStatus ( r.started_ok ) + "; "
-          output+= "Exit:" + self._getStatus ( r.terminated_ok ) + "</p>\n"
+          if not args.only_validate:
+            output+= "<p>Start: " + self._getStatus ( r.started_ok ) + "; "
+            output+= "Exit:" + self._getStatus ( r.terminated_ok ) + "; "
+          if not args.only_generate:
+            output+= "Screenshots: " + self._getScreenshotStatus( r.screenshots_ok ) + "</p>\n"
           output+= "<p>Errors: " + self._getErrorCount ( r.errors, 'fail' ) + "; "
           output+= "Warnings:" + self._getErrorCount ( r.warnings, 'warn' ) + "</p>\n"
-          output+= "<p>Graphics frame rate: " + self._getFPS( r.fps_mean ) + "</p>\n"
+          if not args.only_generate:
+            output+= "<p>Graphics frame rate: " + self._getFPS( r.fps_mean ) + "</p>\n"
           output+= "<p>[<a href='" + os.path.split(report_path)[1] + "'>details</a>]</p>"
           output+= "</td>"
           
           f1= open ( report_path, 'w' )
-          f1.write ( self._reportExample ( r ) )
+          f1.write ( self._reportTestcase ( r ) )
           f1.close()
           
         output+= "</tr>"
@@ -585,7 +711,7 @@ class TestReportHTML ( object ):
   def _includeVariation ( self, variation ):
     return (variation.errors > 0 or variation.warnings > 0 or not variation.started_ok or not variation.terminated_ok or not self.only_failed) and not variation.skipped
     
-  def _reportExample ( self, result ):
+  def _reportTestcase ( self, result ):
   
     output= """
 <html>
@@ -613,7 +739,7 @@ class TestReportHTML ( object ):
 """ % (
       result.name,
       result.name, result.url,
-      self._getScreenshot ( result ),
+      self._getScreenshot ( result, count = (1 if result.test_type == 'performance' else 0)),
       self._getStatus ( result.started_ok ), 
       self._getStatus ( result.terminated_ok ),
       result.std_out,
@@ -659,7 +785,7 @@ body {
 }
 
 td, th {
-  width: 260px;
+  width: 280px;
 }
 
 img {
@@ -670,11 +796,14 @@ img {
     
   def _getStatus ( self, status ):
     return "<span class='success'>OK</span>" if status else "<span class='fail'>FAIL</span>"
+  
+  def _getScreenshotStatus ( self, status_list):
+    return "<span class='success'>OK</span>" if not False in status_list else "<span class='fail'>FAIL</span>"
     
   def _getScreenshot ( self, result, count = 0 ):
     res = "<p>"
     for i in range(0, len(result.screenshots)):
-      if result.screenshot_diffs[i] != "":
+      if result.test_type == 'screenshot' and result.screenshot_diffs[i] != "":
         img_path = os.path.relpath(result.screenshot_diffs[i], self.filepath)
       else:
         img_path = os.path.relpath(result.screenshots[i], self.filepath)
@@ -713,10 +842,10 @@ exitCode= 0
 def isTestable ( file_name , files_in_dir):
   return True
 
-html_reporter_errors= TestReportHTML( os.path.join(args.output, ""), only_failed= True )
+html_reporter_errors= TestReportHTML( os.path.join(args.output, "reports"), only_failed= True )
 
 tester= TestCaseRunner( os.path.join(args.workingdir, ""), startup_time= 5, shutdown_time= 5, testable_callback= isTestable, error_reporter=html_reporter_errors)
-results = tester.processAllTestDefinitions(directory=args.workingdir)
+results = tester.processAllTestDefinitions(directory=args.workingdir, output_dir=args.output)
 
 reporter= TestReport()
 print reporter.reportResults ( results )

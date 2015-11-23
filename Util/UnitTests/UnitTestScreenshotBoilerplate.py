@@ -32,7 +32,7 @@ class UnitTestHelper :
         shutdown_file = open( self.early_shutdown_file, 'w' )
         shutdown_file.write( "OK" )
         shutdown_file.close()
-    timer_callback.addCallback(time.getValue()+1, UnitTestHelper.doTesting, (self,))
+    timer_callback.addCallback(time.getValue()+0.2, UnitTestHelper.doTesting, (self,))
 
   def outputScreenshot(self, test_step_name = None):
     if test_step_name == None:
@@ -42,7 +42,7 @@ class UnitTestHelper :
 
 
 testHelper = UnitTestHelper()
-timer_callback.addCallback(time.getValue()+2, UnitTestHelper.doTesting, (testHelper,))
+timer_callback.addCallback(time.getValue()+1, UnitTestHelper.doTesting, (testHelper,))
 
 
 def testRotation():
