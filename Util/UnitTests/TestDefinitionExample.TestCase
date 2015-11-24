@@ -11,7 +11,7 @@
 #    
 #  
 [Rendering test]
-x3d=test.x3d
+xe3d=test.x3d
 type=screenshot
 baseline=baseline
 script=TestScriptExample.py
