@@ -1,7 +1,9 @@
 """
 This script is supposed to run unit tests on every H3DAPI node. 
 
-NOTE: You must install Imagemagick (and add to PATH) in order for image comparison to function, otherwise screenshot tests will always fail
+Requirements:
+  You must install Imagemagick (and add to PATH) in order for image comparison to function, otherwise screenshot tests will always fail.
+  You must install the google app-engine python library as well as gspread.
 
 """
 
@@ -191,8 +193,8 @@ class TestResults ( object ):
         self.fps_avg = "%.2f" % (math.fsum( fps_list_float ) / float( len( fps_list_float ) ) )
         self.fps_mean = "%.2f" % float( fps_list_float[len( fps_list_float ) / 2] )
       fps_filename = os.path.split(self.fps_data_file)[1]
-      self.fps_datetime = time.strftime("%Y-%m-%d %H-%M-%S.txt", time.localtime())
-      self.perf_file_path = os.path.join(os.path.split(self.fps_data_file)[0], os.path.splitext(fps_filename)[0] + time.strftime("_%Y-%m-%d %H-%M-%S.txt", time.localtime()))
+      self.fps_datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+      self.perf_file_path = os.path.join(os.path.split(self.fps_data_file)[0], os.path.splitext(fps_filename)[0] + time.strftime("_%Y-%m-%d %H-%M-%S", time.localtime()))
       perf_file = open(self.perf_file_path, 'w')
       perf_file.write("\n".join( [self.fps_datetime, self.fps_min, self.fps_max, self.fps_avg, self.fps_mean]))
       perf_file.close()
@@ -284,13 +286,12 @@ class TestCaseRunner ( object ):
       test_results.warnings, test_results.errors= self._countWarnings ( test_results )
       return test_results
     
-    if test_results.started_ok:   
-      process.sendKey ( "{ESC}" )
+    process.sendKey ( "{ESC}" )
 
-      time_slept = 0.0
-      while time_slept < self.shutdown_time and process.isRunning():
-        time.sleep(0.5)
-        time_slept += 0.5
+    time_slept = 0.0
+    while time_slept < self.shutdown_time and process.isRunning():
+      time.sleep(0.5)
+      time_slept += 0.5
     
     if not process.isRunning ():
       test_results.terminated_ok= True

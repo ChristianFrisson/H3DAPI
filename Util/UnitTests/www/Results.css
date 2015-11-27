@@ -1,0 +1,83 @@
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+ul > .Category_Item { position:relative; margin-left: 20px;}
+.Test_Container { margin-left: 20px; clear: both; display:none;}
+
+.TestCase {
+  position:relative; margin-left: 20px;
+  width: auto;
+  padding: 0;
+  float:left;
+}
+
+.TestCase_name {
+  margin: 0;
+  padding: 0;
+  float:left;
+  clear:both;
+  overflow:hidden;
+}
+
+.TestCase_graph {
+  border: 1px solid black;
+  height:250px;
+  width:500px;
+  margin: 0;
+  padding: 0;
+  float:left;
+  clear:both;
+}
+
+.TestCase_data {
+  border: 1px solid black;
+  height:250px;
+  width: 150px;
+  float:left;
+  overflow:hidden;
+}
+
+.Testcase_data_list {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+
+label h3 {
+  display:inline;
+}
+
+input[type=checkbox] { 
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+ul {display: block; clear:both;}
+
+input:checked ~ ul {
+  display: block; 
+}
+
+input ~ ul  {
+  display: none;
+}
+
+input:checked ~ .Test_Container {
+  display:block;
+}
+
+.glyph {
+  display:inline-block; 
+}
+
+input:checked + label > .glyph {
+  -webkit-transform: rotate(90deg); 
+  -moz-transform: rotate(90deg);      
+}
