@@ -219,6 +219,23 @@ namespace H3D {
 
     bool outputonce ;
     std::string generateProfileResult();
+
+    struct ProfileNodeResult {
+      Node* node;
+      H3DTime render_time;
+      H3DTime traverse_time;
+
+      H3DTime render_time_last;
+      H3DTime traverse_time_last;
+    };
+    static bool compareRenderTime ( const ProfileNodeResult& lhs, const ProfileNodeResult& rhs ) { return lhs.render_time > rhs.render_time; }
+    static bool compareTraverseTime( const ProfileNodeResult& lhs, const ProfileNodeResult& rhs ) { return lhs.traverse_time > rhs.traverse_time; }
+
+    typedef std::vector < ProfileNodeResult > ProfileNodeResultVec;
+    std::string exclusive_times_string;
+    H3DTime exclusive_times_update_time;
+
+    void computeExclusiveTimes( Node& _node, ProfileNodeResultVec& _result );
 #endif
     /// Current time within the simulation, updated during each graphic loop.
     ///

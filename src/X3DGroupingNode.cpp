@@ -66,7 +66,9 @@ X3DGroupingNode::X3DGroupingNode( Inst< AddChildren    > _addChildren,
   children      ( _children       )
 #ifdef HAVE_PROFILER
   ,time_in_last_render( 0 ),
-  time_in_last_traverseSG( 0 ) 
+  time_in_last_traverseSG( 0 ),
+  time_last_render ( 0 ),
+  time_last_traverseSG( 0 )
 #endif
 {
 
@@ -129,6 +131,7 @@ void X3DGroupingNode::render()     {
   if( H3D::Profiling::profile_group_nodes ) {
     TimeStamp end_time;
     time_in_last_render = end_time - start_time;
+    time_last_render = end_time;
   }
 #endif
 };
@@ -173,6 +176,7 @@ void X3DGroupingNode::traverseSG( TraverseInfo &ti ) {
   if( H3D::Profiling::profile_group_nodes ) {
     TimeStamp end_time;
     time_in_last_traverseSG = end_time - start_time;
+    time_last_traverseSG = end_time;
   }
 #endif
 }
@@ -361,6 +365,30 @@ bool X3DGroupingNode::movingSphereIntersect( H3DFloat radius,
   }
   return false;
 }
+
+#ifdef HAVE_PROFILER
+std::pair<H3DTime, H3DTime> X3DGroupingNode::getChildTimes() {
+  std::pair<H3DTime, H3DTime> result = std::make_pair( H3DTime( 0 ), H3DTime( 0 ) );
+
+  const NodeVector &c = children->getValue();
+  for( unsigned int i = 0; i < c.size(); ++i ) {
+    if( X3DGroupingNode* g = dynamic_cast < X3DGroupingNode* > ( c[i] ) ) {
+      result.first += g->time_in_last_render;
+      result.second += g->time_in_last_traverseSG;
+    } else if( Inline* inl = dynamic_cast < Inline* > (c[i]) ) {
+      for( NodeVector::const_iterator j = inl->loadedScene->begin();
+      j != inl->loadedScene->end(); ++j ) {
+        if( X3DGroupingNode* g = dynamic_cast < X3DGroupingNode* > (*j) ) {
+          result.first += g->time_in_last_render;
+          result.second += g->time_in_last_traverseSG;
+        }
+      }
+    }
+  }
+
+  return result;
+}
+#endif
 
 void X3DGroupingNode::AddChildren::onAdd( Node *n ) {
   TypedMFNode< X3DChildNode >::onAdd( n );

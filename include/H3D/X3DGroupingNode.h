@@ -238,8 +238,12 @@ namespace H3D {
     static H3DNodeDatabase database;
 
 #ifdef HAVE_PROFILER
+    std::pair < H3DTime, H3DTime > getChildTimes ();
+
     H3DTime time_in_last_render;
     H3DTime time_in_last_traverseSG;
+    H3DTime time_last_render;
+    H3DTime time_last_traverseSG;
 #endif
 
     protected:

@@ -145,6 +145,89 @@ std::string Scene::generateProfileResult()
   
   std::stringstream result;
 
+  // Compute exclusive times for each group node
+  // i.e. Time for group minus total time reported by children
+  const H3DTime update_interval = 1;
+  if( time->getValue () - exclusive_times_update_time > update_interval ) {
+    exclusive_times_update_time = time->getValue();
+    if( X3DGroupingNode* g = dynamic_cast <X3DGroupingNode*> (sceneRoot->getValue()) ) {
+      ProfileNodeResultVec exclusive_times;
+      computeExclusiveTimes( *g, exclusive_times );
+
+      // Sort descending and trim
+      const int max_nodes = 10;
+      const H3DTime max_time = 1;
+
+      ProfileNodeResultVec exclusive_times_render;
+      exclusive_times_render.reserve( exclusive_times.size() );
+      for( ProfileNodeResultVec::iterator i = exclusive_times.begin(); i != exclusive_times.end(); ++i ) {
+        const ProfileNodeResult& r = *i;
+        if( TimeStamp() - r.render_time_last < max_time ) {
+          exclusive_times_render.push_back( r );
+        }
+      }
+      std::sort( exclusive_times_render.begin(), exclusive_times_render.end(), compareRenderTime );
+      if( exclusive_times_render.size() > max_nodes ) {
+        exclusive_times_render.erase( exclusive_times_render.begin() + max_nodes, exclusive_times_render.end() );
+      }
+
+      ProfileNodeResultVec exclusive_times_traverse;
+      exclusive_times_traverse.reserve( exclusive_times.size() );
+      for( ProfileNodeResultVec::iterator i = exclusive_times.begin(); i != exclusive_times.end(); ++i ) {
+        const ProfileNodeResult& r = *i;
+        if( TimeStamp() - r.traverse_time_last < max_time ) {
+          exclusive_times_traverse.push_back( r );
+        }
+      }
+      std::sort( exclusive_times_traverse.begin(), exclusive_times_traverse.end(), compareTraverseTime );
+      if( exclusive_times_traverse.size() > max_nodes ) {
+        exclusive_times_traverse.erase( exclusive_times_traverse.begin() + max_nodes, exclusive_times_traverse.end() );
+      }
+
+      // Format
+      std::stringstream ss;
+      ss << "Render:" << std::endl;
+      for( ProfileNodeResultVec::iterator i = exclusive_times_render.begin(); i != exclusive_times_render.end(); ++i ) {
+        ProfileNodeResult& r = *i;
+
+        std::string child_names;
+        if( !r.node->hasName() ) {
+          if( X3DGroupingNode* group = dynamic_cast <X3DGroupingNode*> (r.node) ) {
+            for( NodeVector::const_iterator j = group->children->begin(); j != group->children->end(); ++j ) {
+              if( *j ) {
+                child_names += (*j)->getName() + " ";
+              }
+            }
+          }
+        }
+
+        ss << std::setprecision( 2 ) << r.render_time*1000.0 << " ms " << r.node->getName() << "(" << r.node->getTypeName() << ") " << child_names << endl;
+      }
+      ss << std::endl;
+      ss << "Traverse:" << std::endl;
+      for( ProfileNodeResultVec::iterator i = exclusive_times_traverse.begin(); i != exclusive_times_traverse.end(); ++i ) {
+        ProfileNodeResult& r = *i;
+
+        std::string child_names;
+        if( !r.node->hasName() ) {
+          if( X3DGroupingNode* group = dynamic_cast <X3DGroupingNode*> (r.node) ) {
+            for( NodeVector::const_iterator j = group->children->begin(); j != group->children->end(); ++j ) {
+              if( *j ) {
+                child_names += (*j)->getName() + " ";
+              }
+            }
+          }
+        }
+
+        ss << std::setprecision( 2 ) << r.traverse_time*1000.0 << " ms " << r.node->getName() << "(" << r.node->getTypeName() << ") " << child_names << endl;
+      }
+      exclusive_times_string = ss.str();
+    }
+  }
+
+  result << "====================================Node Times===================================" << std::endl;
+  result << exclusive_times_string;
+  result << "=======================================END=======================================" << std::endl;
   
   if(!H3D_scene_result.isEmpty())
   {
@@ -165,8 +248,44 @@ std::string Scene::generateProfileResult()
     result<<H3D_sofa_result.getResult();
     result<<"=======================================END======================================="<<std::endl;
   }
+
   return result.str();
 }
+
+void Scene::computeExclusiveTimes( Node& _node, ProfileNodeResultVec& _result ) {
+
+  if( X3DGroupingNode* group = dynamic_cast <X3DGroupingNode*> ( &_node ) ) {
+
+    std::pair < H3DTime, H3DTime > times = group->getChildTimes();
+    ProfileNodeResult r = { 
+      group, group->time_in_last_render - times.first, 
+      group->time_in_last_traverseSG - times.second,
+      group->time_last_render,
+      group->time_last_traverseSG
+    };
+    _result.push_back( r );
+
+    // Recurse
+    for( NodeVector::const_iterator i = group->children->begin(); i != group->children->end(); ++i ) {
+      if( *i ) {
+        computeExclusiveTimes( **i, _result );
+      }
+    }
+
+  } else if( Inline* inl = dynamic_cast <Inline*> (&_node) ) {
+
+    // Recurse
+    for( NodeVector::const_iterator i = inl->loadedScene->begin(); i != inl->loadedScene->end(); ++i ) {
+      if( *i ) {
+        computeExclusiveTimes( **i, _result );
+      }
+    }
+
+  }
+
+  
+}
+
 #endif
 void Scene::idle() {
   // calculate and set frame rate
@@ -579,6 +698,7 @@ Scene::Scene( Inst< SFChildNode >  _sceneRoot,
   maxFrameRate ( _maxFrameRate ),
 #ifdef HAVE_PROFILER
   profiledResult( _profiledResult ),
+  exclusive_times_update_time ( 0 ),
 #endif
   active( true ),
   last_traverseinfo( NULL ),
