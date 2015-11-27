@@ -128,12 +128,21 @@ string X3DTexture2DNode::SFImage::getValueAsString( const string& separator) {
 
 GLint X3DTexture2DNode::glInternalFormat( Image *i ) {
   TextureProperties *texture_properties = textureProperties->getValue();
-  GLint tex_prop_format;
-  if( texture_properties && texture_properties->glInternalFormat( i, tex_prop_format ) ) {
-    return tex_prop_format;
+  GLint tex_format;
+  if( texture_properties ) {
+    if( !texture_properties->glInternalFormat( i, tex_format ) ) {
+      tex_format = X3DTextureNode::glInternalFormat( i );
+    }
   } else {
-    return X3DTextureNode::glInternalFormat( i );
+    tex_format = X3DTextureNode::glInternalFormat( i );
   }
+
+  // Choose compression
+  std::string compression = "DEFAULT";
+  if( texture_properties ) {
+    compression = texture_properties->textureCompression->getValue();
+  }
+  return glCompressedInternalFormat( tex_format, compression );
 }
 
 void X3DTexture2DNode::glTexImage( Image *i, GLenum _texture_target,

@@ -245,6 +245,11 @@ namespace H3D {
     ///
     virtual std::pair<H3DInt32,H3DInt32> getDefaultSaveDimensions ();
   
+    /// Given a non-compressed internal format, return an equivelent compressed
+    /// format based on the compression settings. Or return the original format 
+    /// if none is available or requested.
+    GLint glCompressedInternalFormat( GLint _format, const std::string& _compression );
+
   private:
     static X3DTextureNode *active_texture;
   };

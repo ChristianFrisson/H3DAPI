@@ -64,7 +64,8 @@ namespace H3D {
                      Inst< SFBool > _bindlessTextures = 0,
                      Inst< SFTime > _bindlessTexturesUnusedTime = 0,
                      Inst< SFBool > _shareTextures = 0,
-                     Inst< SFInt32 > _maxTextureDimension = 0 );
+                     Inst< SFInt32 > _maxTextureDimension = 0,
+                     Inst< SFString > _textureCompression = 0 );
     
     bool cacheNode( Node *n ) {
       if( !useCaching->getValue() ) return false;
@@ -207,6 +208,15 @@ namespace H3D {
     /// <b>Default value: </b> -1 \n
     /// <b>Access type: </b> inputOutput \n
     auto_ptr < SFInt32 > maxTextureDimension;
+
+    /// Texture compression method
+    ///
+    /// May be overridden by individual TextureProperties nodes
+    ///
+    /// <b>Access type: </b> inputOutput \n
+    /// <b>Default value: </b> "DEFAULT" \n
+    /// <b>Valid values : < / b> "DEFAULT", "DXT", "DXT1", "DXT3", "DXT5" \n
+    auto_ptr < SFString > textureCompression;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

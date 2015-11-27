@@ -533,3 +533,38 @@ std::pair<H3DInt32,H3DInt32> ImageTexture::getDefaultSaveDimensions(){
     return X3DTexture2DNode::getDefaultSaveDimensions ();
   }
 }
+
+GLint ImageTexture::glInternalFormat( Image *i ) {
+  TextureProperties *texture_properties = textureProperties->getValue();
+  GLint tex_format;
+  if( texture_properties ) {
+    if( !texture_properties->glInternalFormat( i, tex_format ) ) {
+      tex_format = X3DTextureNode::glInternalFormat( i );
+    }
+  } else {
+    tex_format = X3DTextureNode::glInternalFormat( i );
+  }
+
+  // Choose compression
+  std::string compression = "DEFAULT";
+
+  // Get global setting if present
+  GraphicsOptions *graphics_options = NULL;
+  GlobalSettings *default_settings = GlobalSettings::getActive();
+  if( default_settings ) {
+    default_settings->getOptionNode( graphics_options );
+  }
+  if( graphics_options ) {
+    compression = graphics_options->textureCompression->getValue();
+  }
+
+  // Combine with local setting
+  if( texture_properties ) {
+    const std::string& compression_local = texture_properties->textureCompression->getValue();
+    if( compression_local != "DEFAULT" ) {
+      compression = compression_local;
+    }
+  }
+
+  return glCompressedInternalFormat( tex_format, compression );
+}

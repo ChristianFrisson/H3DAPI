@@ -145,6 +145,11 @@ TextureProperties::TextureProperties(
   textureCompression->addValidValue( "MEDIUM" );
   textureCompression->addValidValue( "NICEST" );
   textureCompression->addValidValue( "LOW" );
+  textureCompression->addValidValue( "DXT" );
+  textureCompression->addValidValue( "DXT1" );
+  textureCompression->addValidValue( "DXT3" );
+  textureCompression->addValidValue( "DXT5" );
+  textureCompression->addValidValue( "NONE" );
   textureCompression->setValue( "FASTEST" );
   texturePriority->setValue( 1.0f );
   generateMipMaps->setValue( false );
@@ -380,10 +385,6 @@ void TextureProperties::renderTextureProperties( GLenum texture_target ) {
     } else if( compression == "NICEST" ||
                compression == "LOW"  ) {
       glHint( GL_TEXTURE_COMPRESSION_HINT_ARB, GL_NICEST );
-    } else {
-      Console(LogLevel::Warning) << "Warning: Invalid textureCompression mode \"" 
-                 << compression  << "\" in TextureProperties "
-                 << " node for texture node(" << getName() << ")." << endl; 
     }
   }
 
@@ -422,187 +423,173 @@ void TextureProperties::renderTextureProperties( GLenum texture_target ) {
 }
 
 bool TextureProperties::glInternalFormat( Image *image, GLint &internal_format ) {
-  if( GLEW_ARB_texture_compression && textureCompression->getValue() != "DEFAULT" ) {
-    switch( image->pixelType() ) {
-      case Image::LUMINANCE:
-        internal_format = GL_COMPRESSED_LUMINANCE_ARB; return true;
-      case Image::LUMINANCE_ALPHA:
-        internal_format = GL_COMPRESSED_LUMINANCE_ALPHA_ARB; return true;
-      case Image::RGB:
-      case Image::BGR: internal_format = GL_COMPRESSED_RGB_ARB; return true;
-      case Image::RGBA:
-      case Image::BGRA: internal_format = GL_COMPRESSED_RGBA_ARB; return true;
-      default: { internal_format = GL_RGBA; return true; }
-    }
-  } else {
-    string texture_format = textureFormat->getValue();
-    if( texture_format != "NORMAL" ) {
-      if( GLEW_EXT_texture_integer && texture_format == "INTEGER" ) {
-        switch( image->pixelType() ) {
-          // Do we need to check for RATIONAL pixelComponentType here or can that be
-          // mixed without problem
-          // as long as pixel format is correctly set. Have to test later.
-          case Image::LUMINANCE:
-            switch( image->pixelComponentType() ) {
-              case Image::UNSIGNED:
-                switch( image->bitsPerPixel() ) {
-                  case 8:  internal_format = GL_LUMINANCE8UI_EXT; return true;
-                  case 16: internal_format = GL_LUMINANCE16UI_EXT; return true;
-                  case 32: internal_format = GL_LUMINANCE32UI_EXT; return true;
-                  default: return false;
-                }
-              case Image::SIGNED:
-                switch( image->bitsPerPixel() ) {
-                  case 8:  internal_format = GL_LUMINANCE8I_EXT; return true;
-                  case 16: internal_format = GL_LUMINANCE16I_EXT; return true;
-                  case 32: internal_format = GL_LUMINANCE32I_EXT; return true;
-                  default: return false;
-                }
-              default: return false;
-            }
-          case Image::LUMINANCE_ALPHA:
-            switch( image->pixelComponentType() ) {
-              case Image::UNSIGNED:
-                switch( image->bitsPerPixel() ) {
-                  case 8:
-                    internal_format = GL_LUMINANCE_ALPHA8UI_EXT; return true;
-                  case 16:
-                    internal_format = GL_LUMINANCE_ALPHA16UI_EXT; return true;
-                  case 32:
-                    internal_format = GL_LUMINANCE_ALPHA32UI_EXT; return true;
-                  default: return false;
-                }
-              case Image::SIGNED:
-                switch( image->bitsPerPixel() ) {
-                  case 8:
-                    internal_format = GL_LUMINANCE_ALPHA8I_EXT; return true;
-                  case 16:
-                    internal_format = GL_LUMINANCE_ALPHA16I_EXT; return true;
-                  case 32:
-                    internal_format = GL_LUMINANCE_ALPHA32I_EXT; return true;
-                  default: return false;
-                }
-              default: return false;
-            }
-          case Image::RGB:
-          case Image::BGR:
-            switch( image->pixelComponentType() ) {
-              case Image::UNSIGNED:
-                switch( image->bitsPerPixel() ) {
-                  case 8:  internal_format = GL_RGB8UI_EXT; return true;
-                  case 16: internal_format = GL_RGB16UI_EXT; return true;
-                  case 32: internal_format = GL_RGB32UI_EXT; return true;
-                  default: return false;
-                }
-              case Image::SIGNED:
-                switch( image->bitsPerPixel() ) {
-                  case 8:  internal_format = GL_RGB8I_EXT; return true;
-                  case 16: internal_format = GL_RGB16I_EXT; return true;
-                  case 32: internal_format = GL_RGB32I_EXT; return true;
-                  default: return false;
-                }
-              default: return false;
-            }
-          case Image::RGBA:
-          case Image::BGRA:
-            switch( image->pixelComponentType() ) {
-              case Image::UNSIGNED:
-                switch( image->bitsPerPixel() ) {
-                  case 8:  internal_format = GL_RGBA8UI_EXT; return true;
-                  case 16: internal_format = GL_RGBA16UI_EXT; return true;
-                  case 32: internal_format = GL_RGBA32UI_EXT; return true;
-                  default: return false;
-                }
-              case Image::SIGNED:
-                switch( image->bitsPerPixel() ) {
-                  case 8:  internal_format = GL_RGBA8I_EXT; break;
-                  case 16: internal_format = GL_RGBA16I_EXT; break;
-                  case 32: internal_format = GL_RGBA32I_EXT; break;
-                  default: return false;
-                }
-              default: return false;
-            }
-          default: return false;
-        }
-      } else if( GLEW_ARB_texture_float && texture_format == "FLOAT" ) {
-        switch( image->pixelType() ) {
-          // Do we need to check for RATIONAL pixelComponentType here or can that be
-          // mixed without problem
-          // as long as pixel format is correctly set. Have to test later.
-          case Image::LUMINANCE:
-            switch( image->pixelComponentType() ) {
-              case Image::RATIONAL:
-                switch( image->bitsPerPixel() ) {
-                  case 16: internal_format = GL_LUMINANCE16F_ARB; return true;
-                  case 32: internal_format = GL_LUMINANCE32F_ARB; return true;
-                  default: return false;
-                }
-              default: return false;
-            }
-          case Image::LUMINANCE_ALPHA:
-            switch( image->pixelComponentType() ) {
-              case Image::RATIONAL:
-                switch( image->bitsPerPixel() ) {
-                  case 16: internal_format = GL_LUMINANCE_ALPHA16F_ARB; break;
-                  case 32: internal_format = GL_LUMINANCE_ALPHA32F_ARB; break;
-                  default: return false;
-                }
-              default: return false;
-            }
-          case Image::RGB:
-          case Image::BGR:
-            switch( image->pixelComponentType() ) {
-              case Image::RATIONAL:
-                switch( image->bitsPerPixel() ) {
-                  case 16: internal_format = GL_RGB16F_ARB; break;
-                  case 32: internal_format = GL_RGB32F_ARB; break;
-                  default: return false;
-                }
-              default: return false;
-            }
-          case Image::RGBA:
-          case Image::BGRA:
-            switch( image->pixelComponentType() ) {
-              case Image::RATIONAL:
-                switch( image->bitsPerPixel() ) {
-                  case 16: internal_format = GL_RGBA16F_ARB; break;
-                  case 32: internal_format = GL_RGBA32F_ARB; break;
-                  default: return false;
-                }
-              default: return false;
-            }
-          default: return false;
-        }
+  string texture_format = textureFormat->getValue();
+  if( texture_format != "NORMAL" ) {
+    if( GLEW_EXT_texture_integer && texture_format == "INTEGER" ) {
+      switch( image->pixelType() ) {
+        // Do we need to check for RATIONAL pixelComponentType here or can that be
+        // mixed without problem
+        // as long as pixel format is correctly set. Have to test later.
+        case Image::LUMINANCE:
+          switch( image->pixelComponentType() ) {
+            case Image::UNSIGNED:
+              switch( image->bitsPerPixel() ) {
+                case 8:  internal_format = GL_LUMINANCE8UI_EXT; return true;
+                case 16: internal_format = GL_LUMINANCE16UI_EXT; return true;
+                case 32: internal_format = GL_LUMINANCE32UI_EXT; return true;
+                default: return false;
+              }
+            case Image::SIGNED:
+              switch( image->bitsPerPixel() ) {
+                case 8:  internal_format = GL_LUMINANCE8I_EXT; return true;
+                case 16: internal_format = GL_LUMINANCE16I_EXT; return true;
+                case 32: internal_format = GL_LUMINANCE32I_EXT; return true;
+                default: return false;
+              }
+            default: return false;
+          }
+        case Image::LUMINANCE_ALPHA:
+          switch( image->pixelComponentType() ) {
+            case Image::UNSIGNED:
+              switch( image->bitsPerPixel() ) {
+                case 8:
+                  internal_format = GL_LUMINANCE_ALPHA8UI_EXT; return true;
+                case 16:
+                  internal_format = GL_LUMINANCE_ALPHA16UI_EXT; return true;
+                case 32:
+                  internal_format = GL_LUMINANCE_ALPHA32UI_EXT; return true;
+                default: return false;
+              }
+            case Image::SIGNED:
+              switch( image->bitsPerPixel() ) {
+                case 8:
+                  internal_format = GL_LUMINANCE_ALPHA8I_EXT; return true;
+                case 16:
+                  internal_format = GL_LUMINANCE_ALPHA16I_EXT; return true;
+                case 32:
+                  internal_format = GL_LUMINANCE_ALPHA32I_EXT; return true;
+                default: return false;
+              }
+            default: return false;
+          }
+        case Image::RGB:
+        case Image::BGR:
+          switch( image->pixelComponentType() ) {
+            case Image::UNSIGNED:
+              switch( image->bitsPerPixel() ) {
+                case 8:  internal_format = GL_RGB8UI_EXT; return true;
+                case 16: internal_format = GL_RGB16UI_EXT; return true;
+                case 32: internal_format = GL_RGB32UI_EXT; return true;
+                default: return false;
+              }
+            case Image::SIGNED:
+              switch( image->bitsPerPixel() ) {
+                case 8:  internal_format = GL_RGB8I_EXT; return true;
+                case 16: internal_format = GL_RGB16I_EXT; return true;
+                case 32: internal_format = GL_RGB32I_EXT; return true;
+                default: return false;
+              }
+            default: return false;
+          }
+        case Image::RGBA:
+        case Image::BGRA:
+          switch( image->pixelComponentType() ) {
+            case Image::UNSIGNED:
+              switch( image->bitsPerPixel() ) {
+                case 8:  internal_format = GL_RGBA8UI_EXT; return true;
+                case 16: internal_format = GL_RGBA16UI_EXT; return true;
+                case 32: internal_format = GL_RGBA32UI_EXT; return true;
+                default: return false;
+              }
+            case Image::SIGNED:
+              switch( image->bitsPerPixel() ) {
+                case 8:  internal_format = GL_RGBA8I_EXT; break;
+                case 16: internal_format = GL_RGBA16I_EXT; break;
+                case 32: internal_format = GL_RGBA32I_EXT; break;
+                default: return false;
+              }
+            default: return false;
+          }
+        default: return false;
+      }
+    } else if( GLEW_ARB_texture_float && texture_format == "FLOAT" ) {
+      switch( image->pixelType() ) {
+        // Do we need to check for RATIONAL pixelComponentType here or can that be
+        // mixed without problem
+        // as long as pixel format is correctly set. Have to test later.
+        case Image::LUMINANCE:
+          switch( image->pixelComponentType() ) {
+            case Image::RATIONAL:
+              switch( image->bitsPerPixel() ) {
+                case 16: internal_format = GL_LUMINANCE16F_ARB; return true;
+                case 32: internal_format = GL_LUMINANCE32F_ARB; return true;
+                default: return false;
+              }
+            default: return false;
+          }
+        case Image::LUMINANCE_ALPHA:
+          switch( image->pixelComponentType() ) {
+            case Image::RATIONAL:
+              switch( image->bitsPerPixel() ) {
+                case 16: internal_format = GL_LUMINANCE_ALPHA16F_ARB; break;
+                case 32: internal_format = GL_LUMINANCE_ALPHA32F_ARB; break;
+                default: return false;
+              }
+            default: return false;
+          }
+        case Image::RGB:
+        case Image::BGR:
+          switch( image->pixelComponentType() ) {
+            case Image::RATIONAL:
+              switch( image->bitsPerPixel() ) {
+                case 16: internal_format = GL_RGB16F_ARB; break;
+                case 32: internal_format = GL_RGB32F_ARB; break;
+                default: return false;
+              }
+            default: return false;
+          }
+        case Image::RGBA:
+        case Image::BGRA:
+          switch( image->pixelComponentType() ) {
+            case Image::RATIONAL:
+              switch( image->bitsPerPixel() ) {
+                case 16: internal_format = GL_RGBA16F_ARB; break;
+                case 32: internal_format = GL_RGBA32F_ARB; break;
+                default: return false;
+              }
+            default: return false;
+          }
+        default: return false;
+      }
 #ifdef GL_EXT_texture_sRGB
-      } else if( GLEW_EXT_texture_sRGB && texture_format == "SRGB" ) {
-        switch( image->pixelType() ) {
-          case Image::RGB:
-          case Image::BGR:
-            switch( image->pixelComponentType() ) {
-              case Image::UNSIGNED:
-                switch( image->bitsPerPixel() ) {
-                  case 24:  internal_format = GL_SRGB8_EXT;  return true;
-                  default: return false;
-                }
-              default: return false;
-            }
-          case Image::RGBA:
-          case Image::BGRA:
-            switch( image->pixelComponentType() ) {
-              case Image::UNSIGNED:
-                switch( image->bitsPerPixel() ) {
-                  case 32:  internal_format = GL_SRGB8_ALPHA8_EXT; return true;
-                  default: return false;
-                }
-              default: return false;
-            }
-          default: return false;
-        }
+    } else if( GLEW_EXT_texture_sRGB && texture_format == "SRGB" ) {
+      switch( image->pixelType() ) {
+        case Image::RGB:
+        case Image::BGR:
+          switch( image->pixelComponentType() ) {
+            case Image::UNSIGNED:
+              switch( image->bitsPerPixel() ) {
+                case 24:  internal_format = GL_SRGB8_EXT;  return true;
+                default: return false;
+              }
+            default: return false;
+          }
+        case Image::RGBA:
+        case Image::BGRA:
+          switch( image->pixelComponentType() ) {
+            case Image::UNSIGNED:
+              switch( image->bitsPerPixel() ) {
+                case 32:  internal_format = GL_SRGB8_ALPHA8_EXT; return true;
+                default: return false;
+              }
+            default: return false;
+          }
+        default: return false;
       }
-#else
-      }
-#endif
     }
+#else
+    }
+#endif
   }
   return false;
 }

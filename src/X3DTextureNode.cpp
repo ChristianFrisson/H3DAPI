@@ -459,6 +459,101 @@ std::pair<H3DInt32,H3DInt32> X3DTextureNode::getDefaultSaveDimensions () {
   return std::pair<H3DInt32,H3DInt32> ( 512, 512 );
 }
 
+GLint X3DTextureNode::glCompressedInternalFormat( GLint _format, const std::string& _compression ) {
+#ifdef GL_ARB_texture_compression
+  if( !GLEW_ARB_texture_compression ) {
+    // No compression supported
+    return _format;
+  }
+
+  if( _compression == "DEFAULT" || _compression == "NONE" ) {
+    return _format;
+  }
+
+  // Compression is requested, find appropriate compression for image format
+  switch( _format ) {
+  case GL_LUMINANCE4:
+  case GL_LUMINANCE8:
+  case GL_LUMINANCE12:
+  case GL_LUMINANCE16:
+  case GL_LUMINANCE:
+    return GL_COMPRESSED_LUMINANCE;
+
+  case GL_LUMINANCE4_ALPHA4:
+  case GL_LUMINANCE8_ALPHA8:
+  case GL_LUMINANCE16_ALPHA16:
+  case GL_LUMINANCE_ALPHA:
+    return GL_COMPRESSED_LUMINANCE_ALPHA;
+
+  case GL_RGB4:
+  case GL_RGB5:
+  case GL_RGB8:
+  case GL_RGB10:
+  case GL_RGB12:
+  case GL_RGB16:
+  case GL_RGB:
+#ifdef GL_EXT_texture_compression_s3tc
+    if( GLEW_EXT_texture_compression_s3tc && (_compression == "DXT1" || _compression == "DXT") ) {
+      return GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+    }
+#endif
+    return GL_COMPRESSED_RGB;
+
+
+  case GL_RGBA4:
+  case GL_RGBA8:
+  case GL_RGBA12:
+  case GL_RGBA16:
+  case GL_RGBA:
+#ifdef GL_EXT_texture_compression_s3tc
+    if( GLEW_EXT_texture_compression_s3tc ) {
+      if( _compression == "DXT1" ) {
+        return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+      } else if( _compression == "DXT3" ) {
+        return GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+      } else if( _compression == "DXT5" || _compression == "DXT" ) {
+        return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+      }
+    }
+#endif
+    return GL_COMPRESSED_RGBA;
+
+  case GL_R8:
+  case GL_R16:
+  case GL_R:
+    return GL_COMPRESSED_RED;
+
+#ifdef GL_EXT_texture_sRGB
+  case GL_SRGB8_EXT:
+#ifdef GL_EXT_texture_compression_s3tc
+    if( GLEW_EXT_texture_compression_s3tc && (_compression == "DXT1" || _compression == "DXT") ) {
+      return GL_COMPRESSED_SRGB_S3TC_DXT1_EXT;
+    }
+#endif
+    return GL_COMPRESSED_SRGB;
+
+  case GL_SRGB8_ALPHA8_EXT:
+#ifdef GL_EXT_texture_compression_s3tc
+    if( GLEW_EXT_texture_compression_s3tc ) {
+      if( _compression == "DXT1" ) {
+        return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT;
+      } else if( _compression == "DXT3" ) {
+        return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT;
+      } else if( _compression == "DXT5" || _compression == "DXT" ) {
+        return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT;
+      }
+    }
+#endif
+    return GL_COMPRESSED_SRGB_ALPHA;
+#endif
+  }
+#endif
+
+  // No appropriate compression available
+  return _format;
+}
+
+
 Image* X3DTextureNode::renderToImage ( H3DInt32 _width, H3DInt32 _height, bool output_float_texture ) {
 
   std::pair<H3DInt32,H3DInt32> default_size= getDefaultSaveDimensions ();

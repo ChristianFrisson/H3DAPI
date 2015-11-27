@@ -224,6 +224,11 @@ namespace H3D {
     ///
     virtual std::pair<H3DInt32,H3DInt32> getDefaultSaveDimensions ();
 
+    /// Returns the internal OpenGL format to use given an Image, e.g.
+    /// GL_LUMINANCE, GL_RGB, GL_RGB8, etc
+    ///
+    virtual GLint glInternalFormat( Image *i );
+
     /// The ImageLoader nodes to use to read the image files.
     /// 
     /// <b>Access type:</b> inputOutput \n
