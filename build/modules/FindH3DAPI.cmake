@@ -40,12 +40,14 @@ FIND_LIBRARY( H3DAPI_LIBRARY NAMES ${H3DAPI_NAME}
               PATHS $ENV{H3D_ROOT}/../${DEFAULT_LIB_INSTALL}
                     ../../${DEFAULT_LIB_INSTALL}
                     ${module_file_path}/../../../${DEFAULT_LIB_INSTALL}
+                    $ENV{H3D_ROOT}/../../../${DEFAULT_LIB_INSTALL}
               DOC "Path to ${H3DAPI_NAME} library." )
 
 FIND_LIBRARY( H3DAPI_DEBUG_LIBRARY NAMES ${H3DAPI_NAME}_d
               PATHS $ENV{H3D_ROOT}/../${DEFAULT_LIB_INSTALL}
                     ../../${DEFAULT_LIB_INSTALL}
-                    ${module_file_path}/../../../${DEFAULT_LIB_INSTALL}
+                    ${module_file_path}/../../../${DEFAULT_LIB_INSTALL}  
+                    $ENV{H3D_ROOT}/../../../${DEFAULT_LIB_INSTALL}                    
               DOC "Path to ${H3DAPI_NAME}_d library." )
 MARK_AS_ADVANCED(H3DAPI_LIBRARY)
 MARK_AS_ADVANCED(H3DAPI_DEBUG_LIBRARY)
