@@ -600,22 +600,22 @@ bool TextureProperties::glInternalFormat( Image *image, GLint &internal_format )
           if( GLEW_EXT_texture_compression_s3tc ) {
             switch( image->pixelType() ) {
             case Image::RGB:
-              return GL_COMPRESSED_SRGB_S3TC_DXT1_EXT;
+              internal_format = GL_COMPRESSED_SRGB_S3TC_DXT1_EXT; return true;
             case Image::RGBA:
-              return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT;
+              internal_format = GL_COMPRESSED_SRGBA_ALPHA_S3TC_DXT1_EXT; return true;
             }
           }
           break;
 
         case Image::BC2:
           if( GLEW_EXT_texture_compression_s3tc ) {
-            return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT;
+            internal_format = GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT; return true;
           }
           break;
 
         case Image::BC3:
           if( GLEW_EXT_texture_compression_s3tc ) {
-            return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT;
+            internal_format = GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT; return true;
           }
           break;
 #endif
