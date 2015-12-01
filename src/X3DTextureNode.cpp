@@ -76,83 +76,160 @@ bool X3DTextureNode::load_images_in_separate_thread = true;
 X3DTextureNode *X3DTextureNode::active_texture = NULL;
 
 GLint X3DTextureNode::glInternalFormat( Image *i ) {
-  switch( i->pixelType() ) {
-  case Image::LUMINANCE: 
-    if( GLEW_ARB_texture_float && 
+  if( i->compressionType() == Image::NO_COMPRESSION ) {
+    switch( i->pixelType() ) {
+    case Image::LUMINANCE:
+      if( GLEW_ARB_texture_float &&
         i->pixelComponentType() == Image::RATIONAL ) {
-      if( i->bitsPerPixel() <= 16 ) return GL_LUMINANCE16F_ARB;
-      else return GL_LUMINANCE32F_ARB;
-    } else {
-      switch( i->bitsPerPixel() ) {
-      case 4:  return GL_LUMINANCE4;
-      case 8:  return GL_LUMINANCE8;
-      case 12: return GL_LUMINANCE12;
-      case 16: return GL_LUMINANCE16;
-      default: return GL_LUMINANCE;
+        if( i->bitsPerPixel() <= 16 ) return GL_LUMINANCE16F_ARB;
+        else return GL_LUMINANCE32F_ARB;
+      } else {
+        switch( i->bitsPerPixel() ) {
+        case 4:  return GL_LUMINANCE4;
+        case 8:  return GL_LUMINANCE8;
+        case 12: return GL_LUMINANCE12;
+        case 16: return GL_LUMINANCE16;
+        default: return GL_LUMINANCE;
+        }
       }
-    }
-  case Image::LUMINANCE_ALPHA:
-    if( GLEW_ARB_texture_float && 
+    case Image::LUMINANCE_ALPHA:
+      if( GLEW_ARB_texture_float &&
         i->pixelComponentType() == Image::RATIONAL ) {
-      if( i->bitsPerPixel() <= 32 ) return GL_LUMINANCE_ALPHA16F_ARB;
-      else return GL_LUMINANCE_ALPHA32F_ARB;
-    } else {
-      switch( i->bitsPerPixel() ) {
-      case 8:  return GL_LUMINANCE4_ALPHA4;
-      case 16: return GL_LUMINANCE8_ALPHA8;
-      case 32: return GL_LUMINANCE16_ALPHA16;
-      default: return GL_LUMINANCE_ALPHA;
+        if( i->bitsPerPixel() <= 32 ) return GL_LUMINANCE_ALPHA16F_ARB;
+        else return GL_LUMINANCE_ALPHA32F_ARB;
+      } else {
+        switch( i->bitsPerPixel() ) {
+        case 8:  return GL_LUMINANCE4_ALPHA4;
+        case 16: return GL_LUMINANCE8_ALPHA8;
+        case 32: return GL_LUMINANCE16_ALPHA16;
+        default: return GL_LUMINANCE_ALPHA;
+        }
       }
-    }
-  case Image::RGB:
-  case Image::BGR:
-    if( GLEW_ARB_texture_float && 
+    case Image::RGB:
+    case Image::BGR:
+      if( GLEW_ARB_texture_float &&
         i->pixelComponentType() == Image::RATIONAL ) {
-      if( i->bitsPerPixel() <= 48 ) return GL_RGB16F_ARB;
-      else return GL_RGB32F_ARB;
-    } else {
-      switch( i->bitsPerPixel() ) {
-      case 12: return GL_RGB4;
-      case 15: return GL_RGB5;
-      case 24: return GL_RGB8;
-      case 30: return GL_RGB10;
-      case 36: return GL_RGB12;
-      case 48: return GL_RGB16;
-      default: return GL_RGB;
+        if( i->bitsPerPixel() <= 48 ) return GL_RGB16F_ARB;
+        else return GL_RGB32F_ARB;
+      } else {
+        switch( i->bitsPerPixel() ) {
+        case 12: return GL_RGB4;
+        case 15: return GL_RGB5;
+        case 24: return GL_RGB8;
+        case 30: return GL_RGB10;
+        case 36: return GL_RGB12;
+        case 48: return GL_RGB16;
+        default: return GL_RGB;
+        }
       }
-    }
-  case Image::RGBA:
-  case Image::BGRA:
-    if( GLEW_ARB_texture_float && 
+    case Image::RGBA:
+    case Image::BGRA:
+      if( GLEW_ARB_texture_float &&
         i->pixelComponentType() == Image::RATIONAL ) {
-      if( i->bitsPerPixel() <= 64 ) return GL_RGBA16F_ARB;
-      else return GL_RGBA32F_ARB;
-    } else {
-      switch( i->bitsPerPixel() ) {
-      case 16: return GL_RGBA4;
-      case 32: return GL_RGBA8;
-      case 48: return GL_RGBA12;
-      case 64: return GL_RGBA16;
-      default: return GL_RGBA;
+        if( i->bitsPerPixel() <= 64 ) return GL_RGBA16F_ARB;
+        else return GL_RGBA32F_ARB;
+      } else {
+        switch( i->bitsPerPixel() ) {
+        case 16: return GL_RGBA4;
+        case 32: return GL_RGBA8;
+        case 48: return GL_RGBA12;
+        case 64: return GL_RGBA16;
+        default: return GL_RGBA;
+        }
       }
-    }
-  case Image::R:
-    if( GLEW_ARB_texture_float && 
-      i->pixelComponentType() == Image::RATIONAL ) {
+    case Image::R:
+      if( GLEW_ARB_texture_float &&
+        i->pixelComponentType() == Image::RATIONAL ) {
         if( i->bitsPerPixel() == 16 ) return GL_R16F;
         else return GL_R32F;
-    }else{
-      switch (i->bitsPerPixel())
-      {
-      case 8: return GL_R8;
-      case 16: return GL_R16;
-      default: return GL_R;
+      } else {
+        switch( i->bitsPerPixel() ) {
+        case 8: return GL_R8;
+        case 16: return GL_R16;
+        default: return GL_R;
+        }
       }
+    default:
+      throw UnsupportedPixelType( i->pixelType() );
     }
-  default:
+  } else {
+    switch( i->compressionType() ) {
+
+#ifdef GL_EXT_texture_compression_s3tc
+    case Image::BC1:
+      if( GLEW_EXT_texture_compression_s3tc ) {
+        switch( i->pixelType() ) {
+        case Image::RGB:
+          return GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+        case Image::RGBA:
+          return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+        }
+      }
+      break;
+
+    case Image::BC2:
+      if( GLEW_EXT_texture_compression_s3tc ) {
+        return GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+      }
+      break;
+
+    case Image::BC3:
+      if( GLEW_EXT_texture_compression_s3tc ) {
+        return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+      }
+      break;
+#endif
+
+#ifdef GL_ARB_texture_compression_rgtc
+    case Image::BC4:
+      if( GLEW_ARB_texture_compression_rgtc ) {
+        switch( i->pixelComponentType() ) {
+        case Image::UNSIGNED:
+          return GL_COMPRESSED_RED_RGTC1;
+        case Image::SIGNED:
+          return GL_COMPRESSED_SIGNED_RED_RGTC1;
+        }
+      }
+      break;
+
+    case Image::BC5:
+      if( GLEW_ARB_texture_compression_rgtc ) {
+        switch( i->pixelComponentType() ) {
+        case Image::UNSIGNED:
+          return GL_COMPRESSED_RG_RGTC2;
+        case Image::SIGNED:
+          return GL_COMPRESSED_SIGNED_RG_RGTC2;
+        }
+      }
+      break;
+#endif
+
+#ifdef GL_ARB_texture_compression_bptc
+    case Image::BC6:
+      if( GLEW_ARB_texture_compression_bptc ) {
+        switch( i->pixelComponentType() ) {
+        case Image::RATIONAL:
+          return GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT;
+        case Image::RATIONAL_UNSIGNED:
+          return GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT;
+        }
+      }
+      break;
+    case Image::BC7_RGB:
+      if( GLEW_ARB_texture_compression_bptc ) {
+        return GL_COMPRESSED_RGBA_BPTC_UNORM;
+      }
+      break;
+    case Image::BC7_SRGB:
+      if( GLEW_ARB_texture_compression_bptc ) {
+        return GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM;
+      }
+      break;
+#endif
+    }
+
     throw UnsupportedPixelType( i->pixelType() );
   }
-    
 }
 
 GLenum X3DTextureNode::glPixelFormat( Image *i ) {
@@ -494,7 +571,8 @@ GLint X3DTextureNode::glCompressedInternalFormat( GLint _format, const std::stri
   case GL_RGB:
 #ifdef GL_EXT_texture_compression_s3tc
     if( GLEW_EXT_texture_compression_s3tc && (_compression == "DXT1" || _compression == "DXT") ) {
-      return GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+      //return GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+      return GL_COMPRESSED_RGBA_BPTC_UNORM;
     }
 #endif
     return GL_COMPRESSED_RGB;
@@ -512,7 +590,8 @@ GLint X3DTextureNode::glCompressedInternalFormat( GLint _format, const std::stri
       } else if( _compression == "DXT3" ) {
         return GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
       } else if( _compression == "DXT5" || _compression == "DXT" ) {
-        return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+        //return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+        return GL_COMPRESSED_RGBA_BPTC_UNORM;
       }
     }
 #endif
@@ -527,7 +606,8 @@ GLint X3DTextureNode::glCompressedInternalFormat( GLint _format, const std::stri
   case GL_SRGB8_EXT:
 #ifdef GL_EXT_texture_compression_s3tc
     if( GLEW_EXT_texture_compression_s3tc && (_compression == "DXT1" || _compression == "DXT") ) {
-      return GL_COMPRESSED_SRGB_S3TC_DXT1_EXT;
+      //return GL_COMPRESSED_SRGB_S3TC_DXT1_EXT;
+      return GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM;
     }
 #endif
     return GL_COMPRESSED_SRGB;
@@ -540,7 +620,8 @@ GLint X3DTextureNode::glCompressedInternalFormat( GLint _format, const std::stri
       } else if( _compression == "DXT3" ) {
         return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT;
       } else if( _compression == "DXT5" || _compression == "DXT" ) {
-        return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT;
+        //return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT;
+        return GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM;
       }
     }
 #endif

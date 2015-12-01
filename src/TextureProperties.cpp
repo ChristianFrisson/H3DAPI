@@ -563,28 +563,60 @@ bool TextureProperties::glInternalFormat( Image *image, GLint &internal_format )
       }
 #ifdef GL_EXT_texture_sRGB
     } else if( GLEW_EXT_texture_sRGB && texture_format == "SRGB" ) {
-      switch( image->pixelType() ) {
+      if( image->compressionType() == Image::NO_COMPRESSION ) {
+        switch( image->pixelType() ) {
         case Image::RGB:
         case Image::BGR:
           switch( image->pixelComponentType() ) {
-            case Image::UNSIGNED:
-              switch( image->bitsPerPixel() ) {
-                case 24:  internal_format = GL_SRGB8_EXT;  return true;
-                default: return false;
-              }
+          case Image::UNSIGNED:
+            switch( image->bitsPerPixel() ) {
+            case 24:  internal_format = GL_SRGB8_EXT;  return true;
             default: return false;
+            }
+          default: return false;
           }
         case Image::RGBA:
         case Image::BGRA:
           switch( image->pixelComponentType() ) {
-            case Image::UNSIGNED:
-              switch( image->bitsPerPixel() ) {
-                case 32:  internal_format = GL_SRGB8_ALPHA8_EXT; return true;
-                default: return false;
-              }
+          case Image::UNSIGNED:
+            switch( image->bitsPerPixel() ) {
+            case 32:  internal_format = GL_SRGB8_ALPHA8_EXT; return true;
             default: return false;
+            }
+          default: return false;
           }
         default: return false;
+        }
+      } else {
+        // Compressed sRGB modes
+
+        switch( image->compressionType() ) {
+
+#ifdef GL_EXT_texture_compression_s3tc
+        case Image::BC1:
+          if( GLEW_EXT_texture_compression_s3tc ) {
+            switch( image->pixelType() ) {
+            case Image::RGB:
+              return GL_COMPRESSED_SRGB_S3TC_DXT1_EXT;
+            case Image::RGBA:
+              return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT;
+            }
+          }
+          break;
+
+        case Image::BC2:
+          if( GLEW_EXT_texture_compression_s3tc ) {
+            return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT;
+          }
+          break;
+
+        case Image::BC3:
+          if( GLEW_EXT_texture_compression_s3tc ) {
+            return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT;
+          }
+          break;
+#endif
+        }
       }
     }
 #else

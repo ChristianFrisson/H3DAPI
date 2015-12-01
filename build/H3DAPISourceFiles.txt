@@ -387,7 +387,8 @@ SET( NON_UNITYBUILD_FILES
                  "X3DTriggerNode.cpp"
                  "X3DUrlObject.cpp"
                  "X3DVertexAttributeNode.cpp"
-                 "X3DViewpointNode.cpp" )
+                 "X3DViewpointNode.cpp"
+                 "DDSImageLoader.cpp" )
 
 
 
@@ -833,7 +834,8 @@ SET( H3DAPI_HEADERS "${H3DAPI_SOURCE_DIR}/../include/H3D/Anchor.h"
                     "${H3DAPI_SOURCE_DIR}/../include/H3D/X3DTypes.h"
                     "${H3DAPI_SOURCE_DIR}/../include/H3D/X3DUrlObject.h"
                     "${H3DAPI_SOURCE_DIR}/../include/H3D/X3DVertexAttributeNode.h"
-                    "${H3DAPI_SOURCE_DIR}/../include/H3D/X3DViewpointNode.h" )
+                    "${H3DAPI_SOURCE_DIR}/../include/H3D/X3DViewpointNode.h"
+                    "${H3DAPI_SOURCE_DIR}/../include/H3D/DDSImageLoader.h" )
 
 IF( EXISTS ${CMAKE_CURRENT_BINARY_DIR}/H3DAPI )
   SET( H3DAPI_HEADERS ${H3DAPI_HEADERS} "${CMAKE_CURRENT_BINARY_DIR}/H3DAPI/include/H3D/H3DApi.h" )

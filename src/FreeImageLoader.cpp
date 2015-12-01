@@ -33,6 +33,8 @@
 
 #ifdef HAVE_FREEIMAGE
 #include <H3DUtil/FreeImageImage.h>
+#include <H3D/DDSImageLoader.h>
+
 #include <FreeImage.h>
 
 using namespace H3D;
@@ -51,6 +53,10 @@ FreeImageLoader::reader_registration(
                             );
 
 bool FreeImageLoader::supportsFileType( const string &url ) {
+  // FreeImage will attempt to load DDS files, which we don't want
+  if( DDSImageLoader::supportsFileType( url ) ) {
+    return false;
+  }
   FREE_IMAGE_FORMAT format = FreeImage_GetFileType( url.c_str() );
   return format != FIF_UNKNOWN;
 }

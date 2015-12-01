@@ -30,6 +30,7 @@
 
 #include <H3D/NrrdImageLoader.h>
 #include <H3D/OpenEXRImageLoader.h>
+#include <H3D/DDSImageLoader.h>
 
 #include <algorithm>
 
@@ -60,6 +61,8 @@ bool NrrdImageLoader::supportsFileType( const string &url ) {
   // OpenEXR supports it, do not allow FreeImage to try and load it.
   if ( OpenEXRImageLoader::supportsFileType ( url ) ) return false;
 #endif
+  // Same issue as above
+  if( DDSImageLoader::supportsFileType( url ) ) return false;
 
 #if TEEM_VERSION < 11100
   // only allow it to read files with the extension .nrrd since

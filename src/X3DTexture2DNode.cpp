@@ -264,16 +264,27 @@ void X3DTexture2DNode::glTexImage( Image *i, GLenum _texture_target,
       border_width = 0;
     }
 
-    // install the image as a 2d texture/
-    glTexImage2D( _texture_target, 
-                  0, // mipmap level
-                  glInternalFormat( i ),
-                  width,
-                  height,
-                  border_width, // border
-                  glPixelFormat( i ),
-                  glPixelComponentType( i ),
-                  image_data );
+    // install the image as a 2d texture
+    if( i->compressionType() == Image::NO_COMPRESSION ) {
+      glTexImage2D( _texture_target, 
+        0, // mipmap level
+        glInternalFormat( i ),
+        width,
+        height,
+        border_width, // border
+        glPixelFormat( i ),
+        glPixelComponentType( i ),
+        image_data );
+    } else {
+      glCompressedTexImage2D( _texture_target,
+        0, // mipmap level
+        glInternalFormat( i ),
+        width,
+        height,
+        border_width, // border
+        width*height*i->bitsPerPixel() / 8,
+        image_data );
+    }
   }
 
   glPixelStorei( GL_UNPACK_ALIGNMENT, byte_alignment );
