@@ -602,7 +602,7 @@ bool TextureProperties::glInternalFormat( Image *image, GLint &internal_format )
             case Image::RGB:
               internal_format = GL_COMPRESSED_SRGB_S3TC_DXT1_EXT; return true;
             case Image::RGBA:
-              internal_format = GL_COMPRESSED_SRGBA_ALPHA_S3TC_DXT1_EXT; return true;
+              internal_format = GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT; return true;
             }
           }
           break;
