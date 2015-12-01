@@ -570,7 +570,7 @@ GLint X3DTextureNode::glCompressedInternalFormat( GLint _format, const std::stri
   case GL_RGB16:
   case GL_RGB:
 #ifdef GL_EXT_texture_compression_s3tc
-    if( GLEW_EXT_texture_compression_s3tc && (_compression == "DXT1" || _compression == "DXT") ) {
+    if( GLEW_EXT_texture_compression_s3tc && _compression == "BC1" ) {
       return GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
     }
 #endif
@@ -584,13 +584,18 @@ GLint X3DTextureNode::glCompressedInternalFormat( GLint _format, const std::stri
   case GL_RGBA:
 #ifdef GL_EXT_texture_compression_s3tc
     if( GLEW_EXT_texture_compression_s3tc ) {
-      if( _compression == "DXT1" ) {
+      if( _compression == "BC1" ) {
         return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-      } else if( _compression == "DXT3" ) {
+      } else if( _compression == "BC2" ) {
         return GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-      } else if( _compression == "DXT5" || _compression == "DXT" ) {
+      } else if( _compression == "BC3" ) {
         return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
       }
+    }
+#endif
+#ifdef GL_VERSION_4_2
+    if( GLEW_VERSION_4_2 && _compression == "BC7" ) {
+      return GL_COMPRESSED_RGBA_BPTC_UNORM;
     }
 #endif
     return GL_COMPRESSED_RGBA;
@@ -598,12 +603,27 @@ GLint X3DTextureNode::glCompressedInternalFormat( GLint _format, const std::stri
   case GL_R8:
   case GL_R16:
   case GL_R:
+#ifdef GL_EXT_texture_compression_rgtc
+    if( GLEW_EXT_texture_compression_rgtc && _compression == "BC4" ) {
+      return GL_COMPRESSED_RED_RGTC1_EXT;
+    }
+#endif
     return GL_COMPRESSED_RED;
+
+#ifdef GL_ARB_texture_float
+  case GL_RGB16F_ARB:
+#ifdef GL_VERSION_4_3
+    if( GLEW_VERSION_4_3 && _compression == "BC6" ) {
+      return GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT;
+    }
+#endif
+    return _format;
+#endif
 
 #ifdef GL_EXT_texture_sRGB
   case GL_SRGB8_EXT:
 #ifdef GL_EXT_texture_compression_s3tc
-    if( GLEW_EXT_texture_compression_s3tc && (_compression == "DXT1" || _compression == "DXT") ) {
+    if( GLEW_EXT_texture_compression_s3tc && _compression == "BC1" ) {
       return GL_COMPRESSED_SRGB_S3TC_DXT1_EXT;
     }
 #endif
@@ -612,13 +632,18 @@ GLint X3DTextureNode::glCompressedInternalFormat( GLint _format, const std::stri
   case GL_SRGB8_ALPHA8_EXT:
 #ifdef GL_EXT_texture_compression_s3tc
     if( GLEW_EXT_texture_compression_s3tc ) {
-      if( _compression == "DXT1" ) {
+      if( _compression == "BC1" ) {
         return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT;
-      } else if( _compression == "DXT3" ) {
+      } else if( _compression == "BC2" ) {
         return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT;
-      } else if( _compression == "DXT5" || _compression == "DXT" ) {
+      } else if( _compression == "BC3" ) {
         return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT;
       }
+    }
+#endif
+#ifdef GL_VERSION_4_2
+    if( GLEW_VERSION_4_2 && _compression == "BC7" ) {
+      return GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM;
     }
 #endif
     return GL_COMPRESSED_SRGB_ALPHA;

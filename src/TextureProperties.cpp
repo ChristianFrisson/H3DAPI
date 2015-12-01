@@ -145,10 +145,13 @@ TextureProperties::TextureProperties(
   textureCompression->addValidValue( "MEDIUM" );
   textureCompression->addValidValue( "NICEST" );
   textureCompression->addValidValue( "LOW" );
-  textureCompression->addValidValue( "DXT" );
-  textureCompression->addValidValue( "DXT1" );
-  textureCompression->addValidValue( "DXT3" );
-  textureCompression->addValidValue( "DXT5" );
+  textureCompression->addValidValue( "BC1" );
+  textureCompression->addValidValue( "BC2" );
+  textureCompression->addValidValue( "BC3" );
+  textureCompression->addValidValue( "BC4" );
+  textureCompression->addValidValue( "BC5" );
+  textureCompression->addValidValue( "BC6" );
+  textureCompression->addValidValue( "BC7" );
   textureCompression->addValidValue( "NONE" );
   textureCompression->setValue( "FASTEST" );
   texturePriority->setValue( 1.0f );

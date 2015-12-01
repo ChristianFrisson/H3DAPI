@@ -215,7 +215,8 @@ namespace H3D {
     ///
     /// <b>Access type: </b> inputOutput \n
     /// <b>Default value: </b> "DEFAULT" \n
-    /// <b>Valid values : < / b> "DEFAULT", "DXT", "DXT1", "DXT3", "DXT5" \n
+    /// <b>Valid values : < / b> "DEFAULT", "BC1", "BC2", "BC3", "BC4" 
+    ///                          "BC5", "BC6", "BC7" \n
     auto_ptr < SFString > textureCompression;
 
     /// The H3DNodeDatabase for this node.
