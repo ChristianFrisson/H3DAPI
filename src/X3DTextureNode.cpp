@@ -205,6 +205,7 @@ GLint X3DTextureNode::glInternalFormat( Image *i ) {
 #endif
 
 #ifdef GL_ARB_texture_compression_bptc
+#ifdef GL_VERSION_4_2   // for some reason GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT is defined with GL_VERSION_4_2 instead of GL_ARB_texture_compression_bptc
     case Image::BC6:
       if( GLEW_ARB_texture_compression_bptc ) {
         switch( i->pixelComponentType() ) {
@@ -225,6 +226,7 @@ GLint X3DTextureNode::glInternalFormat( Image *i ) {
         return GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM;
       }
       break;
+#endif // GL_VERSION_4_2
 #endif
     }
 
