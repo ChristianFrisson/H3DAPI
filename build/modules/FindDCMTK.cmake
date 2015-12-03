@@ -56,7 +56,7 @@ FIND_PATH( DCMTK_config_INCLUDE_DIR NAMES dcmtk/config/osconfig.h
            DOC "Path in which the file dcmtk/config/osconfig.h is located." )
 MARK_AS_ADVANCED(DCMTK_config_INCLUDE_DIR)
 
-set( DCMTK_lib_names_internal ofstd oflog dcmjpeg dcmdata dcmimgle dcmimage )
+set( DCMTK_lib_names_internal dcmjpeg ofstd oflog dcmimage dcmdata dcmimgle  )
 if( DCMTK_lib_names )
   set( DCMTK_lib_names_internal ${DCMTK_lib_names} )
 endif()
