@@ -30,6 +30,7 @@
 
 #include <H3D/DicomImageLoader.h>
 #include <H3DUtil/DicomImage.h>
+#include <H3D/DDSImageLoader.h>
 
 #ifdef HAVE_DCMTK
 #include <dcmtk/dcmdata/dcmetinf.h>
@@ -70,6 +71,11 @@ DicomImageLoader::DicomImageLoader():
 }
 
 bool DicomImageLoader::supportsFileType( const string &url ) {
+  // DicomImageLoader try to load some DDS image, then it hangs, so stop
+  // using DicomImageLoader to load it when DDSImageLoader can do it
+  if( DDSImageLoader::supportsFileType(url) ) {
+    return false;
+  }
   // set the dcmtk console to write to the H3D console
   ofConsole.setCerr( &H3DUtil::Console );
   ofConsole.setCout( &H3DUtil::Console );
