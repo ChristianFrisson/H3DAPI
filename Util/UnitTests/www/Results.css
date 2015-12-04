@@ -27,7 +27,7 @@ ul > .Category_Item { position:relative; margin-left: 20px;}
 
 .TestCase_graph {
   border: 1px solid black;
-  height:250px;
+  height:400px;
   width:500px;
   margin: 0;
   padding: 0;
@@ -37,7 +37,7 @@ ul > .Category_Item { position:relative; margin-left: 20px;}
 
 .TestCase_data {
   border: 1px solid black;
-  height:250px;
+  height:400px;
   width: 150px;
   float:left;
   overflow:hidden;
@@ -47,6 +47,17 @@ ul > .Category_Item { position:relative; margin-left: 20px;}
   position: relative;
   top: 50%;
   transform: translateY(-50%);
+}
+
+div#Options {
+  width:300px;
+  height: 250px;
+  border: 1px solid black; 
+  position: fixed;
+  right: 10px;
+  top: 10px;
+  background-color: rgba(255, 255, 255, 1.0); 
+  z-index: 100;
 }
 
 

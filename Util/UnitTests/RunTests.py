@@ -540,16 +540,16 @@ class TestCaseRunner ( object ):
     
     curs = self.db.cursor()
     # Then ensure the test file and test_case exists in the database
-    curs.execute("SELECT id FROM test_files WHERE filename='%s'" % testCase.filename)
+    curs.execute("SELECT id FROM test_files WHERE filename='%s'" % testCase.filename.replace("\\", "/"))
     res = curs.fetchone()
     if res == None: # test_file doesn't exist, so add it
-      curs.execute("INSERT INTO test_files (filename) VALUES ('%s')" % testCase.filename) 
-      curs.execute("SELECT id FROM test_files WHERE filename='%s'" % testCase.filename)
+      curs.execute("INSERT INTO test_files (filename) VALUES ('%s')" % testCase.filename.replace("\\", "/")) 
+      curs.execute("SELECT id FROM test_files WHERE filename='%s'" % testCase.filename.replace("\\", "/"))
       res = curs.fetchone()
     testfile_id = res[0]
     
     # Now ensure the test_case exists in the database
-    curs.execute("SELECT id FROM test_cases WHERE case_name='%s'" % testCase.name)
+    curs.execute("SELECT test_cases.id FROM test_cases JOIN test_files WHERE case_name='%s'" % testCase.name)
     res = curs.fetchone()
     if res == None:
       curs.execute("INSERT INTO test_cases (case_name, test_type) VALUES ('%s', 'performance')" % testCase.name) 
@@ -606,15 +606,12 @@ class TestCaseRunner ( object ):
     self.server_id = res[0]
 
     curs.execute("INSERT INTO test_runs (timestamp, server_id) VALUES (NOW(), %d)" % self.server_id)
-    curs = self.db.cursor()
-    curs.execute("SELECT id FROM test_runs WHERE server_id=%d ORDER BY timestamp " % self.server_id)
-    res = curs.fetchone()
+    self.test_run_id = curs.lastrowid
     curs.close()
     self.db.commit()
     if res == None:
-      print("Failed to create or obtain test run id from db")
+      print("Failed to insert test run in db")
       return
-    self.test_run_id = res[0]
 
     for root, dirs, files in os.walk(directory):
       for file in files:
