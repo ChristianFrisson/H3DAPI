@@ -1,0 +1,27 @@
+Table:
+performance_results
+Columns:
+id, test_run_id, file_id, case_id, min_fps, max_fps, avg_fps, full_case_data
+
+Table:
+test_case_runs
+Columns:
+id, timestamp, server_id
+
+Table:
+servers
+Columns:
+id, server_name
+
+Table:
+test_files
+Columns:
+id, filename
+
+Table:
+test_cases
+Columns:
+id, casename, test_type
+
+
+SQL structure with column type information available in result_database_structure.sql

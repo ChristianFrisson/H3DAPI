@@ -24,6 +24,8 @@ import Image
 import ConfigParser
 import json
 import gspread
+import MySQLdb
+
 from collections import namedtuple
 #from PIL import Image
 
@@ -234,6 +236,7 @@ class TestCaseRunner ( object ):
     self.screenshot_tmp_file = '%s/tmp_screenshot.png' % (os.getcwd())
     self.startup_time_multiplier = 10
     self.load_flags = []#"--no-fullscreen","--screen=800x600"]
+    self.db = None
     # Used to get intermediate failed results in order to be able to cancel test early and still get some results.
     self.error_reporter = error_reporter
 
@@ -334,7 +337,7 @@ class TestCaseRunner ( object ):
       return None
     result = []
     for sect in confParser.sections():
-      test_case = namedtuple('TestDefinition', ['name','x3d', 'type', 'baseline', 'script', 'runtime']) 
+      test_case = namedtuple('TestDefinition', ['name', 'filename', 'x3d', 'type', 'baseline', 'script', 'runtime'])
       test_case.name = sect
       test_case.x3d = confParser.get(sect, 'x3d')
       test_case.type = confParser.get(sect, 'type')    
@@ -518,6 +521,53 @@ class TestCaseRunner ( object ):
       
     results.append([(v, result)])
 
+  def ConnectDB(self):
+    if self.db == None:
+      try:
+        self.db = MySQLdb.connect(host='127.0.0.1', db='testserver', user='UnitTester', passwd='testing')
+        self.db.autocommit = True
+        curs = self.db.cursor()
+        curs.execute("SELECT * FROM servers WHERE server_name='%s'" % self.server_name)
+        if curs.fetchone() == None:
+          curs.execute("INSERT INTO servers (server_name) VALUES ('%s')" % self.server_name)
+        curs.close()
+        self.db.commit()
+      except Exception as e:
+        print(str(e))        
+
+  def UploadResultsToSQL(self, testCase, result, screenshot_dir, perf_dir, report_dir):
+    self.ConnectDB()
+    
+    curs = self.db.cursor()
+    # Then ensure the test file and test_case exists in the database
+    curs.execute("SELECT id FROM test_files WHERE filename='%s'" % testCase.filename)
+    res = curs.fetchone()
+    if res == None: # test_file doesn't exist, so add it
+      curs.execute("INSERT INTO test_files (filename) VALUES ('%s')" % testCase.filename) 
+      curs.execute("SELECT id FROM test_files WHERE filename='%s'" % testCase.filename)
+      res = curs.fetchone()
+    testfile_id = res[0]
+    
+    # Now ensure the test_case exists in the database
+    curs.execute("SELECT id FROM test_cases WHERE case_name='%s'" % testCase.name)
+    res = curs.fetchone()
+    if res == None:
+      curs.execute("INSERT INTO test_cases (case_name, test_type) VALUES ('%s', 'performance')" % testCase.name) 
+      curs.execute("SELECT id FROM test_cases WHERE case_name='%s'" % testCase.name)
+      res = curs.fetchone()
+    testcase_id = res[0]
+
+    if testCase.type == 'performance':
+      # Insert the performance results
+      fpsfile = open(result.fps_data_file)
+      curs.execute("INSERT INTO performance_results (test_run_id, file_id, case_id, min_fps, max_fps, avg_fps, full_case_data) VALUES (%d, %d, %d, %s, %s, %s, '%s')" % (self.test_run_id, testfile_id, testcase_id, result.fps_min, result.fps_max, result.fps_avg, fpsfile.read()))
+      fpsfile.close()
+    elif testCase.type == 'screenshot':
+      pass
+    curs.close()
+    self.db.commit()
+
+
   def processAllTestDefinitions ( self, directory= ".", output_dir= ".", fileExtensions= [".testcase"] ):
     """
         
@@ -543,7 +593,28 @@ class TestCaseRunner ( object ):
     for dir in [output_dir, screenshot_dir, diff_dir, perf_dir, report_dir]:
       if not os.path.exists(dir):
         os.mkdir(dir)
+        
+    self.server_name = 'michael_test'
+    self.ConnectDB()
+    
+    curs = self.db.cursor()
+    curs.execute("SELECT id FROM servers WHERE server_name='%s'" % self.server_name)
+    res = curs.fetchone()
+    if res == None:
+      print("Failed to obtain server id from db")
+      return
+    self.server_id = res[0]
 
+    curs.execute("INSERT INTO test_runs (timestamp, server_id) VALUES (NOW(), %d)" % self.server_id)
+    curs = self.db.cursor()
+    curs.execute("SELECT id FROM test_runs WHERE server_id=%d ORDER BY timestamp " % self.server_id)
+    res = curs.fetchone()
+    curs.close()
+    self.db.commit()
+    if res == None:
+      print("Failed to create or obtain test run id from db")
+      return
+    self.test_run_id = res[0]
 
     for root, dirs, files in os.walk(directory):
       for file in files:
@@ -556,9 +627,13 @@ class TestCaseRunner ( object ):
             if testCase != None and testCase.x3d != None and testCase.type != None:
               print "Testing: " + testCase.name
               if testCase.type == 'screenshot':
-                result = self.processScreenshotTestCase(file, testCase, results, root, output_dir, screenshot_dir, diff_dir, report_dir, screenshotBoilerplateScript)
+                self.processScreenshotTestCase(file, testCase, results, root, output_dir, screenshot_dir, diff_dir, report_dir, screenshotBoilerplateScript)
               elif testCase.type == 'performance':
-                result = self.processPerformanceTestCase(file, testCase, results, root, output_dir, screenshot_dir, perf_dir, report_dir, performanceBoilerplateScript)              
+                self.processPerformanceTestCase(file, testCase, results, root, output_dir, screenshot_dir, perf_dir, report_dir, performanceBoilerplateScript)  
+                testCase.filename = (os.path.relpath(file_path, directory)).replace('\'', '/') # This is used to set up the tree structure for the results page. It will store this parameter in the database as a unique identifier of this specific file of tests.
+                                           # We provide this filename with a path that is relative to the directory we are parsing from. 
+                if results[len(results)-1] != None:
+                  self.UploadResultsToSQL(testCase, results[len(results)-1][0][1], screenshot_dir, perf_dir, report_dir)            
             else:
               # Test skipped
               result= TestResults()
