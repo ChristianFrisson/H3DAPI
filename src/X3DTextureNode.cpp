@@ -205,28 +205,26 @@ GLint X3DTextureNode::glInternalFormat( Image *i ) {
 #endif
 
 #ifdef GL_ARB_texture_compression_bptc
-#ifdef GL_VERSION_4_2   // for some reason GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT is defined with GL_VERSION_4_2 instead of GL_ARB_texture_compression_bptc
     case Image::BC6:
       if( GLEW_ARB_texture_compression_bptc ) {
         switch( i->pixelComponentType() ) {
         case Image::RATIONAL:
-          return GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT;
+          return GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_ARB;
         case Image::RATIONAL_UNSIGNED:
-          return GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT;
+          return GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_ARB;
         }
       }
       break;
     case Image::BC7_RGB:
       if( GLEW_ARB_texture_compression_bptc ) {
-        return GL_COMPRESSED_RGBA_BPTC_UNORM;
+        return GL_COMPRESSED_RGBA_BPTC_UNORM_ARB;
       }
       break;
     case Image::BC7_SRGB:
       if( GLEW_ARB_texture_compression_bptc ) {
-        return GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM;
+        return GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM_ARB;
       }
       break;
-#endif // GL_VERSION_4_2
 #endif
     }
 
@@ -595,9 +593,9 @@ GLint X3DTextureNode::glCompressedInternalFormat( GLint _format, const std::stri
       }
     }
 #endif
-#ifdef GL_VERSION_4_2
-    if( GLEW_VERSION_4_2 && _compression == "BC7" ) {
-      return GL_COMPRESSED_RGBA_BPTC_UNORM;
+#ifdef GL_ARB_texture_compression_bptc
+    if( GLEW_ARB_texture_compression_bptc && _compression == "BC7" ) {
+      return GL_COMPRESSED_RGBA_BPTC_UNORM_ARB;
     }
 #endif
     return GL_COMPRESSED_RGBA;
@@ -643,9 +641,9 @@ GLint X3DTextureNode::glCompressedInternalFormat( GLint _format, const std::stri
       }
     }
 #endif
-#ifdef GL_VERSION_4_2
-    if( GLEW_VERSION_4_2 && _compression == "BC7" ) {
-      return GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM;
+#ifdef GL_ARB_texture_compression_bptc
+    if( GLEW_ARB_texture_compression_bptc && _compression == "BC7" ) {
+      return GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM_ARB;
     }
 #endif
     return GL_COMPRESSED_SRGB_ALPHA;
