@@ -65,7 +65,8 @@ LineSet::LineSet( Inst< SFNode           > _metadata,
   coord          ( _coord       ),
   vertexCount    ( _vertexCount ),
   fogCoord       ( _fogCoord    ),
-  attrib( _attrib ) {
+  attrib( _attrib ),
+  render_patches( false ) {
 
   type_name = "LineSet";
   database.initFields( this );
@@ -208,7 +209,12 @@ void LineSet::render() {
            i != vertex_count.end(); 
            ++i ) {
         // start the polyline rendering.
-        glBegin( GL_LINE_STRIP );
+        if( !render_patches ) {
+          glBegin( GL_LINE_STRIP );
+        } else {
+          glPatchParameteri( GL_PATCH_VERTICES, 2 );
+          glBegin( GL_PATCHES );
+        }
 
         // Check that the vertex count value is > 2
         if( (*i) < 2 ) {
@@ -219,27 +225,31 @@ void LineSet::render() {
         }
 
         unsigned int stop_index = vertex_counter + (*i);
+        unsigned int start_index = vertex_counter;
 
         // render all vertices for this polyline.
         for( ; vertex_counter < stop_index; ++vertex_counter ) {
-          // Set up colors if colors are specified per vertex.
-          if( color_node ) {
-            color_node->render( vertex_counter );
-          }
-          // Render vertex attribute
-          for( unsigned int attrib_index = 0;
-               attrib_index < attrib->size(); ++attrib_index ) {
-            X3DVertexAttributeNode *attr = 
+          size_t repeat = (render_patches && vertex_counter != start_index && vertex_counter != stop_index - 1) ? 2 : 1;
+          for( size_t i = 0; i < repeat; ++i ) {
+            // Set up colors if colors are specified per vertex.
+            if( color_node ) {
+              color_node->render( vertex_counter );
+            }
+            // Render vertex attribute
+            for( unsigned int attrib_index = 0;
+            attrib_index < attrib->size(); ++attrib_index ) {
+              X3DVertexAttributeNode *attr =
                 attrib->getValueByIndex( attrib_index );
               if( attr ) {
                 attr->render( vertex_counter );
               }
-          }
-            
-          // Render the vertices.
-          coordinate_node->render( vertex_counter );
-          if( fog_coord_node){
-            fog_coord_node->render(vertex_counter);
+            }
+
+            // Render the vertices.
+            coordinate_node->render( vertex_counter );
+            if( fog_coord_node ) {
+              fog_coord_node->render( vertex_counter );
+            }
           }
         }
         // end GL_POLY_LINE
@@ -260,3 +270,24 @@ void LineSet::render() {
   }
 }
 
+void LineSet::traverseSG( TraverseInfo &ti ) {
+  X3DGeometryNode::traverseSG( ti );
+  
+  // If multiple uses of the LineSet then whether patches
+  // are rendered or not is decided by the last usage to be traversed
+  bool * shader_requires_patches = NULL;
+  bool render_patches_new = ti.getUserData( "shaderRequiresPatches",
+    (void **)&shader_requires_patches ) == 0 && *shader_requires_patches;
+  if( render_patches_new != render_patches ) {
+    render_patches = render_patches_new;
+    if( !GLEW_ARB_tessellation_shader ) {
+      if( render_patches_new ) {
+        Console( LogLevel::Error ) << "Warning: Tessellation shaders are not supported by your graphics hardware! "
+          "LineSet " << getName() << " will not be rendered as GL_PATCHES." << endl;
+        render_patches = false;
+      }
+    } else {
+      displayList->breakCache();
+    }
+  }
+}

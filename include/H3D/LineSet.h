@@ -144,6 +144,10 @@ namespace H3D {
     /// Render the LineSet with OpenGL
     virtual void render();
 
+    // Traverse the scenegraph. See X3DGeometryNode::traverseSG
+    // for more info.
+    virtual void traverseSG( TraverseInfo &ti );
+
     /// The color field specifies the colour of the line set at each vertex
     /// and contains a X3DColorNode. If the color field is NULL and there is a
     /// Material defined for the Appearance affecting this LineSet, the
@@ -192,6 +196,14 @@ namespace H3D {
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;
+
+    protected:
+      /// This will be set to true in traverseSG if the render function
+      /// is supposed to render GL_PATCHES instead of GL_LINES.
+      ///
+      /// If multiple uses of the LineSet then whether patches
+      /// are rendered or not is decided by the last usage to be traversed.
+      bool render_patches;
   };
 }
 
