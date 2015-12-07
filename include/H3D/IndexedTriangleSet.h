@@ -253,6 +253,16 @@ namespace H3D {
       return true;
     }
 
+    /// Explicitly enable or disable the rendering of patches for tessellation
+    void setRenderPatches( bool _renderPatches ) {
+      render_patches = _renderPatches;
+    }
+
+    /// Returns true if rendering using patches for tessellation is enabled
+    bool getRenderPatches() {
+      return render_patches;
+    }
+
     /// Auto-generated normals that are used if the normal field is NULL.
     /// Only accessable in C++.
     ///
