@@ -1,9 +1,15 @@
-DROP DATABASE IF EXISTS `testserver`;
-CREATE DATABASE IF NOT EXISTS `testserver`
+-- --------------------------------------------------------
+-- Host:                         127.0.0.1
+-- Server version:               10.1.9-MariaDB - mariadb.org binary distribution
+-- Server OS:                    Win64
+-- HeidiSQL Version:             9.1.0.4867
+-- --------------------------------------------------------
+
+
+CREATE DATABASE IF NOT EXISTS `testserver`;
 USE `testserver`;
 
--- Dumping structure for table testserver.performance_results
-DROP TABLE IF EXISTS `performance_results`;
+
 CREATE TABLE IF NOT EXISTS `performance_results` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `test_run_id` int(10) unsigned NOT NULL,
@@ -12,37 +18,52 @@ CREATE TABLE IF NOT EXISTS `performance_results` (
   `min_fps` float unsigned NOT NULL,
   `max_fps` float unsigned NOT NULL,
   `avg_fps` float unsigned NOT NULL,
-  `full_case_data` mediumtext NOT NULL,
+  `mean_fps` float unsigned NOT NULL,
+  `full_case_data` text NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping structure for table testserver.servers
-DROP TABLE IF EXISTS `servers`;
+
+
+CREATE TABLE IF NOT EXISTS `screenshot_baselines` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `test_run_id` int(10) unsigned NOT NULL,
+  `file_id` int(10) unsigned NOT NULL,
+  `case_id` int(10) unsigned NOT NULL,
+  `image` mediumblob NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `screenshot_results` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `test_run_id` int(10) unsigned NOT NULL,
+  `file_id` int(10) unsigned NOT NULL,
+  `case_id` int(10) unsigned NOT NULL,
+  `output_image` mediumblob NOT NULL,
+  `success` enum('Y','N') NOT NULL,
+  `diff_image` mediumblob NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
 CREATE TABLE IF NOT EXISTS `servers` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `server_name` tinytext NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping structure for table testserver.test_cases
-DROP TABLE IF EXISTS `test_cases`;
 CREATE TABLE IF NOT EXISTS `test_cases` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `casename` tinytext NOT NULL,
+  `case_name` text NOT NULL,
   `test_type` enum('performance','rendering') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping structure for table testserver.test_files
-DROP TABLE IF EXISTS `test_files`;
 CREATE TABLE IF NOT EXISTS `test_files` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `filename` tinytext NOT NULL,
+  `filename` text NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping structure for table testserver.test_runs
-DROP TABLE IF EXISTS `test_runs`;
 CREATE TABLE IF NOT EXISTS `test_runs` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,

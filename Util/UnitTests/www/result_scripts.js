@@ -47,9 +47,9 @@ function LoadSQLModel() {
 var all_graphs = [];
 var display_options =  {
   properties: {
-    available: ["fps_min", "fps_avg", "fps_max"],
-    selected: ["fps_min", "fps_avg", "fps_max"],
-    ignore: ["name", "time", "history", "server_id", "server_name"],
+    available: ["fps_min", "fps_avg", "fps_mean", "fps_max"],
+    selected: ["fps_min", "fps_avg", "fps_mean", "fps_max"],
+    ignore: ["name", "time", "history", "server_id", "server_name", "test_run_id"],
   },
   servers:  {
     available: [],
@@ -59,38 +59,40 @@ var display_options =  {
 
 function generateDisplayOptionsList(model) {
   for(var i = 0; i < model.length; i++) {
-    if(model[i].hasOwnProperty('children'))
-      generateDisplayOptionsList(model[i].children); 
-    else {
-      for(var j = 0; j < model[i].testcases.length; j++) {
-      var testcase = model[i].testcases[j];
-        if($.inArray(testcase.server_name, display_options.servers.available) < 0) {
-          display_options.servers.available.push(testcase.server_name);
-        }
-        if(display_options.servers.selected.length == 0) {
-          display_options.servers.selected.push(testcase.server_name);
-        }
-        for(var propertyName in testcase) {
-          if ($.inArray(propertyName, display_options.properties.ignore) < 0) {
-            if($.inArray(propertyName, display_options.properties.available) < 0) {
-              display_options.properties.available.push(propertyName);
-            }             
+    if(model[i]) {
+      if(model[i].hasOwnProperty('children'))
+        generateDisplayOptionsList(model[i].children); 
+      else {
+        for(var j = 0; j < model[i].testcases.length; j++) {
+        var testcase = model[i].testcases[j];
+          if($.inArray(testcase.server_name, display_options.servers.available) < 0) {
+            display_options.servers.available.push(testcase.server_name);
           }
-        }
-        for(var k = 0; k < testcase.history.length; k++) {
-        if($.inArray(testcase.history[k].server_name, display_options.servers.available) < 0) {
-          display_options.servers.available.push(testcase.history[k].server_name);
-        }        
-          for(var propertyName in testcase.history[k]) {
+          if(display_options.servers.selected.length == 0) {
+            display_options.servers.selected.push(testcase.server_name);
+          }
+          for(var propertyName in testcase) {
             if ($.inArray(propertyName, display_options.properties.ignore) < 0) {
               if($.inArray(propertyName, display_options.properties.available) < 0) {
                 display_options.properties.available.push(propertyName);
               }             
             }
           }
-        }        
-      }
-    }               
+          for(var k = 0; k < testcase.history.length; k++) {
+          if($.inArray(testcase.history[k].server_name, display_options.servers.available) < 0) {
+            display_options.servers.available.push(testcase.history[k].server_name);
+          }        
+            for(var propertyName in testcase.history[k]) {
+              if ($.inArray(propertyName, display_options.properties.ignore) < 0) {
+                if($.inArray(propertyName, display_options.properties.available) < 0) {
+                  display_options.properties.available.push(propertyName);
+                }             
+              }
+            }
+          }        
+        }
+      }               
+    }
   }
 }
 
@@ -173,7 +175,7 @@ function generateDatasets(testcase) {
   for(var s = 0; s < display_options.servers.selected.length; s++) {
     var server = display_options.servers.selected[s];
     for(var propertyName in testcase) {
-      if(($.inArray(propertyName, display_options.properties.selected) > -1) || (propertyName == "server_name") || (propertyName == "time")) {
+      if(($.inArray(propertyName, display_options.properties.selected) > -1) || (propertyName == "server_name") || (propertyName == "time") || (propertyName == "test_run_id")) {
         var color = "hsla("+Math.round(hue)+", 60%, 60%";
         var config = {
         label: propertyName, 
@@ -222,8 +224,7 @@ function generateDatasets(testcase) {
           //   Store an index into their dataset label array and my dataset label array.
           //   If one of the two indexes has reached the end of its list then add all remaining timestamps in the other list to the first list
           //   If the two timestamps at these indexes are equal then increment both indexes.
-          //   If the two timestamps these indexes point at aren't equal then increment the earliest index until it no longer is lower or until it goes beyond the end of the list. Then add the other timestamp before that index.
-          //   Increment the index of the earlier timestamp.
+          
           for(var prev = 0; prev < datasets.length; prev++) {
             var theirs = 0;
             var len_t = datasets[prev].labels.length;
@@ -430,38 +431,40 @@ var CategoryCount = 0;
   var first = true;
 function ConstructList(model, target) {
   for (var i = 0; i < model.length; i++) {
-    var ul = $('<ul>');
-    ul.attr('class', 'Category_Item');
-    
-    var label = $('<label>');
-    label.attr('class', 'noselect');       
-    var glyph = $('<div>');
-    glyph.attr('class', 'glyph');
-    glyph.html('▶');
+    if(model[i]) {
+      var ul = $('<ul>');
+      ul.attr('class', 'Category_Item');
       
-    label.append(glyph);
-    label.append('<h3>'+model[i].name+'</h3>');
-    label.attr('for', 'category'+CategoryCount);
-    
-    var input = $('<input>');
-    input.attr('type', 'checkbox');
-    input.attr('id', 'category'+CategoryCount);
-    input.addClass('category_list_checkbox');
-    if(first)
-      input.prop('checked', true);
-    ul.append(input);
-    ul.append(label);
-    
-    CategoryCount++;
-    
-    if(model[i].hasOwnProperty('children'))
-      ConstructList(model[i].children, ul);
-    else if (model[i].hasOwnProperty('testcases')) {
-      ConstructTestCases(model[i].testcases, ul);
-      first = false;
+      var label = $('<label>');
+      label.attr('class', 'noselect');       
+      var glyph = $('<div>');
+      glyph.attr('class', 'glyph');
+      glyph.html('▶');
+        
+      label.append(glyph);
+      label.append('<h3>'+model[i].name+'</h3>');
+      label.attr('for', 'category'+CategoryCount);
+      
+      var input = $('<input>');
+      input.attr('type', 'checkbox');
+      input.attr('id', 'category'+CategoryCount);
+      input.addClass('category_list_checkbox');
+      if(first)
+        input.prop('checked', true);
+      ul.append(input);
+      ul.append(label);
+      
+      CategoryCount++;
+      
+      if(model[i].hasOwnProperty('children'))
+        ConstructList(model[i].children, ul);
+      else if (model[i].hasOwnProperty('testcases')) {
+        ConstructTestCases(model[i].testcases, ul);
+        first = false;
+      }
+             
+      target.append(ul);
     }
-           
-    target.append(ul);
   }      
 }
 
@@ -472,7 +475,6 @@ var model = LoadSQLModel();
 
 $(document).ready(function(){
   $('#Options').draggable();
-  model.push(model[0]);
   refreshDisplayOptions(model);
   ConstructList(model, $('#Categories'));
   $('.TestCase').each(function() { generateGraph($(this));}); // We make sure generateGraph gets called

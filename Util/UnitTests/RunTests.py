@@ -48,8 +48,14 @@ parser.add_argument('--only_validate', dest='only_validate', action='store_true'
 parser.add_argument('--only_generate', dest='only_generate', action='store_true',
                     default=False,
                     help='does not run validation on the generated output. Will not report screenshot or performance comparison results. Can not be combined with only_validate.')
-parser.add_argument('--timestamp', dest='timestamp', help='Format is YYYY-MM-DD HH:MM:SS. The datetime that will be stored in the database for all the tests this script will run. If nothing is specified it will default to the current time.',
+parser.add_argument('--timestamp', dest='timestamp', help='Format is YYYY-MM-DD HH:MM:SS. The time part of the datetime is optional. This datetime will be stored in the database for all the tests this script will run. If nothing is specified it will default to the current time.',
                     default=datetime.datetime.strftime(datetime.datetime.today(), "%Y-%m-%d %H:%M:%S"))                    
+parser.add_argument('--dbhost', dest='dbhost', help='Address to database.')
+parser.add_argument('--dbname', dest='dbname', help='Database name.')
+parser.add_argument('--dbuser', dest='dbuser', help='Database user. Needs write-access to the database.')
+parser.add_argument('--dbpass', dest='dbpass', help='Database password.')
+parser.add_argument('--servername', dest='servername', help='The name of this server. All results from tests run by this script will be associated with this name.',
+                    default='Unknown')
 args = parser.parse_args()
 
 
@@ -340,14 +346,15 @@ class TestCaseRunner ( object ):
       return None
     result = []
     for sect in confParser.sections():
-      test_case = namedtuple('TestDefinition', ['name', 'filename', 'x3d', 'type', 'baseline', 'script', 'runtime'])
-      test_case.name = sect
-      test_case.x3d = confParser.get(sect, 'x3d')
-      test_case.type = confParser.get(sect, 'type')    
-      test_case.baseline = confParser.get(sect, 'baseline')
-      test_case.script = confParser.get(sect, 'script')
-      test_case.runtime = confParser.get(sect, 'runtime')
-      result.append(test_case)
+      if sect != 'Default':
+        test_case = namedtuple('TestDefinition', ['name', 'filename', 'x3d', 'type', 'baseline', 'script', 'runtime'])
+        test_case.name = sect
+        test_case.x3d = confParser.get(sect, 'x3d')
+        test_case.type = confParser.get(sect, 'type')    
+        test_case.baseline = confParser.get(sect, 'baseline')
+        test_case.script = confParser.get(sect, 'script')
+        test_case.runtime = confParser.get(sect, 'runtime')
+        result.append(test_case)
     return result
   
   def validate_screenshot(self, screenshot_path='.', baseline_path='.', diff_path='.'):
@@ -425,7 +432,6 @@ class TestCaseRunner ( object ):
       result.url= os.path.join(directory, testCase.x3d)
       result.created_variation= True
 
-
   def processScreenshotTestCase(self, file, testCase, results, directory, output_dir, screenshot_dir, diff_dir, report_dir, boilerplateScript):
     """
         
@@ -437,7 +443,11 @@ class TestCaseRunner ( object ):
       testCaseScript = ""
                 
     script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (self.early_shutdown_file, os.path.join(screenshot_dir, os.path.splitext(file)[0]+"_"+testCase.name+"_"))) + '\n' + testCaseScript + "]]></PythonScript>"
-                              
+    
+    for dir in [output_dir, screenshot_dir, diff_dir, report_dir]:
+      if not os.path.exists(dir):
+        os.mkdir(dir)
+                                      
     variation_results= []
     v = Variation (testCase.name, script)
     if not args.only_validate:
@@ -485,7 +495,6 @@ class TestCaseRunner ( object ):
     if self.error_reporter:
       self.error_reporter.reportResults( results )
 
-
   def processPerformanceTestCase(self, file, testCase, results, directory, output_dir, screenshot_dir, perf_dir, report_dir, boilerplateScript):
     """
         
@@ -497,8 +506,8 @@ class TestCaseRunner ( object ):
       testCaseScript = ""
                 
     screenshot_path = os.path.abspath(os.path.join(screenshot_dir, os.path.splitext(file)[0]+'_'+testCase.name+'.png'))
-    self.fps_data_file = os.path.join(perf_dir, os.path.splitext(file)[0]+'_'+testCase.name+'_perf.txt')
-    script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (self.fps_data_file.replace('\\', '/'), self.early_shutdown_file.replace('\\', '/'), testCase.runtime.replace('\\', '/'), screenshot_path.replace('\\', '/'))) + '\n' + testCaseScript + "]]></PythonScript>"
+    self.fps_data_file = os.path.abspath(os.path.join(perf_dir, os.path.splitext(file)[0]+'_'+testCase.name+'_perf.txt').replace('\\', '/'))
+    script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (self.fps_data_file, self.early_shutdown_file.replace('\\', '/'), testCase.runtime.replace('\\', '/'), screenshot_path.replace('\\', '/'))) + '\n' + testCaseScript + "]]></PythonScript>"
 
 
     variation_results= []
@@ -527,7 +536,7 @@ class TestCaseRunner ( object ):
   def ConnectDB(self):
     if self.db == None:
       try:
-        self.db = MySQLdb.connect(host='127.0.0.1', db='testserver', user='UnitTester', passwd='testing')
+        self.db = MySQLdb.connect(host=args.dbhost, db=args.dbname, user=args.dbuser, passwd=args.dbpass)
         self.db.autocommit = True
         curs = self.db.cursor()
         curs.execute("SELECT * FROM servers WHERE server_name='%s'" % self.server_name)
@@ -543,11 +552,11 @@ class TestCaseRunner ( object ):
     
     curs = self.db.cursor()
     # Then ensure the test file and test_case exists in the database
-    curs.execute("SELECT id FROM test_files WHERE filename='%s'" % testCase.filename.replace("\\", "/"))
+    curs.execute("SELECT id FROM test_files WHERE filename='%s'" % os.path.splitext(testCase.filename.replace("\\", "/"))[0])
     res = curs.fetchone()
     if res == None: # test_file doesn't exist, so add it
-      curs.execute("INSERT INTO test_files (filename) VALUES ('%s')" % testCase.filename.replace("\\", "/")) 
-      curs.execute("SELECT id FROM test_files WHERE filename='%s'" % testCase.filename.replace("\\", "/"))
+      curs.execute("INSERT INTO test_files (filename) VALUES ('%s')" % os.path.splitext(testCase.filename.replace("\\", "/"))[0]) 
+      curs.execute("SELECT id FROM test_files WHERE filename='%s'" % os.path.splitext(testCase.filename.replace("\\", "/"))[0])
       res = curs.fetchone()
     testfile_id = res[0]
     
@@ -563,10 +572,26 @@ class TestCaseRunner ( object ):
     if testCase.type == 'performance':
       # Insert the performance results
       fpsfile = open(result.fps_data_file)
-      curs.execute("INSERT INTO performance_results (test_run_id, file_id, case_id, min_fps, max_fps, avg_fps, full_case_data) VALUES (%d, %d, %d, %s, %s, %s, '%s')" % (self.test_run_id, testfile_id, testcase_id, result.fps_min, result.fps_max, result.fps_avg, fpsfile.read()))
+      curs.execute("INSERT INTO performance_results (test_run_id, file_id, case_id, min_fps, max_fps, avg_fps, mean_fps, full_case_data) VALUES (%d, %d, %d, %s, %s, %s, %s, '%s')" % (self.test_run_id, testfile_id, testcase_id, result.fps_min, result.fps_max, result.fps_avg, result.fps_mean, fpsfile.read()))
       fpsfile.close()
     elif testCase.type == 'screenshot':
-      pass
+      for i in range(0, len(result.screenshots)):
+        if not result.screenshots_ok[i]: #validation failed, if possible we should upload both the screenshot and the diff
+          if result.screenshot_diffs[i] != '':
+            diff_file = open(result.screenshot_diffs[i], 'rb')
+            diff_image = diff_file.read()
+            diff_file.close()
+          else:
+            diff_image = 'NULL'
+          if result.screenshots[i] != '':
+            output_file = open(result.screenshots[i], 'rb')
+            output_image = output_file.read()
+            output_file.close()
+          else:
+            output_image = 'NULL'
+        curs.execute("INSERT INTO screenshot_results (test_run_id, file_id, case_id, success, output_image, diff_image) VALUES (%d, %d, %d" % (self.test_run_id, testfile_id, testcase_id) + ", 'N', %s, %s)", (output_image, diff_image));
+      else:
+        curs.execute("INSERT INTO screenshot_results (test_run_id, file_id, case_id, success) VALUES (%d, %d, %d, 'Y')" % (self.test_run_id, testfile_id, testcase_id));
     curs.close()
     self.db.commit()
 
@@ -597,7 +622,7 @@ class TestCaseRunner ( object ):
       if not os.path.exists(dir):
         os.mkdir(dir)
         
-    self.server_name = 'someother_hardware'
+    self.server_name = args.servername;
     self.ConnectDB()
     
     curs = self.db.cursor()
@@ -624,16 +649,18 @@ class TestCaseRunner ( object ):
           print "Checking " + file_path + " for tests"
           testCases = self.parseTestDefinitionFile(file_path)
           for testCase in testCases:
-            if testCase != None and testCase.x3d != None and testCase.type != None:
+            if testCase != None and testCase.x3d != None and testCase.type != None and testCase.type != 'performance':
               print "Testing: " + testCase.name
               if testCase.type == 'screenshot':
                 self.processScreenshotTestCase(file, testCase, results, root, output_dir, screenshot_dir, diff_dir, report_dir, screenshotBoilerplateScript)
               elif testCase.type == 'performance':
                 self.processPerformanceTestCase(file, testCase, results, root, output_dir, screenshot_dir, perf_dir, report_dir, performanceBoilerplateScript)  
-                testCase.filename = (os.path.relpath(file_path, directory)).replace('\'', '/') # This is used to set up the tree structure for the results page. It will store this parameter in the database as a unique identifier of this specific file of tests.
-                                           # We provide this filename with a path that is relative to the directory we are parsing from. 
-                if results[len(results)-1] != None:
+              
+              testCase.filename = (os.path.relpath(file_path, directory)).replace('\'', '/') # This is used to set up the tree structure for the results page. It will store this parameter in the database as a unique identifier of this specific file of tests.
+              if results[len(results)-1] != None:  
                   self.UploadResultsToSQL(testCase, results[len(results)-1][0][1], screenshot_dir, perf_dir, report_dir)            
+                
+
             else:
               # Test skipped
               result= TestResults()

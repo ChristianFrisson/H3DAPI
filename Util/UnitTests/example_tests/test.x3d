@@ -1,0 +1,12 @@
+
+<Scene>
+<Viewpoint orientation='0 0 0 0' position='0 0 5'  />
+  <Transform DEF='T'>
+    <Shape>
+      <Appearance>
+        <Material DEF='M' diffuseColor='0.356863 0.85098 0.517647' emissiveColor='0.156863 0.65098 0.65098'  />
+      </Appearance>
+      <Cylinder radius='0.2'/>
+    </Shape>
+  </Transform>
+</Scene>
