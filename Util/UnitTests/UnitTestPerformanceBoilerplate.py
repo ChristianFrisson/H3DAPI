@@ -23,6 +23,7 @@ class StoreFPS( AutoUpdate( SFFloat ) ):
 
   def stop( self ):
     self.started = False
+    self.fps_file.close()
     takeScreenshot( '%s' )
     shutdown_file = open( self.early_shutdown_file, 'w' )
     shutdown_file.write( "OK" )

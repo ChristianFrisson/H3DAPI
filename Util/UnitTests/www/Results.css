@@ -38,7 +38,7 @@ ul > .Category_Item { position:relative; margin-left: 20px;}
 .TestCase_data {
   border: 1px solid black;
   height:400px;
-  width: 150px;
+  width: auto;
   float:left;
   overflow:hidden;
 }
@@ -47,11 +47,14 @@ ul > .Category_Item { position:relative; margin-left: 20px;}
   position: relative;
   top: 50%;
   transform: translateY(-50%);
+  margin-right: 30px;
 }
 
 div#Options {
-  width:300px;
-  height: 250px;
+  min-width:300px;
+  min-height: 250px;
+  height: auto;
+  width: auto;
   border: 1px solid black; 
   position: fixed;
   right: 10px;
@@ -65,7 +68,7 @@ label h3 {
   display:inline;
 }
 
-input[type=checkbox] { 
+ .category_list_checkbox { 
   -webkit-appearance: none;
   appearance: none;
 }

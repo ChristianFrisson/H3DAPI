@@ -25,6 +25,7 @@ import ConfigParser
 import json
 import gspread
 import MySQLdb
+import datetime
 
 from collections import namedtuple
 #from PIL import Image
@@ -46,7 +47,9 @@ parser.add_argument('--only_validate', dest='only_validate', action='store_true'
                     help='Does not run the test cases, only goes through the output directory and compares the generated output. Will not report start/termination results. Can not be combined with only_generate.')
 parser.add_argument('--only_generate', dest='only_generate', action='store_true',
                     default=False,
-                    help='does not run validation on the generated output. Will not report screenshot or performance comparison results. Can not be combined with only_validate.')                    
+                    help='does not run validation on the generated output. Will not report screenshot or performance comparison results. Can not be combined with only_validate.')
+parser.add_argument('--timestamp', dest='timestamp', help='Format is YYYY-MM-DD HH:MM:SS. The datetime that will be stored in the database for all the tests this script will run. If nothing is specified it will default to the current time.',
+                    default=datetime.datetime.strftime(datetime.datetime.today(), "%Y-%m-%d %H:%M:%S"))                    
 args = parser.parse_args()
 
 
@@ -493,7 +496,7 @@ class TestCaseRunner ( object ):
     else:
       testCaseScript = ""
                 
-    screenshot_path = os.path.join(screenshot_dir, os.path.splitext(file)[0]+'_'+testCase.name+'.png')
+    screenshot_path = os.path.abspath(os.path.join(screenshot_dir, os.path.splitext(file)[0]+'_'+testCase.name+'.png'))
     self.fps_data_file = os.path.join(perf_dir, os.path.splitext(file)[0]+'_'+testCase.name+'_perf.txt')
     script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (self.fps_data_file.replace('\\', '/'), self.early_shutdown_file.replace('\\', '/'), testCase.runtime.replace('\\', '/'), screenshot_path.replace('\\', '/'))) + '\n' + testCaseScript + "]]></PythonScript>"
 
@@ -594,7 +597,7 @@ class TestCaseRunner ( object ):
       if not os.path.exists(dir):
         os.mkdir(dir)
         
-    self.server_name = 'michael_test'
+    self.server_name = 'someother_hardware'
     self.ConnectDB()
     
     curs = self.db.cursor()
@@ -605,7 +608,7 @@ class TestCaseRunner ( object ):
       return
     self.server_id = res[0]
 
-    curs.execute("INSERT INTO test_runs (timestamp, server_id) VALUES (NOW(), %d)" % self.server_id)
+    curs.execute("INSERT INTO test_runs (timestamp, server_id) VALUES (\"" + args.timestamp + "\", %d)" % self.server_id)
     self.test_run_id = curs.lastrowid
     curs.close()
     self.db.commit()

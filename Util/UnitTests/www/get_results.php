@@ -58,12 +58,12 @@ while($row = mysqli_fetch_assoc($fetch_result)) {
   }
   $testcase = array(
     "name"   => $category_structure[0],
+    "server_id"=> $row['server_id'],
+    "server_name"=> $row['server_name'],
     "time"   => $row['timestamp'],
     "fps_min"=> $row['min_fps'],
     "fps_avg"=> $row['avg_fps'],
     "fps_max"=> $row['max_fps'],
-    "server_id"=> $row['server_id'],
-    "server_name"=> $row['server_name'],
     "history"=> array());
     // Now build the history array
     $history_fetch = mysqli_query($db, "SELECT min_fps, avg_fps, max_fps, timestamp, server_id, server_name 
@@ -72,15 +72,15 @@ while($row = mysqli_fetch_assoc($fetch_result)) {
                                       ON performance_results.test_run_id=test_runs.id
                                     JOIN servers
                                       ON test_runs.server_id=servers.id
-                                    WHERE case_id=" .$row['case_id']. " AND timestamp<\"" .$row['timestamp'] . "\" ORDER BY timestamp ASC");
+                                    WHERE case_id=" .$row['case_id']. " AND timestamp<=\"" .$row['timestamp'] . "\" AND test_run_id!=".$row['test_run_id']." ORDER BY timestamp ASC");
     while($hist_row = mysqli_fetch_assoc($history_fetch)) {
        array_push($testcase['history'], array(
+      "server_id"=> $hist_row['server_id'],
+      "server_name"=> $hist_row['server_name'],
       "time"   => $hist_row['timestamp'],
       "fps_min"=> $hist_row['min_fps'],
       "fps_avg"=> $hist_row['avg_fps'],
       "fps_max"=> $hist_row['max_fps'],
-      "server_id"=> $hist_row['server_id'],
-      "server_name"=> $hist_row['server_name']
        ));
     }
     // All that remains now is to push the testcase to the node's testcases array
