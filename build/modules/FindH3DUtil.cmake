@@ -41,6 +41,7 @@ FIND_LIBRARY(H3DUTIL_LIBRARY NAMES ${H3DUTIL_NAME}
                                    ../../${DEFAULT_LIB_INSTALL}
                                    ${module_file_path}/../../../${DEFAULT_LIB_INSTALL}
                                    $ENV{H3D_ROOT}/../../../${DEFAULT_LIB_INSTALL}
+                                   $ENV{H3D_ROOT}/../../${DEFAULT_LIB_INSTALL}
                              DOC "Path to ${H3DUTIL_NAME} library." )
 
 FIND_LIBRARY(H3DUTIL_DEBUG_LIBRARY NAMES ${H3DUTIL_NAME}_d
@@ -48,6 +49,7 @@ FIND_LIBRARY(H3DUTIL_DEBUG_LIBRARY NAMES ${H3DUTIL_NAME}_d
                                          ../../${DEFAULT_LIB_INSTALL}
                                          ${module_file_path}/../../../${DEFAULT_LIB_INSTALL}
                                          $ENV{H3D_ROOT}/../../../${DEFAULT_LIB_INSTALL}
+                                         $ENV{H3D_ROOT}/../../${DEFAULT_LIB_INSTALL}
                                    DOC "Path to ${H3DUTIL_NAME}_d library." )
 
 MARK_AS_ADVANCED(H3DUTIL_LIBRARY)

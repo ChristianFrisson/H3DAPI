@@ -55,6 +55,7 @@ FIND_LIBRARY(HAPI_LIBRARY NAMES ${HAPI_NAME}
                                 ../../${DEFAULT_LIB_INSTALL}
                                 ${module_file_path}/../../../${DEFAULT_LIB_INSTALL}
                                 $ENV{H3D_ROOT}/../../../${DEFAULT_LIB_INSTALL}
+                                $ENV{H3D_ROOT}/../../${DEFAULT_LIB_INSTALL}
                           DOC "Path to ${HAPI_NAME} library." )
 
 FIND_LIBRARY( HAPI_DEBUG_LIBRARY NAMES ${HAPI_NAME}_d
@@ -62,6 +63,7 @@ FIND_LIBRARY( HAPI_DEBUG_LIBRARY NAMES ${HAPI_NAME}_d
                     ../../${DEFAULT_LIB_INSTALL}
                     ${module_file_path}/../../../${DEFAULT_LIB_INSTALL}
                     $ENV{H3D_ROOT}/../../../${DEFAULT_LIB_INSTALL}
+                    $ENV{H3D_ROOT}/../../${DEFAULT_LIB_INSTALL}
                     DOC "Path to ${HAPI_NAME}_d library." )
 MARK_AS_ADVANCED(HAPI_LIBRARY)
 MARK_AS_ADVANCED(HAPI_DEBUG_LIBRARY)
