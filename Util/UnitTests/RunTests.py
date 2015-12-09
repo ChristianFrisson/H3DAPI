@@ -9,6 +9,7 @@ Requirements:
 
 import os, sys
 import subprocess
+import shutil
 import time
 import platform
 from Queue import Queue, Empty
@@ -167,7 +168,8 @@ class TestResults ( object ):
     self.std_err= ""
     self.started_ok= False
     self.terminated_ok= False
-    self.screenshots_ok = []
+    self.baselines= []
+    self.screenshots_ok= []
     self.screenshots= []
     self.screenshot_diffs= []
     self.screenshot_thumbs= []
@@ -442,7 +444,7 @@ class TestCaseRunner ( object ):
     else:
       testCaseScript = ""
                 
-    script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (self.early_shutdown_file, os.path.join(screenshot_dir, os.path.splitext(file)[0]+"_"+testCase.name+"_"))) + '\n' + testCaseScript + "]]></PythonScript>"
+    script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (self.early_shutdown_file, os.path.join(os.path.abspath(args.workingdir), screenshot_dir, os.path.splitext(file)[0]+"_"+testCase.name+"_"))) + '\n' + testCaseScript + "]]></PythonScript>"
     
     for dir in [output_dir, screenshot_dir, diff_dir, report_dir]:
       if not os.path.exists(dir):
@@ -464,14 +466,17 @@ class TestCaseRunner ( object ):
       result.url= os.path.join(directory, testCase.x3d)
       result.created_variation= True
 
-    result.has_baseline= (testCase.baseline != None) and os.path.exists(os.path.join(output_dir, testCase.baseline))
-
     for screenshot_file in os.listdir(screenshot_dir):
       screenshot_base, screenshot_ext = os.path.splitext(screenshot_file)
       if screenshot_base.startswith(os.path.splitext(file)[0]+"_"+testCase.name+"_") and not screenshot_base.endswith('_thumb'):
         if screenshot_ext.lower() == '.png':
           diff_path = os.path.join(diff_dir, "diff_") + screenshot_file
-          baseline_path = os.path.join(testCase.baseline, screenshot_file)
+          baseline_path = os.path.join(directory, testCase.baseline, screenshot_file)
+          if os.path.exists(baseline_path):
+            result.baselines.append(baseline_path)
+          else:
+            result.baselines.append('')
+
           if not args.only_generate:
             comp_result = self.validate_screenshot(os.path.join(screenshot_dir, screenshot_file), baseline_path, diff_path)
             result.screenshots_ok.append(comp_result['success'] and result.screenshots_ok)
@@ -549,7 +554,7 @@ class TestCaseRunner ( object ):
 
   def UploadResultsToSQL(self, testCase, result, screenshot_dir, perf_dir, report_dir):
     self.ConnectDB()
-    
+    print "Uploading results."
     curs = self.db.cursor()
     # Then ensure the test file and test_case exists in the database
     curs.execute("SELECT id FROM test_files WHERE filename='%s'" % os.path.splitext(testCase.filename.replace("\\", "/"))[0])
@@ -576,6 +581,20 @@ class TestCaseRunner ( object ):
       fpsfile.close()
     elif testCase.type == 'screenshot':
       for i in range(0, len(result.screenshots)):
+        # First check if there's a baseline in the database for this screenshot
+        step_name = os.path.splitext(result.baselines[i])[0][result.baselines[i].find(testCase.name):]
+        curs.execute("SELECT id, image FROM screenshot_baselines WHERE file_id=%s AND case_id=%s AND step_name='%s'" % (testfile_id, testcase_id, step_name))
+        res = curs.fetchone()
+        if os.path.exists(result.baselines[i]):
+          # Baseline hasn't been stored so we'll upload one if it exists
+          baseline_file = open(result.baselines[i], 'rb')
+          baseline_image = baseline_file.read()
+          baseline_file.close()
+          if res == None:
+            curs.execute(("INSERT INTO screenshot_baselines (test_run_id, file_id, case_id, step_name, image) VALUES (%d, %d, %d, '%s'" % (self.test_run_id, testfile_id, testcase_id, step_name)) + ", %s)", [baseline_image,])
+          elif res[1] != baseline_image:
+            curs.execute("UPDATE screenshot_baselines SET image=%s WHERE id=%d", [baseline_image, res[0]])
+
         if not result.screenshots_ok[i]: #validation failed, if possible we should upload both the screenshot and the diff
           if result.screenshot_diffs[i] != '':
             diff_file = open(result.screenshot_diffs[i], 'rb')
@@ -589,9 +608,10 @@ class TestCaseRunner ( object ):
             output_file.close()
           else:
             output_image = 'NULL'
-        curs.execute("INSERT INTO screenshot_results (test_run_id, file_id, case_id, success, output_image, diff_image) VALUES (%d, %d, %d" % (self.test_run_id, testfile_id, testcase_id) + ", 'N', %s, %s)", (output_image, diff_image));
-      else:
-        curs.execute("INSERT INTO screenshot_results (test_run_id, file_id, case_id, success) VALUES (%d, %d, %d, 'Y')" % (self.test_run_id, testfile_id, testcase_id));
+          curs.execute("INSERT INTO screenshot_results (test_run_id, file_id, case_id, step_name, success, output_image, diff_image) VALUES (%d, %d, %d, '%s'" % (self.test_run_id, testfile_id, testcase_id, step_name) + ", 'N', %s, %s)", [output_image, diff_image]);
+        else:
+          curs.execute("INSERT INTO screenshot_results (test_run_id, file_id, case_id, step_name, success) VALUES (%d, %d, %d, '%s', 'Y')" % (self.test_run_id, testfile_id, testcase_id, step_name));
+
     curs.close()
     self.db.commit()
 
@@ -615,6 +635,9 @@ class TestCaseRunner ( object ):
     
     
     screenshot_dir = os.path.join(output_dir, 'screenshots')
+    if os.path.exists(screenshot_dir):
+      shutil.rmtree(screenshot_dir)
+
     diff_dir = os.path.join(output_dir, 'diffs')
     perf_dir = os.path.join(directory, output_dir, 'perf')
     report_dir = os.path.join(output_dir, 'reports')
@@ -649,7 +672,7 @@ class TestCaseRunner ( object ):
           print "Checking " + file_path + " for tests"
           testCases = self.parseTestDefinitionFile(file_path)
           for testCase in testCases:
-            if testCase != None and testCase.x3d != None and testCase.type != None and testCase.type != 'performance':
+            if testCase != None and testCase.x3d != None and testCase.type != None:
               print "Testing: " + testCase.name
               if testCase.type == 'screenshot':
                 self.processScreenshotTestCase(file, testCase, results, root, output_dir, screenshot_dir, diff_dir, report_dir, screenshotBoilerplateScript)
@@ -658,7 +681,7 @@ class TestCaseRunner ( object ):
               
               testCase.filename = (os.path.relpath(file_path, directory)).replace('\'', '/') # This is used to set up the tree structure for the results page. It will store this parameter in the database as a unique identifier of this specific file of tests.
               if results[len(results)-1] != None:  
-                  self.UploadResultsToSQL(testCase, results[len(results)-1][0][1], screenshot_dir, perf_dir, report_dir)            
+                self.UploadResultsToSQL(testCase, results[len(results)-1][0][1], screenshot_dir, perf_dir, report_dir)            
                 
 
             else:
@@ -966,7 +989,7 @@ img {
 print ""
 print "WARNING: Do not change the window focus, or perform other input until the test is complete!"
 print ""
-time.sleep(3)
+#time.sleep(3)
 
 exitCode= 0
 
