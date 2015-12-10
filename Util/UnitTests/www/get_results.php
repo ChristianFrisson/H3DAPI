@@ -6,9 +6,10 @@ if(mysqli_connect_errno($db)) {
   echo "Failed to connect to MySQL: " . mysqli_connect_error();
 }
 
-// Fetch the performance results from the latest test, as well as filename, timestamps, etc.
-$fetch_result = mysqli_query($db, "
-SELECT performance_results.*, test_runs.timestamp, test_cases.case_name, test_files.filename, test_runs.server_id, servers.server_name
+// Fetch the performance AND rendering results from the latest test, as well as filename, timestamps, etc.
+if(!$fetch_result = mysqli_query($db, "SELECT results.* FROM
+    (SELECT performance_results.id as id, test_runs.timestamp, server_id, server_name, test_run_id, file_id, filename, case_id, test_type, case_name,
+    min_fps, max_fps, mean_fps, avg_fps, NULL AS success, NULL AS output_image, NULL AS diff_image, NULL AS baseline_image, NULL AS step_name
 FROM performance_results
 	JOIN test_runs ON performance_results.test_run_id=test_runs.id
 	JOIN test_cases ON performance_results.case_id=test_cases.id
@@ -19,8 +20,26 @@ FROM performance_results
 			FROM performance_results AS perf
 		WHERE perf.case_id = performance_results.case_id
 			ORDER BY TIMESTAMP DESC
-	LIMIT 1)");
-
+	LIMIT 1)
+	UNION
+	(SELECT rendering_results.id as id, test_runs.timestamp, server_id, server_name, rendering_results.test_run_id, rendering_results.file_id, filename, rendering_results.case_id, test_type, case_name,
+	NULL AS min_fps, NULL AS max_fps, NULL AS mean_fps, NULL AS avg_fps, success, output_image, diff_image, baseline.image AS baseline_image, rendering_results.step_name
+FROM rendering_results
+	JOIN test_runs ON rendering_results.test_run_id=test_runs.id
+	JOIN test_cases ON rendering_results.case_id=test_cases.id
+	JOIN test_files ON rendering_results.file_id=test_files.id
+	JOIN servers ON test_runs.server_id=servers.id
+	LEFT JOIN rendering_baselines as baseline ON rendering_results.case_id=baseline.case_id
+	WHERE rendering_results.id=(
+		SELECT MAX(screen.id)
+			FROM rendering_results AS screen
+		WHERE screen.case_id = rendering_results.case_id
+			ORDER BY TIMESTAMP DESC
+	LIMIT 1))	
+	) as results")) {
+		die("ERROR: " . mysql_error());
+	}
+	mysqli_store_result($db);
 /*
   Tree-building algorithm:
 
@@ -55,8 +74,7 @@ FROM performance_results
     add the data to $node['testcases']
       
 */									
-									
-									
+
 $data = array();
 while($row = mysqli_fetch_assoc($fetch_result)) {
 //  echo json_encode($row);
@@ -124,15 +142,26 @@ while($row = mysqli_fetch_assoc($fetch_result)) {
 
   $testcase = array(
     "name"   => $row['case_name'],
+    "filename"   => $row['filename'],
+    "test_type"   => $row['test_type'],
     "test_run_id" => $row['test_run_id'],
     "server_id"=> $row['server_id'],
     "server_name"=> $row['server_name'],
     "time"   => $row['timestamp'],
-    "fps_min"=> $row['min_fps'],
-    "fps_avg"=> $row['avg_fps'],
-    "fps_mean"=>$row['mean_fps'],
-    "fps_max"=> $row['max_fps'],
-    "history"=> array());
+    "min_fps"=> $row['min_fps'],
+    "avg_fps"=> $row['avg_fps'],
+    "mean_fps"=>$row['mean_fps'],
+    "max_fps"=> $row['max_fps']);
+  
+  if($row['test_type'] == "rendering") {
+    $testcase["success"] = $row['success'];
+    $testcase["step_name"] = $row['step_name'];
+    $testcase["output_image"] = base64_encode($row['output_image']);
+    $testcase["diff_image"] = base64_encode($row['diff_image']);
+    $testcase["baseline_image"] = base64_encode($row['baseline_image']);
+  }
+  else if($row['test_type'] == "performance") {
+  $testcase['history'] = array();
   // Now build the history array
   $query = "SELECT min_fps, avg_fps, max_fps, mean_fps, timestamp, server_id, server_name, test_run_id 
                                 FROM performance_results 
@@ -149,12 +178,14 @@ while($row = mysqli_fetch_assoc($fetch_result)) {
     "server_id"=> $hist_row['server_id'],
     "server_name"=> $hist_row['server_name'],
     "time"   => $hist_row['timestamp'],
-    "fps_min"=> $hist_row['min_fps'],
-    "fps_avg"=> $hist_row['avg_fps'],
-    "fps_mean"=>$hist_row['mean_fps'],
-    "fps_max"=> $hist_row['max_fps'],
+    "min_fps"=> $hist_row['min_fps'],
+    "avg_fps"=> $hist_row['avg_fps'],
+    "mean_fps"=>$hist_row['mean_fps'],
+    "max_fps"=> $hist_row['max_fps'],
      ));
+     }
   }
+  
 
   // All that remains now is to push the testcase to the node's testcases array
   array_push($node['testcases'], $testcase);

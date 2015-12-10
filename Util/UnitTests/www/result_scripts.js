@@ -16,9 +16,9 @@ function LoadSQLModel() {
   // time : the timestamp of the test run
   // server_id : the id of the server that ran this test
   // server_name : the name of the server that ran this test
-  // fps_min : float
-  // fps_avg : float
-  // fps_max : float
+  // min_fps : float
+  // avg_fps : float
+  // max_fps : float
   // history : an array containing history data from other runs of the same test
   //
   // The history array contains one entry for every previous run of this testcase on every test server sorted by their timestamp
@@ -26,9 +26,9 @@ function LoadSQLModel() {
   // time : the timestamp of the testrun
   // server_id : the id of the server that ran this test
   // server_name : the name of the server that ran this test
-  // fps_min : float
-  // fps_avg : float
-  // fps_max : float
+  // min_fps : float
+  // avg_fps : float
+  // max_fps : float
   
   var res = []
   
@@ -47,8 +47,8 @@ function LoadSQLModel() {
 var all_graphs = [];
 var display_options =  {
   properties: {
-    available: ["fps_min", "fps_avg", "fps_mean", "fps_max"],
-    selected: ["fps_min", "fps_avg", "fps_mean", "fps_max"],
+    available: ["min_fps", "avg_fps", "mean_fps", "max_fps"],
+    selected: ["min_fps", "avg_fps", "mean_fps", "max_fps"],
     ignore: ["name", "time", "history", "server_id", "server_name", "test_run_id"],
   },
   servers:  {
@@ -64,32 +64,34 @@ function generateDisplayOptionsList(model) {
         generateDisplayOptionsList(model[i].children); 
       else {
         for(var j = 0; j < model[i].testcases.length; j++) {
-        var testcase = model[i].testcases[j];
-          if($.inArray(testcase.server_name, display_options.servers.available) < 0) {
-            display_options.servers.available.push(testcase.server_name);
-          }
-          if(display_options.servers.selected.length == 0) {
-            display_options.servers.selected.push(testcase.server_name);
-          }
-          for(var propertyName in testcase) {
-            if ($.inArray(propertyName, display_options.properties.ignore) < 0) {
-              if($.inArray(propertyName, display_options.properties.available) < 0) {
-                display_options.properties.available.push(propertyName);
-              }             
+          var testcase = model[i].testcases[j];
+          if(testcase.test_type=='performance') {
+            if($.inArray(testcase.server_name, display_options.servers.available) < 0) {
+              display_options.servers.available.push(testcase.server_name);
             }
-          }
-          for(var k = 0; k < testcase.history.length; k++) {
-          if($.inArray(testcase.history[k].server_name, display_options.servers.available) < 0) {
-            display_options.servers.available.push(testcase.history[k].server_name);
-          }        
-            for(var propertyName in testcase.history[k]) {
+            if(display_options.servers.selected.length == 0) {
+              display_options.servers.selected.push(testcase.server_name);
+            }
+            for(var propertyName in testcase) {
               if ($.inArray(propertyName, display_options.properties.ignore) < 0) {
                 if($.inArray(propertyName, display_options.properties.available) < 0) {
                   display_options.properties.available.push(propertyName);
                 }             
               }
             }
-          }        
+            for(var k = 0; k < testcase.history.length; k++) {
+              if($.inArray(testcase.history[k].server_name, display_options.servers.available) < 0) {
+                display_options.servers.available.push(testcase.history[k].server_name);
+              }        
+              for(var propertyName in testcase.history[k]) {
+                if ($.inArray(propertyName, display_options.properties.ignore) < 0) {
+                  if($.inArray(propertyName, display_options.properties.available) < 0) {
+                    display_options.properties.available.push(propertyName);
+                  }             
+                }
+              }
+            }
+          }
         }
       }               
     }
@@ -424,6 +426,32 @@ function generateGraph(div) {
 }
 
 
+function generateImages(div) {
+  var testcase = $(div).data('model');
+  if(testcase.baseline_image != null) {
+  var byteCharacters = atob(testcase.baseline_image);
+  var byteNumbers = new Array(byteCharacters.length);
+  for (var i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }  
+  var arrayBufferView = new Uint8Array(byteNumbers);
+  var blob = new Blob( [ arrayBufferView ], { type: "image/png" } );
+  var urlCreator = window.URL || window.webkitURL;
+  var imageUrl = urlCreator.createObjectURL( blob );
+  
+  var link = $("<a>");
+  link.attr("href", imageUrl);
+  link.attr("target", imageUrl);
+  link.attr("download", testcase.filename.split('/').pop() + "_" + testcase.name + "_" + testcase.step_name + ".png");
+  var img = $("<img>");
+  img.attr("src", imageUrl);
+  img.addClass("TestCase_image");
+  link.append(img);
+  
+  div.append(link);
+  }
+}
+
 
 
 var CategoryCount = 0;
@@ -477,7 +505,14 @@ $(document).ready(function(){
   $('#Options').draggable();
   refreshDisplayOptions(model);
   ConstructList(model, $('#Categories'));
-  $('.TestCase').each(function() { generateGraph($(this));}); // We make sure generateGraph gets called
+  $('.TestCase').each(function() {
+  var testcase = $(this).data('model');
+    if(testcase.test_type=="performance") {
+      generateGraph($(this));
+    } else if (testcase.test_type=="rendering") {
+      generateImages($(this));
+    }
+  }); // We make sure generateGraph gets called
   
 });    
 

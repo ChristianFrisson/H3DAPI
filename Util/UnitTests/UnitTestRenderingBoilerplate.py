@@ -42,7 +42,7 @@ class UnitTestHelper :
 
 
 testHelper = UnitTestHelper()
-timer_callback.addCallback(time.getValue()+1, UnitTestHelper.doTesting, (testHelper,))
+timer_callback.addCallback(time.getValue()+%d, UnitTestHelper.doTesting, (testHelper,))
 
 
 def testRotation():

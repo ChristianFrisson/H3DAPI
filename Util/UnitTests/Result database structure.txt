@@ -5,12 +5,12 @@ id, test_run_id, file_id, case_id, min_fps, max_fps, avg_fps, full_case_data
 
 Table
 screenshot_baselines
-id, test_run_id, file_id, case_id, image
+id, test_run_id, file_id, case_id, step_name, image
 
 Table
 screenshot_results
 Columns:
-id, test_run_id, file_id, case_id, success, output_image, diff_image
+id, test_run_id, file_id, case_id, step_name, success, output_image, diff_image
 
 //The idea is that output_image and diff_image will ONLY contain data if the test failed.
 

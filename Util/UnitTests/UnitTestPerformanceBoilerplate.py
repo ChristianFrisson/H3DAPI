@@ -19,7 +19,11 @@ class StoreFPS( AutoUpdate( SFFloat ) ):
 
   def start( self ):
     self.started = True
-    timer_callback.addCallback(time.getValue()+%s, StoreFPS.stop, (self,))
+    storeFPS = StoreFPS()
+    scene = getCurrentScenes()[0]
+    scene.frameRate.routeNoEvent( storeFPS )
+    scene = None
+    timer_callback.addCallback(time.getValue()+%d, StoreFPS.stop, (self,))
 
   def stop( self ):
     self.started = False
@@ -29,9 +33,4 @@ class StoreFPS( AutoUpdate( SFFloat ) ):
     shutdown_file.write( "OK" )
     shutdown_file.close()
 
-storeFPS = StoreFPS()
-scene = getCurrentScenes()[0]
-scene.frameRate.routeNoEvent( storeFPS )
-scene = None
-
-timer_callback.addCallback(time.getValue()+1, StoreFPS.start, (storeFPS,))
+timer_callback.addCallback(time.getValue()+%d, StoreFPS.start, (storeFPS,))
