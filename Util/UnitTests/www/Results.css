@@ -7,14 +7,26 @@
     user-select: none;
 }
 
+body {
+  background-color: hsla(360, 0%, 98%, 1);
+}
+
 ul > .Category_Item { position:relative; margin-left: 20px;}
-.Test_Container { margin-left: 20px; clear: both; display:none;}
+.Test_Container {
+  margin-left: 20px;
+  clear: both; 
+  display:none;
+  height:none;
+}
 
 .TestCase {
   position:relative; margin-left: 20px;
   width: auto;
   padding: 0;
   float:left;
+  border: 1px solid black;
+  padding: 5px;
+  margin: 5px;
 }
 
 .TestCase_name {
@@ -50,15 +62,39 @@ ul > .Category_Item { position:relative; margin-left: 20px;}
   margin-right: 30px;
 }
 
+.TestCase_rendering {
+  width: auto;
+  float: left;
+  clear:both;
+}
+
+.TestCase_image_div {
+  width: auto;
+  border: 1px solid black;
+  float:left;
+  margin: 5px;
+}
 
 .TestCase_image {
-  height:400px;
-  width: 500px;
+  height:300px;
+  width: 400px;
   margin: 0;
   padding: 0;
   float:left;
-  clear:both;
 }
+
+
+.test_successful {
+  background-color: hsla(143, 100%, 68%, 1);
+  margin-left: 10px;
+}
+
+.test_failed {
+  background-color: hsla(353, 100%, 68%, 1);
+  margin-left: 10px;
+}
+
+
 
 div#Options {
   min-width:300px;
@@ -83,7 +119,11 @@ label h3 {
   appearance: none;
 }
 
-ul {display: block; clear:both;}
+ul {
+  height:auto;
+  display: block;
+  clear:both;
+}
 
 input:checked ~ ul {
   display: block; 
@@ -94,6 +134,7 @@ input ~ ul  {
 }
 
 input:checked ~ .Test_Container {
+  height:auto;
   display:block;
 }
 

@@ -3,6 +3,7 @@ from H3DUtils import *
 
 timer_callback = TimerCallback()
 
+
 class StoreFPS( AutoUpdate( SFFloat ) ):
   def __init__( self ):
     AutoUpdate( SFFloat ).__init__(self)
@@ -19,7 +20,6 @@ class StoreFPS( AutoUpdate( SFFloat ) ):
 
   def start( self ):
     self.started = True
-    storeFPS = StoreFPS()
     scene = getCurrentScenes()[0]
     scene.frameRate.routeNoEvent( storeFPS )
     scene = None
@@ -32,5 +32,7 @@ class StoreFPS( AutoUpdate( SFFloat ) ):
     shutdown_file = open( self.early_shutdown_file, 'w' )
     shutdown_file.write( "OK" )
     shutdown_file.close()
+    
+storeFPS = StoreFPS()
 
 timer_callback.addCallback(time.getValue()+%d, StoreFPS.start, (storeFPS,))

@@ -417,7 +417,7 @@ class TestCaseRunner ( object ):
     return ret
 
 
-  def processrenderingTestCase(self, file, testCase, results, directory, output_dir, rendering_dir, diff_dir, report_dir, boilerplateScript):
+  def processRenderingTestCase(self, file, testCase, results, directory, output_dir, rendering_dir, diff_dir, report_dir, boilerplateScript):
     """
         
     """
@@ -427,7 +427,7 @@ class TestCaseRunner ( object ):
     else:
       testCaseScript = ""
                 
-    script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (self.early_shutdown_file, os.path.join(os.path.abspath(args.workingdir), rendering_dir, os.path.splitext(file)[0]+"_"+testCase.name+"_"), testCase.starttime)) + '\n' + testCaseScript + "]]></PythonScript>"
+    script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (self.early_shutdown_file, os.path.join(os.path.abspath(args.workingdir), rendering_dir, os.path.splitext(file)[0]+"_"+testCase.name+"_").replace("\\", '/'), testCase.starttime)) + '\n' + testCaseScript + "]]></PythonScript>"
     
     for dir in [output_dir, rendering_dir, diff_dir, report_dir]:
       if not os.path.exists(dir):
@@ -440,6 +440,7 @@ class TestCaseRunner ( object ):
       success, variation_path= self._createVariationFile ( v, os.path.join(directory, testCase.x3d))
       # Run that H3DViewer with that x3d file
       result = self.runTestCase (file, testCase, variation_path, os.path.join(directory, testCase.x3d), v.name, v)
+      print result.std_err
       result.created_variation= success
     else:
       result = TestResults('')
@@ -494,7 +495,7 @@ class TestCaseRunner ( object ):
       testCaseScript = ""
                 
     rendering_path = os.path.abspath(os.path.join(rendering_dir, os.path.splitext(file)[0]+'_'+testCase.name+'.png'))
-    self.fps_data_file = os.path.abspath(os.path.join(perf_dir, os.path.splitext(file)[0]+'_'+testCase.name+'_perf.txt').replace('\\', '/'))
+    self.fps_data_file = os.path.abspath(os.path.join(perf_dir, os.path.splitext(file)[0]+'_'+testCase.name+'_perf.txt')).replace('\\', '/')
     script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (self.fps_data_file, self.early_shutdown_file.replace('\\', '/'), testCase.runtime, rendering_path.replace('\\', '/'), testCase.starttime)) + '\n' + testCaseScript + "]]></PythonScript>"
 
 
@@ -581,7 +582,7 @@ class TestCaseRunner ( object ):
           if res == None:
             curs.execute(("INSERT INTO rendering_baselines (test_run_id, file_id, case_id, step_name, image) VALUES (%d, %d, %d, '%s'" % (self.test_run_id, testfile_id, testcase_id, step_name)) + ", %s)", [baseline_image,])
           elif res[1] != baseline_image:
-            curs.execute("UPDATE rendering_baselines SET image=%s WHERE id=%d", [baseline_image, res[0]])
+            curs.execute("UPDATE rendering_baselines SET image=%s WHERE id=%s", [baseline_image, res[0]])
 
         if not result.renderings_ok[i]: #validation failed, if possible we should upload both the rendering and the diff
           if result.rendering_diffs[i] != '':
@@ -661,12 +662,14 @@ class TestCaseRunner ( object ):
           testCases = self.parseTestDefinitionFile(file_path)
           for testCase in testCases:
             if testCase != None and testCase.x3d != None and testCase.type != None:
-              print "Testing: " + testCase.name
+              print "Testing: [" + testCase.type + "] " + testCase.name
               if testCase.type == 'rendering':
-                self.processrenderingTestCase(file, testCase, results, root, output_dir, rendering_dir, diff_dir, report_dir, renderingBoilerplateScript)
+                self.processRenderingTestCase(file, testCase, results, root, output_dir, rendering_dir, diff_dir, report_dir, renderingBoilerplateScript)
               elif testCase.type == 'performance':
                 self.processPerformanceTestCase(file, testCase, results, root, output_dir, rendering_dir, perf_dir, report_dir, performanceBoilerplateScript)  
-              
+              else:
+                  print "Test type [" + testCase.type + "] Unknown - Test Skipped"
+
               testCase.filename = (os.path.relpath(file_path, directory)).replace('\'', '/') # This is used to set up the tree structure for the results page. It will store this parameter in the database as a unique identifier of this specific file of tests.
               if results[len(results)-1] != None:  
                 self.UploadResultsToSQL(testCase, results[len(results)-1][0][1], rendering_dir, perf_dir, report_dir)            
@@ -992,8 +995,8 @@ results = tester.processAllTestDefinitions(directory=args.workingdir, output_dir
 reporter= TestReport()
 print reporter.reportResults ( results )
 
-html_reporter= TestReportHTML( os.path.join(args.output, "reports") )
-html_reporter.reportResults ( results )
+#html_reporter= TestReportHTML( os.path.join(args.output, "reports") )
+#html_reporter.reportResults ( results )
   
 #html_reporter_errors.reportResults ( results )
 

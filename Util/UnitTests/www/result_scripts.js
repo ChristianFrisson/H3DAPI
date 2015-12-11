@@ -49,7 +49,7 @@ var display_options =  {
   properties: {
     available: ["min_fps", "avg_fps", "mean_fps", "max_fps"],
     selected: ["min_fps", "avg_fps", "mean_fps", "max_fps"],
-    ignore: ["name", "time", "history", "server_id", "server_name", "test_run_id"],
+    ignore: ["name", "time", "history", "server_id", "server_name", "test_run_id", "filename", "test_type"],
   },
   servers:  {
     available: [],
@@ -132,7 +132,7 @@ function refreshDisplayOptions(model) {
           display_options.properties.selected.push($(this).data('propName'));
         }     
       }
-      $('.TestCase').each(function() { generateGraph($(this));}); // regenerates all the graphs
+      $('.TestCase').each(function() { if($(this).data('model').test_type=="performance") generateGraph($(this));}); // regenerates all the graphs
     });    
     
   }
@@ -177,7 +177,7 @@ function generateDatasets(testcase) {
   for(var s = 0; s < display_options.servers.selected.length; s++) {
     var server = display_options.servers.selected[s];
     for(var propertyName in testcase) {
-      if(($.inArray(propertyName, display_options.properties.selected) > -1) || (propertyName == "server_name") || (propertyName == "time") || (propertyName == "test_run_id")) {
+      if(($.inArray(propertyName, display_options.properties.selected) > -1) || (propertyName == "server_name") || (propertyName == "time")) {
         var color = "hsla("+Math.round(hue)+", 60%, 60%";
         var config = {
         label: propertyName, 
@@ -250,7 +250,7 @@ function generateDatasets(testcase) {
               } else if(their_timestamp < my_timestamp) {
                 config.labels.splice(mine, 0, datasets[prev].labels[theirs]);
                 if(config.label == "server_name")
-                  config.data.splice(mine, 0, {x: datasets[prev].labels[theirs], y: config.server_name});
+                  config.data.splice(mine, 0, {x: datasets[prev].labels[theirs], y: config[config.label]});
                 else
                   config.data.splice(mine, 0, {x: datasets[prev].labels[theirs]});
                 theirs++;
@@ -258,7 +258,7 @@ function generateDatasets(testcase) {
               } else if(their_timestamp > my_timestamp) {
                 datasets[prev].labels.splice(theirs, 0, config.labels[mine]);
                 if(datasets[prev].label == "server_name")
-                  datasets[prev].data.splice(theirs, 0, {x: config.labels[mine], y: datasets[prev].server_name});
+                  datasets[prev].data.splice(theirs, 0, {x: config.labels[mine], y: datasets[prev][config.label]});
                 else
                   datasets[prev].data.splice(theirs, 0, {x: config.labels[mine]});
                 theirs++;
@@ -286,7 +286,11 @@ function ConstructTestCases(model, target) {
     div.addClass('TestCase');
     var name_div = $('<div>');
     name_div.addClass('TestCase_name');
-    name_div.append(model[i].name);
+    if(model[i].test_type=="rendering") {
+      name_div.append(model[i].step_name);
+    } else {
+      name_div.append(model[i].name);
+    }
     div.append(name_div);
     div.data('model', model[i]); // Store the associated testCase with the div
     container.append(div);
@@ -426,10 +430,8 @@ function generateGraph(div) {
 }
 
 
-function generateImages(div) {
-  var testcase = $(div).data('model');
-  if(testcase.baseline_image != null) {
-  var byteCharacters = atob(testcase.baseline_image);
+function getImageBlobURL(blob, download_name) {
+  var byteCharacters = atob(blob);
   var byteNumbers = new Array(byteCharacters.length);
   for (var i = 0; i < byteCharacters.length; i++) {
       byteNumbers[i] = byteCharacters.charCodeAt(i);
@@ -442,14 +444,76 @@ function generateImages(div) {
   var link = $("<a>");
   link.attr("href", imageUrl);
   link.attr("target", imageUrl);
-  link.attr("download", testcase.filename.split('/').pop() + "_" + testcase.name + "_" + testcase.step_name + ".png");
+  link.attr("download", download_name);
   var img = $("<img>");
   img.attr("src", imageUrl);
   img.addClass("TestCase_image");
   link.append(img);
+  return link;
+}
+
+function generateImages(div) {
+  var testcase = $(div).data('model');
+  var container = $('<div>');
+  container.addClass('TestCase_rendering');
   
-  div.append(link);
+  var download_name = testcase.filename.split('/').pop() + "_" + testcase.step_name + ".png";
+  var diff_download_name =  "diff_" + download_name;
+  // If it succeded then show the baseline image
+  // If it failed and there's no baseline then show the output and complain about the lack of a baseline
+  // If it failed and there is a baseline then show the baseline, the diff and the output
+  if(testcase.success == 'Y') {
+    var succeeded = $("<span>");
+    succeeded.addClass('test_successful');
+    succeeded.append("Test successful!");
+    div.append(succeeded);
+    var image_container = $('<div>');
+    if(testcase.baseline_image != "") {
+      var image_container = $('<div>');
+      image_container.addClass('TestCase_image_div'); 
+      image_container.append("Baseline:</br>");
+      image_container.append(getImageBlobURL(testcase.baseline_image, download_name));
+      container.append(image_container);
+    }
+  } else { // Didn't succeed
+    var succeeded = $("<span>");
+    succeeded.addClass('test_failed');
+    div.append(succeeded);
+    
+    if (testcase.diff_image == "") {
+      if(testcase.output_image == "")
+         succeeded.append("Test failed - No image output!");
+      else
+         succeeded.append("Test failed - No diff available!");
+    }    
+    else if (testcase.baseline_image == "")
+      succeeded.append("Test failed - No baseline found!");        
+    else
+      succeeded.append("Test failed - Invalid output!");
+        
+    if(testcase.baseline_image != "") {
+      var image_container = $('<div>');
+      image_container.addClass('TestCase_image_div'); 
+      image_container.append("Baseline:</br>");
+      image_container.append(getImageBlobURL(testcase.baseline_image, download_name));
+      container.append(image_container);
+    }
+    if(testcase.output_image != "") {
+      var image_container = $('<div>');
+      image_container.addClass('TestCase_image_div'); 
+      image_container.append("Output:</br>");
+      image_container.append(getImageBlobURL(testcase.output_image, download_name));
+      container.append(image_container);
+    }
+    if(testcase.output_image != "") {
+      var image_container = $('<div>');
+      image_container.addClass('TestCase_image_div'); 
+      image_container.append("Diff:</br>");
+      image_container.append(getImageBlobURL(testcase.diff_image, download_name));
+      container.append(image_container);
+    } 
   }
+  div.append(container);
 }
 
 
@@ -471,6 +535,7 @@ function ConstructList(model, target) {
         
       label.append(glyph);
       label.append('<h3>'+model[i].name+'</h3>');
+
       label.attr('for', 'category'+CategoryCount);
       
       var input = $('<input>');
