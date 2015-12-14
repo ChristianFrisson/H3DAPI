@@ -870,8 +870,7 @@ namespace H3D {
 
       bool use_depth_stencil;
 
-      auto_ptr<float> clear_color_value;
-
+      vector<GLfloat> clear_color_value;
       //float* clear_color_value;
       
       

@@ -375,8 +375,7 @@ void FrameBufferTextureGenerator::initialize()
     colorInitWarningPrinted->push_back(false);
   }
   if( generateColorTextures->size()>0 ) {
-    clear_color_value.reset(new float[4*generateColorTextures->size()]);
-    memset(clear_color_value.get(),0, 4*generateColorTextures->size()*sizeof(float));
+    clear_color_value.assign( 4 * generateColorTextures->size(), 0 );
   }
 }
 
@@ -778,10 +777,10 @@ void FrameBufferTextureGenerator::render()     {
           RGBA clear_color = bg->glClearColor();
           glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
           for( unsigned int i = 0; i<generateColorTextures->size(); ++i ) {
-            clear_color_value.get()[4*i] = clear_color.r;
-            clear_color_value.get()[4*i+1] = clear_color.g;
-            clear_color_value.get()[4*i+2] = clear_color.b;
-            clear_color_value.get()[4*i+3] = clear_color.a;
+            clear_color_value[4*i  ] = (GLfloat)clear_color.r;
+            clear_color_value[4*i+1] = (GLfloat)clear_color.g;
+            clear_color_value[4*i+2] = (GLfloat)clear_color.b;
+            clear_color_value[4*i+3] = (GLfloat)clear_color.a;
           }
         }
         // Prepare the fbo for rendering, it will clear or copy or share what frame buffer is being specified
@@ -816,19 +815,19 @@ void FrameBufferTextureGenerator::render()     {
           // use clearColors instead
           MFColorRGBA::vector_return_type clear_colors = clearColors->getValue();
           for(unsigned int i = 0; i<generateColorTextures->size(); ++i){
-            clear_color_value.get()[4*i] = clear_colors[i].r;
-            clear_color_value.get()[4*i+1] = clear_colors[i].g;
-            clear_color_value.get()[4*i+2] = clear_colors[i].b;
-            clear_color_value.get()[4*i+3] = clear_colors[i].a;
+            clear_color_value[4*i  ] = (GLfloat)clear_colors[i].r;
+            clear_color_value[4*i+1] = (GLfloat)clear_colors[i].g;
+            clear_color_value[4*i+2] = (GLfloat)clear_colors[i].b;
+            clear_color_value[4*i+3] = (GLfloat)clear_colors[i].a;
           }
         }else{
           // if colorTexutres is size is not more than one, or clearColors size 
           // mismatch colorTextues size, use colorColor instead for all color attachment
           for( unsigned int i = 0; i<generateColorTextures->size(); ++i ) {
-            clear_color_value.get()[4*i] = clear_color.r;
-            clear_color_value.get()[4*i+1] = clear_color.g;
-            clear_color_value.get()[4*i+2] = clear_color.b;
-            clear_color_value.get()[4*i+3] = clear_color.a;
+            clear_color_value[4*i  ] = (GLfloat)clear_color.r;
+            clear_color_value[4*i+1] = (GLfloat)clear_color.g;
+            clear_color_value[4*i+2] = (GLfloat)clear_color.b;
+            clear_color_value[4*i+3] = (GLfloat)clear_color.a;
           }
         }
         glClearColor( clear_color.r, clear_color.g, clear_color.b, clear_color.a );
@@ -1280,7 +1279,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
     // no external fbo for color buffers will be used
     // use locally created color buffers, just clear the all color buffers for present
     for( size_t i = 0; i < color_ids.size(); ++i ) {
-      clearColorBuffer( target_fbo, 0, 0, w, h, clear_color_value.get()+4*i, i );
+      clearColorBuffer( target_fbo, 0, 0, w, h, &clear_color_value[0]+4*i, i );
     }
     return;
   } else { // check color_buffer_storages to decide how to handle color buffers
@@ -1296,7 +1295,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
       }
       end_index = color_buffer_storages.size();
       for( size_t i = end_index, ilen = color_ids.size(); i < ilen; ++i ) {
-        clearColorBuffer( target_fbo, 0, 0, w, h, clear_color_value.get()+4*i, i);
+        clearColorBuffer( target_fbo, 0, 0, w, h, &clear_color_value[0]+4*i, i);
       }
     } else if( color_buffer_storages.size()>color_ids.size() ) {
       if( !colorMismatchWarningPrinted->getValue() ) {
@@ -1328,7 +1327,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
       std::string color_buffer_storage = color_buffer_storages[i];
       if( color_buffer_storage.empty() || color_buffer_storage == "LOCAL" ) { 
         // clear the color buffer being processing which is i.
-        clearColorBuffer( target_fbo, 0, 0, w, h, clear_color_value.get()+4*i, i );
+        clearColorBuffer( target_fbo, 0, 0, w, h, &clear_color_value[0]+4*i, i );
         continue;
       } else { 
         // colorBufferStorage is DEFAULT, FBO_COPY_x or FBO_SHARE_x
@@ -1350,7 +1349,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
                 <<"will not be used."<< std::endl;
               colorInitWarningPrinted->setValue(i,true);
             }
-            clearColorBuffer(target_fbo, 0, 0, w, h, clear_color_value.get()+4*i, i);
+            clearColorBuffer(target_fbo, 0, 0, w, h, &clear_color_value[0]+4*i, i);
             continue;
           }
           if( style == "SHARE" ) { 
@@ -1364,7 +1363,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
                   << "please add one, if it is being forget!" <<std::endl;
                 colorInitWarningPrinted->setValue(i,true);
               }
-              clearColorBuffer(target_fbo, 0, 0, w, h, clear_color_value.get()+4*i, i);
+              clearColorBuffer(target_fbo, 0, 0, w, h, &clear_color_value[0]+4*i, i);
               continue;
             } else {
               GeneratedTexture* external_FBO_color_tex = 
@@ -1385,7 +1384,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
                     <<"will use cleared color buffer instead"<<std::endl;
                   colorInitWarningPrinted->setValue(i,true);
                 } 
-                clearColorBuffer(target_fbo, 0, 0, w, h, clear_color_value.get()+4*i, i );
+                clearColorBuffer(target_fbo, 0, 0, w, h, &clear_color_value[0]+4*i, i );
                 continue;
               }
               if( getNrSamples->getValue()>0 ) {
@@ -1405,7 +1404,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
                     <<std::endl;
                   colorInitWarningPrinted->setValue(i,true);
                 }
-                clearColorBuffer( target_fbo,0, 0, w, h, clear_color_value.get()+4*i, i );
+                clearColorBuffer( target_fbo,0, 0, w, h, &clear_color_value[0]+4*i, i );
                 continue;
               }
               color_ids[i] = external_FBO_color_id;
@@ -1450,7 +1449,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
                   << "please add one, if it is being forget!" <<std::endl;
                 colorInitWarningPrinted->setValue(i,true);
               }
-              clearColorBuffer( target_fbo, 0, 0, w, h, clear_color_value.get()+4*i, i );
+              clearColorBuffer( target_fbo, 0, 0, w, h, &clear_color_value[0]+4*i, i );
               continue;
             }
             if( (int)static_cast<FrameBufferTextureGenerator*>(
@@ -1462,7 +1461,7 @@ void FrameBufferTextureGenerator::preProcessFBO(int x, int y,int w, int h, int d
                   <<"will use cleared color buffer instead"<<std::endl;
                 colorInitWarningPrinted->setValue(i,true);
               }
-              clearColorBuffer( target_fbo, 0, 0, w, h, clear_color_value.get()+4*i, i );
+              clearColorBuffer( target_fbo, 0, 0, w, h, &clear_color_value[0]+4*i, i );
               continue;
             }
             GLuint external_FBO_id_color = 
