@@ -73,7 +73,6 @@ void H3DNavigation::doNavigation(
     // current position and viewpoint.
     if( linear_interpolate ) {
       if( !old_vp.get()->retainUserOffsets->getValue() ) {
-        Console(4) << "A3: " << goal_position << endl; 
         old_vp.get()->relPos->setValue( goal_position );
         old_vp.get()->relOrn->setValue( goal_orientation );
       }
@@ -127,7 +126,6 @@ void H3DNavigation::doNavigation(
     H3DTime total_time = transition_time;
     if( elapsed_time < total_time ) {
       H3DDouble interpolation = elapsed_time / total_time;
-      Console(4) << "A1: " << start_position << "  " << move_direction << " " << interpolation << endl;
       vp->relPos->setValue( start_position +
         move_direction * interpolation );
       vp->relOrn->setValue( start_orientation.slerp( goal_orientation,
@@ -138,7 +136,6 @@ void H3DNavigation::doNavigation(
       if( nav_info ) {
         nav_info->setTransitionComplete( true );
       }
-      Console(4) << "A2: " << goal_position << endl;
       vp->relPos->setValue( goal_position );
       vp_full_pos = vp_pos + goal_position;
       vp->relOrn->setValue( goal_orientation );
