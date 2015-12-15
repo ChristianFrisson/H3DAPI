@@ -111,6 +111,13 @@ namespace H3D {
   /// textures. A value of 0 means no multi-sampling, values > 0 means multi-sampling
   /// with the specified number of sample points. Using multiple sample points reduces
   /// aliasing artifacts.
+  /// Note: samples for the FBTG may not produce the MSAA or wrong number of samples 
+  /// due to the "Antialiasing-Mode" "Antialiasing-setting" settings in Nvidia control panel. 
+  /// It is not clear how they are interacting internally in the driver. At least in certain driver versions,
+  /// it is being noted that if "Antialiasing-Mode" is set to off or application controlled, 
+  /// the settings in FBTG will take full control.  when "Antialiasing-Mode" is set to enhance application
+  /// setting or override application setting, then the number of samples is decided by the "Antialiasing-Setting"
+  /// value in control panel, and the enabling/disabling of MSAA effect is based on if the samples is set to zero in FBTG.
   /// 
   /// The update field allows the user to request a regeneration of the 
   /// texture. Setting this field to "ALWAYS" will make the texture be
