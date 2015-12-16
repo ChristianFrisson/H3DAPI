@@ -162,7 +162,7 @@ class TestResults ( object ):
   def __init__ ( self, fps_data_file = "" ):
     self.filename= ""
     self.case_name= ""
-    self.test_type= ""
+    self.result_type= ""
     self.url= ""
     self.std_out= ""
     self.std_err= ""
@@ -248,14 +248,17 @@ class TestCaseRunner ( object ):
     self.early_shutdown_file = '%s/test_complete' % (os.getcwd())
     self.rendering_tmp_file = '%s/tmp_rendering.png' % (os.getcwd())
     self.startup_time_multiplier = 10
-    self.load_flags = []#"--no-fullscreen","--screen=800x600"]
+    if h3d_process_name == "H3DLoad":
+      self.load_flags = [] #"--no-fullscreen","--screen=800x600"]
+    else:
+      self.load_flags = []
     self.db = None
     # Used to get intermediate failed results in order to be able to cancel test early and still get some results.
     self.error_reporter = error_reporter
 
   def launchTest ( self, url, cwd ):
     process = self.getProcess()
-    process.launch ( ["H3DLoad.exe" if platform.system() == 'Windows' else "H3DLoad"] + self.load_flags + [url], cwd )
+    process.launch ( [h3d_process_name + ".exe" if platform.system() == 'Windows' else h3d_process_name] + self.load_flags + [url], cwd )
     return process
 
   def getProcess( self ):
@@ -269,7 +272,7 @@ class TestCaseRunner ( object ):
     """ Returns true if the example can be started. """
     
     process = self.getProcess()
-    return process.testLaunch ( ["H3DLoad.exe" if platform.system() == 'Windows' else "H3DLoad"] + self.load_flags + [url], cwd, self.startup_time, self.shutdown_time, 1 if variation and variation.global_insertion_string_failed else self.startup_time_multiplier, self.early_shutdown_file )
+    return process.testLaunch ( [h3d_process_name + ".exe" if platform.system() == 'Windows' else h3d_process_name] + self.load_flags + [url], cwd, self.startup_time, self.shutdown_time, 1 if variation and variation.global_insertion_string_failed else self.startup_time_multiplier, self.early_shutdown_file )
     
   def runTestCase (self, filename, test_case, url, orig_url= None, var_name= "", variation = None ):
 
@@ -279,7 +282,7 @@ class TestCaseRunner ( object ):
     test_results= TestResults( self.fps_data_file )
     test_results.filename= filename
     test_results.name= test_case.name
-    test_results.test_type= test_case.type
+    test_results.result_type= test_case.type
     test_results.url= orig_url
     test_results.variation = variation
     
@@ -417,22 +420,43 @@ class TestCaseRunner ( object ):
     return ret
 
 
-  def processRenderingTestCase(self, file, testCase, results, directory, output_dir, rendering_dir, diff_dir, report_dir, boilerplateScript):
+  def processTestCase(self, file, testCase, results, directory):
     """
         
     """
-    if testCase.script != None:
-      testCaseFile= open (os.path.join(directory, testCase.script), 'r')
-      testCaseScript = testCaseFile.read()
-    else:
-      testCaseScript = ""
-                
-    script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (self.early_shutdown_file, os.path.join(os.path.abspath(args.workingdir), rendering_dir, os.path.splitext(file)[0]+"_"+testCase.name+"_").replace("\\", '/'), testCase.starttime)) + '\n' + testCaseScript + "]]></PythonScript>"
-    
-    for dir in [output_dir, rendering_dir, diff_dir, report_dir]:
+    output_dir = os.path.abspath(os.path.join(directory, "output"))
+    rendering_dir = os.path.join(directory, output_dir, 'renderings')
+
+    diff_dir = os.path.join(directory, output_dir, 'diffs')
+    perf_dir = os.path.join(directory, output_dir, 'perf')
+    report_dir = os.path.join(directory, output_dir, 'reports')
+    for dir in [output_dir, rendering_dir, diff_dir, perf_dir, report_dir]:
       if not os.path.exists(dir):
         os.mkdir(dir)
-                                      
+
+
+                
+    script = """<PythonScript ><![CDATA[python:
+import sys
+import rpdb2; rpdb2.start_embedded_debugger("h3dtest")
+from imp import *
+sys.path.append('%s')
+from UnitTestRenderingBoilerplate import *
+from inspect import getmembers, isfunction
+sys.path.append('%s')
+import %s
+
+#scriptfile = open('os.path.abspath(os.path.join(directory, testCase.script)).replace('\\', '/'), )', 'r')
+#testcase_module = load_module("TestScripts", scriptfile, 'os.path.abspath(directory).replace('\\', '/')', ('py', 'r', PY_SOURCE))
+#scriptfile.close()    
+testfunctions_list = [o for o in getmembers(%s) if isfunction(o[1]) and o[1].__name__ not in ['performance', 'screenshot', 'console', 'custom']]
+print testfunctions_list
+""" % (
+          os.getcwd().replace('\\', '/'), os.path.split(os.path.abspath(os.path.join(directory, testCase.script)))[0].replace('\\', '/'), os.path.splitext(os.path.split(testCase.script)[1])[0], os.path.splitext(os.path.split(testCase.script)[1])[0]) + """
+testHelper = UnitTestHelper('%s', '%s', '%s') """ % (self.early_shutdown_file.replace('\\', '/'), os.path.abspath(os.path.join(rendering_dir, os.path.splitext(file)[0]+"_"+testCase.name+"_")).replace("\\", '/'), perf_dir.replace('\\', '/')) + """
+testHelper.addTests(testfunctions_list)
+testHelper.doTesting()
+]]></PythonScript>"""        
     variation_results= []
     v = Variation (testCase.name, script)
     if not args.only_validate:
@@ -441,12 +465,13 @@ class TestCaseRunner ( object ):
       # Run that H3DViewer with that x3d file
       result = self.runTestCase (file, testCase, variation_path, os.path.join(directory, testCase.x3d), v.name, v)
       print result.std_err
+      print result.std_out
       result.created_variation= success
     else:
       result = TestResults('')
       result.filename= file
       result.name= testCase.name
-      result.test_type= testCase.type
+      result.result_type= testCase.type
       result.url= os.path.join(directory, testCase.x3d)
       result.created_variation= True
 
@@ -484,43 +509,47 @@ class TestCaseRunner ( object ):
     if self.error_reporter:
       self.error_reporter.reportResults( results )
 
-  def processPerformanceTestCase(self, file, testCase, results, directory, output_dir, rendering_dir, perf_dir, report_dir, boilerplateScript):
-    """
+  #def processPerformanceTestCase(self, file, testCase, results, directory, output_dir, rendering_dir, perf_dir, report_dir, boilerplateScript):
+  #  """
         
-    """
-    if testCase.script != None:
-      testCaseFile= open (os.path.join(directory, testCase.script), 'r')
-      testCaseScript = testCaseFile.read()
-    else:
-      testCaseScript = ""
+  #  """
+  #  if testCase.script != None:
+  #    testCaseFile= open (os.path.join(directory, testCase.script), 'r')
+  #    testCaseScript = testCaseFile.read()
+  #  else:
+  #    testCaseScript = ""
                 
-    rendering_path = os.path.abspath(os.path.join(rendering_dir, os.path.splitext(file)[0]+'_'+testCase.name+'.png'))
-    self.fps_data_file = os.path.abspath(os.path.join(perf_dir, os.path.splitext(file)[0]+'_'+testCase.name+'_perf.txt')).replace('\\', '/')
-    script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (self.fps_data_file, self.early_shutdown_file.replace('\\', '/'), testCase.runtime, rendering_path.replace('\\', '/'), testCase.starttime)) + '\n' + testCaseScript + "]]></PythonScript>"
+  #  rendering_path = os.path.abspath(os.path.join(rendering_dir, os.path.splitext(file)[0]+'_'+testCase.name+'.png'))
+  #  self.fps_data_file = os.path.abspath(os.path.join(perf_dir, os.path.splitext(file)[0]+'_'+testCase.name+'_perf.txt')).replace('\\', '/')
+  #  script = "<PythonScript ><![CDATA[python:" + (boilerplateScript % (self.fps_data_file, self.early_shutdown_file.replace('\\', '/'), testCase.runtime, rendering_path.replace('\\', '/'), testCase.starttime)) + '\n'
+  # ## + testCaseScript
+  #  + "import sys\n"
+  #  + "sys.path.append(%s)\n" % os.path.split(os.path.join(directory, testCase.script))[0]
+  #  + "from " + os.path.split(testCase.script)[1] + " import *\n"
+  #  + "]]></PythonScript>"
 
-
-    variation_results= []
-    v = Variation (testCase.name, script)
-    if not args.only_validate:
-      # Create a temporary x3d file containing our injected script
-      success, variation_path= self._createVariationFile ( v, os.path.join(directory, testCase.x3d))
-      # Run that H3DViewer with that x3d file
-      result = self.runTestCase (file, testCase, variation_path, os.path.join(directory, testCase.x3d), v.name, v)
-      result.renderings.append(rendering_path)
-      result.created_variation= success
-      result.calculateFPS()
-      #resultfile = os.open(output_dir,   json.dumps(result)
-    else:
-      result = TestResults(self.fps_data_file)
-      result.filename= file
-      result.name= testCase.name
-      result.test_type= testCase.type
-      result.url= os.path.join(directory, testCase.x3d)
-      result.created_variation= True
-      result.calculateFPS()
-      result.renderings.append(rendering_path)
+  #  variation_results= []
+  #  v = Variation (testCase.name, script)
+  #  if not args.only_validate:
+  #    # Create a temporary x3d file containing our injected script
+  #    success, variation_path= self._createVariationFile ( v, os.path.join(directory, testCase.x3d))
+  #    # Run that H3DViewer with that x3d file
+  #    result = self.runTestCase (file, testCase, variation_path, os.path.join(directory, testCase.x3d), v.name, v)
+  #    result.renderings.append(rendering_path)
+  #    result.created_variation= success
+  #    result.calculateFPS()
+  #    #resultfile = os.open(output_dir,   json.dumps(result)
+  #  else:
+  #    result = TestResults(self.fps_data_file)
+  #    result.filename= file
+  #    result.name= testCase.name
+  #    result.result_type= testCase.type
+  #    result.url= os.path.join(directory, testCase.x3d)
+  #    result.created_variation= True
+  #    result.calculateFPS()
+  #    result.renderings.append(rendering_path)
       
-    results.append([(v, result)])
+  #  results.append([(v, result)])
 
   def ConnectDB(self):
     if self.db == None:
@@ -536,7 +565,7 @@ class TestCaseRunner ( object ):
       except Exception as e:
         print(str(e))        
 
-  def UploadResultsToSQL(self, testCase, result, rendering_dir, perf_dir, report_dir):
+  def UploadResultsToSQL(self, testCase, result, output_dir):
     self.ConnectDB()
     print "Uploading results."
     curs = self.db.cursor()
@@ -583,7 +612,8 @@ class TestCaseRunner ( object ):
             curs.execute(("INSERT INTO rendering_baselines (test_run_id, file_id, case_id, step_name, image) VALUES (%d, %d, %d, '%s'" % (self.test_run_id, testfile_id, testcase_id, step_name)) + ", %s)", [baseline_image,])
           elif res[1] != baseline_image:
             curs.execute("UPDATE rendering_baselines SET image=%s WHERE id=%s", [baseline_image, res[0]])
-
+        else:
+          step_name = os.path.splitext(result.renderings[i])[0][result.renderings[i].find(testCase.name):]
         if not result.renderings_ok[i]: #validation failed, if possible we should upload both the rendering and the diff
           if result.rendering_diffs[i] != '':
             diff_file = open(result.rendering_diffs[i], 'rb')
@@ -616,24 +646,13 @@ class TestCaseRunner ( object ):
      
     results = []
 
-    renderingBoilerplateScriptFile = open(os.path.join(os.getcwd(), 'UnitTestRenderingBoilerplate.py'), 'r')
-    renderingBoilerplateScript = renderingBoilerplateScriptFile.read()
+    #renderingBoilerplateScriptFile = open(os.path.join(os.getcwd(), 'UnitTestRenderingBoilerplate.py'), 'r')
+    #renderingBoilerplateScript = renderingBoilerplateScriptFile.read()
 
-    performanceBoilerplateScriptFile = open(os.path.join(os.getcwd(), 'UnitTestPerformanceBoilerplate.py'), 'r')
-    performanceBoilerplateScript = performanceBoilerplateScriptFile.read()
+    #performanceBoilerplateScriptFile = open(os.path.join(os.getcwd(), 'UnitTestPerformanceBoilerplate.py'), 'r')
+    #performanceBoilerplateScript = performanceBoilerplateScriptFile.read()
     
     
-    rendering_dir = os.path.join(output_dir, 'renderings')
-    if os.path.exists(rendering_dir):
-      shutil.rmtree(rendering_dir)
-
-    diff_dir = os.path.join(output_dir, 'diffs')
-    perf_dir = os.path.join(directory, output_dir, 'perf')
-    report_dir = os.path.join(output_dir, 'reports')
-    for dir in [output_dir, rendering_dir, diff_dir, perf_dir, report_dir]:
-      if not os.path.exists(dir):
-        os.mkdir(dir)
-        
     self.server_name = args.servername;
     self.ConnectDB()
     
@@ -661,27 +680,19 @@ class TestCaseRunner ( object ):
           print "Checking " + file_path + " for tests"
           testCases = self.parseTestDefinitionFile(file_path)
           for testCase in testCases:
-            if testCase != None and testCase.x3d != None and testCase.type != None:
+            if testCase != None and testCase.x3d != None and testCase.type != None and testCase.type != 'performance':
               print "Testing: [" + testCase.type + "] " + testCase.name
-              if testCase.type == 'rendering':
-                self.processRenderingTestCase(file, testCase, results, root, output_dir, rendering_dir, diff_dir, report_dir, renderingBoilerplateScript)
-              elif testCase.type == 'performance':
-                self.processPerformanceTestCase(file, testCase, results, root, output_dir, rendering_dir, perf_dir, report_dir, performanceBoilerplateScript)  
-              else:
-                  print "Test type [" + testCase.type + "] Unknown - Test Skipped"
+#              if testCase.type == 'rendering':
+              self.processTestCase(file, testCase, results, root)
+#              elif testCase.type == 'performance':
+#                self.processPerformanceTestCase(file, testCase, results, root, output_dir, rendering_dir, perf_dir, report_dir, performanceBoilerplateScript)  
+#              else:
+#                  print "Test type [" + testCase.type + "] Unknown - Test Skipped"
 
               testCase.filename = (os.path.relpath(file_path, directory)).replace('\'', '/') # This is used to set up the tree structure for the results page. It will store this parameter in the database as a unique identifier of this specific file of tests.
               if results[len(results)-1] != None:  
-                self.UploadResultsToSQL(testCase, results[len(results)-1][0][1], rendering_dir, perf_dir, report_dir)            
+                self.UploadResultsToSQL(testCase, results[len(results)-1][0][1], root)            
                 
-
-            else:
-              # Test skipped
-              result= TestResults()
-              result.name= file
-              result.url= os.path.join(file)
-              result.skipped= True
-              results.append ( [(Variation(),result)] )
               
     return results
   
@@ -721,14 +732,14 @@ class TestReport ( object ):
         if not args.only_validate:
           output+= "Started OK    : %s\n" % str(r.started_ok)
           output+= "Exited OK     : %s\n" % str(r.terminated_ok)
-        if r.test_type == 'rendering':
+        if r.result_type == 'rendering':
           output+= "renderings:\n"
           for i in range(0, len(r.renderings)):
             output+= "  %s [%s]\n" % (r.step_names[i], ("OK" if r.renderings_ok[i] else "Failed"))
           if False in r.renderings_ok:
             all_renderings_succeeded = False
 
-    if r.test_type == 'rendering':
+    if r.result_type == 'rendering':
       output+= "\n%s\n" % ("All rendering comparisons OK!" if all_renderings_succeeded else "One or more rendering comparisons Failed!")
     return output
     
@@ -981,6 +992,9 @@ print ""
 print "WARNING: Do not change the window focus, or perform other input until the test is complete!"
 print ""
 #time.sleep(3)
+
+
+h3d_process_name = "H3DLoad"
 
 exitCode= 0
 

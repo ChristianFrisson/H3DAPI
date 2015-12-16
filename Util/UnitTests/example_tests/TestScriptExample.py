@@ -1,3 +1,5 @@
+import UnitTestUtil
+
 """
 An example test script
 Any number of functions can be defined here. The test functions shouldn't take any parameters.
@@ -14,5 +16,3 @@ def testRotation():
   rot = trans.getField('rotation')
   rot.setValue(Rotation(50, 0, 20, 1))
   return "testRotation"
-
-testHelper.addTests([testRotation])

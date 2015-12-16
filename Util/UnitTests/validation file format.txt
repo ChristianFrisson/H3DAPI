@@ -1,0 +1,26 @@
+Validation file format:
+Every entry begins with a line describing the validation type. Then the data for that validation type follows. 
+
+performance data looks like:
+
+performance
+[step name]
+[fps data string]
+
+
+rendering data looks like:
+
+screenshot
+[step name]
+[screenshot name]
+
+console
+[step name]
+[number of lines in this step's console output]
+[this step's console output]
+
+
+custom
+[step name]
+[number of lines in this step's text output]
+[this step's text output]

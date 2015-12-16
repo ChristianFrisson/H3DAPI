@@ -164,7 +164,7 @@ function refreshDisplayOptions(model) {
           display_options.servers.selected.push($(this).data('propName'));
         }     
       }
-      $('.TestCase').each(function() { generateGraph($(this));}); // regenerates all the graphs
+      $('.TestCase').each(function() { if($(this).data('model').test_type=="performance") generateGraph($(this));}); // regenerates all the graphs
     });
   }
 }
