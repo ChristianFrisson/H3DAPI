@@ -34,10 +34,7 @@
 
 #include "WxConsoleDialog.h"
 #include <H3DUtil/Console.h>
-
-#ifdef max
-#undef max
-#endif
+#include <H3DUtil/H3DMath.h>
 
 using namespace std;
 
@@ -105,7 +102,7 @@ void WxConsoleDialog::ConsoleStreamBuf::onIdle() {
 void WxConsoleDialog::ConsoleStreamBuf::writeLine( const wxString& _line ) {
   // Count new lines
   std::string s ( _line.mb_str() );
-  line_count += std::max( 1, std::count( s.begin(), s.end(), '\n' ) );
+  line_count += H3DUtil::H3DMax( 1, (int)std::count( s.begin(), s.end(), '\n' ) );
   text_ctrl->SetDefaultStyle( text_style );
   text_ctrl->AppendText( _line );
   if( text_ctrl_aux ) {
