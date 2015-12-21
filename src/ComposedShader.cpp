@@ -406,9 +406,7 @@ void ComposedShader::render() {
 
       // if a TRUE event has been sent to the activate field we 
       // relink the program (without looking up)
-      else if( displayList->hasCausedEvent( activate ) &&
-               activate->getValue( id ) )
-      {
+      else if( activateMonitor->hasCausedEvent(activate)&&activate->getValue(id) ) {
         // deallocate old instance if not used anywhere
         if (phandle_counts.find(program_handle) != phandle_counts.end()) {
           --(phandle_counts[program_handle]);
@@ -467,6 +465,7 @@ void ComposedShader::render() {
 //#endif
     }
   }
+  activateMonitor->upToDate();
 }
 
 // check if any existing program handle using the same set of ShaderParts

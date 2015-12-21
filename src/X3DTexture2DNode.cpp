@@ -62,7 +62,7 @@ X3DTexture2DNode::X3DTexture2DNode(
   repeatT ( _repeatT  ),
   scaleToPowerOfTwo( _scaleToP2 ),
   textureProperties( _textureProperties ),
-  imageNeedsUpdate ( new Field ),
+  imageUpdated ( new Field ),
   updateTextureProperties( new UpdateTextureProperties ){
 
   type_name = "X3DTexture2DNode";
@@ -83,9 +83,9 @@ X3DTexture2DNode::X3DTexture2DNode(
   scaleToPowerOfTwo->route( displayList );
   textureProperties->route( displayList );
 
-  imageNeedsUpdate->setName( "ImageNeedsUpdate" );
-  imageNeedsUpdate->setOwner( this );
-  image->route( imageNeedsUpdate );
+  imageUpdated->setName( "ImageUpdated" );
+  imageUpdated->setOwner( this );
+  image->route( imageUpdated );
 
   updateTextureProperties->setName( "UpdateTextureProperties" );
   updateTextureProperties->setOwner(this);
@@ -303,7 +303,7 @@ void X3DTexture2DNode::render()     {
   updateTextureProperties->upToDate();
   bool texture_target_changed = (texture_target_prev != texture_target);
   Image * i = static_cast< Image * >(image->getValue());
-  if( displayList->hasCausedEvent( image )|| texture_target_changed) {
+  if( !imageUpdated->isUpToDate()||texture_target_changed ){
     if( !image->imageChanged() || texture_id == 0|| texture_target_changed) {
       // the image has changed so remove the old texture and install 
       // the new
@@ -334,7 +334,7 @@ void X3DTexture2DNode::render()     {
   if( i ) {
     renderTextureProperties();
   }
-  imageNeedsUpdate->upToDate();
+  imageUpdated->upToDate();
 }
 
 void X3DTexture2DNode::renderTextureProperties() {
@@ -416,7 +416,9 @@ void X3DTexture2DNode::enableTexturing() {
   glEnable( texture_target );
   Image * i = static_cast< Image * >(image->getValue());
   if( i ) {
-    // update blend state when image exist and image needs update
+    // need to always update blending state no matter if image are updated or not
+    // because there is no opengl state tracking in H3D.  blend state can be 
+    // modified at any place 
     Image::PixelType pixel_type = i->pixelType();
     if( pixel_type == Image::LUMINANCE_ALPHA ||
       pixel_type == Image::RGBA || 

@@ -118,7 +118,12 @@ namespace H3D {
     virtual NodeType *getValue( int id = 0 ) {
       return getCastedValue( id );
     }
-
+#ifdef DISABLE_PROTOTYPENODE
+    /// Get the value casted to the NodeType.  
+    virtual NodeType *getCastedValue( int id = 0 ) {
+      return static_cast<NodeType *>( SFNode::getValue(id) );
+    }
+#else
     /// Get the value casted to the NodeType.  
     virtual NodeType *getCastedValue( int id = 0 ) {
       Node *n = SFNode::getValue( id );
@@ -128,6 +133,7 @@ namespace H3D {
       else
         return static_cast< NodeType * >( n );
     }
+#endif
 
   };
 

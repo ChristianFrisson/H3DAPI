@@ -153,6 +153,20 @@
 /// Undef if you do not have OpenEXR
 #cmakedefine HAVE_OPENEXR
 
+/// def if user choose to disable h3d displaylist.
+#cmakedefine DISABLE_H3D_DISPLAYLIST
+
+/// def if user force disable field type access check, which is supposed
+/// to be used only for release
+#cmakedefine DISABLE_FIELD_ACCESS_TYPE_CHECK
+
+/// def if user choose to not use x3d prototype node in SFNode,
+/// this is a temporary cpu optimization solution, do not turn it on 
+/// if you use x3d prototype node, it may not function as expected
+#cmakedefine DISABLE_PROTOTYPENODE
+
+
+
 #define XML_USE_WIN32_TRANSCODER
 #define XML_USE_INMEM_MESSAGELOADER
 #define XML_USE_NETACCESSOR_WINSOCK

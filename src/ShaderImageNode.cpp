@@ -41,7 +41,8 @@ unsigned int ShaderImageNode::max_image_unit;
 ShaderImageNode::ShaderImageNode( 
                                 Inst< DisplayList > _displayList,
                                 Inst< SFNode>  _metadata ) :
-  H3DSingleTextureNode(_displayList,_metadata) {
+  H3DSingleTextureNode(_displayList,_metadata),
+  reinitShaderImage( new Field ) {
   type_name = "ShaderImageNode";
   displayList->setName( "displayList" );
   displayList->setOwner( this );

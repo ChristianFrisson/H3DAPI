@@ -65,7 +65,7 @@ X3DTexture3DNode::X3DTexture3DNode(
   repeatR ( _repeatR  ),
   scaleToPowerOfTwo( _scaleToP2 ),
   textureProperties( _textureProp ),
-  imageNeedsUpdate( new Field ),
+  imageUpdated( new Field ),
   updateTextureProperties( new UpdateTextureProperties ){
 
   type_name = "X3DTexture3DNode";
@@ -89,9 +89,9 @@ X3DTexture3DNode::X3DTexture3DNode(
   scaleToPowerOfTwo->route( displayList );
   textureProperties->route( displayList );
 
-  imageNeedsUpdate->setName( "ImageNeedsUpdate" );
-  imageNeedsUpdate->setOwner( this );
-  image->route( imageNeedsUpdate );
+  imageUpdated->setName( "ImageUpdated" );
+  imageUpdated->setOwner( this );
+  image->route( imageUpdated );
 
   updateTextureProperties->setName( "UpdateTextureProperties" );
   updateTextureProperties->setOwner(this);
@@ -289,8 +289,7 @@ void X3DTexture3DNode::render()     {
   updateTextureProperties->upToDate();
   bool texture_target_changed = (texture_target_prev != texture_target);
   Image * i = static_cast< Image * >(image->getValue());
-  if( displayList->hasCausedEvent( image )|| texture_target_changed) {
-
+  if( !imageUpdated->isUpToDate() || texture_target_changed ){
     if( !image->imageChanged() || texture_id == 0|| texture_target_changed) {
       // the image has changed so remove the old texture and install 
       // the new
@@ -323,7 +322,7 @@ void X3DTexture3DNode::render()     {
   if( i ) {
     renderTextureProperties();
   }
-  imageNeedsUpdate->upToDate();
+  imageUpdated->upToDate();
 }
 
 void X3DTexture3DNode::renderTextureProperties() {

@@ -86,6 +86,9 @@ namespace H3D {
     // lock to ensure the access to global_image_units is always safe
     static H3DUtil::MutexLock global_image_units_lock;
     static unsigned int max_image_unit;
+
+    /// flag field to help check if shader image need to be re-initialized
+    auto_ptr<Field> reinitShaderImage;
   };
 }
 

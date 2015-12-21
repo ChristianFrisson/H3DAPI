@@ -32,6 +32,7 @@
 #include <H3D/X3DAppearanceChildNode.h>
 #include <H3D/SFString.h>
 #include <H3D/X3DMaterialNode.h>
+#include <H3D/FieldTemplates.h>
 
 namespace H3D {
   /// \ingroup AbstractNodes
@@ -118,6 +119,9 @@ namespace H3D {
     /// 
     /// <b>Access type:</b> inputOnly \n
     auto_ptr< SFBool > activate;
+
+    /// field used to monitor if activate field is modified 
+    auto_ptr<EventCollectingField<Field> > activateMonitor;
 
     /// The language field is used to indicate to the browser which shading 
     /// language is used for the source file(s). This field is ignored in H3D 

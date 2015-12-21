@@ -59,12 +59,15 @@ X3DShaderNode::X3DShaderNode( Inst< DisplayList > _displayList,
   isSelected( _isSelected ),
   isValid( _isValid ),
   activate( _activate ),
-  language( _language ) {
+  language( _language ),
+  activateMonitor( new EventCollectingField<Field> ) {
   type_name = "X3DShaderNode";
   database.initFields( this );
   
   isSelected->setValue( false, id );
   isValid->setValue( false, id );
   activate->setValue( false, id );
+  activateMonitor->setName( "activateMonitor" );
+  activate->route( activateMonitor,id );
 }
 

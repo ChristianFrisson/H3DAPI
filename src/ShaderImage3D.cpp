@@ -74,15 +74,19 @@ ShaderImage3D::ShaderImage3D( Inst< DisplayList  > _displayList ,
   height->route ( displayList );
   depth->route ( displayList );
   format->route ( displayList );
+
+  width->route( reinitShaderImage );
+  height->route( reinitShaderImage );
+  depth->route( reinitShaderImage );
+  format->route( reinitShaderImage );
 }
 
 
 void ShaderImage3D::render ( ){
 #ifdef GLEW_ARB_shader_image_load_store
-  if ( texture_id == 0|| displayList->hasCausedEvent ( width )
-    || displayList->hasCausedEvent ( height ) || displayList->hasCausedEvent(depth) 
-    || displayList->hasCausedEvent ( format ) )
+  if ( texture_id == 0|| (!reinitShaderImage->isUpToDate()) )
   {// either the first render invocation or parameter for the image needs update
+    reinitShaderImage->upToDate();
     prepareShaderImage ( );
   }
   // bind all the layers to the image unit so it can be accessed in the shader

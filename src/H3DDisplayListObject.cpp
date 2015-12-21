@@ -125,6 +125,12 @@ void H3DDisplayListObject::DisplayList::propagateEvent( Event e ) {
 }
 
 void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
+  #ifdef DISABLE_H3D_DISPLAYLIST
+  owner->render();
+  event_fields.clear();
+  #else
+  
+
   bool was_active = isActive->getValue();
   isActive->callListCalled();
 
@@ -184,6 +190,7 @@ void H3DDisplayListObject::DisplayList::callList( bool build_list ) {
         --delay_cache_counter;
     }
   }  
+  #endif // DISABLE_H3D_DISPLAYLIST
 }
 
 bool H3DDisplayListObject::DisplayList::childrenCachesReady( bool consider_active_field ) {

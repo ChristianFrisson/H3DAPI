@@ -71,7 +71,11 @@ ShaderImage2D::ShaderImage2D(
 
   width->route ( displayList );
   height->route ( displayList );
-  format->route ( format );
+  format->route ( displayList );
+
+  width->route( reinitShaderImage );
+  height->route( reinitShaderImage );
+  format->route( reinitShaderImage );
 }
 
 
@@ -82,9 +86,9 @@ void ShaderImage2D::render ( ){
   // also make sure setImageUnit is called for the similar reason
   glGetIntegerv(GL_ACTIVE_TEXTURE_ARB, &texture_unit);
 #ifdef GLEW_ARB_shader_image_load_store
-  if ( texture_id == 0 ||displayList->hasCausedEvent ( width )
-    ||displayList->hasCausedEvent(height)||displayList->hasCausedEvent(format) )
+  if( texture_id == 0 || !reinitShaderImage->isUpToDate() )
   {// either the first render invocation or parameter for the image needs update
+    reinitShaderImage->upToDate();
     prepareShaderImage ( );
   }
   // For now, always set memory barrier here so image read/write is coherent

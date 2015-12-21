@@ -133,7 +133,11 @@ void Field::checkAccessTypeRouteFrom( Field *f, int id ) {
     }
   }
 }
-
+#ifdef DISABLE_FIELD_ACCESS_TYPE_CHECK
+void Field::checkAccessTypeGet( int id ) {
+  // do nothing
+}
+#else
 void Field::checkAccessTypeGet( int id ) {
   if( access_check_on && owner ) {
     // TODO: the check for routes out makes it possible to get the 
@@ -151,7 +155,13 @@ void Field::checkAccessTypeGet( int id ) {
     } 
   }
 }
+#endif
 
+#ifdef DISABLE_FIELD_ACCESS_TYPE_CHECK
+void Field::checkAccessTypeSet( int id ) {
+  // do nothing
+}
+#else
 void Field::checkAccessTypeSet( int id ) {
   if( access_check_on && owner ) {
     if( access_type == INITIALIZE_ONLY ) {
@@ -171,6 +181,7 @@ void Field::checkAccessTypeSet( int id ) {
     }
   }
 }
+#endif
 
 void Field::routeNoEvent( Field *f, int id ) {
 #ifdef DEBUG

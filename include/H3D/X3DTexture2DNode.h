@@ -177,8 +177,8 @@ namespace H3D {
     ///
     virtual std::pair<H3DInt32,H3DInt32> getDefaultSaveDimensions ();
 
-    /// Field to indicate image will change
-    auto_ptr< Field > imageNeedsUpdate;
+    /// Field to indicate image is modified
+    auto_ptr< Field > imageUpdated;
 
     
 

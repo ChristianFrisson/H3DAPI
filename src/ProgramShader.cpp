@@ -80,7 +80,7 @@ void ProgramShader::postRender() {
 
 void ProgramShader::render() {
   // reinitialize the shaders if activate has caused a TRUE event.
-  bool reinitialize = displayList->hasCausedEvent( activate ) && 
+  bool reinitialize = activateMonitor->hasCausedEvent( activate ) && 
     activate->getValue( id );
 
   for( MFShaderProgram::const_iterator i = programs->begin();
@@ -89,6 +89,7 @@ void ProgramShader::render() {
     if( reinitialize ) sp->initCGShaderProgram();
     sp->displayList->callList();
   }
+  activateMonitor->upToDate();
 }
 
 #endif // HAVE_CG
