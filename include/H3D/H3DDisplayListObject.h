@@ -171,8 +171,13 @@ namespace H3D {
         return event_fields.find( f ) != event_fields.end();
       }
 
+#ifdef DEPRECATE_DISPLAYLIST_EVENT_COLLECT
+      /// \deprecated   This function is not really necessary, please define 
+      /// other local event collection field to save cpu time 
+#else
       /// Returns true if the Field given has generated an event to this
       /// field since the last call to the update() function.
+#endif
       template< class FieldType >
       inline bool hasCausedEvent( auto_ptr< FieldType > &f ) {
         return hasCausedEvent( f.get() );

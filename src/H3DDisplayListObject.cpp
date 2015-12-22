@@ -120,8 +120,12 @@ void H3DDisplayListObject::DisplayList::propagateEvent( Event e ) {
   Field::propagateEvent( e );
   have_valid_display_list = false;
   reset_delay_cache_counter = true;
+#ifdef DEPRECATE_DISPLAYLIST_EVENT_COLLECT
+  // do nothing
+#else
   event_fields.insert( e.ptr );
   /*Console(LogLevel::Error)<<"display list object have a event from :"<<e.ptr->getFullName()<<endl;*/
+#endif
 }
 
 void H3DDisplayListObject::DisplayList::callList( bool build_list ) {

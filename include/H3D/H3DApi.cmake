@@ -165,6 +165,12 @@
 /// if you use x3d prototype node, it may not function as expected
 #cmakedefine DISABLE_PROTOTYPENODE
 
+/// def if user choose to not use h3ddisplaylistobject to collect event.
+/// This is to save cpu time, but displaylist->hasCausedEvent function 
+/// will no longer work with this def, so you need to make sure your 
+/// library does not contain displaylist->hasCausedEvent()
+#cmakedefine DEPRECATE_DISPLAYLIST_EVENT_COLLECT
+
 
 
 #define XML_USE_WIN32_TRANSCODER
