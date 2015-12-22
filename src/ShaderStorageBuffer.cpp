@@ -63,7 +63,8 @@ ShaderStorageBuffer::ShaderStorageBuffer(
   height(_height),
   depth(_depth),
   dataSize(_dataSize),
-  storageName(_storageName){
+  storageName(_storageName),
+  rebuildBuffer(new Field){
   type_name = "ShaderStorageBuffer";
   database.initFields(this);
   displayList->setName( "displayList" );
@@ -79,6 +80,11 @@ ShaderStorageBuffer::ShaderStorageBuffer(
   storage_block_binding = -1;
   buffer_id = -1;
   storageName->setValue(getName());
+  rebuildBuffer->setName( "rebuildBuffer" );
+  width->route( rebuildBuffer );
+  height->route( rebuildBuffer );
+  depth->route( rebuildBuffer );
+  dataSize->route( rebuildBuffer );
 }
 
 void ShaderStorageBuffer::initialize ( ){
@@ -133,11 +139,11 @@ void ShaderStorageBuffer::render ( ){
     // program_handle is not correctly compiled, no need to render  
     return;
   }
-  if ( buffer_id == -1 || displayList->hasCausedEvent(width) || displayList->hasCausedEvent(dataSize)
-    || displayList->hasCausedEvent(height)||displayList->hasCausedEvent(depth))
+  if ( buffer_id == -1 || (!rebuildBuffer->isUpToDate() ) )
   {// either it is the first that the buffer is used, or the size need to be changed
     prepareStorageBuffer ( );
   }
+  rebuildBuffer->upToDate();
   storage_block_index = glGetProgramResourceIndex ( program_handle, GL_SHADER_STORAGE_BLOCK, storageName->getValue().c_str() );
   if ( storage_block_index == GL_INVALID_INDEX )
   {
@@ -147,7 +153,6 @@ void ShaderStorageBuffer::render ( ){
   }
   // bind the assigned storage block index to the storage block binding point for the shader storage buffer
   glShaderStorageBlockBinding ( program_handle, storage_block_index, storage_block_binding );
-
   // setup barrier to ensure the previous read/write to the storage buffer is finished
   glMemoryBarrier ( GL_SHADER_STORAGE_BARRIER_BIT );
   // bind the actual buffer to the storage block binding on storage buffer

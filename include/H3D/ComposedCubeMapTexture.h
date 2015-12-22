@@ -33,6 +33,7 @@
 #include <H3D/X3DEnvironmentTextureNode.h>
 #include <H3D/X3DTexture2DNode.h>
 #include <H3D/DependentNodeFields.h>
+#include <H3D/FieldTemplates.h>
 
 namespace H3D {
 
@@ -119,6 +120,9 @@ namespace H3D {
     /// 
     /// \dotfile ComposedCubeMapTexture_bottom.dot
     auto_ptr< SFTexture2DNode >  bottom;
+
+    /// Field to collect texture updated information
+    auto_ptr< EventCollectingField<Field> > textureUpdated;
 
     /// The H3DNodeDatabase for this node.
     static H3DNodeDatabase database;

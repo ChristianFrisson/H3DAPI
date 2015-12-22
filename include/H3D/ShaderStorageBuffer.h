@@ -136,6 +136,8 @@ namespace H3D {
     static unsigned int max_block_bindings;
     static int generateShaderStorageBinding ( );
     static void deleteShaderStorageBinding ( int binding );
+
+    auto_ptr<Field> rebuildBuffer;
   };
 }
 

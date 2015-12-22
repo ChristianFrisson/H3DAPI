@@ -63,7 +63,8 @@ ComposedCubeMapTexture::ComposedCubeMapTexture(
   left( _left ),
   right( _right ),
   top( _top ),
-  bottom( _bottom ) {
+  bottom( _bottom ),
+  textureUpdated( new EventCollectingField<Field> ){
     
   type_name = "ComposedCubeMapTexture";
   database.initFields( this );
@@ -74,6 +75,14 @@ ComposedCubeMapTexture::ComposedCubeMapTexture(
   right->route( displayList );
   top->route( displayList );
   bottom->route( displayList );
+
+  textureUpdated->setName( "textureUpdated" );
+  back->route( textureUpdated );
+  front->route( textureUpdated );
+  left->route( textureUpdated );
+  right->route( textureUpdated );
+  top->route( textureUpdated );
+  bottom->route( textureUpdated );
 }
 
 void ComposedCubeMapTexture::render() {
@@ -167,32 +176,32 @@ void ComposedCubeMapTexture::render() {
 
       if( !invalid_dims ) {
         glBindTexture( GL_TEXTURE_CUBE_MAP_ARB, cube_map_id );
-        if( displayList->hasCausedEvent( back ) && 
-            back_tex->image->getValue() ) {
+        if( textureUpdated->hasCausedEvent( back ) && 
+            back_tex->image->getValue() ){
           back_tex->glTexImage( back_tex->image->getValue(), 
                                 GL_TEXTURE_CUBE_MAP_POSITIVE_Z, false );
         }
-        if( displayList->hasCausedEvent( front ) && 
+        if( textureUpdated->hasCausedEvent( front ) &&
             front_tex->image->getValue() ) {
           front_tex->glTexImage( front_tex->image->getValue(), 
                                  GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, false );
         }
-        if( displayList->hasCausedEvent( left ) && 
+        if( textureUpdated->hasCausedEvent( left ) &&
             left_tex->image->getValue() ) {
           left_tex->glTexImage( left_tex->image->getValue(), 
                                 GL_TEXTURE_CUBE_MAP_NEGATIVE_X, false );
         }
-        if( displayList->hasCausedEvent( right ) && 
+        if( textureUpdated->hasCausedEvent( right ) &&
             right_tex->image->getValue()) {
           right_tex->glTexImage( right_tex->image->getValue(), 
                                  GL_TEXTURE_CUBE_MAP_POSITIVE_X, false );
         }
-        if( displayList->hasCausedEvent( top ) && 
+        if( textureUpdated->hasCausedEvent( top ) &&
             top_tex->image->getValue()) {
           top_tex->glTexImage( top_tex->image->getValue(), 
                                GL_TEXTURE_CUBE_MAP_POSITIVE_Y, false );
         }
-        if( displayList->hasCausedEvent( bottom ) && 
+        if( textureUpdated->hasCausedEvent( bottom ) &&
             bottom_tex->image->getValue()) {
           bottom_tex->glTexImage( bottom_tex->image->getValue(), 
                                   GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, false );
@@ -221,6 +230,7 @@ void ComposedCubeMapTexture::render() {
       Console(LogLevel::Warning) << "Warning: All cube sides not specified in \"" 
                  << getName() << "\" node. Node will be disabled. " << endl;
     }
+    textureUpdated->upToDate();
   }
 }
 
