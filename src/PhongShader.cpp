@@ -35,6 +35,7 @@
 #include <H3D/DirectionalLight.h>
 #include <H3D/PointLight.h>
 #include <H3D/SpotLight.h>
+#include <H3D/GraphicsHardwareInfo.h>
 
 using namespace H3D;
 
@@ -956,8 +957,12 @@ string PhongShader::addUniformFieldsForLight( ComposedShader *shader,
                                      copyAndRouteField( point_light->radius ) );  
   }
   
-  GLint max_lights;
-  glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
+  GLint max_lights = 1;
+  if ( GraphicsHardwareInfo::infoIsInitialized() ) {
+    max_lights = (GLint)GraphicsHardwareInfo::getInfo().max_lights;
+  } else {
+    glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
+  }
 
   if( (int) gl_index >= max_lights ) {   
     stringstream t_name;
@@ -1104,7 +1109,11 @@ void PhongShader::traverseSG( TraverseInfo &ti ) {
    current_light_nodes = ordered_light_nodes;
 
    GLint max_lights = 1;
-   glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
+   if ( GraphicsHardwareInfo::infoIsInitialized() ) {
+     max_lights = (GLint)GraphicsHardwareInfo::getInfo().max_lights;
+   } else {
+     glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
+   }
 
    // make sure we have the right number of transforms, i.e. one for
    // each light more than maximum number of supported light sources
@@ -1136,8 +1145,12 @@ void PhongShader::traverseSG( TraverseInfo &ti ) {
 string PhongShader::setupLight( X3DLightNode *light,
                                 unsigned int index ) {
   stringstream s;
-  GLint max_lights;
-  glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
+  GLint max_lights = 1;
+  if ( GraphicsHardwareInfo::infoIsInitialized() ) {
+    max_lights = (GLint)GraphicsHardwareInfo::getInfo().max_lights;
+  } else {
+    glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
+  }
 
   SpotLight *spot_light = dynamic_cast< SpotLight * >( light );
   DirectionalLight *dir_light = dynamic_cast< DirectionalLight * >( light );

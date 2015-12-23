@@ -40,6 +40,7 @@
 #include <H3D/X3DTexture3DNode.h>
 #include <H3D/NavigationInfo.h>
 #include <H3DUtil/Console.h>
+#include <H3D/GraphicsHardwareInfo.h>
 
 using namespace H3D;
 
@@ -185,11 +186,8 @@ void Appearance::render()     {
     else
       tt->renderForTextureUnit( 0 );
   } else {
-    GLint saved_mode;
-    glGetIntegerv( GL_MATRIX_MODE, &saved_mode );
     glMatrixMode( GL_TEXTURE );
     glLoadIdentity();
-    glMatrixMode( saved_mode );
   }
 
   for( MFShaderNode::const_iterator i = shaders->begin();
@@ -355,8 +353,11 @@ void Appearance::traverseSG( TraverseInfo &ti ) {
 
   // print warning if too many light sources and fixed pipeline rendering
   GLint max_lights = 1;
-  glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
-
+  if( GraphicsHardwareInfo::infoIsInitialized() ) {
+    max_lights = (GLint)GraphicsHardwareInfo::getInfo().max_lights;
+  } else {
+    glGetIntegerv( GL_MAX_LIGHTS, &max_lights );
+  }
   NavigationInfo *ni = NavigationInfo::getActive();
   unsigned int nr_lights = ti.getActiveLightNodes().size();
   if( !ni || ni->headlight->getValue() ) {
