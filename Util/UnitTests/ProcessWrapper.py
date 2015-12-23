@@ -1,4 +1,4 @@
-""" Contains the Process interface definition as well as implementations of it for Unix and Windows """
+﻿""" Contains the Process interface definition as well as implementations of it for Unix and Windows """
 
 import os, sys
 import subprocess
@@ -110,7 +110,7 @@ class ProcessWin32 ( Process ):
     
   def sendKey ( self, key ):
     shell = win32com.client.Dispatch("WScript.Shell")
-    shell.AppActivate ( "H3D" )
+    shell.AppActivate ( self.process_name )
     time.sleep ( 0.1 )
     shell.SendKeys(key)
     
@@ -121,7 +121,7 @@ class ProcessWin32 ( Process ):
     
     # If the test crashed, close the crash dialog box too
     shell = win32com.client.Dispatch("WScript.Shell")
-    shell.AppActivate ( "H3DLoad.exe" )
+    shell.AppActivate ( self.process_name )
     shell.SendKeys("{Esc}")
     
   def getStdOut ( self ):

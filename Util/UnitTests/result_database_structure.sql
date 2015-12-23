@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS `performance_results` (
   `test_run_id` int(10) unsigned NOT NULL,
   `file_id` int(10) unsigned NOT NULL,
   `case_id` int(10) unsigned NOT NULL,
+  `step_id` int(10) unsigned NOT NULL,
   `min_fps` float unsigned NOT NULL,
   `max_fps` float unsigned NOT NULL,
   `avg_fps` float unsigned NOT NULL,
@@ -32,13 +33,13 @@ CREATE TABLE IF NOT EXISTS `performance_results` (
 -- Data exporting was unselected.
 
 
--- Dumping structure for table testserver.screenshot_baselines
-CREATE TABLE IF NOT EXISTS `screenshot_baselines` (
+-- Dumping structure for table testserver.rendering_baselines
+CREATE TABLE IF NOT EXISTS `rendering_baselines` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `test_run_id` int(10) unsigned NOT NULL,
   `file_id` int(10) unsigned NOT NULL,
   `case_id` int(10) unsigned NOT NULL,
-  `step_name` tinytext NOT NULL,
+  `step_id` int(10) unsigned NOT NULL,
   `image` mediumblob NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -46,13 +47,13 @@ CREATE TABLE IF NOT EXISTS `screenshot_baselines` (
 -- Data exporting was unselected.
 
 
--- Dumping structure for table testserver.screenshot_results
-CREATE TABLE IF NOT EXISTS `screenshot_results` (
+-- Dumping structure for table testserver.rendering_results
+CREATE TABLE IF NOT EXISTS `rendering_results` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `test_run_id` int(10) unsigned NOT NULL,
   `file_id` int(10) unsigned NOT NULL,
   `case_id` int(10) unsigned NOT NULL,
-  `step_name` tinytext NOT NULL,
+  `step_id` int(10) unsigned NOT NULL,
   `success` enum('Y','N') NOT NULL,
   `output_image` mediumblob,
   `diff_image` mediumblob,
@@ -76,7 +77,6 @@ CREATE TABLE IF NOT EXISTS `servers` (
 CREATE TABLE IF NOT EXISTS `test_cases` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `case_name` text NOT NULL,
-  `test_type` enum('performance','rendering') NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -98,6 +98,17 @@ CREATE TABLE IF NOT EXISTS `test_runs` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `server_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table testserver.test_steps
+CREATE TABLE IF NOT EXISTS `test_steps` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `step_name` tinytext NOT NULL,
+  `test_case_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

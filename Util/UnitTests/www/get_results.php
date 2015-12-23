@@ -8,27 +8,29 @@ if(mysqli_connect_errno($db)) {
 
 
 $query = "
-  (        SELECT performance_results.id as id, test_runs.timestamp, server_id, server_name, test_run_id, file_id, filename, case_id, test_type, case_name,
-                null as success, null as output_image, null as diff_image, null as baseline_image, null as step_name, min_fps, max_fps, mean_fps, avg_fps
+(        SELECT performance_results.id as id, test_runs.timestamp, server_id, server_name, test_run_id, file_id, filename, case_id, 'performance' as result_type, case_name, performance_results.step_id, step_name,
+                null as success, null as output_image, null as diff_image, null as baseline_image, min_fps, max_fps, mean_fps, avg_fps
           FROM performance_results
             JOIN test_runs ON performance_results.test_run_id=test_runs.id
             JOIN test_cases ON performance_results.case_id=test_cases.id
+            JOIN test_steps ON performance_results.step_id=test_steps.id
             JOIN test_files ON performance_results.file_id=test_files.id
             JOIN servers ON test_runs.server_id=servers.id
             JOIN (SELECT MAX(perf_inner.id) as id, MAX(timestamp) as maxtime FROM performance_results as perf_inner, test_runs WHERE perf_inner.test_run_id=test_runs.id GROUP BY case_id ORDER BY timestamp DESC) as perf_outer 
-                  ON perf_outer.id = performance_results.id AND perf_outer.maxtime = test_runs.timestamp
+                  ON perf_outer.id = performance_results.id AND perf_outer.maxtime = test_runs.timestamp WHERE server_id = "."3"."
 ) UNION ALL (
-            SELECT rendering_results.id as id, test_runs.timestamp, server_id, server_name, rendering_results.test_run_id, rendering_results.file_id, filename, rendering_results.case_id, test_type, case_name,
-         success, rendering_results.output_image, rendering_results.diff_image, image AS baseline_image, baseline.step_name, null as min_fps, null as max_fps, null as mean_fps, null as avg_fps
+            SELECT rendering_results.id as id, test_runs.timestamp, server_id, server_name, rendering_results.test_run_id, rendering_results.file_id, filename, rendering_results.case_id, 'rendering' as result_type, case_name, rendering_results.step_id, step_name,
+         success, rendering_results.output_image, rendering_results.diff_image, image AS baseline_image, null as min_fps, null as max_fps, null as mean_fps, null as avg_fps
   FROM rendering_results
     JOIN test_runs ON rendering_results.test_run_id=test_runs.id
     JOIN test_cases ON rendering_results.case_id=test_cases.id
+	 JOIN test_steps ON rendering_results.step_id=test_steps.id
     JOIN test_files ON rendering_results.file_id=test_files.id
     JOIN servers ON test_runs.server_id=servers.id
-    LEFT JOIN rendering_baselines as baseline ON rendering_results.case_id=baseline.case_id AND rendering_results.step_name=baseline.step_name
-    JOIN (SELECT MAX(rend_inner.id) as id, MAX(timestamp) as maxtime, case_id FROM rendering_results as rend_inner JOIN test_runs ON rend_inner.test_run_id=test_runs.id GROUP BY case_id, file_id, step_name ORDER BY timestamp DESC) as rend_outer
-            ON rend_outer.id = rendering_results.id AND rend_outer.maxtime = test_runs.timestamp
-            GROUP BY case_id, file_id, step_name)";
+    LEFT JOIN rendering_baselines as baseline ON rendering_results.file_id=baseline.file_id AND rendering_results.case_id=baseline.case_id AND rendering_results.step_id=baseline.step_id
+    JOIN (SELECT MAX(rend_inner.id) as id, MAX(timestamp) as maxtime, case_id FROM rendering_results as rend_inner JOIN test_runs ON rend_inner.test_run_id=test_runs.id GROUP BY case_id, file_id, step_id ORDER BY timestamp DESC) as rend_outer
+            ON rend_outer.id = rendering_results.id AND rend_outer.maxtime = test_runs.timestamp WHERE server_id = "."3"."
+            GROUP BY case_id, file_id, step_name) ORDER BY case_name, step_id ASC";
 
 $data = generate_results($db, $query);
 
@@ -150,20 +152,20 @@ if(!$fetch_result = mysqli_query($db, $query)) {
     $testcase = array(
       "name"   => $row['case_name'],
       "filename"   => $row['filename'],
-      "test_type"   => $row['test_type'],
+      "result_type"   => $row['result_type'],
       "test_run_id" => $row['test_run_id'],
       "server_id"=> $row['server_id'],
       "server_name"=> $row['server_name'],
       "time"   => $row['timestamp']);
+    $testcase["step_name"] = $row['step_name'];
     
-    if($row['test_type'] == "rendering") {
+    if($row['result_type'] == "rendering") {
       $testcase["success"] = $row['success'];
-      $testcase["step_name"] = $row['step_name'];
       $testcase["output_image"] = base64_encode($row['output_image']);
       $testcase["diff_image"] = base64_encode($row['diff_image']);
       $testcase["baseline_image"] = base64_encode($row['baseline_image']);
     }
-    else if($row['test_type'] == "performance") {
+    else if($row['result_type'] == "performance") {
       $testcase["min_fps"] = $row['min_fps'];
       $testcase["avg_fps"] = $row['avg_fps'];
       $testcase["mean_fps"] = $row['mean_fps'];

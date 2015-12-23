@@ -49,7 +49,7 @@ var display_options =  {
   properties: {
     available: ["min_fps", "avg_fps", "mean_fps", "max_fps"],
     selected: ["min_fps", "avg_fps", "mean_fps", "max_fps"],
-    ignore: ["name", "time", "history", "server_id", "server_name", "test_run_id", "filename", "test_type"],
+    ignore: ["name", "time", "history", "server_id", "server_name", "test_run_id", "filename", "result_type", "step_name"],
   },
   servers:  {
     available: [],
@@ -65,7 +65,7 @@ function generateDisplayOptionsList(model) {
       else {
         for(var j = 0; j < model[i].testcases.length; j++) {
           var testcase = model[i].testcases[j];
-          if(testcase.test_type=='performance') {
+          if(testcase.result_type=='performance') {
             if($.inArray(testcase.server_name, display_options.servers.available) < 0) {
               display_options.servers.available.push(testcase.server_name);
             }
@@ -132,7 +132,7 @@ function refreshDisplayOptions(model) {
           display_options.properties.selected.push($(this).data('propName'));
         }     
       }
-      $('.TestCase').each(function() { if($(this).data('model').test_type=="performance") generateGraph($(this));}); // regenerates all the graphs
+      $('.TestCase').each(function() { if($(this).data('model').result_type=="performance") generateGraph($(this));}); // regenerates all the graphs
     });    
     
   }
@@ -164,7 +164,7 @@ function refreshDisplayOptions(model) {
           display_options.servers.selected.push($(this).data('propName'));
         }     
       }
-      $('.TestCase').each(function() { if($(this).data('model').test_type=="performance") generateGraph($(this));}); // regenerates all the graphs
+      $('.TestCase').each(function() { if($(this).data('model').result_type=="performance") generateGraph($(this));}); // regenerates all the graphs
     });
   }
 }
@@ -286,11 +286,7 @@ function ConstructTestCases(model, target) {
     div.addClass('TestCase');
     var name_div = $('<div>');
     name_div.addClass('TestCase_name');
-    if(model[i].test_type=="rendering") {
-      name_div.append(model[i].step_name);
-    } else {
-      name_div.append(model[i].name);
-    }
+    name_div.append("Step: " + model[i].step_name);
     div.append(name_div);
     div.data('model', model[i]); // Store the associated testCase with the div
     container.append(div);
@@ -572,9 +568,9 @@ $(document).ready(function(){
   ConstructList(model, $('#Categories'));
   $('.TestCase').each(function() {
   var testcase = $(this).data('model');
-    if(testcase.test_type=="performance") {
+    if(testcase.result_type=="performance") {
       generateGraph($(this));
-    } else if (testcase.test_type=="rendering") {
+    } else if (testcase.result_type=="rendering") {
       generateImages($(this));
     }
   }); // We make sure generateGraph gets called
