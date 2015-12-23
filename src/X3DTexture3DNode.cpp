@@ -335,22 +335,12 @@ void X3DTexture3DNode::renderTextureProperties() {
     texture_properties->renderTextureProperties( texture_target );
   } else {
     // set up texture parameters 
-    if ( repeatS->getValue() )
-      glTexParameteri( texture_target, GL_TEXTURE_WRAP_S, GL_REPEAT );
-    else
-      glTexParameteri( texture_target, 
-                       GL_TEXTURE_WRAP_S, 
-                       GL_CLAMP_TO_EDGE );
-    if ( repeatT->getValue() )
-      glTexParameteri( texture_target, GL_TEXTURE_WRAP_T, GL_REPEAT );
-    else
-      glTexParameteri( texture_target, GL_TEXTURE_WRAP_T, 
-                       GL_CLAMP_TO_EDGE );
-    if ( repeatR->getValue() )
-      glTexParameteri( texture_target, GL_TEXTURE_WRAP_R, GL_REPEAT );
-    else
-      glTexParameteri( texture_target, GL_TEXTURE_WRAP_R, 
-                       GL_CLAMP_TO_EDGE );
+    if ( !repeatS->getValue() ) {
+      glTexParameteri( texture_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+    }
+    if ( !repeatT->getValue() ) {
+      glTexParameteri( texture_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+    }
     glTexParameteri( texture_target, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri( texture_target, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
   }
