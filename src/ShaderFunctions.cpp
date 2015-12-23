@@ -499,7 +499,6 @@ bool H3D::Shaders::setGLSLUniformVariableValue( GLhandleARB program_handle,
   {
     location = ui->location;
   }
-  glGetError(); // clear the OpenGL error status
   if( location == -1 ) 
   {
     // check if the field is actually not uniform value
