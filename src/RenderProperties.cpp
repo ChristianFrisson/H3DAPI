@@ -270,10 +270,10 @@ int RenderProperties::getSFactor( const string &sfactor_string,
 int RenderProperties::getDFactor( const string &dfactor_string, 
                                   GLenum &d_factor ) {
 
-  if( dfactor_string == "ZERO" ) {
-    d_factor = GL_ZERO;
-  } else if( dfactor_string == "ONE" ) {
-    d_factor = GL_ONE;
+  if( dfactor_string == "ONE_MINUS_SRC_ALPHA" ) {
+    d_factor = GL_ONE_MINUS_SRC_ALPHA;
+  } else if( dfactor_string == "SRC_ALPHA" ) {
+    d_factor = GL_SRC_ALPHA;
   } else if( dfactor_string == "SRC_COLOR" ) {
     d_factor = GL_SRC_COLOR;
   } else if( dfactor_string == "ONE_MINUS_SRC_COLOR" ) {
@@ -282,10 +282,10 @@ int RenderProperties::getDFactor( const string &dfactor_string,
     d_factor = GL_DST_COLOR;
   } else if( dfactor_string == "ONE_MINUS_DST_COLOR" ) {
     d_factor = GL_ONE_MINUS_DST_COLOR;
-  } else if( dfactor_string == "SRC_ALPHA" ) {
-    d_factor = GL_SRC_ALPHA;
-  } else if( dfactor_string == "ONE_MINUS_SRC_ALPHA" ) {
-    d_factor = GL_ONE_MINUS_SRC_ALPHA;
+  } else if( dfactor_string == "ONE" ) {
+    d_factor = GL_ONE;
+  } else if( dfactor_string == "ZERO" ) {
+    d_factor = GL_ZERO;
   } else if( dfactor_string == "DST_ALPHA" ) {
     d_factor = GL_DST_ALPHA;
   } else if( dfactor_string == "ONE_MINUS_DST_ALPHA" ) {
