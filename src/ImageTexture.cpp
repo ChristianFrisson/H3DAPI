@@ -107,7 +107,7 @@ Image* ImageTexture::SFImage::loadImage( ImageTexture *texture,
            ++il ) {
         // First try to resolve the url to file contents and load via string buffer
         // Otherwise fallback on using temp files
-        string url_contents= ResourceResolver::resolveURLAsString ( *i );
+        string url_contents= texture->resolveURLAsString ( *i );
         if ( url_contents != "" ) {
           istringstream tmp_istream( url_contents );
           Image *_image =
@@ -138,7 +138,7 @@ Image* ImageTexture::SFImage::loadImage( ImageTexture *texture,
        i != urls.end(); ++i ) {
     // First try to resolve the url to file contents and load via string buffer
     // Otherwise fallback on using temp files
-    string url_contents= ResourceResolver::resolveURLAsString ( *i );
+    string url_contents= texture->resolveURLAsString ( *i );
     if ( url_contents != "" ) {
       istringstream iss ( url_contents );
       auto_ptr< H3DImageLoaderNode > 
