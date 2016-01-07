@@ -72,7 +72,18 @@ Group* X3D::createX3DFromURL( const string &url,
   // Otherwise fallback on using temp files
   string url_contents= ResourceResolver::resolveURLAsString ( url );
   if ( url_contents != "" ) {
-    return createX3DFromString ( url_contents, dn, exported_nodes, prototypes );
+    // Ensure that we set the base URL even when returning file contents
+    string old_base = ResourceResolver::getBaseURL();
+    string::size_type to = url.find_last_of( "/\\" );
+    if( to != string::npos ) {
+      string base = url.substr( 0, to + 1 );
+      ResourceResolver::setBaseURL( old_base + base );
+    }
+
+    Group* g= createX3DFromString ( url_contents, dn, exported_nodes, prototypes );
+
+    ResourceResolver::setBaseURL( old_base );
+    return g;
   }
 
   bool is_tmp_file;
@@ -250,7 +261,18 @@ AutoRef< Node > X3D::createX3DNodeFromURL( const string &url,
   // Otherwise fallback on using temp files
   string url_contents= ResourceResolver::resolveURLAsString ( url );
   if ( url_contents != "" ) {
-    return createX3DNodeFromString ( url_contents, dn, exported_nodes, prototypes );
+    // Ensure that we set the base URL even when returning file contents
+    string old_base = ResourceResolver::getBaseURL();
+    string::size_type to = url.find_last_of( "/\\" );
+    if ( to != string::npos ) {
+      string base = url.substr ( 0, to+1 );
+      ResourceResolver::setBaseURL( old_base + base );
+    }
+      
+     AutoRef< Node > n = createX3DNodeFromString ( url_contents, dn, exported_nodes, prototypes );
+    
+    ResourceResolver::setBaseURL( old_base );
+    return n;
   }
 
   bool is_tmp_file;

@@ -153,6 +153,12 @@ void Inline::LoadedScene::update() {
           }
           Group *g;
           if ( url_contents != "" ) {
+            // Ensure that we set the base URL even when returning file contents
+            string::size_type to = (*i).find_last_of( "/\\" );
+            if ( to != string::npos ) {
+              string base = (*i).substr ( 0, to+1 );
+              ResourceResolver::setBaseURL( old_url_base + base );
+            }
             // We have resolved to file contents, load from string buffer
             g= X3D::createX3DFromString ( url_contents, 
                                           &inline_node->DEF_nodes, 
