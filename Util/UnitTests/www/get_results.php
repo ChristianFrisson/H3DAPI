@@ -6,31 +6,106 @@ if(mysqli_connect_errno($db)) {
   echo "Failed to connect to MySQL: " . mysqli_connect_error();
 }
 
-
-$query = "
-(        SELECT performance_results.id as id, test_runs.timestamp, server_id, server_name, test_run_id, file_id, filename, case_id, 'performance' as result_type, case_name, performance_results.step_id, step_name,
-                null as success, null as output_image, null as diff_image, null as baseline_image, min_fps, max_fps, mean_fps, avg_fps
-          FROM performance_results
-            JOIN test_runs ON performance_results.test_run_id=test_runs.id
-            JOIN test_cases ON performance_results.case_id=test_cases.id
-            JOIN test_steps ON performance_results.step_id=test_steps.id
-            JOIN test_files ON performance_results.file_id=test_files.id
-            JOIN servers ON test_runs.server_id=servers.id
-            JOIN (SELECT MAX(perf_inner.id) as id, MAX(timestamp) as maxtime FROM performance_results as perf_inner, test_runs WHERE perf_inner.test_run_id=test_runs.id GROUP BY case_id ORDER BY timestamp DESC) as perf_outer 
-                  ON perf_outer.id = performance_results.id AND perf_outer.maxtime = test_runs.timestamp WHERE server_id = "."3"."
-) UNION ALL (
-            SELECT rendering_results.id as id, test_runs.timestamp, server_id, server_name, rendering_results.test_run_id, rendering_results.file_id, filename, rendering_results.case_id, 'rendering' as result_type, case_name, rendering_results.step_id, step_name,
-         success, rendering_results.output_image, rendering_results.diff_image, image AS baseline_image, null as min_fps, null as max_fps, null as mean_fps, null as avg_fps
-  FROM rendering_results
-    JOIN test_runs ON rendering_results.test_run_id=test_runs.id
-    JOIN test_cases ON rendering_results.case_id=test_cases.id
-	 JOIN test_steps ON rendering_results.step_id=test_steps.id
-    JOIN test_files ON rendering_results.file_id=test_files.id
-    JOIN servers ON test_runs.server_id=servers.id
-    LEFT JOIN rendering_baselines as baseline ON rendering_results.file_id=baseline.file_id AND rendering_results.case_id=baseline.case_id AND rendering_results.step_id=baseline.step_id
-    JOIN (SELECT MAX(rend_inner.id) as id, MAX(timestamp) as maxtime, case_id FROM rendering_results as rend_inner JOIN test_runs ON rend_inner.test_run_id=test_runs.id GROUP BY case_id, file_id, step_id ORDER BY timestamp DESC) as rend_outer
-            ON rend_outer.id = rendering_results.id AND rend_outer.maxtime = test_runs.timestamp WHERE server_id = "."3"."
-            GROUP BY case_id, file_id, step_name) ORDER BY case_name, step_id ASC";
+$test_run_id = $_GET['test_run_id'];
+  
+$query = sprintf("
+(SELECT performance_results.id AS id,test_runs.timestamp,server_id,server_name,test_run_id,file_id,filename,case_id,
+        'performance' AS result_type,case_name,performance_results.step_id,step_name,NULL AS success,NULL AS
+        output_image,NULL AS diff_image,NULL AS baseline_image,min_fps,max_fps,mean_fps,avg_fps, NULL AS stdout, NULL AS stderr,NULL AS
+        text_output,NULL AS text_baseline,NULL AS text_diff
+ FROM   test_runs
+        left join performance_results
+               ON performance_results.test_run_id = test_runs.id
+        join test_cases
+          ON performance_results.case_id = test_cases.id
+        join test_steps
+          ON performance_results.step_id = test_steps.id
+        join test_files
+          ON performance_results.file_id = test_files.id
+        join servers
+          ON test_runs.server_id = servers.id
+ WHERE  test_runs.id = %d
+)
+UNION ALL
+(SELECT rendering_results.id AS id,test_runs.timestamp,server_id,server_name,rendering_results.test_run_id,
+        rendering_results.file_id,filename,rendering_results.case_id,'rendering' AS result_type,case_name,
+        rendering_results.step_id,step_name,success,rendering_results.output_image,rendering_results.diff_image,image AS
+        baseline_image,NULL AS min_fps,NULL AS max_fps,NULL AS mean_fps,NULL AS avg_fps, NULL AS stdout, NULL AS stderr,NULL AS
+        text_output,NULL AS text_baseline,NULL AS text_diff
+ FROM   test_runs
+        left join rendering_results
+               ON rendering_results.test_run_id = test_runs.id
+        join test_cases
+          ON rendering_results.case_id = test_cases.id
+        join test_steps
+          ON rendering_results.step_id = test_steps.id
+        join test_files
+          ON rendering_results.file_id = test_files.id
+        join servers
+          ON test_runs.server_id = servers.id
+        left join rendering_baselines AS baseline
+               ON rendering_results.case_id = baseline.case_id
+                  AND rendering_results.step_id = baseline.step_id
+ WHERE  test_runs.id = %d
+)
+UNION ALL
+(SELECT console_results.id AS id,test_runs.timestamp,server_id,server_name,console_results.test_run_id,
+        console_results.file_id,
+        filename,console_results.case_id,'console' AS result_type,case_name,console_results.step_id,step_name,success,
+        NULL AS output_image,NULL AS diff_image,NULL AS baseline_image,NULL AS min_fps,NULL AS max_fps,NULL AS mean_fps,
+        NULL AS avg_fps, NULL AS stdout,NULL AS stderr,output AS text_output,baseline AS text_baseline, diff AS text_diff
+ FROM   test_runs
+        left join console_results
+               ON console_results.test_run_id = test_runs.id
+        join test_cases
+          ON console_results.case_id = test_cases.id
+        join test_steps
+          ON console_results.step_id = test_steps.id
+        join test_files
+          ON console_results.file_id = test_files.id
+        join servers
+          ON test_runs.server_id = servers.id
+ WHERE  test_runs.id = %d
+ GROUP  BY case_id,file_id,step_name)
+UNION ALL
+(SELECT custom_results.id AS id,test_runs.timestamp,server_id,server_name,custom_results.test_run_id,
+        custom_results.file_id,
+        filename,custom_results.case_id,'custom' AS result_type,case_name,custom_results.step_id,step_name,success,
+        NULL AS output_image,NULL AS diff_image,NULL AS baseline_image,NULL AS min_fps,NULL AS max_fps,NULL AS mean_fps,
+        NULL AS avg_fps, NULL AS stdout,NULL AS stderr,output AS text_output,baseline AS text_baseline, diff AS text_diff
+ FROM   test_runs
+        left join custom_results
+               ON custom_results.test_run_id = test_runs.id
+        join test_cases
+          ON custom_results.case_id = test_cases.id
+        join test_steps
+          ON custom_results.step_id = test_steps.id
+        join test_files
+          ON custom_results.file_id = test_files.id
+        join servers
+          ON test_runs.server_id = servers.id
+ WHERE  test_runs.id = %d
+ GROUP  BY case_id,file_id,step_name)
+UNION ALL
+(SELECT error_results.id AS id,test_runs.timestamp,server_id,server_name,error_results.test_run_id,
+        error_results.file_id,
+        filename,error_results.case_id,'error' AS result_type,case_name,error_results.step_id,step_name, NULL AS success,
+        NULL AS output_image,NULL AS diff_image,NULL AS baseline_image,NULL AS min_fps,NULL AS max_fps,NULL AS mean_fps,
+        NULL AS avg_fps, stdout, stderr,NULL AS text_output,NULL AS text_baseline, null AS text_diff
+ FROM   test_runs
+        left join error_results
+               ON error_results.test_run_id = test_runs.id
+        join test_cases
+          ON error_results.case_id = test_cases.id
+        join test_steps
+          ON error_results.step_id = test_steps.id
+        join test_files
+          ON error_results.file_id = test_files.id
+        join servers
+          ON test_runs.server_id = servers.id
+ WHERE  test_runs.id = %d
+ GROUP  BY case_id,file_id,step_name) 
+ORDER  BY case_name,step_id ASC ", $test_run_id, $test_run_id, $test_run_id, $test_run_id, $test_run_id);
 
 $data = generate_results($db, $query);
 
@@ -79,6 +154,18 @@ if(!$fetch_result = mysqli_query($db, $query)) {
   */									
 
   $data = array();
+  
+  if(mysqli_num_rows($fetch_result) == 0) {
+  $testcase = array(
+    "name"   => "No results found",
+    "testcases" => array([
+      "step_name"  => "",
+      "filename"   => "Error",
+      "result_type" => "ignore"])
+    );  
+    $data = array($testcase);
+  }
+  
   while($row = mysqli_fetch_assoc($fetch_result)) {
   //  echo json_encode($row);
     $filename = $row['filename'];
@@ -156,7 +243,8 @@ if(!$fetch_result = mysqli_query($db, $query)) {
       "test_run_id" => $row['test_run_id'],
       "server_id"=> $row['server_id'],
       "server_name"=> $row['server_name'],
-      "time"   => $row['timestamp']);
+      "time"   => $row['timestamp']
+      );
     $testcase["step_name"] = $row['step_name'];
     
     if($row['result_type'] == "rendering") {
@@ -193,6 +281,20 @@ if(!$fetch_result = mysqli_query($db, $query)) {
       "max_fps"=> $hist_row['max_fps'],
        ));
        }
+    }
+    else if ($row['result_type'] == 'console') {
+      $testcase["success"] = $row['success'];
+     $testcase["text_output"] = $row["text_output"];
+     $testcase["text_baseline"] = $row["text_baseline"];
+     $testcase["text_diff"] = $row["text_diff"];
+    } else if ($row['result_type'] == 'custom') {
+      $testcase["success"] = $row['success'];
+     $testcase["text_output"] = $row["text_output"];
+     $testcase["text_baseline"] = $row["text_baseline"];
+     $testcase["text_diff"] = $row["text_diff"];
+    } else if ($row['result_type'] == 'error') {
+      $testcase["stdout"] = $row['stdout'];
+      $testcase["stderr"] = $row['stderr'];
     }
     
 

@@ -45,7 +45,7 @@ class UnitTestHelper :
   def doTesting(self):
 
     if self.store_console_output:
-      pp.pprint("[" + self.last_step_name + "]")
+#     pp.pprint(self.last_step_name)
       f = open(self.validation_file, 'a')
       f.write('console_end\n')
       f.flush()
@@ -53,10 +53,10 @@ class UnitTestHelper :
       self.store_console_output = False
     if self.measure_fps:
       try:
-        pp.pprint("measured fps")
+#       pp.pprint("measured fps")
         fps_data = self.fps_counter.stop()
         self.measure_fps = False
-        pp.pprint("saving to " + self.validation_file)
+#       pp.pprint("saving to " + self.validation_file)
         f = open(self.validation_file, 'a')
         f.write('performance\n')
         f.write(fps_data + '\n')
@@ -66,7 +66,7 @@ class UnitTestHelper :
         print(str(e))   
     if self.store_custom_output:
       try:
-        pp.pprint("custom output")
+#        pp.pprint("custom output")
         self.store_custom_output = False
         f = open(self.validation_file, 'a')
         f.write('custom_start\n')
@@ -79,7 +79,7 @@ class UnitTestHelper :
         print(str(e))   
     try: # If a screenshot has been queued up then it will take that
       screenshot_name = self.screenshot_queue.get(False)
-      pp.pprint("screenshot: " + screenshot_name)
+#      pp.pprint("screenshot: " + screenshot_name)
       self.outputScreenshot(screenshot_name)
     except Exception as e:
       if str(e) != '':
@@ -113,6 +113,7 @@ class UnitTestHelper :
       else:
         try:
           if self.store_console_output:
+            print "console_start"
             f = open(self.validation_file, 'a')
             f.write("console_start\n")
             f.flush()
@@ -132,11 +133,12 @@ class UnitTestHelper :
       return
     except Exception as e:
       print(str(e))   
+      print "Testcase done!"
       shutdown_file = open( self.early_shutdown_file, 'w' )
       shutdown_file.write( "OK" )
       shutdown_file.flush()
       shutdown_file.close()
-      print "Done!"
+      throwQuitAPIException()
 
 
   def printCustom(self, value):
@@ -172,7 +174,7 @@ class UnitTestHelper :
       self.screenshot_counter += 1
     filename = os.path.abspath(os.path.join(self.output_file_prefix, "renderings/", test_step_name + '.png').replace('\\', '/'))
     takeScreenshot(filename)
-    pp.pprint("saving to " + self.validation_file)
+#    pp.pprint("saving to " + self.validation_file)
     f = open(self.validation_file, 'a')
     f.write('screenshot\n')
     f.write(filename + '\n')

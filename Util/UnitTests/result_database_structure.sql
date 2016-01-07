@@ -15,6 +15,55 @@ CREATE DATABASE IF NOT EXISTS `testserver` /*!40100 DEFAULT CHARACTER SET utf8 *
 USE `testserver`;
 
 
+-- Dumping structure for table testserver.console_results
+CREATE TABLE IF NOT EXISTS `console_results` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `test_run_id` int(10) unsigned NOT NULL,
+  `file_id` int(10) unsigned NOT NULL,
+  `case_id` int(10) unsigned NOT NULL,
+  `step_id` int(10) unsigned NOT NULL,
+  `success` enum('Y','N') NOT NULL,
+  `output` text NOT NULL,
+  `baseline` text,
+  `diff` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table testserver.custom_results
+CREATE TABLE IF NOT EXISTS `custom_results` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `test_run_id` int(10) unsigned NOT NULL,
+  `file_id` int(10) unsigned NOT NULL,
+  `case_id` int(10) unsigned NOT NULL,
+  `step_id` int(10) unsigned NOT NULL,
+  `success` enum('Y','N') NOT NULL,
+  `output` text NOT NULL,
+  `baseline` text,
+  `diff` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table testserver.error_results
+CREATE TABLE IF NOT EXISTS `error_results` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `test_run_id` int(10) unsigned NOT NULL,
+  `file_id` int(10) unsigned NOT NULL,
+  `case_id` int(10) unsigned NOT NULL,
+  `step_id` int(10) unsigned NOT NULL,
+  `stdout` text,
+  `stderr` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Data exporting was unselected.
+
+
 -- Dumping structure for table testserver.performance_results
 CREATE TABLE IF NOT EXISTS `performance_results` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -36,7 +85,6 @@ CREATE TABLE IF NOT EXISTS `performance_results` (
 -- Dumping structure for table testserver.rendering_baselines
 CREATE TABLE IF NOT EXISTS `rendering_baselines` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `test_run_id` int(10) unsigned NOT NULL,
   `file_id` int(10) unsigned NOT NULL,
   `case_id` int(10) unsigned NOT NULL,
   `step_id` int(10) unsigned NOT NULL,

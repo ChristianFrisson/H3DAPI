@@ -12,11 +12,23 @@ body {
 }
 
 ul > .Category_Item { position:relative; margin-left: 20px;}
+
 .Test_Container {
   margin-left: 20px;
   clear: both; 
   display:none;
   height:none;
+}
+
+.TestResult {
+  background-color:white;
+  position:relative; margin-left: 20px;
+  width: auto;
+  padding: 0;
+  float:left;
+  border: 1px solid black;
+  padding: 5px;
+  margin: 5px;
 }
 
 .TestCase {
@@ -28,7 +40,30 @@ ul > .Category_Item { position:relative; margin-left: 20px;}
   padding: 5px;
   margin: 5px;
 }
+.TestCase:hover{
+  background-color: hsla(195,53%,79%, 0.45);  
+}
 
+.stdout_div {
+  position:relative; margin-left: 20px;
+  width: 450px;
+  height: 450px;
+  overflow-y:scroll;
+  word-wrap: break-word;
+  padding: 0;
+  float:left;
+  border: 1px solid black;
+  padding: 5px;
+  margin: 5px;
+}
+
+.TestStep_name {
+  margin: 0;
+  padding: 0;
+  float:left;
+  clear:both;
+  overflow:hidden;
+}
 .TestCase_name {
   margin: 0;
   padding: 0;
@@ -37,7 +72,8 @@ ul > .Category_Item { position:relative; margin-left: 20px;}
   overflow:hidden;
 }
 
-.TestCase_graph {
+
+.TestResult_graph {
   border: 1px solid black;
   height:400px;
   width:700px;
@@ -48,7 +84,30 @@ ul > .Category_Item { position:relative; margin-left: 20px;}
   clear:both;
 }
 
-.TestCase_data {
+.TestResult_console {
+  border: 1px solid black;
+  height:400px;
+  width:400px;
+  width:auto;
+  overflow-y:scroll;
+  margin: 0;
+  padding: 0;
+  float:left;
+  clear:both;
+}
+
+.TestResult_error {
+  height:400px;
+  width:400px;
+  overflow-y:scroll;
+  margin: 0;
+  padding: 0;
+  float:left;
+  clear:both;
+}
+
+
+.TestResult_data {
   border: 1px solid black;
   height:400px;
   width: auto;
@@ -56,27 +115,27 @@ ul > .Category_Item { position:relative; margin-left: 20px;}
   overflow:hidden;
 }
 
-.Testcase_data_list {
+.TestResult_data_list {
   position: relative;
   top: 50%;
   transform: translateY(-50%);
   margin-right: 30px;
 }
 
-.TestCase_rendering {
+.TestResult_rendering {
   width: auto;
   float: left;
   clear:both;
 }
 
-.TestCase_image_div {
+.TestResult_image_div {
   width: auto;
   border: 1px solid black;
   float:left;
   margin: 5px;
 }
 
-.TestCase_image {
+.TestResult_image {
   height:400px;
   width: 533.33;
   margin: 0;
@@ -95,6 +154,58 @@ ul > .Category_Item { position:relative; margin-left: 20px;}
   margin-left: 10px;
 }
 
+
+div#Servers_List {
+  height: 100px;
+  width: 80%;
+  margin-left: 20px;
+  border: 1px solid black;
+  overflow-y: scroll;
+  border-radius: 5px;
+}
+
+.TestServer {
+  text-align: center;
+  float:left;
+  height: 25px;
+  width: 200px;
+  margin: 5px 5px 10px 10px;
+  font-size: 20px;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+div#TestRuns_list {
+  height: 150px;
+  width: 80%;
+  margin-left: 20px;
+  border: 1px solid black;
+  overflow-y: scroll;
+  border-radius: 5px;
+}
+
+.TestRun {
+  text-align: center;
+  float:left;
+  height: 25px;
+  width: 200px;
+  margin: 5px 5px 10px 10px;
+  font-size: 20px;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.TestRun_NoResults {
+  color: lightgray;
+}
+
+.Selected_Server {
+  background-color: lightblue;
+}
+
+.Selected_TestRun {
+  background-color: lightblue;
+}
 
 
 div#Options {

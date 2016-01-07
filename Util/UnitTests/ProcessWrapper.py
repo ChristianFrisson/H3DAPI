@@ -16,6 +16,9 @@ import signal
 if platform.system() == 'Windows':
   import win32api
   import win32com.client
+  import win32gui
+  import win32con
+  import win32process
 
 
 class Process ( object ):
@@ -107,12 +110,35 @@ class ProcessWin32 ( Process ):
     output = p.communicate()
     
     return output[0].find(self.process_name) >= 0
-    
+
   def sendKey ( self, key ):
-    shell = win32com.client.Dispatch("WScript.Shell")
-    shell.AppActivate ( self.process_name )
-    time.sleep ( 0.1 )
-    shell.SendKeys(key)
+    if key == "{ESC}":
+      # This will allow us to send ESC without the window being in focus
+      target_pid = self.process.pid
+      h3d_handle = 0
+      
+      def win32_enum_handles_callback (handle):
+        _, found_pid = win32process.GetWindowThreadProcessId (handle)
+        if found_pid==target_pid:
+          h3d_handle = handle
+        return True
+      
+      try:
+        win32gui.EnumWindows(win32_enum_handles_callback)
+        win32api.PostMessage(
+            h3d_handle, 
+            win32con.WM_KEYDOWN, 
+            win32con.VK_ESCAPE, 
+            0)
+      except Exception as e:
+        print e
+    else:
+      shell = win32com.client.Dispatch("WScript.Shell")
+      shell.AppActivate ( self.process_name )
+      time.sleep ( 0.1 )
+      shell.SendKeys(key)
+
+
     
   def kill ( self ):
     # for Windows XP
@@ -123,7 +149,8 @@ class ProcessWin32 ( Process ):
     shell = win32com.client.Dispatch("WScript.Shell")
     shell.AppActivate ( self.process_name )
     shell.SendKeys("{Esc}")
-    
+
+
   def getStdOut ( self ):
     output= ""
     try:

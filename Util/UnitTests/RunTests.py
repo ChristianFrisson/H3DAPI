@@ -107,6 +107,7 @@ class TestCaseRunner ( object ):
       return ProcessWin32()
     elif platform_system == 'Linux':
       return ProcessUnix()
+
   def _countWarnings ( self, test_results ):
     haystack= test_results.std_out + test_results.std_err
     haystack= haystack.lower()
@@ -116,11 +117,13 @@ class TestCaseRunner ( object ):
     process = self.getProcess()
     process.launch ( [h3d_process_name + ".exe" if platform.system() == 'Windows' else h3d_process_name] + self.load_flags + [url], cwd )
     return process
+
   def testStartUp ( self, url, cwd, variation ):
     """ Returns true if the example can be started. """
     
     process = self.getProcess()
     return process.testLaunch ( [h3d_process_name + ".exe" if platform.system() == 'Windows' else h3d_process_name] + self.load_flags + [url], cwd, self.startup_time, self.shutdown_time, 1 if variation and variation.global_insertion_string_failed else self.startup_time_multiplier, self.early_shutdown_file )
+  
   def runTestCase (self, filename, test_case, url, orig_url= None, var_name= "", variation = None):
 
     if orig_url is None:
@@ -130,34 +133,27 @@ class TestCaseRunner ( object ):
     test_results.filename= filename
     test_results.name= test_case.name
     test_results.url= orig_url
-  
-    return test_results # Hack for testing validation without having to regenerate all the time
-
 
     self.startup_time = test_case.starttime
     self.shutdown_time = test_case.runtime + 5
     cwd= os.path.split ( orig_url )[0]
     filename= os.path.abspath ( url )
     
-#    test_results.starts_ok= self.testStartUp ( url, cwd, variation )
-    
     if os.path.isfile( self.early_shutdown_file ):
       os.remove( self.early_shutdown_file )
     process= self.launchTest ( url, cwd )
-    startup_time_multiplier = test_case.runtime
-    for i in range( 0, int(startup_time_multiplier) ):
-      time.sleep(self.startup_time)
+    for i in range( 0, int(test_case.runtime) ):
+      time.sleep(1)
       if os.path.isfile( self.early_shutdown_file ) or not process.isRunning():
         break
     if not process.isRunning ():
       test_results.std_out= process.getStdOut()
       test_results.std_err= process.getStdErr()
       test_results.warnings, test_results.errors= self._countWarnings ( test_results )
+      test_results.terminates_ok = os.path.isfile(self.early_shutdown_file)
       return test_results
-    
-    process.sendKey ( "{ESC}" )
-
-    self.shutdown_timeout = 5
+   
+    self.shutdown_timeout = 10
     time_slept = 0.0
     while time_slept < self.shutdown_timeout and process.isRunning():
       time.sleep(0.5)
@@ -210,16 +206,13 @@ class TestCaseRunner ( object ):
         result.append(test_case)
     return result
 
-  def processTestCase(self, file, testCase, results, directory):
+  def processTestDef(self, file, testCase, results, directory):
     """
         
     """
     output_dir = os.path.abspath(os.path.join(directory, "output"))
     rendering_dir = os.path.join(directory, output_dir, 'renderings')
 
-    #diff_dir = os.path.join(directory, output_dir, 'diffs')
-    #perf_dir = os.path.join(directory, output_dir, 'perf')
-    #report_dir = os.path.join(directory, output_dir, 'reports')
     for dir in [output_dir, rendering_dir]:
       if not os.path.exists(dir):
         os.mkdir(dir)
@@ -247,39 +240,13 @@ class TestCaseRunner ( object ):
       result.filename= file
       result.name= testCase.name
       result.url= os.path.join(directory, testCase.x3d)
-      
-    #for rendering_file in os.listdir(rendering_dir):
-    #  rendering_base, rendering_ext = os.path.splitext(rendering_file)
-    #  if rendering_base.startswith(os.path.splitext(file)[0]+"_"+testCase.name+"_") and not rendering_base.endswith('_thumb'):
-    #    if rendering_ext.lower() == '.png':
-    #      diff_path = os.path.join(diff_dir, "diff_") + rendering_file
-    #      baseline_path = os.path.join(directory, testCase.baseline, rendering_file)
-    #      if os.path.exists(baseline_path):
-    #        result.baselines.append(baseline_path)
-    #      else:
-    #        result.baselines.append('')
 
-    #      if not args.only_generate:
-    #        comp_result = self.validate_rendering(os.path.join(rendering_dir, rendering_file), baseline_path, diff_path)
-    #        result.renderings_ok.append(comp_result['success'] and result.renderings_ok)
-    #      else:
-    #        result.renderings_ok.append(os.path.exists(diff_path))
-    #      result.step_names.append(rendering_base)
-    #      result.renderings.append(os.path.join(rendering_dir, rendering_file)) 
-    #      if not args.only_generate and comp_result['diff_file'] != '':
-    #        result.rendering_diffs.append(os.path.join(diff_path, comp_result['diff_file']))
-    #      else:
-    #        result.rendering_diffs.append('')
-                
     if not args.only_validate:
       os.remove ( variation_path )
 
-            
-    #if self.error_reporter:
-    #  self.error_reporter.reportResults( results )
-
     return result
-  def processAllTestDefinitions ( self, directory= ".", output_dir= ".", fileExtensions= [".testcase"] ):
+
+  def processAllTestDefinitions ( self, directory= ".", output_dir= ".", fileExtensions= [".testdef"] ):
     """
         
     """
@@ -301,14 +268,7 @@ class TestCaseRunner ( object ):
       return
     self.server_id = res[0]
 
-    curs.execute("INSERT INTO test_runs (timestamp, server_id) VALUES (\"" + args.timestamp + "\", %d)" % self.server_id)
-    self.test_run_id = curs.lastrowid
-    curs.close()
-    self.db.commit()
-    if res == None:
-      print("Failed to insert test run in db")
-      return
-
+    
     for root, dirs, files in os.walk(directory):
       for file in files:
         base, ext= os.path.splitext(file)
@@ -319,7 +279,7 @@ class TestCaseRunner ( object ):
           for testCase in testCases:
             if testCase != None and testCase.x3d != None and testCase.script != None:
               print "Testing: " + testCase.name
-              case_results = self.processTestCase(file, testCase, results, root)
+              case_results = self.processTestDef(file, testCase, results, root)
               results.append(case_results)
               testCase.filename = (os.path.relpath(file_path, directory)).replace('\'', '/') # This is used to set up the tree structure for the results page. It will store this parameter in the database as a unique identifier of this specific file of tests.
               if case_results != None:  
@@ -375,6 +335,16 @@ class TestCaseRunner ( object ):
       res = curs.fetchone()
     testfile_id = res[0]
     
+    
+    # Also add this test run to the database
+    if not hasattr(self, "test_run_id"):
+      curs.execute("INSERT INTO test_runs (timestamp, server_id) VALUES (\"" + args.timestamp + "\", %d)" % (self.server_id))
+      self.test_run_id = curs.lastrowid
+      if res == None:
+        print("Failed to insert test run in db")
+        return
+
+
     # Now ensure the test_case exists in the database
     curs.execute("SELECT test_cases.id FROM test_cases JOIN test_files WHERE case_name='%s'" % testCase.name)
     res = curs.fetchone()
@@ -392,16 +362,50 @@ class TestCaseRunner ( object ):
     #CustomResultTuple = namedtuple("CustomResult", ['success', 'baseline_path', 'output', 'diff'])
     for step in case_results.step_list:
       #First ensure the test step exists in the database
-      curs.execute("SELECT test_steps.id FROM test_steps WHERE step_name='%s'" % step.step_name)
+      curs.execute("SELECT test_steps.id FROM test_steps WHERE step_name='%s' AND test_case_id=%d" % (self.db.escape_string(step.step_name), testcase_id))
       res = curs.fetchone()
       if res == None:
-        curs.execute("INSERT INTO test_steps (step_name, test_case_id) VALUES ('%s', %d)" % (step.step_name, testcase_id))
-        curs.execute("SELECT id FROM test_steps WHERE step_name='%s'" % step.step_name)
+        curs.execute("INSERT INTO test_steps (step_name, test_case_id) VALUES ('%s', %d)" % (self.db.escape_string(step.step_name), testcase_id))
+        curs.execute("SELECT id FROM test_steps WHERE step_name='%s'" % self.db.escape_string(step.step_name))
         res = curs.fetchone()
       teststep_id = res[0]
 
       for result in step.results:
-        if type(result).__name__ == 'PerformanceResult':
+        if type(result).__name__ == 'ErrorResult':
+          curs.execute("INSERT INTO error_results (test_run_id, file_id, case_id, step_id, stdout, stderr) VALUES (%d, %d, %d, %d, '%s', '%s')" % (self.test_run_id, testfile_id, testcase_id, teststep_id, self.db.escape_string(result.stdout), self.db.escape_string(result.stderr)))
+
+        elif type(result).__name__ == 'ConsoleResult':
+          output_string = ''
+          for line in result.output:
+            output_string += line
+          if result.success:
+            curs.execute("INSERT INTO console_results (test_run_id, file_id, case_id, step_id, success, output) VALUES (%d, %d, %d, %d, 'Y', '%s')" % (self.test_run_id, testfile_id, testcase_id, teststep_id, self.db.escape_string(output_string)))
+          else:
+            # Go read the baseline file so we can add that to the output
+            if os.path.exists(result.baseline_path):
+              f = open(result.baseline_path)
+              baseline_string = f.read()
+              f.close()
+            else:
+              baseline_string = 'Baseline not found'
+            curs.execute("INSERT INTO console_results (test_run_id, file_id, case_id, step_id, success, output, baseline, diff) VALUES (%d, %d, %d, %d, 'N', '%s', '%s', '%s')" % (self.test_run_id, testfile_id, testcase_id, teststep_id, self.db.escape_string(output_string), self.db.escape_string(baseline_string), self.db.escape_string(result.diff)))
+        elif type(result).__name__ == 'CustomResult':
+          output_string = ''
+          for line in result.output:
+            output_string += line
+          if result.success:
+            curs.execute("INSERT INTO custom_results (test_run_id, file_id, case_id, step_id, success, output) VALUES (%d, %d, %d, %d, 'Y', '%s')" % (self.test_run_id, testfile_id, testcase_id, teststep_id, self.db.escape_string(output_string)))
+          else:
+            # Go read the baseline file so we can add that to the output
+            if os.path.exists(result.baseline_path):
+              f = open(result.baseline_path)
+              baseline_string = f.read()
+              f.close()
+            else:
+              baseline_string = 'Baseline not found'
+            curs.execute("INSERT INTO custom_results (test_run_id, file_id, case_id, step_id, success, output, baseline, diff) VALUES (%d, %d, %d, %d, 'N', '%s', '%s', '%s')" % (self.test_run_id, testfile_id, testcase_id, teststep_id, self.db.escape_string(output_string), self.db.escape_string(baseline_string), self.db.escape_string(result.diff)))
+
+        elif type(result).__name__ == 'PerformanceResult':
           # Insert the performance results, but only if all the tests in this step succeeded!
           if step.success:
             curs.execute("INSERT INTO performance_results (test_run_id, file_id, case_id, step_id, min_fps, max_fps, avg_fps, mean_fps, full_case_data) VALUES (%d, %d, %d, %d, %s, %s, %s, %s, '%s')" % (self.test_run_id, testfile_id, testcase_id, teststep_id, result.fps_min, result.fps_max, result.fps_avg, result.fps_mean, result.fps_full))
@@ -415,7 +419,7 @@ class TestCaseRunner ( object ):
               curs.execute("SELECT id, image FROM rendering_baselines WHERE file_id=%s AND case_id=%s AND step_id='%s'" % (testfile_id, testcase_id, teststep_id))
               res = curs.fetchone()
               if res == None:
-                curs.execute(("INSERT INTO rendering_baselines (test_run_id, file_id, case_id, step_id, image) VALUES (%d, %d, %d, %d" % (self.test_run_id, testfile_id, testcase_id, teststep_id)) + ", %s)", [baseline_image,])
+                curs.execute(("INSERT INTO rendering_baselines (file_id, case_id, step_id, image) VALUES (%d, %d, %d" % (testfile_id, testcase_id, teststep_id)) + ", %s)", [baseline_image,])
               elif res[1] != baseline_image:
                 curs.execute("UPDATE rendering_baselines SET image=%s WHERE id=%s", [baseline_image, res[0]])
             
@@ -732,7 +736,7 @@ def isTestable ( file_name , files_in_dir):
 #html_reporter_errors= TestReportHTML( os.path.join(args.output, "reports"), only_failed= True )
 
 tester= TestCaseRunner( os.path.join(args.workingdir, ""), startup_time= 5, shutdown_time= 5, testable_callback= isTestable, error_reporter=None)
-results = tester.processAllTestDefinitions(directory=args.workingdir, output_dir=args.output)
+nresults = tester.processAllTestDefinitions(directory=args.workingdir, output_dir=args.output)
 
 #reporter= TestReport()
 #print reporter.reportResults ( results )
