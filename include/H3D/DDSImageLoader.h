@@ -47,9 +47,24 @@ namespace H3D {
       return H3DUtil::loadDDSImage( url );
     }
     
+    /// Load an image from an istream
+    ///
+    /// Does not need to be implemented for all image loaders
+    ///
+    /// \returns An Image * with the image data loaded from the
+    /// url. Returns NULL if not implemented for image loader.
+    ///
+    virtual Image *loadImage( istream &is ) {
+      return H3DUtil::loadDDSImage( is );
+    }
+
     /// Returns true if the node supports the filetype of the file
     /// specified by url.
     static bool supportsFileType( const string &url );
+
+    /// Returns true if the node supports the filetype of the file
+    /// specified by the stream.
+    static bool supportsStreamType( istream &is );
 
     static H3DNodeDatabase database;    
 

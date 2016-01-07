@@ -48,3 +48,19 @@ bool DDSImageLoader::supportsFileType( const string &url ) {
   // We could check the magic number, but keep it simple
   return url.substr( url.length() - 4 ) == ".dds";
 }
+
+bool DDSImageLoader::supportsStreamType( istream &is ) {
+  // Magic number
+  const unsigned int dds_magic_no = 0x20534444;
+
+  // Check magic number
+  int magic_no;
+  is.read( (char*)&magic_no, sizeof( magic_no ) );
+  bool is_dds = is && magic_no == dds_magic_no;
+
+  // Rewind stream
+  is.clear();
+  is.seekg( 0 );
+
+  return is_dds;
+}

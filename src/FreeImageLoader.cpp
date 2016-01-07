@@ -62,6 +62,10 @@ bool FreeImageLoader::supportsFileType( const string &url ) {
 }
 
 bool FreeImageLoader::supportsStreamType( istream &is ) {
+  // FreeImage will attempt to load DDS files, which we don't want
+  if( DDSImageLoader::supportsStreamType( is ) ) {
+    return false;
+  }
   FREE_IMAGE_FORMAT format = FreeImage_GetFileTypeFromHandle ( FreeImageImage::getIStreamIO(), static_cast<fi_handle>(&is) );
   return format != FIF_UNKNOWN;
 }
