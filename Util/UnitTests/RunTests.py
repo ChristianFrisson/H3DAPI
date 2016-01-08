@@ -225,7 +225,7 @@ class TestCaseRunner ( object ):
     <PythonScript DEF='TestScript' url='%s'></PythonScript>""" % (os.path.split(os.path.abspath(os.path.join(directory, testCase.script)))[0].replace('\\', '/'),
                                                                   os.path.splitext(os.path.split(testCase.script)[1])[0],
                                                                   os.getcwd().replace('\\', '/'),
-                                                                  os.path.join(os.getcwd().replace('\\', '/'), 'UnitTestBoilerplate.py'))
+                                                                  os.path.join(os.path.dirname(os.path.realpath(__file__)).replace('\\', '/'), 'UnitTestBoilerplate.py'))
     v = Variation (testCase.name, script)
     if not args.only_validate:
       # Create a temporary x3d file containing our injected script
