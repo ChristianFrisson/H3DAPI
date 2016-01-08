@@ -766,7 +766,9 @@ void X3DTextureNode::UpdateSaveToURL::onNewValue( const std::string &v ) {
       node->saveSuccess->setValue(H3DUtil::saveOpenEXRImage(v, *image), node->id );
     }else{
 #endif
+#ifdef HAVE_FREEIMAGE
       node->saveSuccess->setValue ( H3DUtil::saveFreeImagePNG ( v, *image ), node->id );
+#endif
 #ifdef HAVE_OPENEXR
     }
 #endif
