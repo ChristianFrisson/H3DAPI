@@ -19,7 +19,7 @@ pp = pprint.PrettyPrinter(indent=4)
 timer_callback = TimerCallback()
 
 class UnitTestHelper :
-  def __init__( self, early_shutdown_file, output_file_prefix):
+  def __init__( self, early_shutdown_file, output_file_prefix, screenshot_filename_prefix):
     self.test_funcs = Queue()
     self.screenshot_queue = Queue()
     self.early_shutdown_file = early_shutdown_file
@@ -32,6 +32,7 @@ class UnitTestHelper :
     self.store_console_output = False
     self.store_custom_output = False
     self.custom_output = ''
+    self.screenshot_filename_prefix = screenshot_filename_prefix
     self.validation_file = output_file_prefix + "/validation.txt"
     temp = open(self.validation_file, 'w')
     temp.write('Startup\n')
@@ -172,7 +173,7 @@ class UnitTestHelper :
     if test_step_name == None:
       test_step_name = str(self.screenshot_counter)
       self.screenshot_counter += 1
-    filename = os.path.abspath(os.path.join(self.output_file_prefix, "renderings/", test_step_name + '.png').replace('\\', '/'))
+    filename = os.path.abspath(os.path.join(self.output_file_prefix, "renderings/", self.screenshot_filename_prefix + test_step_name + '.png').replace('\\', '/'))
     takeScreenshot(filename)
 #    pp.pprint("saving to " + self.validation_file)
     f = open(self.validation_file, 'a')
@@ -211,13 +212,14 @@ TestBaseFolder = getNamedNode('TestBaseFolder').getField('value').getValueAsStri
 sys.path.append(TestBaseFolder) # This is so we can properly import from UnitTestUtil.py
 TestcaseScriptFilename = getNamedNode('TestCaseScriptFilename').getField('value').getValueAsString().replace('"', '')
 sys.path.append(TestcaseScriptFolder)
+TestcaseName = getNamedNode('TestCaseName').getField('value').getValueAsString().replace('"', '')
 #  res =  __import__(TestcaseScriptFilename)
 res = import_module(TestcaseScriptFilename)
 res.__scriptnode__ = globals()['__scriptnode__']    
 testfunctions_list = [o for o in getmembers(res) if isfunction(o[1])]
 testfunctions_list = [item for item in testfunctions_list if ((item not in getmembers(H3DInterface)) and (item not in getmembers(H3DUtils)) and (item not in getmembers(__import__("UnitTestUtil"))))]
 
-testHelper = UnitTestHelper(TestBaseFolder+"/test_complete", os.path.abspath(os.path.join(TestcaseScriptFolder, "output").replace("\\", '/')))
+testHelper = UnitTestHelper(TestBaseFolder+"/test_complete", os.path.abspath(os.path.join(TestcaseScriptFolder, "output").replace("\\", '/')), TestcaseName + '_')
 testHelper.addTests(testfunctions_list)
 res.printCustom = testHelper.printCustom
 testHelper.doTesting()

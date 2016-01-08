@@ -485,7 +485,7 @@ function generateImages(div) {
       image_container.append(getImageBlobURL(testcase.output_image, download_name));
       container.append(image_container);
     }
-    if(testcase.output_image != "") {
+    if((testcase.output_image != "") && (testcase.baseline_image != "")) {
       var image_container = $('<div>');
       image_container.addClass('TestResult_image_div'); 
       image_container.append("Diff:</br>");
