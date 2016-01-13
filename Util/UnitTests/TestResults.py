@@ -150,20 +150,17 @@ class TestResults ( object ):
     return line.strip()
 
   def parseValidationFile(self, file_path='validation.txt', baseline_folder=''):
+    self.step_list = []
     if (self.errors > 0):
-      self.step_list.append(self.StepResultTuple("", False, [self.ErrorResultTuple(self.std_out, self.std_err + "\nTest returned errors")]))
-      return
-    elif not os.path.exists(file_path):
-      self.step_list.append(self.StepResultTuple("", False, [self.ErrorResultTuple(self.std_out, self.std_err + "\nTest didn't output validation data")]))
-#      self.step_list.append(self.StepResultTuple("No validation file generated", False, []))
-      return
+      self.step_list.append(self.StepResultTuple("", False, [self.ErrorResultTuple(self.std_out + "\nTest returned errors", self.std_err)]))
     elif not self.terminates_ok:
-      self.step_list.append(self.StepResultTuple("", False, [self.ErrorResultTuple(self.std_out, self.std_err + "\nTest didn't finish successfully (crashed, froze, or was otherwise interrupted.) Make sure you haven't set the timeout too low.")]))
+      self.step_list.append(self.StepResultTuple("", False, [self.ErrorResultTuple(self.std_out + "\nTest didn't finish successfully (crashed, froze, or was otherwise interrupted.)", self.std_err)]))
+    if not os.path.exists(file_path):
+      self.step_list.append(self.StepResultTuple("", False, [self.ErrorResultTuple(self.std_out + "\nTest didn't output validation data, it probably crashed.", self.std_err)]))
       return
     
-
+    
     f = open(file_path, 'r')
-    self.step_list = []
     step_name = self.getNextLine(f)
     while step_name != None:
       success = True

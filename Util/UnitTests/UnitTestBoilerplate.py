@@ -25,7 +25,7 @@ class UnitTestHelper :
     self.early_shutdown_file = early_shutdown_file
     self.output_file_prefix = output_file_prefix
     self.screenshot_counter = 0    
-    self.screenshot_queue.put("Startup")
+#    self.screenshot_queue.put("Startup")
     self.fps_counter = StoreFPS()
     self.measure_fps = False
     self.last_step_name = "Startup"
@@ -35,7 +35,7 @@ class UnitTestHelper :
     self.screenshot_filename_prefix = screenshot_filename_prefix
     self.validation_file = output_file_prefix + "/validation.txt"
     temp = open(self.validation_file, 'w')
-    temp.write('Startup\n')
+#    temp.write('Startup\n')
     temp.flush()
     temp.close()
 
@@ -133,8 +133,6 @@ class UnitTestHelper :
           timer_callback.addCallback(time.getValue()+1, UnitTestHelper.doTesting, (self,))          
       return
     except Exception as e:
-      print(str(e))   
-      print "Testcase done!"
       shutdown_file = open( self.early_shutdown_file, 'w' )
       shutdown_file.write( "OK" )
       shutdown_file.flush()
@@ -206,14 +204,13 @@ class StoreFPS( AutoUpdate( SFFloat ) ):
     return self.fps_string
 
 
-#def initTest():
 TestcaseScriptFolder = getNamedNode('TestCaseScript').getField('value').getValueAsString().replace('"', '')
 TestBaseFolder = getNamedNode('TestBaseFolder').getField('value').getValueAsString().replace('"', '')
 sys.path.append(TestBaseFolder) # This is so we can properly import from UnitTestUtil.py
 TestcaseScriptFilename = getNamedNode('TestCaseScriptFilename').getField('value').getValueAsString().replace('"', '')
 sys.path.append(TestcaseScriptFolder)
 TestcaseName = getNamedNode('TestCaseName').getField('value').getValueAsString().replace('"', '')
-#  res =  __import__(TestcaseScriptFilename)
+StartTime = getNamedNode('StartTime').getField('value').getValue()[0]
 res = import_module(TestcaseScriptFilename)
 res.__scriptnode__ = globals()['__scriptnode__']    
 testfunctions_list = [o for o in getmembers(res) if isfunction(o[1])]
@@ -222,6 +219,5 @@ testfunctions_list = [item for item in testfunctions_list if ((item not in getme
 testHelper = UnitTestHelper(TestBaseFolder+"/test_complete", os.path.abspath(os.path.join(TestcaseScriptFolder, "output").replace("\\", '/')), TestcaseName + '_')
 testHelper.addTests(testfunctions_list)
 res.printCustom = testHelper.printCustom
-testHelper.doTesting()
-    
-#timer_callback.addCallback(time.getValue()+1, initTest, ())
+
+timer_callback.addCallback(time.getValue()+StartTime, UnitTestHelper.doTesting, (testHelper,))       

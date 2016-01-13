@@ -58,6 +58,8 @@ parser.add_argument('--dbuser', dest='dbuser', help='Database user. Needs write-
 parser.add_argument('--dbpass', dest='dbpass', help='Database password.')
 parser.add_argument('--servername', dest='servername', help='The name of this server. All results from tests run by this script will be associated with this name.',
                     default='Unknown')
+parser.add_argument('--RunTestsDir', dest='RunTestsDir', help='The location of UnitTestsUtil.py and UnitTestsBoilerplate.py. This is for the cases where RunTests.py is being run from a different directory, for example for targeting a specific build of H3D.',
+                    default=os.path.dirname(os.path.realpath(__file__)).replace('\\', '/'))
 args = parser.parse_args()
 
 
@@ -90,7 +92,7 @@ class TestCaseRunner ( object ):
     self.shutdown_time= shutdown_time
     self.testable_callback= testable_callback
     self.fps_data_file = '%s/fps.txt' % (os.getcwd())
-    self.early_shutdown_file = '%s/test_complete' % (os.getcwd())
+    self.early_shutdown_file = '%s/test_complete' % (args.RunTestsDir)
     self.rendering_tmp_file = '%s/tmp_rendering.png' % (os.getcwd())
     self.startup_time_multiplier = 10
     if h3d_process_name == "H3DLoad":
@@ -136,7 +138,7 @@ class TestCaseRunner ( object ):
 
     self.startup_time = test_case.starttime
     self.shutdown_time = test_case.runtime + 5
-    cwd= os.path.split ( orig_url )[0]
+    cwd= os.path.abspath(os.path.split ( orig_url )[0])
     filename= os.path.abspath ( url )
     
     if os.path.isfile( self.early_shutdown_file ):
@@ -223,11 +225,13 @@ class TestCaseRunner ( object ):
     <MetadataString DEF='TestCaseScript' value='%s'/>
     <MetadataString DEF='TestCaseScriptFilename' value='%s'/>
     <MetadataString DEF='TestBaseFolder' value='%s'/>
+    <MetadataFloat DEF='StartTime' value='%f'/>
     <PythonScript DEF='TestScript' url='%s'></PythonScript>""" % (testCase.name,
                                                                   os.path.split(os.path.abspath(os.path.join(directory, testCase.script)))[0].replace('\\', '/'),
                                                                   os.path.splitext(os.path.split(testCase.script)[1])[0],
-                                                                  os.getcwd().replace('\\', '/'),
-                                                                  os.path.join(os.path.dirname(os.path.realpath(__file__)).replace('\\', '/'), 'UnitTestBoilerplate.py'))
+                                                                  args.RunTestsDir,
+                                                                  testCase.starttime,
+                                                                  os.path.join(args.RunTestsDir, 'UnitTestBoilerplate.py'))
     v = Variation (testCase.name, script)
     if not args.only_validate:
       # Create a temporary x3d file containing our injected script
@@ -236,7 +240,8 @@ class TestCaseRunner ( object ):
       result = self.runTestCase (file, testCase, variation_path, os.path.join(directory, testCase.x3d), v.name, v)
       print result.std_err
       print result.std_out
-      result.parseValidationFile(output_dir + '\\validation.txt', os.path.abspath(os.path.join(directory, testCase.baseline)))
+      print os.path.abspath(output_dir + '\\validation.txt')
+      result.parseValidationFile(os.path.abspath(output_dir + '\\validation.txt'), os.path.abspath(os.path.join(directory, testCase.baseline)))
     else:
       result = TestResults('')
       result.filename= file
@@ -728,7 +733,7 @@ print ""
 #time.sleep(3)
 
 
-h3d_process_name = "H3DLoad_d"
+h3d_process_name = "H3DLoad"
 
 exitCode= 0
 

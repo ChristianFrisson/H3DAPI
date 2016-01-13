@@ -1,4 +1,4 @@
-function LoadSQLModel(test_run_id) {
+function LoadSQLModel(test_run_id, result_callback) {
   // The model is a tree implemented with nested arrays
   // Every node is a category and every leaf is a test file.
   //
@@ -30,18 +30,14 @@ function LoadSQLModel(test_run_id) {
   // avg_fps : float
   // max_fps : float
   
-  var res = []
-  
   // Connect database
   $.ajax({
       type: 'GET',
       url: 'get_results.php?test_run_id=' + test_run_id,
       dataType: 'json',
-      success: function(data) { res = data; },
-      async: false
+      success:result_callback,
+      async: true
   });
-  
-  return res;
 }
    
 var all_graphs = [];
@@ -229,25 +225,22 @@ function generateDatasets(testcase) {
           
           for(var prev = 0; prev < datasets.length; prev++) {
             var theirs = 0;
-            var len_t = datasets[prev].labels.length;
             var mine = 0;
-            var len_m = config.labels.length;
-            while((theirs < len_t) || (mine < len_m)) {
-              if(theirs < len_t) {
+            while((theirs < datasets[prev].labels.length) || (mine < config.labels.length)) {
+              if(theirs < datasets[prev].labels.length) {
                 var their_timestamp = Date.parse(datasets[prev].labels[theirs]);
               } else {
-                var their_timestamp = Date.now();
+                var their_timestamp = null;
               }
-              if(mine < len_m) {
+              if(mine < config.labels.length) {
                 var my_timestamp = Date.parse(config.labels[mine]);
               } else {
-                var my_timestamp = Date.now();
-              }
-                            
+                var my_timestamp = null;
+              }         
               if(their_timestamp == my_timestamp) {
                 theirs++;
                 mine++;
-              } else if(their_timestamp < my_timestamp) {
+              }  else if((my_timestamp == null) || (their_timestamp < my_timestamp)) {
                 config.labels.splice(mine, 0, datasets[prev].labels[theirs]);
                 if(config.label == "server_name")
                   config.data.splice(mine, 0, {x: datasets[prev].labels[theirs], y: config[config.label]});
@@ -255,7 +248,7 @@ function generateDatasets(testcase) {
                   config.data.splice(mine, 0, {x: datasets[prev].labels[theirs]});
                 theirs++;
                 mine++;
-              } else if(their_timestamp > my_timestamp) {
+              } else if((their_timestamp == null) || (their_timestamp > my_timestamp)) {
                 datasets[prev].labels.splice(theirs, 0, config.labels[mine]);
                 if(datasets[prev].label == "server_name")
                   datasets[prev].data.splice(theirs, 0, {x: config.labels[mine], y: datasets[prev][config.label]});
@@ -302,6 +295,9 @@ function generateGraph(div) {
         datasets: graph_data
         },
       options:{
+        animation: {
+          duration: 5
+        },
         maintainAspectRatio: true,
         responsive: true,
         scaleShowLabels: true,
@@ -330,7 +326,11 @@ function generateGraph(div) {
               mode: 'label',
               callbacks : {
                 label: function(tooltipItem, data) {
-                  return data.datasets[tooltipItem.datasetIndex].label + ': ' + data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].y;
+                  if (data.datasets[tooltipItem.datasetIndex].label == 'time') {
+                    return 'date : ' + data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].y.substring(0, data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].y.indexOf(' '));
+                  } else {
+                    return data.datasets[tooltipItem.datasetIndex].label + ': ' + data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].y;
+                  }
                 }
               }
           },        
@@ -340,7 +340,7 @@ function generateGraph(div) {
                   ticks : {
                     userCallback: function(value) {
                       if(value){
-                        return value;//.substring(0, value.indexOf(' '));
+                        return value.substring(0, value.indexOf(' '));
                       } else {
                         return '';
                       }
@@ -437,7 +437,7 @@ function generateImages(div) {
   var container = $('<div>');
   container.addClass('TestResult_rendering');
   
-  var download_name = testcase.filename.split('/').pop() + "_" + testcase.step_name + ".png";
+  var download_name = testcase.name + "_" + testcase.step_name + ".png";
   var diff_download_name =  "diff_" + download_name;
   // If it succeded then show the baseline image
   // If it failed and there's no baseline then show the output and complain about the lack of a baseline
@@ -543,9 +543,9 @@ function generateError(div) {
   
   var std = $('<div>');
   std.addClass('std_div');
-  std.append("<b>stdout:</b></br></br>");
+  std.append("<b>stdout:</b></br>");
   std.append(testcase.stdout.split('\n').join('</br>'));
-  std.append("<b>stderr:</b></br></br>");
+  std.append("</br></br><b>stderr:</b></br></br>");
   std.append(testcase.stderr.split('\n').join('</br>'));
   container.append(std);
   
@@ -592,9 +592,9 @@ function ConstructTestCases(model, target) {
 
 var CategoryCount = 0;
 
-  var first = true;
+var first = false;
 function ConstructList(model, target) {
-  target.empty();
+
   for (var i = 0; i < model.length; i++) {
     if(model[i]) {
       var ul = $('<ul>');
@@ -616,20 +616,27 @@ function ConstructList(model, target) {
       input.attr('type', 'checkbox');
       input.attr('id', 'category'+CategoryCount);
       input.addClass('category_list_checkbox');
-      if(first)
+      if(first) {
         input.prop('checked', true);
+        first = false;
+      }
       ul.append(input);
       ul.append(label);
       
       CategoryCount++;
       
-      if(model[i].hasOwnProperty('children'))
+      if(model[i].hasOwnProperty('children')) {
         ConstructList(model[i].children, ul);
+        if($('.test_failed', ul).length > 0)
+          name.addClass('test_failed');                
+        else
+          name.addClass('test_successful');
+      }
       else if (model[i].hasOwnProperty('testcases')) {
         if(model[i].success)
           name.addClass('test_successful');
         else
-          name.addClass('test_failed');
+          name.addClass('test_failed');                
         ConstructTestCases(model[i], ul);
         first = false;
       }
@@ -647,78 +654,93 @@ function GetServerList() {
       type: 'GET',
       url: 'get_servers.php',
       dataType: 'json',
-      success: function(data) { res = data; },
-      async: false
+      success: function(data) { 
+      var res = data; 
+      var target = $('#Servers_List');
+      target.empty();
+      for(var i = 0; i < res.length; ++i) {
+        var div = $('<div>');
+        div.addClass('TestServer');
+        div.addClass("noselect");
+        if(!res[i].success) {
+          div.addClass('test_failed');
+        }
+        div.append(res[i].name);
+        div.data("server_id", res[i].id);
+        div.click(function(){
+          GetTestRunList($(this).data("server_id"));
+          $(".Selected_Server").removeClass('Selected_Server');
+          $(".Selected_TestRun").removeClass('Selected_TestRun');
+          $(this).addClass('Selected_Server');
+              $('#Categories_List').empty();
+        });
+        target.append(div);
+      }
+      },
   });
-  var target = $('#Servers_List');
-  target.empty();
-  for(var i = 0; i < res.length; ++i) {
-    var div = $('<div>');
-    div.addClass('TestServer');
-    div.addClass("noselect");
-    div.append(res[i].name);
-    div.data("server_id", res[i].id);
-    div.click(function(){
-      GetTestRunList($(this).data("server_id"));
-      $(".Selected_Server").removeClass('Selected_Server');
-      $(this).addClass('Selected_Server');
-    });
-    target.append(div);
-  }
+
 }
 
 function GetTestRunList(server_id) {
-  var res = []
-  
   // Connect database
   $.ajax({
       type: 'GET',
       url: 'get_test_runs.php?server_id=' + server_id,
       dataType: 'json',
-      success: function(data) { res = data; },
-      async: false
+      success: function(data) { 
+        var res = data;
+        $("#TestRuns").show();
+        var target = $("#TestRuns_List");
+        target.empty();
+        for(var i = 0; i < res.length; ++i) {
+          var div = $('<div>');
+          div.addClass('TestRun');
+          div.addClass("noselect");
+          if(!res[i].success) {
+            div.addClass('test_failed');
+          }
+          div.append(res[i].timestamp);
+          div.data("test_run_id", res[i].id);
+          if(res[i].has_results) {
+            div.click(function(){
+              SetTestRun($(this).data("test_run_id"));
+              $(".Selected_TestRun").removeClass('Selected_TestRun');
+              $(this).addClass('Selected_TestRun');
+             // $('#Categories_List').empty();
+            });
+          } else {
+            div.addClass('TestRun_NoResults');
+          }
+          target.append(div);
+        }      
+      }
   });
-  $("#TestRuns").show();
-  var target = $("#TestRuns_List");
-  target.empty();
-  for(var i = 0; i < res.length; ++i) {
-    var div = $('<div>');
-    div.addClass('TestRun');
-    div.addClass("noselect");
-    div.append(res[i].timestamp);
-    div.data("test_run_id", res[i].id);
-    if(res[i].has_results) {
-      div.click(function(){
-        SetTestRun($(this).data("test_run_id"));
-        $(".Selected_TestRun").removeClass('Selected_TestRun');
-        $(this).addClass('Selected_TestRun');      
-      });
-    } else {
-      div.addClass('TestRun_NoResults');
-    }
-    target.append(div);
-  }
+
 }
 
 function SetTestRun(test_run_id) {
-  model = LoadSQLModel(test_run_id);
-  refreshDisplayOptions(model);
-  first = true;
-  ConstructList(model, $('#Categories_List'));
-  $('.TestResult').each(function() {
-  var testResult = $(this).data('model');
-    if(testResult.result_type=="performance") {
-      generateGraph($(this));
-    } else if (testResult.result_type=="rendering") {
-      generateImages($(this));
-    } else if (testResult.result_type=="console") {
-      generateConsole($(this));
-    } else if (testResult.result_type=="custom") {
-      generateConsole($(this));
-    } else if (testResult.result_type=='error') {
-      generateError($(this));
-    }
+  LoadSQLModel(test_run_id, function(data) {
+    $('#Categories_List').empty();
+    model = data;
+    refreshDisplayOptions(model);
+    first = true;
+    ConstructList(model, $('#Categories_List'));
+    $('.TestResult').each(function() {
+    var testResult = $(this).data('model');
+      if(testResult.result_type=="performance") {
+        generateGraph($(this));
+      } else if (testResult.result_type=="rendering") {
+        generateImages($(this));
+      } else if (testResult.result_type=="console") {
+        generateConsole($(this));
+      } else if (testResult.result_type=="custom") {
+        generateConsole($(this));
+      } else if (testResult.result_type=='error') {
+        generateError($(this));
+      }
   });  
+  
+  });
 }
 
 

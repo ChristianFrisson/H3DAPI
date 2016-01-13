@@ -47,6 +47,7 @@ UNION ALL
                ON rendering_results.case_id = baseline.case_id
                   AND rendering_results.step_id = baseline.step_id
  WHERE  test_runs.id = %d
+ GROUP  BY case_id,file_id,step_name
 )
 UNION ALL
 (SELECT console_results.id AS id,test_runs.timestamp,server_id,server_name,console_results.test_run_id,
@@ -105,7 +106,7 @@ UNION ALL
           ON test_runs.server_id = servers.id
  WHERE  test_runs.id = %d
  GROUP  BY case_id,file_id,step_name) 
-ORDER  BY case_name,step_id ASC ", $test_run_id, $test_run_id, $test_run_id, $test_run_id, $test_run_id);
+ORDER  BY case_id, step_id ASC ", $test_run_id, $test_run_id, $test_run_id, $test_run_id, $test_run_id);
 
 $data = generate_results($db, $query);
 
@@ -165,7 +166,6 @@ if(!$fetch_result = mysqli_query($db, $query)) {
     );  
     $data = array($testcase);
   }
-  
   while($row = mysqli_fetch_assoc($fetch_result)) {
   //  echo json_encode($row);
     $filename = $row['filename'];
@@ -231,7 +231,7 @@ if(!$fetch_result = mysqli_query($db, $query)) {
       } else {
         //create and push an element for this testfile into the array
         //point $node at that element
-        $new_node = array( 'name' => $category_structure[0], 'testcases' => array());
+        $new_node = array( 'name' => $category_structure[0], 'testcases' => array(), 'success' => true);
         $node = &$node['children'][array_push($node['children'], $new_node)-1];
         }
     }
@@ -248,6 +248,9 @@ if(!$fetch_result = mysqli_query($db, $query)) {
     $testcase["step_name"] = $row['step_name'];
     
     if($row['result_type'] == "rendering") {
+      if($row['success'] =='N') {
+        $node['success'] = false;
+      }
       $testcase["success"] = $row['success'];
       $testcase["output_image"] = base64_encode($row['output_image']);
       $testcase["diff_image"] = base64_encode($row['diff_image']);
@@ -283,21 +286,27 @@ if(!$fetch_result = mysqli_query($db, $query)) {
        }
     }
     else if ($row['result_type'] == 'console') {
+      if($row['success'] =='N') {
+        $node['success'] = false;
+      }
       $testcase["success"] = $row['success'];
-     $testcase["text_output"] = $row["text_output"];
-     $testcase["text_baseline"] = $row["text_baseline"];
-     $testcase["text_diff"] = $row["text_diff"];
+      $testcase["text_output"] = $row["text_output"];
+      $testcase["text_baseline"] = $row["text_baseline"];
+      $testcase["text_diff"] = $row["text_diff"];
     } else if ($row['result_type'] == 'custom') {
+      if($row['success'] =='N') {
+        $node['success'] = false;
+      }
       $testcase["success"] = $row['success'];
-     $testcase["text_output"] = $row["text_output"];
-     $testcase["text_baseline"] = $row["text_baseline"];
-     $testcase["text_diff"] = $row["text_diff"];
+      $testcase["text_output"] = $row["text_output"];
+      $testcase["text_baseline"] = $row["text_baseline"];
+      $testcase["text_diff"] = $row["text_diff"];
     } else if ($row['result_type'] == 'error') {
+      $node['success'] = false;
       $testcase["stdout"] = $row['stdout'];
       $testcase["stderr"] = $row['stderr'];
     }
     
-
     // All that remains now is to push the testcase to the node's testcases array
     array_push($node['testcases'], $testcase);
   }

@@ -17,12 +17,13 @@ ul > .Category_Item { position:relative; margin-left: 20px;}
   margin-left: 20px;
   clear: both; 
   display:none;
-  height:none;
+  height:auto;
 }
 
 .TestResult {
   background-color:white;
   position:relative; margin-left: 20px;
+  height:460px;
   width: auto;
   padding: 0;
   float:left;
@@ -137,7 +138,7 @@ ul > .Category_Item { position:relative; margin-left: 20px;}
 
 .TestResult_image {
   height:400px;
-  width: 533.33;
+  width: 533.33px;
   margin: 0;
   padding: 0;
   float:left;
@@ -168,7 +169,8 @@ div#Servers_List {
   text-align: center;
   float:left;
   height: 25px;
-  width: 200px;
+  width: auto;
+  padding: 0 5px 0 5px;
   margin: 5px 5px 10px 10px;
   font-size: 20px;
   border: 1px solid black;
@@ -189,6 +191,7 @@ div#TestRuns_list {
   float:left;
   height: 25px;
   width: 200px;
+  width:auto;
   margin: 5px 5px 10px 10px;
   font-size: 20px;
   border: 1px solid black;
