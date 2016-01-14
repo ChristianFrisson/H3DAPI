@@ -283,7 +283,7 @@ void H3DHapticsDevice::renderShapes(
 }
 
 void H3DHapticsDevice::updateDeviceValues() {
-  previuos_proxy_pos = proxyPositions->getValue();
+  previous_proxy_pos = proxyPositions->getValue();
   TimeStamp now = TimeStamp();
   TimeStamp dt = now - last_update_values;
   last_update_values = now;

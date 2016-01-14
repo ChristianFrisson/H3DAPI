@@ -29,6 +29,7 @@ endif()
 GET_FILENAME_COMPONENT( module_file_path ${CMAKE_CURRENT_LIST_FILE} PATH )
 get_external_search_paths_h3d( module_include_search_paths module_lib_search_paths ${module_file_path} "static" )
 
+SET( DCMTK_LIBRARY_POSTFIX "" )
 IF( MSVC_BEFORE_VS2010 )
   SET( H3D_MSVC_VERSION 6 )
   SET( TEMP_MSVC_VERSION 1299 )
