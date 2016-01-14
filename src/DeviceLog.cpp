@@ -144,7 +144,8 @@ HAPI::DeviceLog* DeviceLog::createHAPIDeviceLog ( const std::string& _url ) {
     _url, 
     getLogTypes (), 
     frequency->getValue(), 
-    logBinary->getValue() );
+    logBinary->getValue(),
+    true );
 }
 
 HAPI::DeviceLog::LogTypeVector DeviceLog::getLogTypes () {

@@ -154,7 +154,7 @@ namespace H3D {
 
   protected:
     virtual HAPI::HapticSpring * createHAPISpring() {
-      return new HAPI::HapticSpring();
+      return new HAPI::HapticSpring(true);
     }
   };
 }

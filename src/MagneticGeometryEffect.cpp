@@ -129,7 +129,8 @@ void MagneticGeometryEffect::traverseSG( TraverseInfo &ti ) {
                                     dynamic_cast< Sphere * >(the_geometry)
                                       ->radius->getValue() * max( scale.x,
                                                                   max( scale.y, scale.z ) ) ),
-                                 springConstant->getValue() ) );
+                                 springConstant->getValue(),
+                                 true ) );
             } else {
               H3DFloat lookahead_factor = 3;
               HapticsOptions *haptics_options = NULL;

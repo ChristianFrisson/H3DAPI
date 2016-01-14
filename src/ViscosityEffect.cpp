@@ -79,7 +79,8 @@ void ViscosityEffect::traverseSG( TraverseInfo &ti ) {
                              new HAPI::HapticViscosity(
                                                    viscosity->getValue(),
                                                    radius->getValue(),
-                                                   dampingFactor->getValue() ) );
+                                                   dampingFactor->getValue(),
+                                                   true ) );
         }
       }
     } else {
@@ -89,7 +90,8 @@ void ViscosityEffect::traverseSG( TraverseInfo &ti ) {
                              new HAPI::HapticViscosity(
                                                    viscosity->getValue(),
                                                    radius->getValue(),
-                                                   dampingFactor->getValue() ) );
+                                                   dampingFactor->getValue(),
+                                                   true ) );
         }
       }
     }

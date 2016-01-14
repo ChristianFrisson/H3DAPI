@@ -88,7 +88,8 @@ void TimeFunctionEffect::traverseSG( TraverseInfo &ti ) {
               new HAPI::HapticTimeFunctionEffect( x_hapi_func,
                                                   y_hapi_func,
                                                   z_hapi_func,
-                                                  0, 0, 0 ) );
+                                                  0, 0, 0,
+                                                  true ) );
           }
         }
       }
@@ -109,7 +110,8 @@ void TimeFunctionEffect::traverseSG( TraverseInfo &ti ) {
               new HAPI::HapticTimeFunctionEffect( x_hapi_func,
                                                   y_hapi_func,
                                                   z_hapi_func,
-                                                  0, 0, 0 ) );
+                                                  0, 0, 0,
+                                                  true ) );
           }
         }
       }

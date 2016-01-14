@@ -88,7 +88,8 @@ void PositionFunctionEffect::traverseSG( TraverseInfo &ti ) {
             ti.addForceEffect( i,
               new HAPI::HapticPositionFunctionEffect( x_hapi_func,
                                                       y_hapi_func,
-                                                      z_hapi_func ) );
+                                                      z_hapi_func,
+                                                      true ) );
           }
         }
       }
@@ -108,7 +109,8 @@ void PositionFunctionEffect::traverseSG( TraverseInfo &ti ) {
             ti.addForceEffect( device_index[i],
               new HAPI::HapticPositionFunctionEffect( x_hapi_func,
                                                       y_hapi_func,
-                                                      z_hapi_func ) );
+                                                      z_hapi_func,
+                                                      true ) );
           }
         }
       }
