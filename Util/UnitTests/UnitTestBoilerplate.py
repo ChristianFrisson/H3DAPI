@@ -48,9 +48,10 @@ class UnitTestHelper :
     if self.store_console_output:
 #     pp.pprint(self.last_step_name)
       f = open(self.validation_file, 'a')
-      f.write('console_end\n')
+      f.write('console\n')
       f.flush()
       f.close()
+      print 'console_end_' + self.last_step_name
       self.store_console_output = False
     if self.measure_fps:
       try:
@@ -114,11 +115,7 @@ class UnitTestHelper :
       else:
         try:
           if self.store_console_output:
-            print "console_start"
-            f = open(self.validation_file, 'a')
-            f.write("console_start\n")
-            f.flush()
-            f.close()
+            print 'console_start_' + self.last_step_name
         except Exception as e:
           print(str(e))
         try:
@@ -149,10 +146,7 @@ class UnitTestHelper :
   def startFuncDelayed(self, func):
       try:
         if self.store_console_output:
-          f = open(self.validation_file, 'a')
-          f.write("console_start\n")
-          f.flush()
-          f.close()
+          print 'console_start_' + self.last_step_name
       except Exception as e:
         print(str(e))
       try:

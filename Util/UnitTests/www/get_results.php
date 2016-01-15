@@ -237,6 +237,7 @@ if(!$fetch_result = mysqli_query($db, $query)) {
     }
 
     $testcase = array(
+      "id" => $row['id'],
       "name"   => $row['case_name'],
       "filename"   => $row['filename'],
       "result_type"   => $row['result_type'],

@@ -24,19 +24,23 @@ def performance(start_time, run_time):
   return _performance
 
 
-def console():
+def console(start_time):
   def _console(func):
     if not hasattr(func, 'validation'):
       func.validation = []
+    if ((start_time) and not hasattr(func, 'start_time') or (func.start_time < start_time)):
+      func.start_time = start_time
     func.validation.append({'type': 'console', 'name' : func.__name__})
     return func
   return _console
 
 
-def custom():
+def custom(start_time):
   def _custom(func):
     if not hasattr(func, 'validation'):
       func.validation = []
+    if ((start_time) and not hasattr(func, 'start_time') or (func.start_time < start_time)):
+      func.start_time = start_time
     func.validation.append({'type': 'custom', 'name': func.__name__})
     return func
   return _custom

@@ -44,7 +44,7 @@ var all_graphs = [];
 var display_options =  {
   properties: {
     available: ["min_fps", "avg_fps", "mean_fps", "max_fps"],
-    selected: ["min_fps", "avg_fps", "mean_fps", ""],
+    selected: ["avg_fps", "mean_fps"],
     ignore: ["name", "time", "history", "server_id", "server_name", "test_run_id", "filename", "result_type", "step_name", "stdout", "stderr", "console_output", "console_baseline", "console_diff"],
   },
   servers:  {
@@ -54,42 +54,44 @@ var display_options =  {
 };
 
 function generateDisplayOptionsList(model) {
-  for(var i = 0; i < model.length; i++) {
-    if(model[i]) {
-      if(model[i].hasOwnProperty('children'))
-        generateDisplayOptionsList(model[i].children); 
-      else {
-        for(var j = 0; j < model[i].testcases.length; j++) {
-          var testcase = model[i].testcases[j];
-          if(testcase.result_type=='performance') {
-            if($.inArray(testcase.server_name, display_options.servers.available) < 0) {
-              display_options.servers.available.push(testcase.server_name);
-            }
-            if(display_options.servers.selected.length == 0) {
-              display_options.servers.selected.push(testcase.server_name);
-            }
-            for(var propertyName in testcase) {
-              if ($.inArray(propertyName, display_options.properties.ignore) < 0) {
-                if($.inArray(propertyName, display_options.properties.available) < 0) {
-                  display_options.properties.available.push(propertyName);
-                }             
+  if(model) {
+    for(var i = 0; i < model.length; i++) {
+      if(model[i]) {
+        if(model[i].hasOwnProperty('children'))
+          generateDisplayOptionsList(model[i].children); 
+        else {
+          for(var j = 0; j < model[i].testcases.length; j++) {
+            var testcase = model[i].testcases[j];
+            if(testcase.result_type=='performance') {
+              if($.inArray(testcase.server_name, display_options.servers.available) < 0) {
+                display_options.servers.available.push(testcase.server_name);
               }
-            }
-            for(var k = 0; k < testcase.history.length; k++) {
-              if($.inArray(testcase.history[k].server_name, display_options.servers.available) < 0) {
-                display_options.servers.available.push(testcase.history[k].server_name);
-              }        
-              for(var propertyName in testcase.history[k]) {
+              if(display_options.servers.selected.length == 0) {
+                display_options.servers.selected.push(testcase.server_name);
+              }
+              for(var propertyName in testcase) {
                 if ($.inArray(propertyName, display_options.properties.ignore) < 0) {
                   if($.inArray(propertyName, display_options.properties.available) < 0) {
                     display_options.properties.available.push(propertyName);
                   }             
                 }
               }
+              for(var k = 0; k < testcase.history.length; k++) {
+                if($.inArray(testcase.history[k].server_name, display_options.servers.available) < 0) {
+                  display_options.servers.available.push(testcase.history[k].server_name);
+                }        
+                for(var propertyName in testcase.history[k]) {
+                  if ($.inArray(propertyName, display_options.properties.ignore) < 0) {
+                    if($.inArray(propertyName, display_options.properties.available) < 0) {
+                      display_options.properties.available.push(propertyName);
+                    }             
+                  }
+                }
+              }
             }
           }
-        }
-      }               
+        }               
+      }
     }
   }
 }
@@ -296,7 +298,7 @@ function generateGraph(div) {
         },
       options:{
         animation: {
-          duration: 5
+          duration: 0
         },
         maintainAspectRatio: true,
         responsive: true,
@@ -326,10 +328,16 @@ function generateGraph(div) {
               mode: 'label',
               callbacks : {
                 label: function(tooltipItem, data) {
-                  if (data.datasets[tooltipItem.datasetIndex].label == 'time') {
-                    return 'date : ' + data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].y.substring(0, data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].y.indexOf(' '));
-                  } else {
-                    return data.datasets[tooltipItem.datasetIndex].label + ': ' + data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].y;
+                  var item_label = data.datasets[tooltipItem.datasetIndex].label;
+                  var item_value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].y;
+                  if(item_value && item_label) {
+                    if(item_label == 'server_name') {
+                      return item_value;
+                    } else if (item_label == 'time') {
+                      return 'date : ' + item_value.substring(0, item_value.indexOf(' '));
+                    } else {
+                      return item_label + ': ' + item_value;
+                    }
                   }
                 }
               }
@@ -358,7 +366,7 @@ function generateGraph(div) {
                     suggestedMin: 0,
                     suggestedMax: highest,
                     userCallback: function(value) {
-                    return value;
+                      return value;
                     }
                   }
               }]
@@ -518,7 +526,7 @@ function generateConsole(div) {
   container.addClass('TestResult_console');
   var output = $('<div>');
   output.addClass('stdout_div');
-  output.append("<b>Output:</b></br></br>");
+  output.append("<b style='text-transform:capitalize;'>" + testcase.result_type + ":</b></br></br>");
   output.append(testcase.text_output.split('\n').join('</br>'));
   container.append(output);
   if(testcase.success == "N") {  
@@ -566,8 +574,21 @@ function ConstructTestCases(model, target) {
         case_div.addClass('.Category_Item'); 
         var case_name = $('<div>');
         case_name.addClass("TestResult_name");
+        
+        case_name.addClass("minimized");
+        case_name.click(function(){ // onclick function for toggling the presence of a minimized-class
+          $(this).toggleClass("minimized");
+        });
+        
         case_name.append("Case: " + model.testcases[i].name);
-        case_div.append(case_name);
+        if(model.testcases[i].success == 'Y') {
+          case_name.addClass("test_successful");
+        } else {
+          case_name.addClass("test_failed");
+        }
+        
+        case_div.append(case_name);        
+        
         container.append(case_div);
         current_case_name = model.testcases[i].name;
       }
@@ -575,6 +596,10 @@ function ConstructTestCases(model, target) {
       step_div.addClass('TestResult');
       var name_div = $('<div>');
       name_div.addClass('TestStep_name');
+      name_div.click(function(){ // onclick function for toggling the presence of a minimized-class
+        $(this).toggleClass("minimized");
+      });
+        
       if(model.testcases[i].result_type == 'error') {
         name_div.append("Testcase failed");
         name_div.addClass("test_failed");
@@ -647,7 +672,9 @@ function ConstructList(model, target) {
 }
 
 function GetServerList() {
-  var res = []
+  var res = [];
+  display_options.servers.available = [];
+  display_options.servers.selected = [];
   
   // Connect database
   $.ajax({
@@ -667,18 +694,25 @@ function GetServerList() {
         }
         div.append(res[i].name);
         div.data("server_id", res[i].id);
+        div.data("server_name", res[i].name);
         div.click(function(){
-          GetTestRunList($(this).data("server_id"));
-          $(".Selected_Server").removeClass('Selected_Server');
-          $(".Selected_TestRun").removeClass('Selected_TestRun');
-          $(this).addClass('Selected_Server');
-              $('#Categories_List').empty();
+          SetServer($(this).data("server_id"), $(this).data("server_name"));
         });
         target.append(div);
       }
       },
   });
+}
 
+function SetServer(server_id, server_name) {
+  GetTestRunList(server_id);
+  $(".Selected_Server").removeClass('Selected_Server');
+  $(".Selected_TestRun").removeClass('Selected_TestRun');
+  $(this).addClass('Selected_Server');
+  $('#Categories_List').empty();
+  display_options.servers.available = [server_name];
+  display_options.servers.selected = [server_name];
+  refreshDisplayOptions();
 }
 
 function GetTestRunList(server_id) {
@@ -699,7 +733,7 @@ function GetTestRunList(server_id) {
           if(!res[i].success) {
             div.addClass('test_failed');
           }
-          div.append(res[i].timestamp);
+          div.append(res[i].timestamp.substring(0, res[i].timestamp.indexOf(' ')));
           div.data("test_run_id", res[i].id);
           if(res[i].has_results) {
             div.click(function(){
@@ -748,7 +782,6 @@ function SetTestRun(test_run_id) {
 var model = null;
 
 $(document).ready(function(){
-  $('#Options').draggable();
   GetServerList(); 
 });    
 

@@ -111,7 +111,12 @@ class TestCaseRunner ( object ):
       return ProcessUnix()
 
   def _countWarnings ( self, test_results ):
-    haystack= test_results.std_out + test_results.std_err
+    outhead, outpart, outtail = test_results.std_out.partition("console_start")
+    errhead, errpart, errtail = test_results.std_err.partition("console_start")
+    outtail = outtail.partition("console_end")[2]
+    errtail = errtail.partition("console_end")[2]
+    haystack = outhead + outtail[outtail.find('\n')+1:] + errhead + errtail[errtail.find('\n')+1:]
+
     haystack= haystack.lower()
     return ( haystack.count ( "warning" ), haystack.count ( "error" ) )
 
@@ -741,6 +746,9 @@ def isTestable ( file_name , files_in_dir):
   return True
 
 #html_reporter_errors= TestReportHTML( os.path.join(args.output, "reports"), only_failed= True )
+
+print "Running these tests using: " + subprocess.check_output('where.exe ' + h3d_process_name + '.exe') # Run our test script and wait for it to finish executing
+
 
 tester= TestCaseRunner( os.path.join(args.workingdir, ""), startup_time= 5, shutdown_time= 5, testable_callback= isTestable, error_reporter=None)
 nresults = tester.processAllTestDefinitions(directory=args.workingdir, output_dir=args.output)

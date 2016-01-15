@@ -70,13 +70,12 @@ class TestResults ( object ):
     error = []
 
     # Comparison thresholds
-    fuzz= 3               # % of fuzz (increase to ignore small differences)
-    error_threshold= 5    # Number of pixels that must differ in order to trigger a warning
+    fuzz= 6               # % of fuzz (increase to ignore small differences)
+    error_threshold= 10   # Number of pixels that must differ in order to trigger a warning
 
     g= glob.glob(baseline_path)
     if g:
       baselinerendering= max(g, key= os.path.getmtime)
-      #diff_name= "difference_%s_%s_r%s_%s.png" % (caseName, clientName, results['revision'], ret['time'].strftime('%b_%d_%Y_%H_%M_%S'))
       try:
         process= subprocess.Popen(
           ["compare",
@@ -129,7 +128,8 @@ class TestResults ( object ):
       f = open(baseline_path, 'r')    
       baseline = [line.replace('\n', '') for line in f.readlines()]  
       f.close()
-      delta = differ.compare(baseline, [out.replace('\n', '') for out in output])
+      output_list = [out.replace('\n', '') for out in output]
+      delta = differ.compare(baseline, output_list)
       try:
         while True:
           line = delta.next()
@@ -182,13 +182,20 @@ class TestResults ( object ):
           res = self.getPerformanceResult(fps_data)
           #success = success and res.success
           results.append(res)
-        elif line == 'console_start':
-          # Console format: one line that says console_start, then any amount of lines that don't say console_end, then one line that says console_end
-          line = self.getNextLine(f)
-          output = ''
-          while line != 'console_end':
-            output += line + '\n'
-            line = self.getNextLine(f)
+        elif line == 'console':
+          # Console format: one line that says console and nothing else. We need to get stderr and look through it for a line that says "console_start_<stepname>" and read it until we get to "console_end_<stepname>"
+          
+          output = []
+          found = False
+          for line in self.std_err.splitlines(False):
+            if not found:
+              if line == "console_start_" + step_name:
+                found = True
+            elif line == "console_end_" + step_name:
+              break
+            else:
+              output.append(line + '\n')
+
           res = self.getConsoleResult(baseline_folder + '\\' + step_name+"_console.txt", output)
           success = success and res.success
           results.append(res)

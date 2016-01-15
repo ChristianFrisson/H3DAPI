@@ -17,13 +17,12 @@ ul > .Category_Item { position:relative; margin-left: 20px;}
   margin-left: 20px;
   clear: both; 
   display:none;
-  height:auto;
+  height:none;
 }
 
 .TestResult {
   background-color:white;
   position:relative; margin-left: 20px;
-  height:460px;
   width: auto;
   padding: 0;
   float:left;
@@ -86,11 +85,9 @@ ul > .Category_Item { position:relative; margin-left: 20px;}
 }
 
 .TestResult_console {
-  border: 1px solid black;
-  height:400px;
-  width:400px;
+  height:auto;
   width:auto;
-  overflow-y:scroll;
+  overflow-y:hidden;
   margin: 0;
   padding: 0;
   float:left;
@@ -227,6 +224,10 @@ div#Options {
 
 label h3 {
   display:inline;
+}
+
+.minimized ~ div {
+  display: none;
 }
 
  .category_list_checkbox { 
