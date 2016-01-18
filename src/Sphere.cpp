@@ -232,6 +232,7 @@ void Sphere::render() {
   X3DTextureCoordinateNode::renderVertexBufferObjectForActiveTexture(
     3, GL_FLOAT, 9 * sizeof(GLfloat), texture_pointer );
 
+  glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
   glScalef( r, r, r );
   // Draw the triangles
