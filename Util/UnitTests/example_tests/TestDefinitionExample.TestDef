@@ -1,0 +1,14 @@
+#  Contains the definitions for one or more test cases.
+#  Every test case is specified with a section in this file and the name of that section will be the name of the test case
+#  Required parameters:
+#    x3d - Specifies the x3d file to run the test with.
+#    baseline folder - Specifies where the baselines for this test are.
+#    script - A .py file containing the test script itself.
+#  Optional parameters:
+#    starttime - Defaults to 1. How long h3d should wait after launching before it starts doing the test, specified in seconds.
+#    timeout - Defaults to 1. A timeout that starts counting down immediately after h3d is launched. This should be longer than the expected time of your test, as a test will be considered failed if it times out. This timeout is primarily for when H3D has frozen, since the timeout will be the only way to shut down a frozen H3D automatically and continue with the testing.
+[TestExample]
+x3d=TestExample.x3d
+script=TestExample.py
+baseline folder=baseline
+timeout=30

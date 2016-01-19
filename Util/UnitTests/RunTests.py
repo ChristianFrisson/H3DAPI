@@ -91,10 +91,8 @@ class TestCaseRunner ( object ):
     self.startup_time= startup_time
     self.shutdown_time= shutdown_time
     self.testable_callback= testable_callback
-    self.fps_data_file = '%s/fps.txt' % (os.getcwd())
     self.early_shutdown_file = '%s/test_complete' % (args.RunTestsDir)
-    self.rendering_tmp_file = '%s/tmp_rendering.png' % (os.getcwd())
-    self.startup_time_multiplier = 10
+    self.startup_time_multiplier = 1
     if h3d_process_name == "H3DLoad":
       self.load_flags = [] #"--no-fullscreen","--screen=800x600"]
     else:
@@ -206,10 +204,17 @@ class TestCaseRunner ( object ):
         test_case = namedtuple('TestDefinition', ['name', 'filename', 'x3d', 'baseline', 'script', 'runtime', 'starttime'])
         test_case.name = sect
         test_case.x3d = confParser.get(sect, 'x3d')
-        test_case.baseline = confParser.get(sect, 'baseline')
+        test_case.baseline = confParser.get(sect, 'baseline folder')
         test_case.script = confParser.get(sect, 'script')
-        test_case.runtime = confParser.getfloat(sect, 'runtime')
-        test_case.starttime = confParser.getfloat(sect, 'starttime')
+        try: 
+          test_case.runtime = confParser.getfloat(sect, 'timeout')
+        except:
+          test_case.runtime = 1
+        try:
+          test_case.starttime = confParser.getfloat(sect, 'starttime')
+        except:
+          test_case.starttime = 1
+
         result.append(test_case)
     return result
 
