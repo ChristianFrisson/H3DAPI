@@ -232,13 +232,15 @@ class TestCaseRunner ( object ):
                 
     script = """
     <MetadataString DEF='TestCaseName' value='%s'/>
-    <MetadataString DEF='TestCaseScript' value='%s'/>
+    <MetadataString DEF='TestCaseScriptFolder' value='%s'/>
     <MetadataString DEF='TestCaseScriptFilename' value='%s'/>
+    <MetadataString DEF='TestCaseDefFolder' value='%s'/>
     <MetadataString DEF='TestBaseFolder' value='%s'/>
     <MetadataFloat DEF='StartTime' value='%f'/>
     <PythonScript DEF='TestScript' url='%s'></PythonScript>""" % (testCase.name,
                                                                   os.path.split(os.path.abspath(os.path.join(directory, testCase.script)))[0].replace('\\', '/'),
                                                                   os.path.splitext(os.path.split(testCase.script)[1])[0],
+                                                                  os.path.abspath(directory),
                                                                   args.RunTestsDir,
                                                                   testCase.starttime,
                                                                   os.path.join(args.RunTestsDir, 'UnitTestBoilerplate.py'))

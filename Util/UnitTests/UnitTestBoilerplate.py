@@ -198,7 +198,8 @@ class StoreFPS( AutoUpdate( SFFloat ) ):
     return self.fps_string
 
 
-TestcaseScriptFolder = getNamedNode('TestCaseScript').getField('value').getValueAsString().replace('"', '')
+TestCaseScriptFolder = getNamedNode('TestCaseScriptFolder').getField('value').getValueAsString().replace('"', '')
+TestCaseDefFolder = getNamedNode('TestCaseDefFolder').getField('value').getValueAsString().replace('"', '')
 TestBaseFolder = getNamedNode('TestBaseFolder').getField('value').getValueAsString().replace('"', '')
 sys.path.append(TestBaseFolder) # This is so we can properly import from UnitTestUtil.py
 TestcaseScriptFilename = getNamedNode('TestCaseScriptFilename').getField('value').getValueAsString().replace('"', '')
@@ -210,7 +211,7 @@ res.__scriptnode__ = globals()['__scriptnode__']
 testfunctions_list = [o for o in getmembers(res) if isfunction(o[1])]
 testfunctions_list = [item for item in testfunctions_list if ((item not in getmembers(H3DInterface)) and (item not in getmembers(H3DUtils)) and (item not in getmembers(__import__("UnitTestUtil"))))]
 
-testHelper = UnitTestHelper(TestBaseFolder+"/test_complete", os.path.abspath(os.path.join(TestcaseScriptFolder, "output").replace("\\", '/')), TestcaseName + '_')
+testHelper = UnitTestHelper(TestBaseFolder+"/test_complete", os.path.abspath(os.path.join(TestcaseDefFolder, "output").replace("\\", '/')), TestcaseName + '_')
 testHelper.addTests(testfunctions_list)
 res.printCustom = testHelper.printCustom
 

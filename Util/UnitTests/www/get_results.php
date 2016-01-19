@@ -207,7 +207,7 @@ if(!$fetch_result = mysqli_query($db, $query)) {
       if($index > -1) {
         $node = &$node['children'][$i];
       } else {     
-        $new_node = array("name" => $category_structure[0], "children" => array());
+        $new_node = array("name" => $category_structure[0], "children" => array(), 'success' => true);
         $node = &$node['children'][array_push($node['children'], $new_node)-1];
   //  echo "node is: </br>" . json_encode($node) . "</br>";
       }
@@ -244,7 +244,8 @@ if(!$fetch_result = mysqli_query($db, $query)) {
       "test_run_id" => $row['test_run_id'],
       "server_id"=> $row['server_id'],
       "server_name"=> $row['server_name'],
-      "time"   => $row['timestamp']
+      "time"   => $row['timestamp'],
+      "success" => "Y",
       );
     $testcase["step_name"] = $row['step_name'];
     
@@ -304,9 +305,10 @@ if(!$fetch_result = mysqli_query($db, $query)) {
       $testcase["text_diff"] = $row["text_diff"];
     } else if ($row['result_type'] == 'error') {
       $node['success'] = false;
+      $testcase["success"] = 'N';
       $testcase["stdout"] = $row['stdout'];
       $testcase["stderr"] = $row['stderr'];
-    }
+    } 
     
     // All that remains now is to push the testcase to the node's testcases array
     array_push($node['testcases'], $testcase);
