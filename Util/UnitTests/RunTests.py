@@ -60,7 +60,7 @@ parser.add_argument('--servername', dest='servername', help='The name of this se
                     default='Unknown')
 parser.add_argument('--RunTestsDir', dest='RunTestsDir', help='The location of UnitTestsUtil.py and UnitTestsBoilerplate.py. This is for the cases where RunTests.py is being run from a different directory, for example for targeting a specific build of H3D.',
                     default=os.path.dirname(os.path.realpath(__file__)).replace('\\', '/'))
-args = parser.parse_args()
+args = parser.parse_known_args()[0]
 
 
 def createFilename(orig_url, var_name):
@@ -224,8 +224,8 @@ class TestCaseRunner ( object ):
     """
     output_dir = os.path.abspath(os.path.join(directory, "output"))
     rendering_dir = os.path.join(directory, output_dir, 'renderings')
-
-    for dir in [output_dir, rendering_dir]:
+    text_dir = os.path.join(directory, output_dir, 'text')
+    for dir in [output_dir, rendering_dir, text_dir]:
       if not os.path.exists(dir):
         os.mkdir(dir)
 
@@ -252,8 +252,8 @@ class TestCaseRunner ( object ):
       result = self.runTestCase (file, testCase, variation_path, os.path.join(directory, testCase.x3d), v.name, v)
       print result.std_err
       print result.std_out
-      print os.path.abspath(output_dir + '\\validation.txt')
-      result.parseValidationFile(os.path.abspath(output_dir + '\\validation.txt'), os.path.abspath(os.path.join(directory, testCase.baseline)))
+#      print os.path.abspath(output_dir + '\\validation.txt')
+      result.parseValidationFile(os.path.abspath(output_dir + '\\validation.txt'), os.path.abspath(os.path.join(directory, testCase.baseline)), os.path.abspath(output_dir + '\\text\\'))
     else:
       result = TestResults('')
       result.filename= file

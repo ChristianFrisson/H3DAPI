@@ -27,65 +27,27 @@ class UnitTestHelper :
     self.screenshot_counter = 0    
 #    self.screenshot_queue.put("Startup")
     self.fps_counter = StoreFPS()
-    self.measure_fps = False
-    self.last_step_name = "Startup"
-    self.store_console_output = False
-    self.store_custom_output = False
-    self.custom_output = ''
     self.screenshot_filename_prefix = screenshot_filename_prefix
     self.validation_file = output_file_prefix + "/validation.txt"
+    self.last_func = None
+    self.customPrintHelper = None
     temp = open(self.validation_file, 'w')
-#    temp.write('Startup\n')
     temp.flush()
     temp.close()
+
 
   def addTests(self, funclist):
     for func in funclist:
       self.test_funcs.put(func)
 
   def doTesting(self):
-
-    if self.store_console_output:
-#     pp.pprint(self.last_step_name)
-      f = open(self.validation_file, 'a')
-      f.write('console\n')
-      f.flush()
-      f.close()
-      print 'console_end_' + self.last_step_name
-      self.store_console_output = False
-    if self.measure_fps:
+    if not self.last_func is None:
       try:
-#       pp.pprint("measured fps")
-        fps_data = self.fps_counter.stop()
-        self.measure_fps = False
-#       pp.pprint("saving to " + self.validation_file)
-        f = open(self.validation_file, 'a')
-        f.write('performance\n')
-        f.write(fps_data + '\n')
-        f.flush()
-        f.close()
+        for validation in self.last_func.validation:
+          validation['post'](self, validation, self.validation_file)
       except Exception as e:
-        print(str(e))   
-    if self.store_custom_output:
-      try:
-#        pp.pprint("custom output")
-        self.store_custom_output = False
-        f = open(self.validation_file, 'a')
-        f.write('custom_start\n')
-        f.write(self.custom_output) 
-        f.write('custom_end\n')
-        f.flush()
-        f.close()
-        self.custom_output = ''
-      except Exception as e:
-        print(str(e))   
-    try: # If a screenshot has been queued up then it will take that
-      screenshot_name = self.screenshot_queue.get(False)
-#      pp.pprint("screenshot: " + screenshot_name)
-      self.outputScreenshot(screenshot_name)
-    except Exception as e:
-      if str(e) != '':
-        print(str(e))   
+        print str(e)
+   
     try: # If there're more test functions queued up they'll be called, otherwise we shut down.
       func_data = self.test_funcs.get(False)
       self.last_step_name = func_data[0]
@@ -97,35 +59,27 @@ class UnitTestHelper :
       except Exception as E:
         print str(e)
       func = func_data[1]
+      self.last_func = func_data[1]
+      start_time = None
+      run_time = None
       for validation in func.validation:
-        if validation['type'] == 'screenshot':
-          screenshot_name = validation['name']
-          self.screenshot_queue.put(screenshot_name)
-        elif validation['type'] == 'performance':
-          self.measure_fps = True
-        elif validation['type'] == 'console':
-          #pp.pprint("[" + validation['name'] + "]")
-          self.last_step_name = validation['name']
-          self.store_console_output = True
-        elif validation['type'] == 'custom':
-          self.custom_output = ''
-          self.store_custom_output = True
-      if hasattr(func, 'start_time'):
-        timer_callback.addCallback(time.getValue()+func.start_time, UnitTestHelper.startFuncDelayed, (self,func))
+        if (not (start_time is None) and (hasattr(validation, 'start_time') or (start_time < validation['start_time']))):
+          start_time = validation['start_time']
+    
+      if not(start_time is None):
+        timer_callback.addCallback(time.getValue()+start_time, UnitTestHelper.startFuncDelayed, (self,func, run_time))
       else:
         try:
-          if self.store_console_output:
-            print 'console_start_' + self.last_step_name
+          for validation in func.validation:
+            validation['init'](self, validation, self.validation_file)
         except Exception as e:
           print(str(e))
         try:
           func()
         except Exception as e:
           print str(e)
-        if self.measure_fps:
-          self.fps_counter.start()
-        if(hasattr(func, 'run_time')):
-          timer_callback.addCallback(time.getValue()+func.run_time, UnitTestHelper.doTesting, (self,))
+        if(not (run_time is None)):
+          timer_callback.addCallback(time.getValue()+run_time, UnitTestHelper.doTesting, (self,))
         else:
           timer_callback.addCallback(time.getValue()+1, UnitTestHelper.doTesting, (self,))          
       return
@@ -136,43 +90,28 @@ class UnitTestHelper :
       shutdown_file.close()
       throwQuitAPIException()
 
-
-  def printCustom(self, value):
-    if self.store_custom_output:
-      self.custom_output += value + "\n"
-    else:
-      pp.pprint("Warning: Test script for step " + self.last_step_name + " called printCustom without specifying @custom. The output will not be saved or evaluated.")
-
-  def startFuncDelayed(self, func):
+  def startFuncDelayed(self, func, run_time):
       try:
-        if self.store_console_output:
-          print 'console_start_' + self.last_step_name
+        for validation in func.validation:
+          validation['init'](self, validation, self.validation_file)
       except Exception as e:
         print(str(e))
       try:
         func()
       except Exception as e:
         print str(e)
-      if self.measure_fps:
-        self.fps_counter.start()
-      if(hasattr(func, 'run_time')):
-        timer_callback.addCallback(time.getValue()+func.run_time, UnitTestHelper.doTesting, (self,))
+
+      if(not (run_time is None)):
+        timer_callback.addCallback(time.getValue()+run_time, UnitTestHelper.doTesting, (self,))
       else:
-        timer_callback.addCallback(time.getValue()+1, UnitTestHelper.doTesting, (self,))          
+        timer_callback.addCallback(time.getValue()+0.5, UnitTestHelper.doTesting, (self,))          
 
+  def printCustom(self, value):
+    if self.customPrintHelper is None:
+      print "Error: Test script called printCustom from a function that does not have the @custom decorator"
+    else:
+      self.customPrintHelper(self, value)
 
-  def outputScreenshot(self, test_step_name = None):
-    if test_step_name == None:
-      test_step_name = str(self.screenshot_counter)
-      self.screenshot_counter += 1
-    filename = os.path.abspath(os.path.join(self.output_file_prefix, "renderings/", self.screenshot_filename_prefix + test_step_name + '.png').replace('\\', '/'))
-    takeScreenshot(filename)
-#    pp.pprint("saving to " + self.validation_file)
-    f = open(self.validation_file, 'a')
-    f.write('screenshot\n')
-    f.write(filename + '\n')
-    f.flush()
-    f.close()
 
 
 
@@ -208,8 +147,8 @@ TestCaseName = getNamedNode('TestCaseName').getField('value').getValueAsString()
 StartTime = getNamedNode('StartTime').getField('value').getValue()[0]
 res = import_module(TestCaseScriptFilename)
 res.__scriptnode__ = globals()['__scriptnode__']    
-testfunctions_list = [o for o in getmembers(res) if isfunction(o[1])]
-testfunctions_list = [item for item in testfunctions_list if ((item not in getmembers(H3DInterface)) and (item not in getmembers(H3DUtils)) and (item not in getmembers(__import__("UnitTestUtil"))))]
+testfunctions_list = [o for o in getmembers(res) if isfunction(o[1]) and hasattr(o[1], "validation")]
+#testfunctions_list = [item for item in testfunctions_list if ((item not in getmembers(H3DInterface)) and (item not in getmembers(H3DUtils)) and (item not in getmembers(__import__("UnitTestUtil"))))]
 
 testHelper = UnitTestHelper(TestBaseFolder+"/test_complete", os.path.abspath(os.path.join(TestCaseDefFolder, "output").replace("\\", '/')), TestCaseName + '_')
 testHelper.addTests(testfunctions_list)

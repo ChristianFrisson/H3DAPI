@@ -221,6 +221,15 @@ div#Options {
   z-index: 100;
 }
 
+.Options_Header {
+  margin-bottom: 5px;
+}
+
+
+input#Options_Toggle {
+  margin: 5px;
+}
+
 
 label h3 {
   display:inline;

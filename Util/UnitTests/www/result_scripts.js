@@ -100,8 +100,8 @@ function refreshDisplayOptions(model) {
   $('#Option_Properties').empty();
   $('#Option_Servers').empty();
   generateDisplayOptionsList(model);
-  $('#Option_Properties').append('<h3>Properties:</h3>');
-  $('#Option_Servers').append('<h3>Servers:</h3>');
+  $('#Option_Properties').append('<h3 class="Options_Header">Properties:</h3>');
+  $('#Option_Servers').append('<h3 class="Options_Header">Servers:</h3>');
   for(var i = 0; i < display_options.properties.available.length; i++) {
     var cb = $('<input>');
     cb.attr('type', 'checkbox');    
@@ -551,7 +551,6 @@ function generateError(div) {
   
   var std = $('<div>');
   std.addClass('std_div');
-  std.append("<b>stdout:</b></br>");
   std.append(testcase.stdout.split('\n').join('</br>'));
   std.append("</br></br><b>stderr:</b></br></br>");
   std.append(testcase.stderr.split('\n').join('</br>'));
@@ -571,7 +570,7 @@ function ConstructTestCases(model, target) {
       if(model.testcases[i].name != current_case_name) {
         var case_div = $('<div>');
         case_div.addClass('TestCase');
-        case_div.addClass('.Category_Item'); 
+        case_div.addClass('Category_Item'); 
         var case_name = $('<div>');
         case_name.addClass("TestResult_name");
         
@@ -592,6 +591,18 @@ function ConstructTestCases(model, target) {
         container.append(case_div);
         current_case_name = model.testcases[i].name;
       }
+      
+      if(model.testcases[i].success != 'Y') {
+        case_name.removeClass("test_successful");
+        case_name.addClass("test_failed");
+      }
+      
+      // This is specifically for suppressing the green label
+//      if(model.testcases[i].result_type == 'error' && $(".TestResult", case_div).length == 0 && (i < model.testcases.length-1 && (model.testcases[i+1].name != current_case_name)) ) {
+//        case_name.removeClass("test_successful");
+//        case_name.addClass("test_failed");
+ //     }
+            
       var step_div = $('<div>');
       step_div.addClass('TestResult');
       var name_div = $('<div>');
@@ -658,11 +669,16 @@ function ConstructList(model, target) {
           name.addClass('test_successful');
       }
       else if (model[i].hasOwnProperty('testcases')) {
-        if(model[i].success)
+        if(model[i].success == undefined || (model[i].success))
           name.addClass('test_successful');
         else
-          name.addClass('test_failed');                
+          name.addClass('test_failed');
         ConstructTestCases(model[i], ul);
+        if($('.test_failed', ul).length > 0)
+          name.addClass('test_failed');                
+        else
+          name.addClass('test_successful');        
+        
         first = false;
       }
              
@@ -675,6 +691,7 @@ function GetServerList() {
   var res = [];
   display_options.servers.available = [];
   display_options.servers.selected = [];
+  $('#Options_Toggle').hide();
   
   // Connect database
   $.ajax({
@@ -733,7 +750,7 @@ function GetTestRunList(server_id) {
           if(!res[i].success) {
             div.addClass('test_failed');
           }
-          div.append(res[i].timestamp.substring(0, res[i].timestamp.indexOf(' ')));
+          div.append(res[i].timestamp);
           div.data("test_run_id", res[i].id);
           if(res[i].has_results) {
             div.click(function(){
@@ -757,6 +774,7 @@ function SetTestRun(test_run_id) {
     $('#Categories_List').empty();
     model = data;
     refreshDisplayOptions(model);
+    $('#Options_Toggle').show();
     first = true;
     ConstructList(model, $('#Categories_List'));
     $('.TestResult').each(function() {
@@ -782,7 +800,53 @@ function SetTestRun(test_run_id) {
 var model = null;
 
 $(document).ready(function(){
-  GetServerList(); 
+  GetServerList();
+  
+  // Set up the toggle buttons.
+  $('#Options_Toggle_Categories').data('collapsed', true);
+  $('#Options_Toggle_Categories').prop('value', 'Expand All Categories');
+  $('#Options_Toggle_Categories').click(function(){
+    if($(this).data('collapsed')) {
+      $('.category_list_checkbox').prop('checked', true);
+      $(this).data('collapsed', false);
+      $('#Options_Toggle_Categories').prop('value', 'Collapse All Categories');
+    } else {
+      $('.category_list_checkbox').prop('checked', false);
+      $(this).data('collapsed', true);
+      $('#Options_Toggle_Categories').prop('value', 'Expand All Categories');
+    }
+  });
+  
+  
+  
+  $('#Options_Toggle_Cases').data('collapsed', true);
+  $('#Options_Toggle_Cases').prop('value', 'Expand Visible Cases');
+  $('#Options_Toggle_Cases').click(function(){
+    if($(this).data('collapsed')) {
+      $('.TestResult_name:visible').removeClass('minimized');
+      $(this).data('collapsed', false);
+      $('#Options_Toggle_Cases').prop('value', 'Collapse Visible Cases');
+    } else {
+      $('.TestResult_name:visible').addClass('minimized');
+      $(this).data('collapsed', true);
+      $('#Options_Toggle_Cases').prop('value', 'Expand Visible Cases');
+    }
+  });
+
+  $('#Options_Toggle_Steps').data('collapsed', true);
+  $('#Options_Toggle_Steps').prop('value', 'Expand Visible Steps');
+  $('#Options_Toggle_Steps').click(function(){
+    if($(this).data('collapsed')) {
+      $('.TestStep_name:visible').removeClass('minimized');
+      $(this).data('collapsed', false);
+      $('#Options_Toggle_Steps').prop('value', 'Collapse Visible Steps');
+    } else {
+      $('.TestStep_name:visible').addClass('minimized');
+      $(this).data('collapsed', true);
+      $('#Options_Toggle_Steps').prop('value', 'Expand Visible Steps');
+    }
+  });
+  
 });    
 
           

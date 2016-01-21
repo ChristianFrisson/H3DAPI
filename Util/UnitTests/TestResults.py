@@ -149,7 +149,7 @@ class TestResults ( object ):
       line = file.readline()
     return line.strip()
 
-  def parseValidationFile(self, file_path='validation.txt', baseline_folder=''):
+  def parseValidationFile(self, file_path='validation.txt', baseline_folder='', text_output_folder=''):
     self.step_list = []
     if (self.errors > 0):
       self.step_list.append(self.StepResultTuple("", False, [self.ErrorResultTuple(self.std_out + "\nTest returned errors", self.std_err)]))
@@ -166,7 +166,7 @@ class TestResults ( object ):
       success = True
       line = self.getNextLine(f)
       if line == '':
-        break
+        break;
       results = []
       while line != None:
         if line == 'screenshot':
@@ -187,15 +187,18 @@ class TestResults ( object ):
           
           output = []
           found = False
-          for line in self.std_err.splitlines(False):
+          for err_line in self.std_err.splitlines(False):
             if not found:
-              if line == "console_start_" + step_name:
+              if err_line == "console_start_" + step_name:
                 found = True
-            elif line == "console_end_" + step_name:
+            elif err_line == "console_end_" + step_name:
               break
             else:
-              output.append(line + '\n')
-
+              output.append(err_line + '\n')
+          console_f = open(text_output_folder +'\\' + step_name + '_console.txt', 'w')
+          console_f.writelines(output)
+          console_f.flush()
+          console_f.close()            
           res = self.getConsoleResult(baseline_folder + '\\' + step_name+"_console.txt", output)
           success = success and res.success
           results.append(res)
