@@ -202,16 +202,16 @@ TestCaseScriptFolder = getNamedNode('TestCaseScriptFolder').getField('value').ge
 TestCaseDefFolder = getNamedNode('TestCaseDefFolder').getField('value').getValueAsString().replace('"', '')
 TestBaseFolder = getNamedNode('TestBaseFolder').getField('value').getValueAsString().replace('"', '')
 sys.path.append(TestBaseFolder) # This is so we can properly import from UnitTestUtil.py
-TestcaseScriptFilename = getNamedNode('TestCaseScriptFilename').getField('value').getValueAsString().replace('"', '')
-sys.path.append(TestcaseScriptFolder)
-TestcaseName = getNamedNode('TestCaseName').getField('value').getValueAsString().replace('"', '')
+TestCaseScriptFilename = getNamedNode('TestCaseScriptFilename').getField('value').getValueAsString().replace('"', '')
+sys.path.append(TestCaseScriptFolder)
+TestCaseName = getNamedNode('TestCaseName').getField('value').getValueAsString().replace('"', '')
 StartTime = getNamedNode('StartTime').getField('value').getValue()[0]
-res = import_module(TestcaseScriptFilename)
+res = import_module(TestCaseScriptFilename)
 res.__scriptnode__ = globals()['__scriptnode__']    
 testfunctions_list = [o for o in getmembers(res) if isfunction(o[1])]
 testfunctions_list = [item for item in testfunctions_list if ((item not in getmembers(H3DInterface)) and (item not in getmembers(H3DUtils)) and (item not in getmembers(__import__("UnitTestUtil"))))]
 
-testHelper = UnitTestHelper(TestBaseFolder+"/test_complete", os.path.abspath(os.path.join(TestcaseDefFolder, "output").replace("\\", '/')), TestcaseName + '_')
+testHelper = UnitTestHelper(TestBaseFolder+"/test_complete", os.path.abspath(os.path.join(TestCaseDefFolder, "output").replace("\\", '/')), TestCaseName + '_')
 testHelper.addTests(testfunctions_list)
 res.printCustom = testHelper.printCustom
 
