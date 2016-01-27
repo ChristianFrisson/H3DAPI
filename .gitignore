@@ -6,6 +6,9 @@ Makefile
 cmake_install.cmake
 install_manifest.txt
 
+# CMake / QtCreator
+CMakeLists.txt.user
+
 # Compiled Object files
 *.slo
 *.lo
