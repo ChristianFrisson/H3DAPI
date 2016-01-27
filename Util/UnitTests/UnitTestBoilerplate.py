@@ -1,20 +1,14 @@
-﻿import H3DInterface
-import H3DUtils
-from H3DInterface import *
+﻿from H3DInterface import *
 from H3DUtils import *
-from Queue import Queue, Empty
+
 import sys
 import os
-from imp import *
-import inspect
+from Queue import Queue, Empty
 from inspect import getmembers, isfunction
+import operator
 from importlib import import_module
-import pprint
 
 
-
-
-pp = pprint.PrettyPrinter(indent=4)
 
 timer_callback = TimerCallback()
 
@@ -146,9 +140,12 @@ sys.path.append(TestCaseScriptFolder)
 TestCaseName = getNamedNode('TestCaseName').getField('value').getValueAsString().replace('"', '')
 StartTime = getNamedNode('StartTime').getField('value').getValue()[0]
 res = import_module(TestCaseScriptFilename)
-res.__scriptnode__ = globals()['__scriptnode__']    
+res.__scriptnode__ = globals()['__scriptnode__']   
+
+# import all the functions that have our validator decorators attached. We identify them by the presence of a validation array.
+# the result is a list of tuples containing (function name, function address), so we sort by the latter to ensure the test functions will be executed in the same order as they appear in the file
 testfunctions_list = [o for o in getmembers(res) if isfunction(o[1]) and hasattr(o[1], "validation")]
-#testfunctions_list = [item for item in testfunctions_list if ((item not in getmembers(H3DInterface)) and (item not in getmembers(H3DUtils)) and (item not in getmembers(__import__("UnitTestUtil"))))]
+testfunctions_list.sort(key=operator.itemgetter(1))
 
 testHelper = UnitTestHelper(TestBaseFolder+"/test_complete", os.path.abspath(os.path.join(TestCaseDefFolder, "output").replace("\\", '/')), TestCaseName + '_')
 testHelper.addTests(testfunctions_list)

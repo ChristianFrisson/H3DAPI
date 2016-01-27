@@ -1,4 +1,4 @@
-from UnitTestUtil import *
+﻿from UnitTestUtil import *
 from H3DInterface import *
 from H3DUtils import *
 
@@ -54,13 +54,12 @@ def testPerformance():
   trans = getNamedNode('T')
   trans.getField('rotation').setValue(Rotation(0, 0, 20, 1))
 
-
 @custom()
 def testCustom():
   """ waits 0 seconds, executes the function, and then records all the strings passed to printCustom() for validation. """
   printCustom("This is test line")
   printCustom("This is a different test line")
-  pass
+
 
 @console()
 @custom()
@@ -71,5 +70,4 @@ def testCustomAndConsole():
   print "words!"
   print "error not a real error"
   print "not a real warning"
-  pass
 

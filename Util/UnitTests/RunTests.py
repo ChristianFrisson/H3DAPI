@@ -19,22 +19,20 @@ import argparse
 import math
 import signal
 import glob
-import Image
+#import Image
 import ConfigParser
 import json
+import datetime
+from collections import namedtuple
+
 import MySQLdb
-#import gspread
+
 from TestResults import TestResults
 from Variations import Option, Variation
-
-import datetime
-
-from collections import namedtuple
-#from PIL import Images
-
-#from oauth2client.client import GoogleCredentials
-
 from ProcessWrapper import *
+
+
+
 
 parser = argparse.ArgumentParser(
   description='Runs python tests')
@@ -604,15 +602,16 @@ class TestReportHTML ( object ):
     return (variation.errors > 0 or variation.warnings > 0 or not variation.started_ok or not variation.terminated_ok or not self.only_failed) and not variation.skipped
 
   def _getThumbnail(self, rendering_path, thumb_dir):
-    if not os.path.exists(rendering_path):
-      return ""
-    else:
-      im = Image.open(rendering_path)
-      im.thumbnail((256,256), Image.ANTIALIAS)
-      rendering_filename = os.path.split(rendering_path)[1]
-      thumb_path = os.path.join(thumb_dir, os.path.splitext(rendering_filename)[0] + "_thumb.png")
-      im.save(thumb_path, "PNG")
-      return thumb_path
+#    if not os.path.exists(rendering_path):
+#      return ""
+#    else:
+#      im = Image.open(rendering_path)
+#      im.thumbnail((256,256), Image.ANTIALIAS)
+#      rendering_filename = os.path.split(rendering_path)[1]
+#      thumb_path = os.path.join(thumb_dir, os.path.splitext(rendering_filename)[0] + "_thumb.png")
+#      im.save(thumb_path, "PNG")
+#      return thumb_path
+    pass
     
   def _reportTestcase ( self, result ):   
 

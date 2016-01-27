@@ -1,7 +1,7 @@
 ﻿import os
 from collections import namedtuple
 import glob
-import Image
+#import Image
 import subprocess
 import difflib
 import math

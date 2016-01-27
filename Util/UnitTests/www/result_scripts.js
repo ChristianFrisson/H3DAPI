@@ -45,7 +45,7 @@ var display_options =  {
   properties: {
     available: ["min_fps", "avg_fps", "mean_fps", "max_fps"],
     selected: ["avg_fps", "mean_fps"],
-    ignore: ["name", "time", "history", "server_id", "server_name", "test_run_id", "filename", "result_type", "step_name", "stdout", "stderr", "console_output", "console_baseline", "console_diff"],
+    ignore: ["name", "time", "history", "server_id", "server_name", "test_run_id", "filename", "result_type", "step_name", "stdout", "stderr", "console_output", "console_baseline", "console_diff", "id", "success"],
   },
   servers:  {
     available: [],
@@ -165,109 +165,49 @@ function refreshDisplayOptions(model) {
       $('.TestResult').each(function() { if($(this).data('model').result_type=="performance") generateGraph($(this));}); // regenerates all the graphs
     });
   }
+  
 }
 
 
+
+
+var highest_x = 60;
+var lowest_time = 0;
+var highest_time = 0;
+var highest_y = 0;
 function generateDatasets(testcase) {
+  var stack_count = 0;
   var datasets = [];
-  var hue = 80;
-  
-  for(var s = 0; s < display_options.servers.selected.length; s++) {
+    for(var s = 0; s < display_options.servers.selected.length; s++) {
     var server = display_options.servers.selected[s];
     for(var propertyName in testcase) {
-      if(($.inArray(propertyName, display_options.properties.selected) > -1) || (propertyName == "server_name") || (propertyName == "time")) {
-        var color = "hsla("+Math.round(hue)+", 60%, 60%";
-        var config = {
-        label: propertyName, 
-        fill: false,
-        backgroundColor: color+", 0.2)",
-        borderColor: color+", 1)",
-        pointBorderColor: color+", 1)",
-        pointBackgroundColor: "#fff",
-        pointBorderWidth: 1,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: color+", 1)",
-        pointHoverBorderColor: color+", 1)",
-        pointHoverBorderWidth: 2,
-        data: [],
-        labels : [],
-        server_name : server,
-        highest_y_value : 60
-        };
-        hue = (hue + 20 + Math.random()*40) % 360;
-        
-        var highest = 60;
+      if(($.inArray(propertyName, display_options.properties.selected) > -1)) {
+    ++stack_count;
         var new_dataset = [];
-        if(!isNaN(testcase[propertyName]))
-          highest = Math.max(testcase[propertyName], highest);
         if(testcase.hasOwnProperty("history")) {
           for(var j = 0; j < testcase.history.length; j++) {
             if((testcase.history[j].server_name == server)) {
-              config.labels.push(testcase.history[j].time);
-              if(!isNaN(testcase.history[j][propertyName]))
-                highest = Math.max(testcase.history[j][propertyName], highest);
-              new_dataset.push({x: testcase.history[j].time, y: testcase.history[j][propertyName]});
-            }
-          }
-        }
-        if(testcase.server_name == server) {
-          new_dataset.push({x: testcase.time, y: testcase[propertyName]});
-          config.labels.push(testcase.time);
-          if(!isNaN(highest))
-            highest = Math.max(highest, config.highest_y_value);
-        }
-        config.highest_y_value = highest;
-        config.data = new_dataset;
-        if(config.labels.length > 0) { // Only add this to the dataset list if it actually contains something.
-          // But first make sure every previous dataset has matching points. And that this has matching points for every previous dataset.
-          // Algorithm: For every previously existing dataset:
-          //   Store an index into their dataset label array and my dataset label array.
-          //   If one of the two indexes has reached the end of its list then add all remaining timestamps in the other list to the first list
-          //   If the two timestamps at these indexes are equal then increment both indexes.
-          
-          for(var prev = 0; prev < datasets.length; prev++) {
-            var theirs = 0;
-            var mine = 0;
-            while((theirs < datasets[prev].labels.length) || (mine < config.labels.length)) {
-              if(theirs < datasets[prev].labels.length) {
-                var their_timestamp = Date.parse(datasets[prev].labels[theirs]);
-              } else {
-                var their_timestamp = null;
+              if(lowest_time == 0 || new Date(testcase.history[j].time) < new Date(lowest_time)) {
+                lowest_time = testcase.history[j].time;
               }
-              if(mine < config.labels.length) {
-                var my_timestamp = Date.parse(config.labels[mine]);
-              } else {
-                var my_timestamp = null;
-              }         
-              if(their_timestamp == my_timestamp) {
-                theirs++;
-                mine++;
-              }  else if((my_timestamp == null) || (their_timestamp < my_timestamp)) {
-                config.labels.splice(mine, 0, datasets[prev].labels[theirs]);
-                if(config.label == "server_name")
-                  config.data.splice(mine, 0, {x: datasets[prev].labels[theirs], y: config[config.label]});
-                else
-                  config.data.splice(mine, 0, {x: datasets[prev].labels[theirs]});
-                theirs++;
-                mine++;
-              } else if((their_timestamp == null) || (their_timestamp > my_timestamp)) {
-                datasets[prev].labels.splice(theirs, 0, config.labels[mine]);
-                if(datasets[prev].label == "server_name")
-                  datasets[prev].data.splice(theirs, 0, {x: config.labels[mine], y: datasets[prev][config.label]});
-                else
-                  datasets[prev].data.splice(theirs, 0, {x: config.labels[mine]});
-                theirs++;
-                mine++;
-              } else {
-                //Something went wrong if we end up here.
-                break;                
-              }
-              
+              if(highest_time == 0 || testcase.history[j].time > highest_time) {
+                highest_time = testcase.history[j].time;
+              }              
+              new_dataset.push([new Date(testcase.history[j].time).getTime(), testcase.history[j][propertyName]]);
             }
-          }
-          datasets.push(config);
+          } 
         }
-     }
+        if(!isNaN(testcase[propertyName])) {
+          if(lowest_time == 0 || new Date( testcase.time) < new Date(lowest_time)) {
+            lowest_time = testcase.time;
+          }
+          if(highest_time == 0 || new Date(testcase.time) > new Date(highest_time)) {
+            highest_time = testcase.time;
+          }           
+          new_dataset.push([new Date(testcase.time).getTime(), testcase[propertyName]]);
+        }
+      datasets.push({label: propertyName, stack: stack_count, data: new_dataset, server_name: testcase['server_name']});
+      }
     }
   }
   return datasets;
@@ -279,142 +219,64 @@ function generateGraph(div) {
   $('.TestResult_data', div).remove();
   var model = div.data('model');
   var graph_data = generateDatasets(model);
-  var highest = 60;
-  for(dataset in graph_data) {
-    highest = Math.max(highest, dataset.highest_y_value);
-  }
-    var graph_div = $('<div>');
-    graph_div.addClass('TestResult_graph');        
-    
-    var graph_canvas = $('<canvas>');
-    graph_div.append(graph_canvas);
 
-  var graph_config = 
-    {
-      type : 'line',
-      data: {
-        labels: graph_data[0].labels,
-        datasets: graph_data
-        },
-      options:{
-        animation: {
-          duration: 0
-        },
-        maintainAspectRatio: true,
-        responsive: true,
-        scaleShowLabels: true,
-        legendCallback : function(controller){
-        var data = controller.data;
-          var res = "<p>Legend:</br>";
-          var server = data.datasets[0].server_name;
-            res += "<span>[" + server + "]</span></br>";
-          for (var k=0; k<data.datasets.length; k++){
-            if(data.datasets[k].server_name != server) {
-              server = data.datasets[k].server_name;
-              res += "<span>[" + server + "]</span></br>";
-            }
-            if($.inArray(data.datasets[k].label, display_options.properties.ignore) < 0) {
-              res += "<span style=\"color:" +data.datasets[k].pointBorderColor+"\">";
-              if(data.datasets[k].label){
-                res += data.datasets[k].label;
-              }
-              res += "</span></br>";                  
-            }
-          }
-          res += "</p>";							
-          return res;
-        },
-          tooltips: {
-              mode: 'label',
-              callbacks : {
-                label: function(tooltipItem, data) {
-                  var item_label = data.datasets[tooltipItem.datasetIndex].label;
-                  var item_value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].y;
-                  if(item_value && item_label) {
-                    if(item_label == 'server_name') {
-                      return item_value;
-                    } else if (item_label == 'time') {
-                      return 'date : ' + item_value.substring(0, item_value.indexOf(' '));
-                    } else {
-                      return item_label + ': ' + item_value;
-                    }
-                  }
-                }
-              }
-          },        
-          scales: {
-              xAxes: [{
-                  display: true,
-                  ticks : {
-                    userCallback: function(value) {
-                      if(value){
-                        return value.substring(0, value.indexOf(' '));
-                      } else {
-                        return '';
-                      }
-                    }
-                  }
-              }],
-              yAxes: [{
-                  display: true,
-                  scaleLabel: {
-                      show: true,
-                      labelString: 'Value'
-                  },
-                  ticks : {
-                    beginAtZero: true,
-                    suggestedMin: 0,
-                    suggestedMax: highest,
-                    userCallback: function(value) {
-                      return value;
-                    }
-                  }
-              }]
-          },
-      }
-    }       
+  var graph_div = $('<div>');
+  graph_div.addClass('TestResult_graph');
   
-  // Chart.js will fail if the canvas isn't visible in the document when Chart() is called. For that reason we append graph_div to the body, call Chart() and then detach it so we can put it in div afterwards.
+  if(lowest_time == highest_time) {
+    highest_time = (new Date(lowest_time).getTime()+1)
+  }
+  highest_time = (new Date(highest_time).getTime())
+  lowest_time = (new Date(lowest_time).getTime())
+  
+  
+  var graph_options = {
+    series: {
+      lines: {
+        show: true,
+        fill: true,
+        steps: false
+      },
+      points: {
+        show: true
+      }
+    },
+    grid:  { hoverable: true }, //important! flot.tooltip requires this
+    tooltip: {
+      show: true,
+      content: function(label, xval, yval, flotItem) {
+        return flotItem.series.server_name + "<br/>" + label + ": " + yval;
+      }
+    },
+    xaxis: {
+      mode: "time",
+      min: lowest_time,
+      max: highest_time,
+      tickFormatter: function (val, axis) {
+          var d = new Date(val);
+          return d.toISOString().split("T")[0];
+      }
+    },
+    yaxis: {
+      min: 0
+    },
+    zoom: {
+      interactive: true
+    },
+    pan: {
+      interactive: true
+    }    
+  }
+		
   $('body').append(graph_div);
 
-  model.chart = Chart.Line(graph_canvas[0].getContext('2d'), graph_config);
-
-  graph_div.detach();
+  // Options can be set globally. 
  
+  $.plot(graph_div, graph_data, graph_options);
+  
   div.append(graph_div); 
-  var data_div = $('<div>');
-  data_div.addClass('TestResult_data');
-  var data_list = $('<ul>');
-  data_list.addClass('TestResult_data_list');
-  data_list.append('Latest:');
-  for(var i = 0; i < display_options.properties.selected.length; i++) {
-    var prop = display_options.properties.selected[i];
-    var line = '<li>' + prop + ': ';
-    if(model.hasOwnProperty(prop))
-      line += model[prop];
-    else
-      line += 'N/A';
-    line += '</li>';
-    data_list.append(line);
-  }
 
            
-  var getprops = function getAllProperties(obj){
-    var allProps = []
-      , curr = obj
-    do{
-        var props = Object.getOwnPropertyNames(curr)
-        props.forEach(function(prop){
-            if (allProps.indexOf(prop) === -1)
-                allProps.push(prop)
-        })
-    }  while(curr = Object.getPrototypeOf(curr))
-    return allProps
-  }
-  
-  data_list.append(model.chart.generateLegend());
-  data_div.append(data_list);
-  div.append(data_div);
 }
 
 
@@ -423,7 +285,7 @@ function getImageBlobURL(blob, download_name) {
   var byteNumbers = new Array(byteCharacters.length);
   for (var i = 0; i < byteCharacters.length; i++) {
       byteNumbers[i] = byteCharacters.charCodeAt(i);
-  }  
+  }
   var arrayBufferView = new Uint8Array(byteNumbers);
   var blob = new Blob( [ arrayBufferView ], { type: "image/png" } );
   var urlCreator = window.URL || window.webkitURL;
