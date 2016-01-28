@@ -334,16 +334,25 @@ namespace H3D {
       template<>
       inline RGB getValue<RGB>( const char *s, const char *&rest ) {
         RGB color;
-        const char *t1, *t2;
-        color.r = getValue<H3DFloat>( s, t1 );
-        if( !isspace(t1[0]) ) {
-          throw X3DFieldConversionError( "RGB" );
+        if(s[0] == '#' && sizeof(s) == 8*sizeof(char)){
+            long h = (long) strtol( &s[1], NULL, 16);
+            color.r = (H3DFloat)( (long)(h >> 16) )/255.0;
+            color.g = (H3DFloat)( (long)(h >> 8 & 0xFF) )/255.0;
+            color.b = (H3DFloat)( (long)(h & 0xFF) )/255.0;
+            rest = &s[7]; // terminating character '\0'
         }
-        color.g = getValue<H3DFloat>( t1, t2 );
-        if( !isspace(t2[0]) ) {
-          throw X3DFieldConversionError( "RGB" );
+        else{
+            const char *t1, *t2;
+            color.r = getValue<H3DFloat>( s, t1 );
+            if( !isspace(t1[0]) && t1[0] != ','  ) {
+                throw X3DFieldConversionError( "RGB" );
+            }
+            color.g = getValue<H3DFloat>( t1, t2 );
+            if( !isspace(t2[0]) && t2[0] != ','  ) {
+                throw X3DFieldConversionError( "RGB" );
+            }
+            color.b = getValue<H3DFloat>( t2, rest );
         }
-        color.b = getValue<H3DFloat>( t2, rest );
         return color;
       }
       
