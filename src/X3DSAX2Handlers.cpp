@@ -125,6 +125,7 @@ namespace X3DSAX2HandlersInternals {
   static const XMLCh gEmptyString[] = { chNull }; 
   static const XMLCh gUSE[] =  { chLatin_U, chLatin_S, chLatin_E, chNull };
   static const XMLCh gX3D[] =  { chLatin_X, chDigit_3, chLatin_D, chNull };
+  static const XMLCh gx3d[] =  { chLatin_x, chDigit_3, chLatin_d, chNull };
   static const XMLCh gurl[] =  { chLatin_u, chLatin_r, chLatin_l, chNull };
   static const XMLCh gCOPY[] =  { chLatin_C, chLatin_O, chLatin_P, chLatin_Y, chNull };
   static const XMLCh gDEF[] =  { chLatin_D, chLatin_E, chLatin_F, chNull };
@@ -134,6 +135,8 @@ namespace X3DSAX2HandlersInternals {
     { chLatin_v, chLatin_a, chLatin_l, chLatin_u,  chLatin_e, chNull };
   static const XMLCh gScene[] =  
     { chLatin_S, chLatin_c, chLatin_e, chLatin_n, chLatin_e, chNull };
+  static const XMLCh gscene[] =  
+    { chLatin_s, chLatin_c, chLatin_e, chLatin_n, chLatin_e, chNull };
 }
 using namespace X3DSAX2HandlersInternals;
 
@@ -1223,7 +1226,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
   Node *parent = NULL;
 
   // skip special element X3D
-  if( XMLString::equals( localname, gX3D ) ) {
+  if( XMLString::equals( localname, gX3D ) || XMLString::equals( localname, gx3d ) ) {
     if( node_stack.size() > 0 ) 
       throw X3D::XMLParseError( "X3D element only allowed at toplevel.", "", 
                                 toString( locator->getSystemId() ),
@@ -1263,7 +1266,7 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
   }
 
   // special element Scene works as a Group node so we use a Group node.
-  if( XMLString::equals( localname, gScene ) ) {
+  if( XMLString::equals( localname, gScene ) || XMLString::equals( localname, gscene ) ) {
     if( node_stack.size() > 0 ) 
       throw X3D::XMLParseError( "Scene element only allowed at toplevel or in X3D element.", "", 
                                 toString( locator->getSystemId() ),
@@ -1491,20 +1494,20 @@ void X3DSAX2Handlers::startElement(const XMLCh* const uri,
           XMLSize_t nr_attrs = attrs.getLength();
           for( XMLSize_t i = 0; i < nr_attrs; ++i ) {
             string name = toString( attrs.getQName( i ) );
-      
-            if( name == "USE" ) {
+            transform( name.begin(), name.end(), name.begin(), ::tolower );
+            if( name == "use" ) {
               // this case has already been specially handled above, 
               // so we just ignore it
             } else if( name == "class" ) {
               // class is a reserved attribute name 
-            } else if( name == "DEF" ) {
+            } else if( name == "def" ) {
               const XMLCh *def_name = attrs.getValue( i );
               if( new_node && DEF_map ) {
                 DEF_map->addNode( toString( def_name ), 
                                   new_node ); 
                 new_node->setName( toString( def_name ) );
               }
-            } else if( name == "containerField" ) {
+            } else if( name == "containerfield" ) {
               string s = toString( attrs.getValue( i ) );
               container_field = s;
 #ifdef HAVE_PYTHON
@@ -1633,7 +1636,7 @@ void X3DSAX2Handlers::endElement (const XMLCh *const uri,
   string localname_string = toString( localname );
 
   // skip special element X3D.
-  if( localname_string == "X3D" ) {
+  if( localname_string == "x3d" || localname_string == "X3D") {
     profile_set = false;
     return;
   }

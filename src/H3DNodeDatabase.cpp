@@ -31,6 +31,9 @@
 #include <H3D/H3DNodeDatabase.h>
 #include <H3D/Node.h>
 
+#include <algorithm>
+#include <string> 
+
 using namespace H3D;
 
 H3DNodeDatabase::H3DNodeDatabaseType *H3DNodeDatabase::database = 
@@ -42,11 +45,13 @@ H3DNodeDatabase::H3DNodeDatabase( const string &_name,
                                   H3DCreateNodeFunc _createf,
                                   const type_info &_ti,
                                   H3DNodeDatabase *_parent ) :
-name( _name ), 
 createf( _createf ),
 ti( _ti ),
 parent( _parent ),
 database_allocated_dynamic( false ) {
+  std::string __name(_name);
+  std::transform(__name.begin(), __name.end(), __name.begin(), ::tolower); 
+  name = __name;
   if (!initialized) {
     database = new H3DNodeDatabaseType;
     initialized = true;
@@ -59,11 +64,13 @@ H3DNodeDatabase::H3DNodeDatabase( const string &_name,
                                   H3DCreateNodeFunc _createf,
                                   const type_info &_ti,
                                   H3DNodeDatabase *_parent ) :
-name( _name ), 
 createf( _createf ),
 ti( _ti ),
 parent( _parent ),
 database_allocated_dynamic( false ) {
+  std::string __name(_name);
+  std::transform(__name.begin(), __name.end(), __name.begin(), ::tolower); 
+  name = __name;
   if (!initialized) {
     database = new H3DNodeDatabaseType;
     initialized = true;
@@ -135,7 +142,9 @@ H3DNodeDatabase::~H3DNodeDatabase(void){
 }
 
 
-Node *H3DNodeDatabase::createNode( const string &name ) {
+Node *H3DNodeDatabase::createNode( const string &_name ) {
+  std::string name(_name);
+  std::transform(name.begin(), name.end(), name.begin(), ::tolower); 
   H3DNodeDatabase *db = lookupName( name );
   if( !db || db->createf == NULL )
     return NULL;
@@ -160,11 +169,13 @@ void H3DNodeDatabase::initFields( Node *n ) const {
 }
 
 
-Field *H3DNodeDatabase::getFieldHelp( const Node *n, const string &f ) const {
+Field *H3DNodeDatabase::getFieldHelp( const Node *n, const string &_f ) const {
+  std::string f(_f);
+  std::transform(f.begin(), f.end(), f.begin(), ::tolower); 
   for( FieldDBType::const_iterator i = fields.begin(); i != fields.end(); ++i ) {
     FieldDBElement *fdb = (*i).second;
-    const string &_name = (*i).first;
-    if( _name == f )
+    const string &name = (*i).first;
+    if ( name == f )
       return fdb->getField( n );
   }
   if ( parent )
@@ -174,18 +185,20 @@ Field *H3DNodeDatabase::getFieldHelp( const Node *n, const string &f ) const {
 }
 
 Field *H3DNodeDatabase::getField( const Node *n, const string &_name ) const {
-  Field *f = getFieldHelp( n, _name );
+  std::string name(_name);
+  std::transform(name.begin(), name.end(), name.begin(), ::tolower); 
+  Field *f = getFieldHelp( n, name );
   if( f ) return f;
 
   // could not find the field with the given name. If the name starts with
   // "set_" try to remove that prefix.
-  if( _name.size() > 4 && _name.substr( 0, 4 ) == "set_" ) {
-    f = getFieldHelp( n, _name.substr( 4, _name.size() - 4 ) );
+  if( name.size() > 4 && name.substr( 0, 4 ) == "set_" ) {
+    f = getFieldHelp( n, name.substr( 4, name.size() - 4 ) );
     if( f && f->getAccessType() == Field::INPUT_OUTPUT ) return f;
   }
 
-  if( _name.size() > 8 && _name.substr( _name.size() - 8, 8 ) == "_changed" ) {
-    f = getFieldHelp( n, _name.substr( 0, _name.size() - 8 ) );
+  if( name.size() > 8 && name.substr( name.size() - 8, 8 ) == "_changed" ) {
+    f = getFieldHelp( n, name.substr( 0, name.size() - 8 ) );
     if( f && f->getAccessType() == Field::INPUT_OUTPUT ) return f;
   }
 
@@ -233,7 +246,9 @@ H3DNodeDatabase *H3DNodeDatabase::lookupTypeId( const type_info &t ) {
     return (*pos).second;
 }
 
-H3DNodeDatabase *H3DNodeDatabase::lookupName( const string &name ) {
+H3DNodeDatabase *H3DNodeDatabase::lookupName( const string &_name ) {
+  std::string name(_name);
+  std::transform(name.begin(), name.end(), name.begin(), ::tolower); 
    for( H3DNodeDatabaseType::iterator i = database->begin(); 
        i != database->end(); ++i ) {
     H3DNodeDatabase *n = (*i).second;
@@ -255,8 +270,10 @@ H3DNodeDatabase *H3DNodeDatabase::lookupName( const string &name ) {
 FieldDBElement::FieldDBElement( H3DNodeDatabase *_container,
                                 const string &_name, 
                                 const Field::AccessType _access ) :
-container( _container ), name( _name ), access( _access ) {
-
+container( _container ), access( _access ) {
+  std::string __name(_name);
+  std::transform(__name.begin(), __name.end(), __name.begin(), ::tolower); 
+  name = __name;
 }
 
 bool H3DNodeDatabase::FieldDBConstIterator::operator==( 
