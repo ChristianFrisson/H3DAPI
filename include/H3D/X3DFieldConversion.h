@@ -183,7 +183,7 @@ namespace H3D {
         unsigned long integer_part = 0;
         double fractional_part = 0;
         bool valid = false;
-        while( isspace(s[i]) && s[i]!='\0' ) {
+        while( (isspace(s[i]) || s[i]==',') && s[i]!='\0' ) {
           ++i;
         }
         if( s[i] == '+' ) {
@@ -366,15 +366,15 @@ namespace H3D {
         RGBA color;
         const char *t1, *t2;
         color.r = getValue<H3DFloat>( s, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "RGBA" );
         }
         color.g = getValue<H3DFloat>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "RGBA" );
         }
         color.b = getValue<H3DFloat>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "RGBA" );
         }
         color.a = getValue<H3DFloat>( t1, rest );
@@ -392,15 +392,15 @@ namespace H3D {
         Rotation rot;
         const char *t1, *t2;
         rot.axis.x = getValue<H3DFloat>( s, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Rotation" );
         }
         rot.axis.y = getValue<H3DFloat>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Rotation" );
         }
         rot.axis.z = getValue<H3DFloat>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Rotation" );
         }
         rot.angle = getValue<H3DFloat>( t1, rest );
@@ -418,15 +418,15 @@ namespace H3D {
         Quaternion q;
         const char *t1, *t2;
         q.v.x = getValue<H3DFloat>( s, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Quaternion" );
         }
         q.v.y = getValue<H3DFloat>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Quaternion" );
         }
         q.v.z = getValue<H3DFloat>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Quaternion" );
         }
         q.w = getValue<H3DFloat>( t1, rest );
@@ -443,66 +443,66 @@ namespace H3D {
         Matrix4f m;
         const char *t1, *t2;
         m[0][0] = getValue<H3DFloat>( s, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4f" );
         }
         m[0][1] = getValue<H3DFloat>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4f" );
         }
         m[0][2] = getValue<H3DFloat>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4f" );
         }
         m[0][3] = getValue<H3DFloat>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4f" );
         }
 
         m[1][0] = getValue<H3DFloat>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4f" );
         }
         m[1][1] = getValue<H3DFloat>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4f" );
         }
         m[1][2] = getValue<H3DFloat>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4f" );
         }
         m[1][3] = getValue<H3DFloat>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4f" );
         } 
   
         m[2][0] = getValue<H3DFloat>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4f" );
         }
         m[2][1] = getValue<H3DFloat>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4f" );
         }
         m[2][2] = getValue<H3DFloat>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4f" );
         }
         m[2][3] = getValue<H3DFloat>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4f" );
         } 
 
         m[3][0] = getValue<H3DFloat>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4f" );
         }
         m[3][1] = getValue<H3DFloat>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4f" );
         }
         m[3][2] = getValue<H3DFloat>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4f" );
         }
         m[3][3] = getValue<H3DFloat>( t1, rest );
@@ -520,35 +520,35 @@ namespace H3D {
         Matrix3f m;
         const char *t1, *t2;
         m[0][0] = getValue<H3DFloat>( s, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix3f" );
         }
         m[0][1] = getValue<H3DFloat>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix3f" );
         }
         m[0][2] = getValue<H3DFloat>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix3f" );
         }
         m[1][0] = getValue<H3DFloat>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix3f" );
         }
         m[1][1] = getValue<H3DFloat>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix3f" );
         }
         m[1][2] = getValue<H3DFloat>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix3f" );
         }
         m[2][0] = getValue<H3DFloat>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix3f" );
         }
         m[2][1] = getValue<H3DFloat>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix3f" );
         }
         m[2][2] = getValue<H3DFloat>( t2, rest );
@@ -566,66 +566,66 @@ namespace H3D {
         Matrix4d m;
         const char *t1, *t2;
         m[0][0] = getValue<H3DDouble>( s, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4d" );
         }
         m[0][1] = getValue<H3DDouble>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4d" );
         }
         m[0][2] = getValue<H3DDouble>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4d" );
         }
         m[0][3] = getValue<H3DDouble>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4d" );
         }
 
         m[1][0] = getValue<H3DDouble>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4d" );
         }
         m[1][1] = getValue<H3DDouble>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4d" );
         }
         m[1][2] = getValue<H3DDouble>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4d" );
         }
         m[1][3] = getValue<H3DDouble>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4d" );
         } 
   
         m[2][0] = getValue<H3DDouble>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4d" );
         }
         m[2][1] = getValue<H3DDouble>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4d" );
         }
         m[2][2] = getValue<H3DDouble>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4d" );
         }
         m[2][3] = getValue<H3DDouble>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4d" );
         } 
 
         m[3][0] = getValue<H3DDouble>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4d" );
         }
         m[3][1] = getValue<H3DDouble>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4d" );
         }
         m[3][2] = getValue<H3DDouble>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix4d" );
         }
         m[3][3] = getValue<H3DDouble>( t1, rest );
@@ -643,35 +643,35 @@ namespace H3D {
         Matrix3d m;
         const char *t1, *t2;
         m[0][0] = getValue<H3DDouble>( s, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix3d" );
         }
         m[0][1] = getValue<H3DDouble>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix3d" );
         }
         m[0][2] = getValue<H3DDouble>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix3d" );
         }
         m[1][0] = getValue<H3DDouble>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix3d" );
         }
         m[1][1] = getValue<H3DDouble>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix3d" );
         }
         m[1][2] = getValue<H3DDouble>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix3d" );
         }
         m[2][0] = getValue<H3DDouble>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix3d" );
         }
         m[2][1] = getValue<H3DDouble>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ','  ) {
           throw X3DFieldConversionError( "Matrix3d" );
         }
         m[2][2] = getValue<H3DDouble>( t2, rest );
@@ -691,15 +691,15 @@ namespace H3D {
         Vec4f v;
         const char *t1, *t2;
         v.x = getValue<H3DFloat>( s, t1 );
-        if( !isspace(t1[0]) ) {
+	if( !isspace(t1[0]) && t1[0] != ',') {
           throw X3DFieldConversionError( "Vec4f" );
         }
         v.y = getValue<H3DFloat>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ',' ) {
           throw X3DFieldConversionError( "Vec4f" );
         }
         v.z = getValue<H3DFloat>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ',' ) {
           throw X3DFieldConversionError( "Vec4f" );
         }
         v.w = getValue<H3DFloat>( t1, rest );
@@ -716,15 +716,15 @@ namespace H3D {
         Vec4d v;
         const char *t1, *t2;
         v.x = getValue<H3DDouble>( s, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ',') {
           throw X3DFieldConversionError( "Vec4d" );
         }
         v.y = getValue<H3DDouble>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ',' ) {
           throw X3DFieldConversionError( "Vec4d" );
         }
         v.z = getValue<H3DDouble>( t2, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ',' ) {
           throw X3DFieldConversionError( "Vec4d" );
         }
         v.w = getValue<H3DDouble>( t1, rest );
@@ -741,11 +741,11 @@ namespace H3D {
         Vec3f v;
         const char *t1, *t2;
         v.x = getValue<H3DFloat>( s, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ',' ) {
           throw X3DFieldConversionError( "Vec3f" );
         }
         v.y = getValue<H3DFloat>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ',' ) {
           throw X3DFieldConversionError( "Vec3f" );
         }
         v.z = getValue<H3DFloat>( t2, rest );
@@ -762,11 +762,11 @@ namespace H3D {
         Vec3d v;
         const char *t1, *t2;
         v.x = getValue<H3DDouble>( s, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ',' ) {
           throw X3DFieldConversionError( "Vec3d" );
         }
         v.y = getValue<H3DDouble>( t1, t2 );
-        if( !isspace(t2[0]) ) {
+        if( !isspace(t2[0]) && t2[0] != ',' ) {
           throw X3DFieldConversionError( "Vec3d" );
         }
         v.z = getValue<H3DDouble>( t2, rest );
@@ -783,7 +783,7 @@ namespace H3D {
         Vec2f v;
         const char *t1;
         v.x = getValue<H3DFloat>( s, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ',') {
           throw X3DFieldConversionError( "Vec2f" );
         }
         v.y = getValue<H3DFloat>( t1, rest );
@@ -800,7 +800,7 @@ namespace H3D {
         Vec2d v;
         const char *t1;
         v.x = getValue<H3DDouble>( s, t1 );
-        if( !isspace(t1[0]) ) {
+        if( !isspace(t1[0]) && t1[0] != ',' ) {
           throw X3DFieldConversionError( "Vec2d" );
         }
         v.y = getValue<H3DDouble>( t1, rest );
